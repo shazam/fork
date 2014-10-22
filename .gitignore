@@ -1,0 +1,16 @@
+# IDEA
+.idea
+*.iml
+
+# Gradle
+build
+.gradle
+
+# Other
+.DS_Store
+
+# android studio
+local.properties
+
+# output files
+fork-output

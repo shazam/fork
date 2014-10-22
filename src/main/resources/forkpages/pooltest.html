@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Fork Execution</title>
+        <link href="http://fonts.googleapis.com/css?family=Roboto:regular,medium,thin,italic,mediumitalic,bold" rel="stylesheet">
+        <link href="../../../static/bootstrap.min.css" rel="stylesheet">
+        <link href="../../../static/bootstrap-responsive.min.css" rel="stylesheet">
+        <link href="../../../static/spoon.css" rel="stylesheet">
+        <script src="../../../static/jquery.min.js"></script>
+        <script src="../../../static/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="hero-unit">
+                <h1>{{prettyMethodName}}</h1>
+                <p>{{prettyClassName}}</p>
+            </div>
+            <a href="../../../../screenshots/{{deviceSerial}}_({{deviceModelDespaced}})/{{plainClassName}}/{{plainMethodName}}.png">
+                <img style="float: right; border: dotted blue 2px;" width="18%" height="18%"
+                     src="../../../../screenshots/{{deviceSerial}}_({{deviceModelDespaced}})/{{plainClassName}}/{{plainMethodName}}.png"/>
+            </a>
+            <div class="row log">
+                <ul class="birds-eye">
+                    <li class="test {{status}}">{{status}} in {{timeTaken}}s on [{{deviceSerial}}] {{deviceModelDespaced}}</li>
+                    <li><a href="../../{{plainPoolName}}.html">All tests for {{prettyPoolName}}</a></li>
+                    <li><a href="../../../../logcat__{{plainPoolName}}__{{deviceSerial}}__{{plainClassName}}%23{{plainMethodName}}.log">Raw log</a></li>
+                </ul>
+            </div>
+            <script language="javascript">
+                function filterTable(mode) {
+                   rows=document.getElementsByClassName('logcat')[0].rows;
+                   regex=document.getElementById('filter').value;
+                   for (i=0; i<rows.length; ++i) {
+                     if (rows[i].textContent.match(regex)) {
+                       rows[i].style.display=mode;
+                     }
+                   }
+                }
+            </script>
+            <form>
+                <input type="text" id="filter" placeholder="Unanchored regex; empty is 'all'"/>
+                <input type="button" value="hide match(regex) from logcat" onclick="filterTable('none')">
+                <input type="button" value="show match(regex) in logcat" onclick="filterTable('')">
+            </form>
+            <pre class="test {{status}}">{{#trace}}
+{{.}}
+{{/trace}}</pre>
+            <div class="row">
+                <table class="logcat">
+                    <tr><th>tid</th><th>pid</th><th>tag</th><th>name</th><th>level</th><th>time</th><th>message</th></tr>
+                    {{#logcatMessages}}
+<tr class="line {{logLevel}}"><td>{{tid}}</td><td>{{pid}}</td><td>{{tag}}</td><td>{{appName}}</td><td>{{logLevel}}</td><td style="white-space:nowrap;">{{time}}</td><td style="word-wrap:break-word;">{{message}}</td></tr>
+                    {{/logcatMessages}}
+                </table>
+                <!-- iframe width="80%" height="600" src="../../../../logcat__{{plainPoolName}}__{{deviceSerial}}__{{plainClassName}}%23{{plainMethodName}}.log"></iframe -->
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            $('.test a').popover({
+                placement: 'top',
+                trigger: 'hover'
+            });
+        </script>
+    </body>
+</html>

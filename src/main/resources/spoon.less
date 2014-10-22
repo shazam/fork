@@ -1,0 +1,188 @@
+::-webkit-selection,
+::-moz-selection,
+::selection {
+	background-color: #0099cc;
+	color: #fff;
+}
+
+html, body {
+	height: 100%;
+	background-color: #f9f9f9;
+	-webkit-font-smoothing: antialiased;
+}
+
+body {
+	color: #222;
+	font: 14px/19px Roboto, sans-serif;
+	font-weight: 400;
+	letter-spacing: .1;
+	padding-top: 20px;
+	padding-bottom: 50px;
+}
+
+.hero-unit {
+  background-image: url('ceiling_android.png');
+  background-repeat: no-repeat;
+  background-position: top right;
+  padding: 15px 30px;
+
+  h1 {
+    margin-bottom: 5px;
+    font-weight: 200;
+  }
+  p {
+    margin: 0;
+  }
+}
+
+.stacktrace {
+  overflow-y: scroll;
+  margin-bottom: 10px;
+
+  &.error {
+    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-size: 40px 40px;
+  }
+
+  h4 {
+    cursor: pointer;
+  }
+  .stacktrace-line {
+    white-space: nowrap;
+  }
+}
+
+.test-result {
+  font-weight: 200;
+
+  small {
+    font-weight: 200;
+    display: none;
+  }
+  &:hover small {
+    display: inline;
+  }
+
+  &.pass {
+    border-bottom: 2px solid #89c989;
+  }
+  &.fail,
+  &.error {
+    border-bottom: 2px solid #c98989;
+  }
+
+  .icon {
+    padding: 0 8px;
+
+    image {
+      opacity: 0.5;
+    }
+    &:hover image {
+      opacity: 1.0;
+    }
+  }
+}
+
+.modal .modal-body {
+  max-height: none;
+}
+
+.logcat {
+  table-layout: fixed;
+  overflow-x: scroll;
+  clear: both;
+
+  .line {
+    &.debug {
+      background-color: #cff;
+    }
+    &.assert {
+      background-color: #ccf;
+    }
+    &.error {
+      background-color: #fcc;
+    }
+    &.info {
+      background-color: #fff;
+    }
+    &.verbose {
+      color: #888;
+    }
+    &.warn {
+      background-color: #ffc;
+    }
+
+    td { padding: 5px; }
+  }
+}
+
+.birds-eye {
+  width: 100%;
+  table-layout: fixed;
+
+  .device th {
+    text-align: left;
+    padding: 0;
+
+    a {
+      display: block;
+      padding: 10px 2px 5px;
+    }
+  }
+
+  .test {
+    height: 30px;
+    padding: 0;
+
+    a {
+      display: block;
+      text-decoration: none;
+      height: 30px;
+    }
+
+    &.pass {
+      background-color: #b9e9b9;
+    }
+    &.pass:hover {
+      background-color: #99c999;
+    }
+    &.fail,
+    &.error {
+      background-color: #e9b9b9;
+    }
+    &.fail:hover,
+    &.error:hover {
+      background-color: #c99999;
+    }
+    &.error {
+      background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+      background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+      background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+      background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+      background-size: 40px 40px;
+    }
+  }
+}
+
+pre.error {
+  border-color: rgb(238, 95, 91);
+  background-color: rgba(238, 95, 91, 0.1);
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-size: 40px 40px;
+}
+
+
+.log {
+  .span12 {
+    overflow-y: auto;
+  }
+  td {
+    white-space: nowrap;
+  }
+}
