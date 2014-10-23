@@ -6,21 +6,21 @@ def isReleaseBuild() {
 }
 
 def getReleaseRepositoryUrl() {
-    return hasProperty('SHAZAM_RELEASE_REPOSITORY_URL') ? SHAZAM_RELEASE_REPOSITORY_URL
+    return hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL
             : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 }
 
 def getSnapshotRepositoryUrl() {
-    return hasProperty('SHAZAM_SNAPSHOT_REPOSITORY_URL') ? SHAZAM_SNAPSHOT_REPOSITORY_URL
+    return hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL
             : "https://oss.sonatype.org/content/repositories/snapshots/"
 }
 
 def getRepositoryUsername() {
-    return hasProperty('SHAZAM_NEXUS_USERNAME') ? SHAZAM_NEXUS_USERNAME : ""
+    return hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : ""
 }
 
 def getRepositoryPassword() {
-    return hasProperty('SHAZAM_NEXUS_PASSWORD') ? SHAZAM_NEXUS_PASSWORD : ""
+    return hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ""
 }
 
 uploadArchives {
