@@ -80,8 +80,9 @@ With either way of executing Fork (Gradle/standalone/maven) you can specify thes
 
 One of:
  * **fork.tablet=(true|false)** - to configure pools depending on their manufacturer's 'tablet' flag (ro.build.characteristics)
- * **fork.pool.POOL_NAME=(Serial','?)* ** - to add devices with a given serial to a pool with given name,e.g. hdpi=01234567,abcdefgh
- * **fork.computed.STRATEGY=(PoolName=LowerBound','?)* ** - to automatically create pools based on device characteristics, where
+ * **fork.pool.POOL_NAME=(Serial','?)\* ** - to add devices with a given serial to a pool with given name,e.g. hdpi=01234567,abcdefgh
+ * **fork.computed.STRATEGY=(PoolName=LowerBound','?)\* ** - to automatically create pools based on device characteristics, where
+ 
 	STRATEGY:=sw - by smallest width, e.g.phablet=0,tablet=720
 
 	STRATEGY:=api - by api, e.g. gingerbread_and_earlier=0,honeycomb_and_later=11)
@@ -89,7 +90,7 @@ One of:
 
 Any of:
 * **android.test.classes=REGEX** - to specify a pattern for the classes/packages to run
-* **fork.excluded.serial=(Serial','?)* ** - to exclude specific devices from running any tests
+* **fork.excluded.serial=(Serial','?)\* ** - to exclude specific devices from running any tests
 * **fork.report.title=Title** - to specify a title for the generated report
 * **fork.report.subtitle=Subitle** - to specify a subtitle for the generated report
 
