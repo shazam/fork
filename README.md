@@ -80,9 +80,9 @@ With either way of executing Fork (Gradle/standalone/maven) you can specify thes
 
 One of:
  * **fork.tablet=(true|false)** - to configure pools depending on their manufacturer's 'tablet' flag (ro.build.characteristics)
- * **fork.pool.POOL_NAME=(Serial','?)\* ** - to add devices with a given serial to a pool with given name,e.g. hdpi=01234567,abcdefgh
- * **fork.computed.STRATEGY=(PoolName=LowerBound','?)\* ** - to automatically create pools based on device characteristics, where
- 
+ * **fork.pool.POOL_NAME=(Serial','?) \* ** - to add devices with a given serial to a pool with given name,e.g. hdpi=01234567,abcdefgh
+ * **fork.computed.STRATEGY=(PoolName=LowerBound','?) \* ** - to automatically create pools based on device characteristics, where
+
 	STRATEGY:=sw - by smallest width, e.g.phablet=0,tablet=720
 
 	STRATEGY:=api - by api, e.g. gingerbread_and_earlier=0,honeycomb_and_later=11)
@@ -90,14 +90,35 @@ One of:
 
 Any of:
 * **android.test.classes=REGEX** - to specify a pattern for the classes/packages to run
-* **fork.excluded.serial=(Serial','?)\* ** - to exclude specific devices from running any tests
+* **fork.excluded.serial=(Serial','?) \* ** - to exclude specific devices from running any tests
 * **fork.report.title=Title** - to specify a title for the generated report
 * **fork.report.subtitle=Subitle** - to specify a subtitle for the generated report
+
+
+Examples
+-----------
+A common case can be that you want to create two pools, one for phones & small tablets (7" and below) and one for large tablets. You could execute:
+```
+gradlew forkDebugTest -Dfork.computed.sw=phablets=0,tablets=720
+```
+The above will run tests on 2 pools, one named "phablets" and another called "tablets". The smallest width for the first pool will be 0 and for the latter 720 dpi.
+
 
 Limitations
 -----------
  * Multi-dex test APKs are not supported yet.
  * The scheduling still works on a single build box with ADB, so there still is a limit by how many devices & emulators can be simultaneously connected to ADB. Eventually, Fork could be tweaked to talk over HTTP with other build agents, that would then be connected to devices over ADB. That model would tie in nicely with multi-agent CI systems, like Jenkins.
+
+License
+--------
+
+    Copyright 2014 Shazam Entertainment Limited.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
+
+    You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
 
  [1]: https://github.com/square/spoon
