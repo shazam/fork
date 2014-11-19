@@ -18,13 +18,8 @@ package com.squareup.spoon.axmlparser;
 import java.io.IOException;
 
 /**
- * @author Dmitry Skiba
- *
  * Block of strings, used in binary xml and arsc.
- *
- * TODO:
- * - implement get()
- *
+ * @author Dmitry Skiba
  */
 public class StringBlock {
 

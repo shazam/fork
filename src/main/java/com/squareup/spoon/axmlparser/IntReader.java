@@ -20,13 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @author Dmitry Skiba
- *
  * Simple helper class that allows reading of integers.
- *
- * TODO:
- * 	* implement buffering
- *
+ * @author Dmitry Skiba
  */
 public final class IntReader {
 

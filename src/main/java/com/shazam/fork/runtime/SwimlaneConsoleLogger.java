@@ -25,7 +25,6 @@ import static java.lang.System.nanoTime;
  *
  * FIXME: Find a better way of keeping track of test progress.
  */
-
 public class SwimlaneConsoleLogger {
 	private static final String STARTED_NO_FAILURE = "|";
     private static final char STARTED_FIRST_FAILURE = 'a';

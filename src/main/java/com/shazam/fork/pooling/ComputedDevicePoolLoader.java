@@ -34,7 +34,6 @@ import static com.shazam.fork.model.DevicePool.Builder.aDevicePool;
 //FIXME: Class with no Unit Tests
 public class ComputedDevicePoolLoader implements DevicePoolLoader {
     private static final Logger logger = LoggerFactory.getLogger(ComputedDevicePoolLoader.class);
-
     private final ComputedPoolsSelector computedPoolsSelector;
 
 	public ComputedDevicePoolLoader(ComputedPoolsSelector computedPoolsSelector) {

@@ -19,12 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @author Dmitry Skiba
- *
  * Parser for Android's binary xml files (axml).
- *
- * TODO:
- * 	* understand ? values
+ * @author Dmitry Skiba
  */
 public final class AXMLParser {
 

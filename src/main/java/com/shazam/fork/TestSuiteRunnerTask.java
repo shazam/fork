@@ -25,6 +25,10 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.concurrent.CountDownLatch;
 
+import static com.android.ddmlib.IDevice.Feature.SCREEN_RECORD;
+import static com.shazam.fork.io.RemoteDirectory.remoteForkDirectory;
+import static com.shazam.fork.io.RemoteFileManager.createRemoteDirectory;
+import static com.shazam.fork.io.RemoteFileManager.removeRemoteDirectory;
 import static com.shazam.fork.model.TestRunParameters.Builder.testRunParameters;
 
 class TestSuiteRunnerTask implements Runnable {
@@ -62,12 +66,18 @@ class TestSuiteRunnerTask implements Runnable {
 
 	@Override
 	public void run() {
-		try {
-			String serial = device.getSerial();
-			swimlaneConsoleLogger.setCount(serial, poolName, testClassProvider.size());
-			installer.prepareInstallation(device.getDeviceInterface());
-			TestClass testClass;
-			while ((testClass = testClassProvider.getNextTest()) != null) {
+        String serial = device.getSerial();
+        IDevice deviceInterface = device.getDeviceInterface();
+        String remoteDirectory = remoteForkDirectory();
+        try {
+            swimlaneConsoleLogger.setCount(serial, poolName, testClassProvider.size());
+            installer.prepareInstallation(deviceInterface);
+            // For when previous run crashed/disconnected and left files behind
+            removeRemoteDirectory(deviceInterface, remoteDirectory);
+            createRemoteDirectory(deviceInterface, remoteDirectory);
+
+            TestClass testClass;
+            while ((testClass = testClassProvider.getNextTest()) != null) {
 				runIndividualTestClass(testClass);
 			}
 		} catch (Exception e) {
@@ -75,15 +85,18 @@ class TestSuiteRunnerTask implements Runnable {
 		} finally {
             logger.info("Device {} from pool {} finished", device.getSerial(), poolName);
 			deviceCountDownLatch.countDown();
+            removeRemoteDirectory(deviceInterface, remoteDirectory);
 		}
 	}
 
-	private void runIndividualTestClass(TestClass testClass) {
-		TestRunParameters testRunParameters = testRunParameters()
+    private void runIndividualTestClass(TestClass testClass) {
+        InstrumentationInfo instrumentationInfo = configuration.getInstrumentationInfo();
+
+        TestRunParameters testRunParameters = testRunParameters()
 				.withDeviceInterface(device.getDeviceInterface())
 				.withTest(testClass)
-				.withTestPackage(configuration.getInstrumentationInfo().getInstrumentationPackage())
-				.withTestRunner(configuration.getInstrumentationInfo().getTestRunnerClass())
+				.withTestPackage(instrumentationInfo.getInstrumentationPackage())
+				.withTestRunner(instrumentationInfo.getTestRunnerClass())
 				.build();
         File output = configuration.getOutput();
         ITestRunListener xmlTestRunListener = getForkXmlTestRunListener(
@@ -94,24 +107,33 @@ class TestSuiteRunnerTask implements Runnable {
                 testClass);
         ITestRunListener logTestRunListener = new LoggingTestRunListener(device.getSerial(), swimlaneConsoleLogger);
         ITestRunListener logCatTestRunListener = new LogCatTestRunListener(gson, filenameCreator, poolName, device);
-
+        ITestRunListener screenRecorderTestRunListener = getScreenRecorderTestRunListener(output);
+        
 		TestRun testRun = new TestRun(
                 configuration,
                 poolName,
 				testRunParameters,
 				xmlTestRunListener,
                 logTestRunListener,
-				logCatTestRunListener);
+				logCatTestRunListener,
+                screenRecorderTestRunListener);
 		testRun.execute();
 	}
 
-	public static ForkXmlTestRunListener getForkXmlTestRunListener(FilenameCreator filenameCreator,
+    public static ForkXmlTestRunListener getForkXmlTestRunListener(FilenameCreator filenameCreator,
                                                                    File output,
                                                                    String poolName,
                                                                    String serial,
                                                                    TestClass testClass) {
-		ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(filenameCreator, poolName, serial, testClass);
-		xmlTestRunListener.setReportDir(output);
-		return xmlTestRunListener;
-	}
+        ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(filenameCreator, poolName, serial, testClass);
+        xmlTestRunListener.setReportDir(output);
+        return xmlTestRunListener;
+    }
+
+    private ITestRunListener getScreenRecorderTestRunListener(File output) {
+        if (device.getDeviceInterface().supportsFeature(SCREEN_RECORD)) {
+            return new ScreenRecorderTestRunListener(output, device);
+        }
+        return new NoOpTestRunListener();
+    }
 }

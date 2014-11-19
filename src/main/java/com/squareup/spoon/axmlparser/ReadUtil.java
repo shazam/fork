@@ -20,12 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @author Dmitry Skiba
- *
  * Various read helpers.
- *
- * TODO: remove? (as we have IntReader now)
- *
+ * @author Dmitry Skiba
  */
 public class ReadUtil {
 

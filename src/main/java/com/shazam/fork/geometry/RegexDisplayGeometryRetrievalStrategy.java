@@ -27,7 +27,6 @@ import java.util.regex.PatternSyntaxException;
 /**
  * Runs a command on a device and sniffs its output for geometry by regex. Main aim is to determine shortest width.
  */
-//TODO Break this up.
 public class RegexDisplayGeometryRetrievalStrategy implements DisplayGeometryRetrievalStrategy {
     private static final Logger logger = LoggerFactory.getLogger(RegexDisplayGeometryRetrievalStrategy.class);
     private final String command;
@@ -45,6 +44,7 @@ public class RegexDisplayGeometryRetrievalStrategy implements DisplayGeometryRet
         return getDisplayGeometry(device, commandOutputLogger);
     }
 
+    //TODO Ugly method. Break this up.
     DisplayGeometry getDisplayGeometry(IDevice device, CommandOutputLogger commandOutputLogger) {
         DisplayGeometry displayGeometry = null;
         StringBufferIShellOutputReceiver receiver = new StringBufferIShellOutputReceiver();
