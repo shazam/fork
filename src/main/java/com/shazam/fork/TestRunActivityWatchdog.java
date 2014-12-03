@@ -154,7 +154,7 @@ class TestRunActivityWatchdog implements ITestRunListener {
 			if (!previouslyStarted) {
 				testRunListener.testStarted(identifier);
 			}
-			testRunListener.testFailed(TestFailure.ERROR, identifier, "WATCHDOG: " + lastWatchdogFailure);
+			testRunListener.testFailed(identifier, "WATCHDOG: " + lastWatchdogFailure);
 			testRunListener.testEnded(identifier, EMPTY_MAP);
 		}
 	}
@@ -175,12 +175,23 @@ class TestRunActivityWatchdog implements ITestRunListener {
 
 	@Override
 	/** Called just before testEnded() on failure */
-	public void testFailed(TestFailure testFailure, TestIdentifier testIdentifier, String errorMessage) {
+	public void testFailed(TestIdentifier testIdentifier, String errorMessage) {
 		interTestReschedule("testFailed" + testIdentifier.getTestName());
 		observeTestCompleted(testIdentifier);
 	}
 
-	@Override
+    @Override
+    public void testAssumptionFailure(TestIdentifier test, String trace) {
+        logger.debug("test=%s", test);
+        logger.debug("assumption failure %s", trace);
+    }
+
+    @Override
+    public void testIgnored(TestIdentifier test) {
+        logger.debug("ignored test %s", test);
+    }
+
+    @Override
 	/** Mandatory */
 	public void testEnded(TestIdentifier testIdentifier, Map<String, String> runMetrics) {
 		interTestReschedule("testEnded" + testIdentifier.getTestName());

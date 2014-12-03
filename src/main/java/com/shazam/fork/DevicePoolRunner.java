@@ -97,7 +97,7 @@ public class DevicePoolRunner {
 				String methodName = method.getName();
 				TestIdentifier identifier = new TestIdentifier(className, methodName);
 				xmlGenerator.testStarted(identifier);
-				xmlGenerator.testFailed(ITestRunListener.TestFailure.ERROR, identifier, poolName + " DROPPED");
+				xmlGenerator.testFailed(identifier, poolName + " DROPPED");
 				xmlGenerator.testEnded(identifier, emptyHash);
 			}
 			xmlGenerator.testRunFailed("DROPPED BY " + poolName);

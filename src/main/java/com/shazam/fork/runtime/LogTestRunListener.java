@@ -56,13 +56,24 @@ public class LogTestRunListener implements ITestRunListener {
 	}
 
 	@Override
-	public void testFailed(TestFailure status, TestIdentifier test, String trace) {
+	public void testFailed(TestIdentifier test, String trace) {
 		runningStatusListener.testFailed(serial);
-        System.out.println(format("%s [%s] Test %s %s\n %s", runningStatusListener.getStatus(serial), serial, test, status.name(), trace));
+        System.out.println(format("%s [%s] Test %s\n %s", runningStatusListener.getStatus(serial), serial, test, trace));
 //        logger.debug("{} [{}] Test {} {}\n {}", runningStatusListener.getStatus(serial), serial, test, status.name(), trace);
 	}
 
-	@Override
+    @Override
+    public void testAssumptionFailure(TestIdentifier test, String trace) {
+        logger.debug("test=%s", test);
+        logger.debug("assumption failure %s", trace);
+    }
+
+    @Override
+    public void testIgnored(TestIdentifier test) {
+        logger.debug("ignored test %s", test);
+    }
+
+    @Override
 	public void testRunFailed(String errorMessage) {
         System.out.println(format("[%s] Test run failed: %s", serial, errorMessage));
 //        logger.debug("[{}] Test run failed: {}", serial, errorMessage);
