@@ -22,6 +22,7 @@ import org.jf.dexlib.EncodedValue.AnnotationEncodedSubValue;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -36,30 +37,43 @@ import static org.apache.commons.io.IOUtils.copyLarge;
 public class TestClassScanner {
     private static final Pattern TEST_CLASS_PATTERN = Pattern.compile("^((?!Abstract).)*Test;$");
     private static final String TEST = "test";
-    private static final String CLASSES_DEX = "classes.dex";
+    public static final String CLASSES_PREFIX = "classes";
+    public static final String DEX_EXTENSION = ".dex";
     private final File instrumentationApkFile;
-	private final File dexFileDestination;
+    private File outputFolder;
 
-	public TestClassScanner(File instrumentationApkFile, File output) {
+	public TestClassScanner(File instrumentationApkFile, File outputFolder) {
 		this.instrumentationApkFile = instrumentationApkFile;
-		dexFileDestination = new File(output, CLASSES_DEX);
+        this.outputFolder = outputFolder;
 	}
 
 	public List<TestClass> scanForTestClasses() {
-		getDexClassesFromApk(instrumentationApkFile, dexFileDestination);
-		return getTestClassesFromDexFile(dexFileDestination);
+		getDexClassesFromApk(instrumentationApkFile, outputFolder);
+		return getTestClassesFromDexFile(outputFolder);
 	}
 
-    private static void getDexClassesFromApk(File apkFile, File dexFile) {
+    private static void getDexClassesFromApk(File apkFile, File outputFolder) {
         ZipFile zip = null;
         InputStream classesDexInputStream = null;
         FileOutputStream fileOutputStream = null;
         try {
             zip = new ZipFile(apkFile);
-            ZipEntry classesDex = zip.getEntry(CLASSES_DEX);
-            classesDexInputStream = zip.getInputStream(classesDex);
-            fileOutputStream = new FileOutputStream(dexFile);
-            copyLarge(classesDexInputStream, fileOutputStream);
+
+            int index = 1;
+            String currentDex;
+            while(true) {
+                currentDex = CLASSES_PREFIX + (index > 1 ? index : "") + DEX_EXTENSION;
+                ZipEntry classesDex = zip.getEntry(currentDex);
+                if (classesDex != null) {
+                    File dexFileDestination = new File(outputFolder, currentDex);
+                    classesDexInputStream = zip.getInputStream(classesDex);
+                    fileOutputStream = new FileOutputStream(dexFileDestination);
+                    copyLarge(classesDexInputStream, fileOutputStream);
+                    index++;
+                } else {
+                    break;
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -69,23 +83,31 @@ public class TestClassScanner {
         }
     }
 
-    private static List<TestClass> getTestClassesFromDexFile(File dexFileDestination) {
+    private static List<TestClass> getTestClassesFromDexFile(File dexFilesFolder) {
         try {
-            DexFile dexFile = new DexFile(dexFileDestination);
-            List<ClassDefItem> items = dexFile.ClassDefsSection.getItems();
+            File[] dexFiles = dexFilesFolder.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.startsWith("classes") && name.endsWith(".dex");
+                }
+            });
             List<TestClass> testClasses = new ArrayList<>();
-            for (ClassDefItem classDefItem : items) {
-                final String typeDescriptor = classDefItem.getClassType().getTypeDescriptor();
-                if (TEST_CLASS_PATTERN.matcher(typeDescriptor).matches()) {
-                    TestClass testClass = getTestClass(typeDescriptor);
-                    testClasses.add(testClass);
-                    try {
-                        collectMethods(classDefItem, testClass);
-                        visitMethodAnnotations(classDefItem,
-                                new SuppressedMethodFlagSetter(testClass)
-                        );
-                    } catch (Throwable t) {
-                        throw new RuntimeException(t);
+            for (File file : dexFiles) {
+                DexFile dexFile = new DexFile(file);
+                List<ClassDefItem> items = dexFile.ClassDefsSection.getItems();
+                for (ClassDefItem classDefItem : items) {
+                    final String typeDescriptor = classDefItem.getClassType().getTypeDescriptor();
+                    if (TEST_CLASS_PATTERN.matcher(typeDescriptor).matches()) {
+                        TestClass testClass = getTestClass(typeDescriptor);
+                        testClasses.add(testClass);
+                        try {
+                            collectMethods(classDefItem, testClass);
+                            visitMethodAnnotations(classDefItem,
+                                    new SuppressedMethodFlagSetter(testClass)
+                            );
+                        } catch (Throwable t) {
+                            throw new RuntimeException(t);
+                        }
                     }
                 }
             }

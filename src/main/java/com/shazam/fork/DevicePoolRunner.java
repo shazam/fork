@@ -12,7 +12,6 @@
  */
 package com.shazam.fork;
 
-import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.DevicePool;
