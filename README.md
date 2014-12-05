@@ -40,7 +40,7 @@ This is the only way that will be supported in the future. First, you need to ad
 ```
 buildscript {
     dependencies {
-        classpath 'com.shazam.fork:fork-gradle-plugin:0.9.0-SNAPSHOT'
+        classpath 'com.shazam.fork:fork-gradle-plugin:0.9.1'
     }
 }
 ```
