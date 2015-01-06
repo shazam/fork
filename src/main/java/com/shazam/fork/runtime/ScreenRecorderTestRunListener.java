@@ -34,7 +34,7 @@ public class ScreenRecorderTestRunListener implements ITestRunListener {
     private static final Logger logger = LoggerFactory.getLogger(ScreenRecorderTestRunListener.class);
     private final CancellableShellOutputReceiver cancellableReceiver = new CancellableShellOutputReceiver();
     private static final int DURATION = 15;
-    private static final int BIT_RATE_MBPS = 1;
+    private static final int BIT_RATE_MBPS = 2;
     private static final ScreenRecorderOptions RECORDER_OPTIONS = new ScreenRecorderOptions.Builder()
             .setTimeLimit(DURATION, SECONDS)
             .setBitRate(BIT_RATE_MBPS)
@@ -70,8 +70,18 @@ public class ScreenRecorderTestRunListener implements ITestRunListener {
     }
 
     @Override
-    public void testFailed(TestFailure status, TestIdentifier test, String trace) {
+    public void testFailed(TestIdentifier test, String trace) {
         hasFailed = true;
+    }
+
+    @Override
+    public void testAssumptionFailure(TestIdentifier test, String trace) {
+        cancellableReceiver.cancel();
+    }
+
+    @Override
+    public void testIgnored(TestIdentifier test) {
+        cancellableReceiver.cancel();
     }
 
     @Override
