@@ -40,7 +40,7 @@ This is the only way that will be supported in the future. First, you need to ad
 ```
 buildscript {
     dependencies {
-        classpath 'com.shazam.fork:fork-gradle-plugin:0.9.1'
+        classpath 'com.shazam.fork:fork-gradle-plugin:0.10.0'
     }
 }
 ```
@@ -112,7 +112,7 @@ Limitations
 License
 --------
 
-    Copyright 2014 Shazam Entertainment Limited.
+    Copyright 2015 Shazam Entertainment Limited.
 
     Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
 
