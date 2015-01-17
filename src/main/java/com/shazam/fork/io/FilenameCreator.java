@@ -37,9 +37,14 @@ public class FilenameCreator {
         }
     }
 
-    public File createFile(FileType fileType, String pool, String deviceSerial, TestIdentifier testIdentifier) {
+    public File[] getTestFilesForDevice(String pool, String serial) {
+        Path path = getDirectory(TEST, pool, serial);
+        return path.toFile().listFiles();
+    }
+
+    public File createFile(FileType fileType, String pool, String serial, TestIdentifier testIdentifier) {
         try {
-            Path directory = createDirectory(fileType, pool, deviceSerial);
+            Path directory = createDirectory(fileType, pool, serial);
             String filename = createFilenameForTest(testIdentifier, fileType);
             return createFile(directory, filename);
         } catch (IOException e) {
@@ -47,8 +52,18 @@ public class FilenameCreator {
         }
     }
 
+    public File getFile(FileType fileType, String pool, String serial, TestIdentifier testIdentifier) {
+        String filenameForTest = createFilenameForTest(testIdentifier, fileType);
+        Path path = get(output.getAbsolutePath(), fileType.getDirectory(), pool, serial, filenameForTest);
+        return path.toFile();
+    }
+
     private Path createDirectory(FileType test, String pool, String deviceSerial) throws IOException {
-        return createDirectories(get(output.getAbsolutePath(), test.getDirectory(), pool, deviceSerial));
+        return createDirectories(getDirectory(test, pool, deviceSerial));
+    }
+
+    private Path getDirectory(FileType fileType, String pool, String deviceSerial) {
+        return get(output.getAbsolutePath(), fileType.getDirectory(), pool, deviceSerial);
     }
 
     private File createFile(Path directory, String filename) {

@@ -12,31 +12,36 @@
  */
 package com.shazam.fork.summary;
 
-import com.shazam.fork.Configuration;
 import com.shazam.fork.RuntimeConfiguration;
+import com.shazam.fork.io.FilenameCreator;
 import com.shazam.fork.model.DevicePool;
 import com.shazam.fork.model.TestClass;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 public class ReportGeneratorHook extends Thread {
 
     private static final Logger logger = LoggerFactory.getLogger(ReportGeneratorHook.class);
 
-    private final Configuration configuration;
     private final RuntimeConfiguration runtimeConfiguration;
+    private final FilenameCreator filenameCreator;
     private final Collection<DevicePool> devicePools;
     private final List<TestClass> testClasses;
     private final SummaryPrinter summaryPrinter;
 
-    public ReportGeneratorHook(Configuration configuration, RuntimeConfiguration runtimeConfiguration,
-                               Collection<DevicePool> devicePools, List<TestClass> testClasses, SummaryPrinter summaryPrinter) {
-        this.configuration = configuration;
+    public ReportGeneratorHook(RuntimeConfiguration runtimeConfiguration,
+                               FilenameCreator filenameCreator,
+                               Collection<DevicePool> devicePools,
+                               List<TestClass> testClasses,
+                               SummaryPrinter summaryPrinter) {
         this.runtimeConfiguration = runtimeConfiguration;
+        this.filenameCreator = filenameCreator;
         this.devicePools = devicePools;
 		this.testClasses = testClasses;
         this.summaryPrinter = summaryPrinter;
@@ -62,7 +67,8 @@ public class ReportGeneratorHook extends Thread {
 	public synchronized Summary generateReportOnlyOnce() {
 		if (onlyOnce) {
 			onlyOnce = false;
-			Summarizer summarizer = new Summarizer(configuration, runtimeConfiguration, devicePools, testClasses);
+			Summarizer summarizer = new Summarizer(runtimeConfiguration, filenameCreator, devicePools,
+                    testClasses);
 			Summary summary = summarizer.compileSummary();
             summaryPrinter.print(summary);
 			return summary;

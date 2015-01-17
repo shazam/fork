@@ -14,23 +14,18 @@ package com.shazam.fork.summary;
 
 import com.google.common.base.Function;
 import com.shazam.fork.*;
-import com.shazam.fork.model.Device;
-import com.shazam.fork.model.DevicePool;
-import com.shazam.fork.model.TestClass;
-import com.shazam.fork.model.TestMethod;
-import org.apache.commons.io.filefilter.PrefixFileFilter;
+import com.shazam.fork.io.FilenameCreator;
+import com.shazam.fork.model.*;
+
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
-import javax.annotation.Nullable;
 import java.io.File;
-import java.io.FileFilter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+
+import javax.annotation.Nullable;
 
 import static com.google.common.collect.Collections2.transform;
-import static com.shazam.fork.runtime.TestFilenameFactory.createTestFilenamePrefix;
 import static com.shazam.fork.summary.PoolSummary.Builder.aPoolSummary;
 import static com.shazam.fork.summary.Summary.Builder.aSummary;
 import static com.shazam.fork.summary.TestResult.Builder.aTestResult;
@@ -39,16 +34,18 @@ public class Summarizer {
 
     private static final boolean STRICT = false;
 
-    private final Configuration configuration;
     private final RuntimeConfiguration runtimeConfiguration;
+    private final FilenameCreator filenameCreator;
     private final Collection<DevicePool> devicePools;
-	private final List<TestClass> testClasses;
-	private final Serializer serializer;
+    private final List<TestClass> testClasses;
+    private final Serializer serializer;
 
-	public Summarizer(Configuration configuration, RuntimeConfiguration runtimeConfiguration,
-                      Collection<DevicePool> devicePools, List<TestClass> testClasses) {
-        this.configuration = configuration;
+    public Summarizer(RuntimeConfiguration runtimeConfiguration,
+                      FilenameCreator filenameCreator,
+                      Collection<DevicePool> devicePools,
+                      List<TestClass> testClasses) {
         this.runtimeConfiguration = runtimeConfiguration;
+        this.filenameCreator = filenameCreator;
         this.devicePools = devicePools;
 		this.testClasses = testClasses;
 		serializer = new Persister();
@@ -94,18 +91,21 @@ public class Summarizer {
 	}
 
 	private void compileResultsForDevice(DevicePool devicePool, PoolSummary.Builder poolSummaryBuilder, Device device) {
-		final String poolName = devicePool.getName();
+		String poolName = devicePool.getName();
 		File[] deviceResultFiles = getTestResultFiles(poolName, device.getSerial());
+        if (deviceResultFiles == null) {
+            return;
+        }
 		for (File file : deviceResultFiles) {
 			Collection<TestResult> testResultsForFile = compileTestResultsForFile(file, device, poolName);
 			poolSummaryBuilder.addTestResults(testResultsForFile);
 		}
 	}
 
-	private Collection<TestResult> compileTestResultsForFile(File file, final Device device, final String poolName) {
+	private Collection<TestResult> compileTestResultsForFile(File file, Device device, String poolName) {
 		try {
 			TestSuite testSuite = serializer.read(TestSuite.class, file, STRICT);
-			final List<TestCase> testCases = testSuite.getTestCases();
+			List<TestCase> testCases = testSuite.getTestCases();
 			if ((testCases == null) || testCases.isEmpty()) {
 				return new ArrayList<>(0);
 			}
@@ -133,10 +133,7 @@ public class Summarizer {
 		};
 	}
 
-	private File[] getTestResultFiles(final String poolName, String serial) {
-		String testFilenamePrefix = createTestFilenamePrefix(poolName, serial);
-        final FileFilter testFileFilter = new PrefixFileFilter(testFilenamePrefix);
-        throw new UnsupportedOperationException();
-//        return configuration.getOutput().listFiles(testFileFilter);
+	private File[] getTestResultFiles(String poolName, String serial) {
+        return filenameCreator.getTestFilesForDevice(poolName, serial);
 	}
 }

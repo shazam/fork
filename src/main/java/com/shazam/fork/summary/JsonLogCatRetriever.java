@@ -16,37 +16,26 @@ import com.android.ddmlib.logcat.LogCatMessage;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
-import org.apache.commons.io.filefilter.*;
+import com.shazam.fork.io.FileType;
+import com.shazam.fork.io.FilenameCreator;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
 
 public class JsonLogCatRetriever implements LogCatRetriever {
-    private static final String LOGCAT_PREFIX = "logcat__%s__%s__%s";
     private final Gson gson;
-    private final File output;
+    private final FilenameCreator filenameCreator;
 
-    public JsonLogCatRetriever(File output, Gson gson) {
-        this.output = output;
+    public JsonLogCatRetriever(Gson gson, FilenameCreator filenameCreator) {
         this.gson = gson;
+        this.filenameCreator = filenameCreator;
     }
 
     @Override
     public List<LogCatMessage> retrieveLogCat(String poolName, String serial, TestIdentifier testIdentifier) {
-        String filenamePrefix = createLogCatFilenamePrefix(poolName, serial, testIdentifier);
-        final PrefixFileFilter prefixFileFilter = new PrefixFileFilter(filenamePrefix);
-        SuffixFileFilter suffixFileFilter = new SuffixFileFilter("json");
-        final AndFileFilter filter = new AndFileFilter(prefixFileFilter, suffixFileFilter);
-        File[] files = output.listFiles((FileFilter) filter);
-        if (files.length == 0) {
-            return new ArrayList<>();
-        }
-        File logcatJsonFile = files[0];
-
+        File logcatJsonFile = filenameCreator.getFile(FileType.JSON_LOG, poolName, serial, testIdentifier);
         try {
             FileReader fileReader = new FileReader(logcatJsonFile);
             return gson.fromJson(fileReader, new TypeToken<List<LogCatMessage>>() {}.getType());
@@ -55,7 +44,4 @@ public class JsonLogCatRetriever implements LogCatRetriever {
         }
     }
 
-    private static String createLogCatFilenamePrefix(String poolName, String serial, TestIdentifier testIdentifier) {
-        return format(LOGCAT_PREFIX, poolName, serial, testIdentifier.toString());
-    }
 }

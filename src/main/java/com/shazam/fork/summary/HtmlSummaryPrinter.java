@@ -62,7 +62,8 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 		mustacheFactory = new DefaultMustacheFactory();
 	}
 
-	@Override
+	@SuppressWarnings("ResultOfMethodCallIgnored")
+    @Override
 	public void print(Summary summary) {
         htmlOutput.mkdirs();
 		copyAssets();
@@ -117,10 +118,13 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 		}
 	}
 
-	/** Page for each pool, multiple tests
-	 * @param htmlSummary
+    /**
+     * Generates an HTML page for each pool, with multiple tests
+     *
+     * @param htmlSummary the summary of the pool
      */
-	private void generatePoolHtml(HtmlSummary htmlSummary) {
+	@SuppressWarnings("ResultOfMethodCallIgnored")
+    private void generatePoolHtml(HtmlSummary htmlSummary) {
 		FileWriter writer = null;
 		Mustache mustache = mustacheFactory.compile("forkpages/pool.html");
 		File poolsDir = new File(htmlOutput, "pools");
@@ -138,26 +142,28 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 		}
 	}
 
-	/** Page for each test-pool combination.
-	 * @param htmlSummary
+	/**
+     * Genarates an HTML page for each test of each pool.
+     *
+	 * @param htmlSummary the summary containing the results
 	 */
-	private void generatePoolTestHtml(HtmlSummary htmlSummary) {
+	@SuppressWarnings("ResultOfMethodCallIgnored")
+    private void generatePoolTestHtml(HtmlSummary htmlSummary) {
 		FileWriter writer = null;
 		Mustache mustache = mustacheFactory.compile("forkpages/pooltest.html");
 		for (HtmlPoolSummary pool : htmlSummary.pools) {
 			for (HtmlTestResult testResult : pool.testResults) {
 				try {
-					File poolsDir = new File(htmlOutput, "pools/" + pool.plainPoolName + "/test");
+					File poolsDir = new File(htmlOutput, "pools/" + pool.plainPoolName);
 					poolsDir.mkdirs();
-					File indexFile = new File(poolsDir, testResult.plainClassName + "__" + testResult.plainMethodName + ".html");
-					writer = new FileWriter(indexFile);
+					File testFile = new File(poolsDir, testResult.plainClassName + "__" + testResult.plainMethodName + ".html");
+					writer = new FileWriter(testFile);
 					try {
 						TestIdentifier testIdentifier = new TestIdentifier(testResult.plainClassName, testResult.plainMethodName);
 						List<LogCatMessage> logCatMessages = retriever.retrieveLogCat(pool.plainPoolName, testResult.deviceSerial, testIdentifier);
 						testResult.logcatMessages = transform(logCatMessages, toHtmlLogCatMessages());
 						mustache.execute(writer, new Object[] {testResult, pool});
-					}
-					finally {
+					} finally {
 						testResult.logcatMessages = null;
 					}
 				} catch (IOException e) {

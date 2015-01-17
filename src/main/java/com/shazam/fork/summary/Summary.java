@@ -22,9 +22,7 @@ import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 public class Summary {
 	private final List<PoolSummary> poolSummaries;
 	private final String title;
-
 	private final String subtitle;
-
 	private final ArrayList<String> suppressedTests;
 
 	public List<PoolSummary> getPoolSummaries() {
