@@ -44,7 +44,7 @@
                 function filterTable(mode) {
                    rows=document.getElementsByClassName('logcat')[0].rows;
                    regex=document.getElementById('filter').value;
-                   for (i=0; i<rows.length; ++i) {
+                   for (i=1; i<rows.length; ++i) {
                      if (rows[i].textContent.match(regex)) {
                        rows[i].style.display=mode;
                      }
