@@ -14,11 +14,11 @@
 </head>
 <body>
 <div class="container">
-    <div class="hero-unit">
+    <div class="hero-unit {{overallStatus}}">
         <h1>{{prettyPoolName}}</h1>
     </div>
     <div class="birds-eye">
-        <table class="results">
+        <table class="table">
             {{#testResults}}
             <tr class="test {{status}}">
                 <td>{{deviceSerial}}</td>

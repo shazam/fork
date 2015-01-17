@@ -33,6 +33,14 @@ body {
   p {
     margin: 0;
   }
+
+  &.pass{
+    background-image: url('ceiling_android-green.png');
+  }
+  &.fail{
+    background-image: url('ceiling_android-red.png');
+  }
+
 }
 
 .stacktrace {
@@ -92,8 +100,8 @@ body {
 
 .logcat {
   table-layout: fixed;
-  overflow-x: scroll;
-  clear: both;
+  width:100%;
+  font-size: 12px;
 
   .line {
     &.debug {
@@ -115,7 +123,10 @@ body {
       background-color: #ffc;
     }
 
-    td { padding: 5px; }
+    td {
+      padding: 4px;
+      word-wrap: break-word;
+    }
   }
 }
 
