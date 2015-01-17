@@ -19,13 +19,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.shazam.fork.Utils.millisSince;
+import static com.shazam.fork.injector.ConfigurationInjector.setConfiguration;
 import static com.shazam.fork.injector.ForkRunnerInjector.forkRunner;
-import static com.shazam.fork.model.InstrumentationInfo.parseFromFile;
 import static java.lang.System.nanoTime;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 
 /**
@@ -36,6 +33,12 @@ public final class Fork {
 
     private final ForkRunner forkRunner;
     private final File output;
+
+    Fork(Configuration configuration) {
+        this.output = configuration.getOutput();
+        setConfiguration(configuration);
+        this.forkRunner = forkRunner();
+    }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public boolean run() {
@@ -49,121 +52,7 @@ public final class Fork {
 			return false;
 		} finally {
 			AndroidDebugBridge.terminate();
-            long elapsedNanos = nanoTime() - startOfTests;
-            long durationInMs = MILLISECONDS.convert(elapsedNanos, NANOSECONDS);
-            logger.info("Total time taken: {} ms", durationInMs);
+            logger.info("Total time taken: {} ms", millisSince(startOfTests));
 		}
 	}
-
-	private Fork(Builder builder) {
-        Configuration configuration = new Configuration(
-                builder.androidSdk,
-                builder.applicationApk,
-                builder.instrumentationApk,
-                parseFromFile(builder.instrumentationApk),
-                builder.output,
-                builder.idleTimeout,
-                builder.testTimeout,
-                builder.testIntervalTimeout);
-
-        this.output = configuration.getOutput();
-        this.forkRunner = forkRunner(configuration);
-    }
-
-    /** Build a test suite for the specified devices and output. */
-	public static class Builder {
-		private File androidSdk;
-		private File applicationApk;
-		private File instrumentationApk;
-		private File output;
-        private int idleTimeout = 2 * 60 * 1000; // Empirical default.
-        private int testTimeout = 4 * 60 * 1000; // Empirical default.
-        private int testIntervalTimeout = 30 * 1000; // Empirical default.
-
-        public static Builder aFork() {
-			return new Builder();
-		}
-
-        /**
-         * Path to the local Android SDK directory.
-         * @param androidSdk android SDK location
-         * @return this builder
-         */
-		public Builder withAndroidSdk(File androidSdk) {
-			this.androidSdk = androidSdk;
-			return this;
-		}
-
-        /**
-         * Path to application APK.
-         * @param apk the location of the production APK
-         * @return this builder
-         */
-		public Builder withApplicationApk(File apk) {
-			applicationApk = apk;
-			return this;
-		}
-
-        /**
-         * Path to the instrumentation APK.
-         * @param apk the location of the instrumentation APK
-         * @return this builder
-         */
-		public Builder withInstrumentationApk(File apk) {
-			instrumentationApk = apk;
-			return this;
-		}
-
-        /**
-         * Path to output directory.
-         * @param output the output directory
-         * @return this builder
-         */
-		public Builder withOutputDirectory(File output) {
-			this.output = output;
-			return this;
-		}
-
-        /**
-         * Maximum inactivity of a device
-         * @param idleTimeout the period in millis
-         * @return this builder
-         */
-        public Builder withIdleTimeout(int idleTimeout) {
-            this.idleTimeout = idleTimeout;
-            return this;
-        }
-
-        /**
-         * Maximum time a test can take
-         * @param testTimeout the period in millis
-         * @return this builder
-         */
-        public Builder withTestTimeout(int testTimeout) {
-            this.testTimeout = testTimeout;
-            return this;
-        }
-
-        /**
-         * Millis for maximum time between two tests
-         * @param testIntervalTimeout the period in millis
-         * @return this builder
-         */
-        public Builder withTestIntervalTimeout(int testIntervalTimeout) {
-            this.testIntervalTimeout = testIntervalTimeout;
-            return this;
-        }
-
-        public Fork build() {
-			checkNotNull(androidSdk, "SDK is required.");
-			checkArgument(androidSdk.exists(), "SDK directory does not exist.");
-			checkNotNull(applicationApk, "Application APK is required.");
-			checkArgument(applicationApk.exists(), "Application APK file does not exist.");
-			checkNotNull(instrumentationApk, "Instrumentation APK is required.");
-			checkArgument(instrumentationApk.exists(), "Instrumentation APK file does not exist.");
-			checkNotNull(output, "Output path is required.");
-
-			return new Fork(this);
-		}
-    }
 }

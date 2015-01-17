@@ -12,30 +12,29 @@
  */
 package com.shazam.fork.runtime;
 
-import com.android.ddmlib.logcat.LogCatListener;
-import com.android.ddmlib.logcat.LogCatMessage;
-import com.android.ddmlib.logcat.LogCatReceiverTask;
+import com.android.ddmlib.logcat.*;
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
+import com.google.gson.Gson;
+import com.shazam.fork.io.FilenameCreator;
 import com.shazam.fork.model.Device;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class LogCatTestRunListener implements ITestRunListener {
-	private final String pool;
+    private final FilenameCreator filenameCreator;
+    private final String pool;
 	private final Device device;
-	private final File output;
 	private final LogCatReceiverTask logCatReceiverTask;
 	private final LogCatListener logCatListener;
 	private final List<LogCatMessage> logCatMessages;
+    private final Gson gson;
 
-	public LogCatTestRunListener(String pool, Device device, File output) {
-		this.pool = pool;
+    public LogCatTestRunListener(Gson gson, FilenameCreator filenameCreator, String pool, Device device) {
+        this.gson = gson;
+        this.filenameCreator = filenameCreator;
+        this.pool = pool;
 		this.device = device;
-		this.output = output;
 		logCatMessages = new ArrayList<>();
 		logCatListener = new MessageCollectingLogCatListener(logCatMessages);
 		logCatReceiverTask = new LogCatReceiverTask(device.getDeviceInterface());
@@ -72,8 +71,8 @@ public class LogCatTestRunListener implements ITestRunListener {
 			copyOfLogCatMessages.addAll(logCatMessages);
 		}
         LogCatWriter logCatWriter = new CompositeLogCatWriter(
-                new JsonLogCatWriter(output, pool, device.getSerial()),
-                new RawLogCatWriter(output, pool, device.getSerial()));
+                new JsonLogCatWriter(gson, filenameCreator, pool, device.getSerial()),
+                new RawLogCatWriter(filenameCreator, pool, device.getSerial()));
         LogCatSerializer logCatSerializer = new LogCatSerializer(test, logCatWriter);
 		logCatSerializer.serializeLogs(copyOfLogCatMessages);
 	}

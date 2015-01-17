@@ -1,40 +1,40 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Fork Execution</title>
-        <link href="http://fonts.googleapis.com/css?family=Roboto:regular,medium,thin,italic,mediumitalic,bold" rel="stylesheet">
-        <link href="../static/bootstrap.min.css" rel="stylesheet">
-        <link href="../static/bootstrap-responsive.min.css" rel="stylesheet">
-        <link href="../static/spoon.css" rel="stylesheet">
-        <script src="../static/jquery.min.js"></script>
-        <script src="../static/bootstrap.min.js"></script>
-    </head>
-    <body>
-        <div class="container">
-            <div class="hero-unit">
-                <h1>{{prettyPoolName}}</h1>
-                <p>{{subtitle}}</p>
-            </div>
-            <div class="birds-eye">
-                            <table>
-                                {{#testResults}}
-                                <tr class="test {{status}}">
-                                    <td>{{status}}</td>
-                                    <td>[{{deviceSerial}}] {{deviceModelDespaced}}</td>
-                                    <td style="vertical-align: middle;"><a style="vertical-align: middle;" href="{{plainPoolName}}/test/{{plainClassName}}__{{plainMethodName}}.html">{{prettyClassName}} : {{prettyMethodName}}</a></td>
-                                </tr>
-                                {{/testResults}}
-                            </table>
-            </div>
-        </div>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fork Execution</title>
+    <link href="http://fonts.googleapis.com/css?family=Roboto:regular,medium,thin,italic,mediumitalic,bold" rel="stylesheet">
+    <link href="../static/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="../static/spoon.css" rel="stylesheet">
+    <script src="../static/jquery.min.js"></script>
+    <script src="../static/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="hero-unit">
+        <h1>{{prettyPoolName}}</h1>
+        <p>{{subtitle}}</p>
+    </div>
+    <div class="birds-eye">
+        <table>
+            {{#testResults}}
+            <tr class="test {{status}}">
+                <td>{{status}}</td>
+                <td>[{{deviceSerial}}] {{deviceModelDespaced}}</td>
+                <td style="vertical-align: middle;"><a style="vertical-align: middle;" href="{{plainPoolName}}/{{plainClassName}}__{{plainMethodName}}.html">{{prettyClassName}} : {{prettyMethodName}}</a></td>
+            </tr>
+            {{/testResults}}
+        </table>
+    </div>
+</div>
 
-        <script type="text/javascript">
+<script type="text/javascript">
             $('.test a').popover({
                 placement: 'top',
                 trigger: 'hover'
             });
         </script>
-    </body>
+</body>
 </html>

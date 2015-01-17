@@ -14,17 +14,11 @@ package com.shazam.fork.runtime;
 
 import static java.lang.String.format;
 
+@Deprecated
 public class TestFilenameFactory {
 	private static final String TEST_FILE_PREFIX = "test__%s__%s";
-	private static final String FILE_OUTPUT_PATTERN = TEST_FILE_PREFIX + "__%s.%s";
-	private static final String XML = "xml";
 
 	public static String createTestFilenamePrefix(String poolName, String serial) {
 		return format(TEST_FILE_PREFIX, poolName, serial);
 	}
-
-	public static String createTestFilename(String poolName, String serial, String test){
-		return format(FILE_OUTPUT_PATTERN, poolName, serial, test, XML);
-	}
-
 }

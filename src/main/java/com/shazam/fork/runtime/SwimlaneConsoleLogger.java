@@ -17,10 +17,13 @@ import com.android.ddmlib.testrunner.TestIdentifier;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.shazam.fork.Utils.millisSince;
+import static java.lang.System.nanoTime;
+
 /**
  * Maintains current test state and makes it available it when requested.
  *
- * TODO: We really shouldn't be faffing about, maintaining our own serial-pool mapping!
+ * FIXME: Find a better way of keeping track of test progress.
  */
 
 public class SwimlaneConsoleLogger {
@@ -129,10 +132,10 @@ public class SwimlaneConsoleLogger {
 	public String getStatus(String serial) {
 		ensureSerialLaneMap(serial);
 		if (started == 0) {
-			started = System.currentTimeMillis();
+			started = nanoTime();
 		}
 
-        StringBuilder b = new StringBuilder(minsSecs.format(new Date(System.currentTimeMillis() - started)));
+        StringBuilder b = new StringBuilder(minsSecs.format(new Date(millisSince(started))));
         appendTotalProgress(b);
 
 		b.append(String.format(" %d ", failures));

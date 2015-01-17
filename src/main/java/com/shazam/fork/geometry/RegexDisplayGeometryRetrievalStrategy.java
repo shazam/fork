@@ -48,12 +48,12 @@ public class RegexDisplayGeometryRetrievalStrategy implements DisplayGeometryRet
     DisplayGeometry getDisplayGeometry(IDevice device, CommandOutputLogger commandOutputLogger) {
         DisplayGeometry displayGeometry = null;
         StringBufferIShellOutputReceiver receiver = new StringBufferIShellOutputReceiver();
-        String deviceLongName = device.getSerialNumber() + "." + device.getName();
+        String serial = device.getSerialNumber();
 
         try {
             device.executeShellCommand(command, receiver);
             String commandOutput = receiver.getOutput().toString();
-            commandOutputLogger.logCommandOutput(deviceLongName, commandOutput);
+            commandOutputLogger.logCommandOutput(serial, commandOutput);
             Pattern xxnnn = Pattern.compile("(\\w+?)(\\d+)");
             for (String regex : regexes) {
                 Pattern pattern;
@@ -98,7 +98,7 @@ public class RegexDisplayGeometryRetrievalStrategy implements DisplayGeometryRet
                         displayGeometry = found;
                     } else {
                         if (!found.matches(displayGeometry)) {
-                            logger.warn("Conflicting geometry found for {}: {} and {} with {}", deviceLongName,
+                            logger.warn("Conflicting geometry found for {}: {} and {} with {}", serial,
                                     displayGeometry, found, regex);
                             displayGeometry = null;
                             break;
@@ -106,13 +106,13 @@ public class RegexDisplayGeometryRetrievalStrategy implements DisplayGeometryRet
                     }
                 }
                 if (displayGeometry != null) {
-                    logger.debug("Device {} found {} with {} {}", deviceLongName, displayGeometry, command, regex);
+                    logger.debug("Device {} found {} with {} {}", serial, displayGeometry, command, regex);
                     break;
                 }
             }
             return displayGeometry;
         } catch (Exception e) { // No special handling for now, so catch any exception
-            logger.warn("Error when executing " + command + " on "+ deviceLongName, e);
+            logger.warn("Error when executing " + command + " on "+ serial, e);
         }
 
         return null;

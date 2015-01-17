@@ -12,16 +12,14 @@
  */
 package com.shazam.fork;
 
-import com.beust.jcommander.IStringConverter;
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-import static com.shazam.fork.Fork.Builder.aFork;
+import static com.shazam.fork.ForkBuilder.aFork;
 
 public class ForkCli {
     private static final Logger logger = LoggerFactory.getLogger(ForkCli.class);

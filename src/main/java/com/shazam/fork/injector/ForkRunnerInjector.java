@@ -12,45 +12,42 @@
  */
 package com.shazam.fork.injector;
 
-import com.shazam.fork.Configuration;
 import com.shazam.fork.ForkRunner;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.shazam.fork.injector.ConfigurationInjector.setConfiguration;
+import static com.shazam.fork.Utils.millisSince;
 import static com.shazam.fork.injector.DeviceLoaderInjector.deviceLoader;
 import static com.shazam.fork.injector.DevicePoolLoaderInjector.devicePoolLoader;
 import static com.shazam.fork.injector.DevicePoolRunnerInjector.devicePoolRunner;
+import static com.shazam.fork.injector.FilenameCreatorInjector.filenameCreator;
 import static com.shazam.fork.injector.RuntimeConfigurationInjector.runtimeConfiguration;
-import static com.shazam.fork.injector.ScreenshotServiceInjector.screenshotService;
 import static com.shazam.fork.injector.SummaryPrinterInjector.summaryPrinter;
 import static com.shazam.fork.injector.SwimlaneConsoleLoggerInjector.swimlaneConsoleLogger;
 import static com.shazam.fork.injector.TestClassFilterInjector.testClassFilter;
 import static com.shazam.fork.injector.TestClassScannerInjector.testClassScanner;
-import static java.lang.System.currentTimeMillis;
+import static java.lang.System.nanoTime;
 
 public class ForkRunnerInjector {
 
     private static final Logger logger = LoggerFactory.getLogger(ForkRunnerInjector.class);
 
-    public static ForkRunner forkRunner(Configuration configuration) {
-        setConfiguration(configuration);
-
-        long initializationStart = currentTimeMillis();
+    public static ForkRunner forkRunner() {
+        long initializationStart = nanoTime();
 
         ForkRunner forkRunner = new ForkRunner(
-                configuration,
                 runtimeConfiguration(),
                 deviceLoader(),
                 devicePoolLoader(),
-                screenshotService(),
                 testClassScanner(),
                 testClassFilter(),
                 devicePoolRunner(),
                 swimlaneConsoleLogger(),
-                summaryPrinter());
+                summaryPrinter(),
+                filenameCreator());
 
-        logger.debug("Initialization of ForkRunner took: {} milliseconds", currentTimeMillis() - initializationStart);
+        logger.debug("Initialization of ForkRunner took: {} milliseconds", millisSince(initializationStart));
 
         return forkRunner;
     }

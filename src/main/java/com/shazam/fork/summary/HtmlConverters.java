@@ -98,7 +98,7 @@ class HtmlConverters {
 		if (lastIndexOfDot != -1) {
 			testClass = testClass.substring(lastIndexOfDot+1);
 		}
-		return testClass.replaceAll("Test", "");
+		return testClass;
 	}
 
 	private static String prettifyMethodName(String testMethod) {

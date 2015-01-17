@@ -12,11 +12,13 @@
  */
 package com.shazam.fork;
 
-import com.shazam.fork.model.Device;
-import com.shazam.fork.model.TestClass;
-import com.shazam.fork.model.TestRunParameters;
+import com.android.ddmlib.testrunner.ITestRunListener;
+import com.google.gson.Gson;
+import com.shazam.fork.io.FilenameCreator;
+import com.shazam.fork.model.*;
 import com.shazam.fork.runtime.*;
 import com.shazam.fork.system.Installer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,17 +31,27 @@ class TestSuiteRunnerTask implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(TestSuiteRunnerTask.class);
 
     private final Configuration configuration;
-	private final Installer installer;
-	private final String poolName;
-	private final Device device;
-	private final TestClassProvider testClassProvider;
+    private final Gson gson;
+    private final Installer installer;
+    private final String poolName;
+    private final Device device;
+    private final TestClassProvider testClassProvider;
     private final CountDownLatch deviceCountDownLatch;
     private final SwimlaneConsoleLogger swimlaneConsoleLogger;
+    private final FilenameCreator filenameCreator;
 
-	public TestSuiteRunnerTask(Configuration configuration, Installer installer, String poolName, Device device,
-                               TestClassProvider testClassProvider, CountDownLatch deviceCountDownLatch,
+    public TestSuiteRunnerTask(Configuration configuration,
+                               Gson gson,
+                               Installer installer,
+                               FilenameCreator filenameCreator,
+                               String poolName,
+                               Device device,
+                               TestClassProvider testClassProvider,
+                               CountDownLatch deviceCountDownLatch,
                                SwimlaneConsoleLogger swimlaneConsoleLogger) {
         this.configuration = configuration;
+        this.gson = gson;
+        this.filenameCreator = filenameCreator;
         this.installer = installer;
 		this.poolName = poolName;
 		this.device = device;
@@ -73,12 +85,15 @@ class TestSuiteRunnerTask implements Runnable {
 				.withTestPackage(configuration.getInstrumentationInfo().getInstrumentationPackage())
 				.withTestRunner(configuration.getInstrumentationInfo().getTestRunnerClass())
 				.build();
-		ForkXmlTestRunListener xmlTestRunListener = getForkXmlTestRunListener(poolName,
-                device.getSerial(), testClass.getClassName(), configuration.getOutput());
-		LogTestRunListener logTestRunListener = new LogTestRunListener(device.getSerial(),
-                swimlaneConsoleLogger);
-		LogCatTestRunListener logCatTestRunListener = new LogCatTestRunListener(poolName, device,
-                configuration.getOutput());
+        File output = configuration.getOutput();
+        ITestRunListener xmlTestRunListener = getForkXmlTestRunListener(
+                filenameCreator,
+                output,
+                poolName,
+                device.getSerial(),
+                testClass);
+        ITestRunListener logTestRunListener = new LoggingTestRunListener(device.getSerial(), swimlaneConsoleLogger);
+        ITestRunListener logCatTestRunListener = new LogCatTestRunListener(gson, filenameCreator, poolName, device);
 
 		TestRun testRun = new TestRun(
                 configuration,
@@ -90,8 +105,12 @@ class TestSuiteRunnerTask implements Runnable {
 		testRun.execute();
 	}
 
-	public static ForkXmlTestRunListener getForkXmlTestRunListener(String poolName, String serial, String className, File output) {
-		ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(poolName, serial, className);
+	public static ForkXmlTestRunListener getForkXmlTestRunListener(FilenameCreator filenameCreator,
+                                                                   File output,
+                                                                   String poolName,
+                                                                   String serial,
+                                                                   TestClass testClass) {
+		ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(filenameCreator, poolName, serial, testClass);
 		xmlTestRunListener.setReportDir(output);
 		return xmlTestRunListener;
 	}

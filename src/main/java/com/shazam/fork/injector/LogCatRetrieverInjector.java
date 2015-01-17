@@ -15,11 +15,11 @@ package com.shazam.fork.injector;
 import com.shazam.fork.summary.JsonLogCatRetriever;
 import com.shazam.fork.summary.LogCatRetriever;
 
-import static com.shazam.fork.injector.ConfigurationInjector.configuredOutput;
+import static com.shazam.fork.injector.FilenameCreatorInjector.filenameCreator;
 import static com.shazam.fork.injector.GsonInjector.gson;
 
 public class LogCatRetrieverInjector {
     public static LogCatRetriever logCatRetriever() {
-        return new JsonLogCatRetriever(configuredOutput(), gson());
+        return new JsonLogCatRetriever(gson(), filenameCreator());
     }
 }
