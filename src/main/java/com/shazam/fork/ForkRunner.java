@@ -39,23 +39,25 @@ public class ForkRunner {
     private final RuntimeConfiguration runtimeConfiguration;
     private final DeviceLoader deviceLoader;
     private final DevicePoolLoader poolLoader;
-    private final ScreenshotService screenshotService;
     private final TestClassScanner testClassScanner;
     private final TestClassFilter testClassFilter;
     private final DevicePoolRunner devicePoolRunner;
     private final SwimlaneConsoleLogger swimlaneConsoleLogger;
     private final SummaryPrinter summaryPrinter;
 
-    public ForkRunner(Configuration configuration, RuntimeConfiguration runtimeConfiguration,
-                      DeviceLoader deviceLoader, DevicePoolLoader poolLoader,
-                      ScreenshotService screenshotService, TestClassScanner testClassScanner,
-                      TestClassFilter testClassFilter, DevicePoolRunner devicePoolRunner,
-                      SwimlaneConsoleLogger swimlaneConsoleLogger, SummaryPrinter summaryPrinter) {
+    public ForkRunner(Configuration configuration,
+                      RuntimeConfiguration runtimeConfiguration,
+                      DeviceLoader deviceLoader,
+                      DevicePoolLoader poolLoader,
+                      TestClassScanner testClassScanner,
+                      TestClassFilter testClassFilter,
+                      DevicePoolRunner devicePoolRunner,
+                      SwimlaneConsoleLogger swimlaneConsoleLogger,
+                      SummaryPrinter summaryPrinter) {
         this.configuration = configuration;
         this.runtimeConfiguration = runtimeConfiguration;
         this.deviceLoader = deviceLoader;
         this.poolLoader = poolLoader;
-        this.screenshotService = screenshotService;
         this.testClassScanner = testClassScanner;
 		this.testClassFilter = testClassFilter;
         this.devicePoolRunner = devicePoolRunner;
@@ -79,7 +81,6 @@ public class ForkRunner {
 				return false;
 			}
 
-            screenshotService.start(devices);
 			List<TestClass> allTestClasses = testClassScanner.scanForTestClasses();
             final List<TestClass> testClasses = testClassFilter.anyUserFilter(allTestClasses);
 
@@ -123,7 +124,6 @@ public class ForkRunner {
 			if (poolExecutor != null) {
 				poolExecutor.shutdown();
 			}
-            screenshotService.stop();
 		}
 	}
 }

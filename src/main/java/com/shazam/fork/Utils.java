@@ -17,12 +17,20 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 
+import static java.lang.System.nanoTime;
 import static java.util.concurrent.Executors.newFixedThreadPool;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 public class Utils {
 
     public static ExecutorService namedExecutor(int numberOfThreads, String nameFormat) {
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat(nameFormat).build();
         return newFixedThreadPool(numberOfThreads, namedThreadFactory);
+    }
+
+    public static long millisSince(long startNanos) {
+        long elapsedNanos = nanoTime() - startNanos;
+        return MILLISECONDS.convert(elapsedNanos, NANOSECONDS);
     }
 }

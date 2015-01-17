@@ -21,12 +21,12 @@ import java.util.Map;
 
 import static java.lang.String.format;
 
-public class LogTestRunListener implements ITestRunListener {
-    private static final Logger logger = LoggerFactory.getLogger(LogTestRunListener.class);
+public class LoggingTestRunListener implements ITestRunListener {
+    private static final Logger logger = LoggerFactory.getLogger(LoggingTestRunListener.class);
 	private final String serial;
 	private final SwimlaneConsoleLogger runningStatusListener;
 
-	public LogTestRunListener(String serial, SwimlaneConsoleLogger runningStatusListener) {
+	public LoggingTestRunListener(String serial, SwimlaneConsoleLogger runningStatusListener) {
 		this.serial = serial;
 		this.runningStatusListener = runningStatusListener;
 	}

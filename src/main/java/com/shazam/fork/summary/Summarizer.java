@@ -135,7 +135,8 @@ public class Summarizer {
 
 	private File[] getTestResultFiles(final String poolName, String serial) {
 		String testFilenamePrefix = createTestFilenamePrefix(poolName, serial);
-		final FileFilter testFileFilter = new PrefixFileFilter(testFilenamePrefix);
-		return configuration.getOutput().listFiles(testFileFilter);
+        final FileFilter testFileFilter = new PrefixFileFilter(testFilenamePrefix);
+        throw new UnsupportedOperationException();
+//        return configuration.getOutput().listFiles(testFileFilter);
 	}
 }

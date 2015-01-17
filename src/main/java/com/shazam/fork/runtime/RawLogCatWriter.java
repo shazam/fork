@@ -14,32 +14,30 @@ package com.shazam.fork.runtime;
 
 import com.android.ddmlib.logcat.LogCatMessage;
 import com.android.ddmlib.testrunner.TestIdentifier;
+import com.shazam.fork.io.FilenameCreator;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
-import static com.shazam.fork.runtime.LogCatFilenameFactory.createRawLogcatFilename;
+import static com.shazam.fork.io.FileType.RAW_LOG;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.write;
 
 class RawLogCatWriter implements LogCatWriter {
-	private final File output;
+    private final FilenameCreator filenameCreator;
 	private final String pool;
 	private final String serial;
 
-	RawLogCatWriter(File output, String pool, String serial) {
-		this.output = output;
+	RawLogCatWriter(FilenameCreator filenameCreator, String pool, String serial) {
+        this.filenameCreator = filenameCreator;
 		this.pool = pool;
 		this.serial = serial;
 	}
 
 	@Override
 	public void writeLogs(TestIdentifier test, List<LogCatMessage> logCatMessages) {
-		String filename = createRawLogcatFilename(pool, serial, test);
-		File file = new File(output, filename);
-		FileWriter fileWriter = null;
+        File file = filenameCreator.createFile(RAW_LOG, pool, serial, test);
+        FileWriter fileWriter = null;
 		try {
 			fileWriter = new FileWriter(file);
 			for (LogCatMessage logCatMessage : logCatMessages) {

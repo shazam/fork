@@ -13,6 +13,8 @@
 package com.shazam.fork;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
+import com.google.gson.Gson;
+import com.shazam.fork.io.FilenameCreator;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.DevicePool;
 import com.shazam.fork.model.TestClass;
@@ -29,6 +31,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
+import static com.shazam.fork.TestSuiteRunnerTask.getForkXmlTestRunListener;
 import static com.shazam.fork.Utils.namedExecutor;
 import static java.lang.String.format;
 
@@ -37,11 +40,16 @@ public class DevicePoolRunner {
 	public static final String DROPPED_BY = "DroppedBy-";
 
     private final Configuration configuration;
-	private final Installer installer;
-	private final SwimlaneConsoleLogger swimlaneConsoleLogger;
+    private final Gson gson;
+    private final Installer installer;
+    private final SwimlaneConsoleLogger swimlaneConsoleLogger;
+    private final FilenameCreator filenameCreator;
 
-	public DevicePoolRunner(Configuration configuration, Installer installer, SwimlaneConsoleLogger swimlaneConsoleLogger) {
+    public DevicePoolRunner(Configuration configuration, Gson gson, Installer installer, FilenameCreator filenameCreator,
+                            SwimlaneConsoleLogger swimlaneConsoleLogger) {
         this.configuration = configuration;
+        this.gson = gson;
+        this.filenameCreator = filenameCreator;
         this.installer = installer;
 		this.swimlaneConsoleLogger = swimlaneConsoleLogger;
 	}
@@ -59,8 +67,10 @@ public class DevicePoolRunner {
 			for (Device device : devicePool.getDevices()) {
 				concurrentDeviceExecutor.execute(new TestSuiteRunnerTask(
                         configuration,
+                        gson,
                         installer,
-						devicePool.getName(),
+                        filenameCreator,
+                        devicePool.getName(),
                         device,
 						testsProvider,
 						deviceInPoolCountDownLatch,
@@ -87,8 +97,8 @@ public class DevicePoolRunner {
 		for (TestClass nextTest; (nextTest = testsProvider.getNextTest()) != null;) {
 			String className = nextTest.getClassName();
 			String poolName = devicePool.getName();
-			ForkXmlTestRunListener xmlGenerator = TestSuiteRunnerTask.getForkXmlTestRunListener(
-					poolName, DROPPED_BY + poolName, className, configuration.getOutput());
+			ForkXmlTestRunListener xmlGenerator = getForkXmlTestRunListener(filenameCreator, configuration.getOutput(),
+                    poolName, DROPPED_BY + poolName, nextTest);
 
 			List<TestMethod> methods = nextTest.getUnsuppressedMethods();
 			xmlGenerator.testRunStarted(poolName, methods.size());

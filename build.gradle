@@ -32,7 +32,6 @@ dependencies {
             'com.google.guava:guava:14.0.1',
             'org.lesscss:lesscss:1.3.3',
             'com.github.spullara.mustache.java:compiler:0.8.12',
-            'com.github.rtyley:android-screenshot-paparazzo:1.9',
             'org.slf4j:slf4j-api:1.7.7',
             'org.slf4j:slf4j-log4j12:1.7.7'
     )

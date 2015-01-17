@@ -16,21 +16,17 @@ import com.android.ddmlib.logcat.LogCatMessage;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.shazam.fork.runtime.LogCatFilenameFactory;
-import org.apache.commons.io.filefilter.AndFileFilter;
-import org.apache.commons.io.filefilter.PrefixFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import org.apache.commons.io.filefilter.*;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.shazam.fork.runtime.LogCatFilenameFactory.createLogCatFilenamePrefix;
+import static java.lang.String.format;
 
 public class JsonLogCatRetriever implements LogCatRetriever {
+    private static final String LOGCAT_PREFIX = "logcat__%s__%s__%s";
     private final Gson gson;
     private final File output;
 
@@ -43,7 +39,7 @@ public class JsonLogCatRetriever implements LogCatRetriever {
     public List<LogCatMessage> retrieveLogCat(String poolName, String serial, TestIdentifier testIdentifier) {
         String filenamePrefix = createLogCatFilenamePrefix(poolName, serial, testIdentifier);
         final PrefixFileFilter prefixFileFilter = new PrefixFileFilter(filenamePrefix);
-        SuffixFileFilter suffixFileFilter = new SuffixFileFilter(LogCatFilenameFactory.JSON);
+        SuffixFileFilter suffixFileFilter = new SuffixFileFilter("json");
         final AndFileFilter filter = new AndFileFilter(prefixFileFilter, suffixFileFilter);
         File[] files = output.listFiles((FileFilter) filter);
         if (files.length == 0) {
@@ -57,5 +53,9 @@ public class JsonLogCatRetriever implements LogCatRetriever {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static String createLogCatFilenamePrefix(String poolName, String serial, TestIdentifier testIdentifier) {
+        return format(LOGCAT_PREFIX, poolName, serial, testIdentifier.toString());
     }
 }
