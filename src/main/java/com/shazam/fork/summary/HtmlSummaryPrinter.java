@@ -42,6 +42,7 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 	private static final String[] STATIC_ASSETS = {
 		"bootstrap-responsive.min.css",
 		"bootstrap.min.css",
+		"fork.css",
 		"bootstrap.min.js",
 		"ceiling_android.png",
 		"device.png",

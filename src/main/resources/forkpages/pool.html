@@ -8,6 +8,7 @@
     <link href="../static/bootstrap.min.css" rel="stylesheet">
     <link href="../static/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="../static/spoon.css" rel="stylesheet">
+    <link href="../static/fork.css" rel="stylesheet">
     <script src="../static/jquery.min.js"></script>
     <script src="../static/bootstrap.min.js"></script>
 </head>
@@ -15,15 +16,14 @@
 <div class="container">
     <div class="hero-unit">
         <h1>{{prettyPoolName}}</h1>
-        <p>{{subtitle}}</p>
     </div>
     <div class="birds-eye">
-        <table>
+        <table class="results">
             {{#testResults}}
             <tr class="test {{status}}">
-                <td>{{status}}</td>
-                <td>[{{deviceSerial}}] {{deviceModelDespaced}}</td>
-                <td style="vertical-align: middle;"><a style="vertical-align: middle;" href="{{plainPoolName}}/{{plainClassName}}__{{plainMethodName}}.html">{{prettyClassName}} : {{prettyMethodName}}</a></td>
+                <td>{{deviceSerial}}</td>
+                <td>{{deviceModelDespaced}}</td>
+                <td><a href="{{plainPoolName}}/{{plainClassName}}__{{plainMethodName}}.html">{{prettyClassName}} : {{prettyMethodName}}</a></td>
             </tr>
             {{/testResults}}
         </table>
