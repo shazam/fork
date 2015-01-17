@@ -32,7 +32,7 @@ public class OutcomeAggregator {
 		return and(poolOutcomes);
 	}
 
-	private Function<? super PoolSummary, Boolean> toPoolOutcome() {
+	public static Function<? super PoolSummary, Boolean> toPoolOutcome() {
 		return new Function<PoolSummary, Boolean>() {
 			@Override
 			@Nullable
@@ -44,7 +44,7 @@ public class OutcomeAggregator {
 		};
 	}
 
-	private Function<TestResult, Boolean> toResultOutcome() {
+	private static Function<TestResult, Boolean> toResultOutcome() {
 		return new Function<TestResult, Boolean>() {
 			@Override
 			@Nullable
@@ -54,9 +54,8 @@ public class OutcomeAggregator {
 		};
 	}
 
-	@SuppressWarnings("ToArrayCallWithZeroLengthArrayArgument")
-    private Boolean and(final Collection<Boolean> booleans) {
-		return BooleanUtils.and(booleans.toArray(new Boolean[0]));
+    private static Boolean and(final Collection<Boolean> booleans) {
+		return BooleanUtils.and(booleans.toArray(new Boolean[booleans.size()]));
 	}
 
 }

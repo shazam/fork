@@ -1,0 +1,9 @@
+input.regex {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+th.message {
+	width: 50%;
+}
+

@@ -19,6 +19,7 @@ import com.shazam.fork.model.Device;
 import javax.annotation.Nullable;
 
 import static com.google.common.collect.Collections2.transform;
+import static com.shazam.fork.summary.OutcomeAggregator.toPoolOutcome;
 import static org.apache.commons.lang3.text.WordUtils.capitalizeFully;
 
 class HtmlConverters {
@@ -38,13 +39,19 @@ class HtmlConverters {
 			@Nullable
 			public HtmlPoolSummary apply(@Nullable PoolSummary poolSummary) {
 				HtmlPoolSummary htmlPoolSummary = new HtmlPoolSummary();
-				htmlPoolSummary.prettyPoolName = prettifyPoolName(poolSummary.getPoolName());
-				htmlPoolSummary.plainPoolName = poolSummary.getPoolName();
-				htmlPoolSummary.testCount = poolSummary.getTestResults().size();
-				htmlPoolSummary.testResults = transform(poolSummary.getTestResults(), toHtmlTestResult());
+                htmlPoolSummary.overallStatus = getPoolStatus(poolSummary);
+                htmlPoolSummary.prettyPoolName = prettifyPoolName(poolSummary.getPoolName());
+                htmlPoolSummary.plainPoolName = poolSummary.getPoolName();
+                htmlPoolSummary.testCount = poolSummary.getTestResults().size();
+                htmlPoolSummary.testResults = transform(poolSummary.getTestResults(), toHtmlTestResult());
 				return htmlPoolSummary;
 			}
-		};
+
+            private String getPoolStatus(PoolSummary poolSummary) {
+                Boolean success = toPoolOutcome().apply(poolSummary);
+                return (success != null && success? "pass" : "fail");
+            }
+        };
 	}
 
 	private static Function<TestResult, HtmlTestResult> toHtmlTestResult() {

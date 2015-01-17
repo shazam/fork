@@ -23,7 +23,6 @@ public class TestResult {
 	private final String testMethod;
 	private final String errorTrace;
 	private final String failureTrace;
-
 	private final String poolName;
 
 	public Device getDevice() {

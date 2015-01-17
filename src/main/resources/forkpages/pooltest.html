@@ -8,53 +8,29 @@
         <link href="../../static/bootstrap.min.css" rel="stylesheet">
         <link href="../../static/bootstrap-responsive.min.css" rel="stylesheet">
         <link href="../../static/spoon.css" rel="stylesheet">
+        <link href="../../static/fork.css" rel="stylesheet">
         <script src="../../static/jquery.min.js"></script>
         <script src="../../static/bootstrap.min.js"></script>
     </head>
     <body>
         <div class="container">
-            <div class="hero-unit">
+            <div class="hero-unit {{status}}">
                 <h1>{{prettyMethodName}}</h1>
-                <p>{{prettyClassName}}</p>
+                <p>{{prettyClassName}} - Took {{timeTaken}}s on {{deviceSerial}} ({{deviceModelDespaced}})</p>
+                <p><a href="../{{plainPoolName}}.html">Other tests for this pool</a> - <a href="../../../logcat/{{plainPoolName}}/{{deviceSerial}}/{{plainClassName}}%23{{plainMethodName}}.log">Log file</a></p>
             </div>
-            <a href="../../../../screenshots/{{deviceSerial}}_({{deviceModelDespaced}})/{{plainClassName}}/{{plainMethodName}}.png">
-                <img style="float: right; border: dotted blue 2px;" width="18%" height="18%"
-                     src="../../../../screenshots/{{deviceSerial}}_({{deviceModelDespaced}})/{{plainClassName}}/{{plainMethodName}}.png"/>
-            </a>
-            <div class="row log">
-                <ul class="birds-eye">
-                    <li class="test {{status}}">{{status}} in {{timeTaken}}s on [{{deviceSerial}}] {{deviceModelDespaced}}</li>
-                    <li><a href="../{{plainPoolName}}.html">All tests for {{prettyPoolName}}</a></li>
-                    <li><a href="../../../logcat/{{plainPoolName}}/{{deviceSerial}}/{{plainClassName}}%23{{plainMethodName}}.log">Raw log</a></li>
-                </ul>
-            </div>
-            <script language="javascript">
-                function filterTable(mode) {
-                   rows=document.getElementsByClassName('logcat')[0].rows;
-                   regex=document.getElementById('filter').value;
-                   for (i=0; i<rows.length; ++i) {
-                     if (rows[i].textContent.match(regex)) {
-                       rows[i].style.display=mode;
-                     }
-                   }
-                }
-            </script>
             <form>
-                <input type="text" id="filter" placeholder="Unanchored regex; empty is 'all'"/>
-                <input type="button" value="hide match(regex) from logcat" onclick="filterTable('none')">
-                <input type="button" value="show match(regex) in logcat" onclick="filterTable('')">
+                <input type="text" id="filter" class="regex" placeholder="Search for regular expression"/>
+                <input type="button" value="Hide" onclick="filterTable('none')">
+                <input type="button" value="Show" onclick="filterTable('')">
             </form>
-            <pre class="test {{status}}">{{#trace}}
-{{.}}
-{{/trace}}</pre>
-            <div class="row">
-                <table class="logcat">
-                    <tr><th>tid</th><th>pid</th><th>tag</th><th>name</th><th>level</th><th>time</th><th>message</th></tr>
+            <div>
+                <table class="table logcat">
+                    <tr><th>Process</th><th>Tag</th><th>Level</th><th>Time</th><th class="message">Message</th></tr>
                     {{#logcatMessages}}
-<tr class="line {{logLevel}}"><td>{{tid}}</td><td>{{pid}}</td><td>{{tag}}</td><td>{{appName}}</td><td>{{logLevel}}</td><td style="white-space:nowrap;">{{time}}</td><td style="word-wrap:break-word;">{{message}}</td></tr>
+                    <tr class="line {{logLevel}}"><td>{{pid}}</td><td>{{tag}}</td><td>{{logLevel}}</td><td style="white-space:nowrap;">{{time}}</td><td>{{message}}</td></tr>
                     {{/logcatMessages}}
                 </table>
-                <!-- iframe width="80%" height="600" src="../../../../logcat__{{plainPoolName}}__{{deviceSerial}}__{{plainClassName}}%23{{plainMethodName}}.log"></iframe -->
             </div>
         </div>
 
@@ -64,5 +40,16 @@
                 trigger: 'hover'
             });
         </script>
+        <script language="javascript">
+                function filterTable(mode) {
+                   rows=document.getElementsByClassName('logcat')[0].rows;
+                   regex=document.getElementById('filter').value;
+                   for (i=1; i<rows.length; ++i) {
+                     if (rows[i].textContent.match(regex)) {
+                       rows[i].style.display=mode;
+                     }
+                   }
+                }
+            </script>
     </body>
 </html>

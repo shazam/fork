@@ -18,8 +18,9 @@ import java.util.Collection;
  * Plain bean class, to feed to Moustache markup files.
  */
 public class HtmlPoolSummary {
-	public String prettyPoolName;
-	public int testCount;
-	public Collection<HtmlTestResult> testResults;
-	public String plainPoolName;
+    public String overallStatus;
+    public String prettyPoolName;
+    public int testCount;
+    public Collection<HtmlTestResult> testResults;
+    public String plainPoolName;
 }
