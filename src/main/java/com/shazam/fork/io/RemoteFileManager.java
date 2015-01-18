@@ -13,8 +13,8 @@
 package com.shazam.fork.io;
 
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.NullOutputReceiver;
 import com.android.ddmlib.testrunner.TestIdentifier;
-import com.shazam.fork.system.NoOpIShellOutputReceiver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 public class RemoteFileManager {
     private static final String MP4 = ".mp4";
     private static final Logger logger = LoggerFactory.getLogger(RemoteFileManager.class);
-    private static final NoOpIShellOutputReceiver NO_OP_RECEIVER = new NoOpIShellOutputReceiver();
+    private static final NullOutputReceiver NO_OP_RECEIVER = new NullOutputReceiver();
     public static final String FORK_DIRECTORY = "/sdcard/fork";
 
     public static void removeRemotePath(IDevice device, String remotePath) {
@@ -52,10 +52,6 @@ public class RemoteFileManager {
 
     public static String remoteVideoForTest(String remoteFolder, TestIdentifier test) {
         return remoteFolder + "/" + videoFileName(test);
-    }
-
-    public static String videosIn(String remoteFolder) {
-        return remoteFolder + "/*" + MP4;
     }
 
     private static String videoFileName(TestIdentifier test) {

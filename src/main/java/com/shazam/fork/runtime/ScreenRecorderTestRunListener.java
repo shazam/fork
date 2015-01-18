@@ -9,11 +9,9 @@
  */
 package com.shazam.fork.runtime;
 
-import com.android.ddmlib.IDevice;
-import com.android.ddmlib.ScreenRecorderOptions;
+import com.android.ddmlib.*;
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
-import com.shazam.fork.Utils;
 import com.shazam.fork.io.FileManager;
 import com.shazam.fork.io.RemoteFileManager;
 import com.shazam.fork.model.Device;
@@ -23,17 +21,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 import static com.shazam.fork.Utils.millisSinceNanoTime;
 import static com.shazam.fork.io.FileType.SCREENRECORD;
-import static com.shazam.fork.io.RemoteFileManager.*;
+import static com.shazam.fork.io.RemoteFileManager.remoteVideoForTest;
+import static com.shazam.fork.io.RemoteFileManager.removeRemotePath;
 import static java.lang.System.nanoTime;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+/**
+ * http://stackoverflow.com/questions/25185746/stop-adb-screenrecord-from-java
+ */
 public class ScreenRecorderTestRunListener implements ITestRunListener {
     private static final Logger logger = LoggerFactory.getLogger(ScreenRecorderTestRunListener.class);
-    private static final int DURATION = 30;
+    private static final int DURATION = 15;
     private static final int BIT_RATE_MBPS = 1;
     private static final ScreenRecorderOptions RECORDER_OPTIONS = new ScreenRecorderOptions.Builder()
             .setTimeLimit(DURATION, SECONDS)
@@ -63,17 +66,13 @@ public class ScreenRecorderTestRunListener implements ITestRunListener {
 
     @Override
     public void testStarted(TestIdentifier test) {
-        cancellableReceiver = new CancellableShellOutputReceiver();
         hasFailed = false;
-        try {
-            String remoteFilePath = remoteVideoForTest(remoteDirectory, test);
-            logger.debug("Started recording video at: {}", remoteFilePath);
-            long startNanos = nanoTime();
-            deviceInterface.startScreenRecorder(remoteFilePath, RECORDER_OPTIONS, cancellableReceiver);
-            logger.debug("Recording finished in {}ms {}", millisSinceNanoTime(startNanos), remoteFilePath);
-        } catch (Exception e) {
-            logger.error("Could not start screen recorder", e);
-        }
+        cancellableReceiver = new CancellableShellOutputReceiver();
+        String remoteFilePath = remoteVideoForTest(remoteDirectory, test);
+
+        File localVideoFile = fileManager.createFile(SCREENRECORD, pool, device.getSerial(), test);
+        new Thread(new ScreenRecorder(remoteFilePath, localVideoFile, deviceInterface, cancellableReceiver))
+                .start();
     }
 
     @Override
@@ -83,27 +82,19 @@ public class ScreenRecorderTestRunListener implements ITestRunListener {
 
     @Override
     public void testAssumptionFailure(TestIdentifier test, String trace) {
+        cancellableReceiver.cancel();
     }
 
     @Override
     public void testIgnored(TestIdentifier test) {
+        cancellableReceiver.cancel();
     }
 
     @Override
     public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
-        String remoteFilePath = remoteVideoForTest(remoteDirectory, test);
-
-        try {
-            File localVideoFile = fileManager.createFile(SCREENRECORD, pool, device.getSerial(), test);
-            logger.debug("Started pulling file \n {} \n {}", remoteFilePath, localVideoFile);
-            long startNanos = nanoTime();
-            deviceInterface.pullFile(remoteFilePath, localVideoFile.toString());
-            logger.debug("Pulling finished in {}ms {}", millisSinceNanoTime(startNanos), remoteFilePath);
-//            if (hasFailed) {
-//            }
-        } catch (Exception e) {
-            logger.warn("Failed to pull video file: " + e.getMessage());
-        }
+//        if (!hasFailed) {
+//            cancellableReceiver.cancel();
+//        }
     }
 
     @Override
@@ -116,6 +107,58 @@ public class ScreenRecorderTestRunListener implements ITestRunListener {
 
     @Override
     public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
-        removeRemotePath(deviceInterface, videosIn(remoteDirectory));
+    }
+
+    private static class ScreenRecorder implements Runnable {
+        private final String remoteFilePath;
+        private final File localVideoFile;
+        private final IDevice deviceInterface;
+        private final IShellOutputReceiver outputReceiver;
+
+        public ScreenRecorder(String remoteFilePath, File localVideoFile, IDevice deviceInterface,
+                              IShellOutputReceiver outputReceiver) {
+            this.remoteFilePath = remoteFilePath;
+            this.localVideoFile = localVideoFile;
+            this.deviceInterface = deviceInterface;
+            this.outputReceiver = outputReceiver;
+        }
+
+        @Override
+        public void run() {
+            try {
+                startRecordingTestVideo(); //blocking and long operation
+                if (outputReceiver.isCancelled()) {
+                    removeTestVideo();
+                } else {
+                    pullTestVideo();
+                    removeTestVideo();
+                }
+
+            } catch (Exception e) {
+                logger.error("Something went wrong", e);
+            }
+        }
+
+        private void startRecordingTestVideo() throws TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException {
+            logger.debug("Started recording video at: {}", remoteFilePath);
+            long startNanos = nanoTime();
+            deviceInterface.startScreenRecorder(remoteFilePath, RECORDER_OPTIONS, outputReceiver);
+            logger.debug("Recording finished in {}ms {}", millisSinceNanoTime(startNanos), remoteFilePath);
+        }
+
+        private void pullTestVideo() throws IOException, AdbCommandRejectedException, TimeoutException, SyncException {
+            long startNanos;
+            logger.debug("Started pulling file {} to {}", remoteFilePath, localVideoFile);
+            startNanos = nanoTime();
+            deviceInterface.pullFile(remoteFilePath, localVideoFile.toString());
+            logger.debug("Pulling finished in {}ms {}", millisSinceNanoTime(startNanos), remoteFilePath);
+        }
+
+        private void removeTestVideo() {
+            logger.debug("Started removing file {}", remoteFilePath);
+            long startNanos = nanoTime();
+            removeRemotePath(deviceInterface, remoteFilePath);
+            logger.debug("Removed file in {}ms {}", millisSinceNanoTime(startNanos), remoteFilePath);
+        }
     }
 }
