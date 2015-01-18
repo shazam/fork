@@ -13,19 +13,19 @@
 package com.shazam.fork.runtime;
 
 import com.android.ddmlib.testrunner.XmlTestRunListener;
-import com.shazam.fork.io.FilenameCreator;
+import com.shazam.fork.io.FileManager;
 import com.shazam.fork.model.TestClass;
 
 import java.io.File;
 
 public class ForkXmlTestRunListener extends XmlTestRunListener {
-    private final FilenameCreator filenameCreator;
+    private final FileManager fileManager;
     private final String pool;
     private final String serial;
     private final TestClass testClass;
 
-    public ForkXmlTestRunListener(FilenameCreator filenameCreator, String pool, String serial, TestClass testClass) {
-        this.filenameCreator = filenameCreator;
+    public ForkXmlTestRunListener(FileManager fileManager, String pool, String serial, TestClass testClass) {
+        this.fileManager = fileManager;
         this.pool = pool;
         this.serial = serial;
         this.testClass = testClass;
@@ -33,6 +33,6 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
 
     @Override
     protected File getResultFile(File reportDir) {
-        return filenameCreator.createFileForTest(pool, serial, testClass);
+        return fileManager.createFileForTest(pool, serial, testClass);
     }
 }

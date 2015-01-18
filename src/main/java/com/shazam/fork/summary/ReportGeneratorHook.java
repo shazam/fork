@@ -13,7 +13,7 @@
 package com.shazam.fork.summary;
 
 import com.shazam.fork.RuntimeConfiguration;
-import com.shazam.fork.io.FilenameCreator;
+import com.shazam.fork.io.FileManager;
 import com.shazam.fork.model.DevicePool;
 import com.shazam.fork.model.TestClass;
 
@@ -30,18 +30,18 @@ public class ReportGeneratorHook extends Thread {
     private static final Logger logger = LoggerFactory.getLogger(ReportGeneratorHook.class);
 
     private final RuntimeConfiguration runtimeConfiguration;
-    private final FilenameCreator filenameCreator;
+    private final FileManager fileManager;
     private final Collection<DevicePool> devicePools;
     private final List<TestClass> testClasses;
     private final SummaryPrinter summaryPrinter;
 
     public ReportGeneratorHook(RuntimeConfiguration runtimeConfiguration,
-                               FilenameCreator filenameCreator,
+                               FileManager fileManager,
                                Collection<DevicePool> devicePools,
                                List<TestClass> testClasses,
                                SummaryPrinter summaryPrinter) {
         this.runtimeConfiguration = runtimeConfiguration;
-        this.filenameCreator = filenameCreator;
+        this.fileManager = fileManager;
         this.devicePools = devicePools;
 		this.testClasses = testClasses;
         this.summaryPrinter = summaryPrinter;
@@ -67,7 +67,7 @@ public class ReportGeneratorHook extends Thread {
 	public synchronized Summary generateReportOnlyOnce() {
 		if (onlyOnce) {
 			onlyOnce = false;
-			Summarizer summarizer = new Summarizer(runtimeConfiguration, filenameCreator, devicePools,
+			Summarizer summarizer = new Summarizer(runtimeConfiguration, fileManager, devicePools,
                     testClasses);
 			Summary summary = summarizer.compileSummary();
             summaryPrinter.print(summary);

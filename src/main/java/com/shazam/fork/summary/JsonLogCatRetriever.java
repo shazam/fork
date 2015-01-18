@@ -17,7 +17,7 @@ import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.shazam.fork.io.FileType;
-import com.shazam.fork.io.FilenameCreator;
+import com.shazam.fork.io.FileManager;
 
 import java.io.*;
 import java.util.List;
@@ -26,16 +26,16 @@ import static java.lang.String.format;
 
 public class JsonLogCatRetriever implements LogCatRetriever {
     private final Gson gson;
-    private final FilenameCreator filenameCreator;
+    private final FileManager fileManager;
 
-    public JsonLogCatRetriever(Gson gson, FilenameCreator filenameCreator) {
+    public JsonLogCatRetriever(Gson gson, FileManager fileManager) {
         this.gson = gson;
-        this.filenameCreator = filenameCreator;
+        this.fileManager = fileManager;
     }
 
     @Override
     public List<LogCatMessage> retrieveLogCat(String poolName, String serial, TestIdentifier testIdentifier) {
-        File logcatJsonFile = filenameCreator.getFile(FileType.JSON_LOG, poolName, serial, testIdentifier);
+        File logcatJsonFile = fileManager.getFile(FileType.JSON_LOG, poolName, serial, testIdentifier);
         try {
             FileReader fileReader = new FileReader(logcatJsonFile);
             return gson.fromJson(fileReader, new TypeToken<List<LogCatMessage>>() {}.getType());

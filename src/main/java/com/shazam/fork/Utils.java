@@ -29,7 +29,7 @@ public class Utils {
         return newFixedThreadPool(numberOfThreads, namedThreadFactory);
     }
 
-    public static long millisSince(long startNanos) {
+    public static long millisSinceNanoTime(long startNanos) {
         long elapsedNanos = nanoTime() - startNanos;
         return MILLISECONDS.convert(elapsedNanos, NANOSECONDS);
     }

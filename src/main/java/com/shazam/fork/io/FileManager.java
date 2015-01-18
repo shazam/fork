@@ -20,10 +20,10 @@ import static com.shazam.fork.io.FileType.TEST;
 import static java.nio.file.Files.createDirectories;
 import static java.nio.file.Paths.get;
 
-public class FilenameCreator {
+public class FileManager {
     private final File output;
 
-    public FilenameCreator(File output) {
+    public FileManager(File output) {
         this.output = output;
     }
 

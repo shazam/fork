@@ -10,11 +10,12 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.shazam.fork;
+package com.shazam.fork.runtime;
 
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.RemoteAndroidTestRunner;
 import com.android.ddmlib.testrunner.TestIdentifier;
+import com.shazam.fork.Configuration;
 import com.shazam.fork.model.TestClass;
 import com.shazam.fork.model.TestMethod;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ import java.util.*;
 /**
 * Aborts lingering tests
 */
-class TestRunActivityWatchdog implements ITestRunListener {
+public class TestRunActivityWatchdog implements ITestRunListener {
 
 	private static final Map<String,String> EMPTY_MAP = Collections.emptyMap();
     private static final Logger logger = LoggerFactory.getLogger(TestRunActivityWatchdog.class);

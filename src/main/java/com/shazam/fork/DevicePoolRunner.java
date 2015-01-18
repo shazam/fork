@@ -14,7 +14,7 @@ package com.shazam.fork;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.gson.Gson;
-import com.shazam.fork.io.FilenameCreator;
+import com.shazam.fork.io.FileManager;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.DevicePool;
 import com.shazam.fork.model.TestClass;
@@ -43,13 +43,13 @@ public class DevicePoolRunner {
     private final Gson gson;
     private final Installer installer;
     private final SwimlaneConsoleLogger swimlaneConsoleLogger;
-    private final FilenameCreator filenameCreator;
+    private final FileManager fileManager;
 
-    public DevicePoolRunner(Configuration configuration, Gson gson, Installer installer, FilenameCreator filenameCreator,
+    public DevicePoolRunner(Configuration configuration, Gson gson, Installer installer, FileManager fileManager,
                             SwimlaneConsoleLogger swimlaneConsoleLogger) {
         this.configuration = configuration;
         this.gson = gson;
-        this.filenameCreator = filenameCreator;
+        this.fileManager = fileManager;
         this.installer = installer;
 		this.swimlaneConsoleLogger = swimlaneConsoleLogger;
 	}
@@ -69,7 +69,7 @@ public class DevicePoolRunner {
                         configuration,
                         gson,
                         installer,
-                        filenameCreator,
+                        fileManager,
                         devicePool.getName(),
                         device,
 						testsProvider,
@@ -97,7 +97,7 @@ public class DevicePoolRunner {
 		for (TestClass nextTest; (nextTest = testsProvider.getNextTest()) != null;) {
 			String className = nextTest.getClassName();
 			String poolName = devicePool.getName();
-			ForkXmlTestRunListener xmlGenerator = getForkXmlTestRunListener(filenameCreator, configuration.getOutput(),
+			ForkXmlTestRunListener xmlGenerator = getForkXmlTestRunListener(fileManager, configuration.getOutput(),
                     poolName, DROPPED_BY + poolName, nextTest);
 
 			List<TestMethod> methods = nextTest.getUnsuppressedMethods();

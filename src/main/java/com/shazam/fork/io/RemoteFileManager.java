@@ -13,6 +13,7 @@
 package com.shazam.fork.io;
 
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.system.NoOpIShellOutputReceiver;
 
 import org.slf4j.Logger;
@@ -20,8 +21,10 @@ import org.slf4j.LoggerFactory;
 
 //TODO Could we improve behaviour for different types of ADB exceptions?
 public class RemoteFileManager {
+    private static final String MP4 = ".mp4";
     private static final Logger logger = LoggerFactory.getLogger(RemoteFileManager.class);
     private static final NoOpIShellOutputReceiver NO_OP_RECEIVER = new NoOpIShellOutputReceiver();
+    public static final String FORK_DIRECTORY = "/sdcard/fork";
 
     public static void removeRemotePath(IDevice device, String remotePath) {
         try {
@@ -45,5 +48,17 @@ public class RemoteFileManager {
         } catch (Exception e) {
             logger.error("Could not delete remote directory: " + remoteDirectory, e);
         }
+    }
+
+    public static String remoteVideoForTest(String remoteFolder, TestIdentifier test) {
+        return remoteFolder + "/" + videoFileName(test);
+    }
+
+    public static String videosIn(String remoteFolder) {
+        return remoteFolder + "/*" + MP4;
+    }
+
+    private static String videoFileName(TestIdentifier test) {
+        return test.getClassName() + "-" + test.getTestName() + MP4;
     }
 }

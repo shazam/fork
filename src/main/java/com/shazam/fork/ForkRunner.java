@@ -12,7 +12,7 @@
  */
 package com.shazam.fork;
 
-import com.shazam.fork.io.FilenameCreator;
+import com.shazam.fork.io.FileManager;
 import com.shazam.fork.model.*;
 import com.shazam.fork.pooling.DevicePoolLoader;
 import com.shazam.fork.runtime.SwimlaneConsoleLogger;
@@ -40,7 +40,7 @@ public class ForkRunner {
     private final DevicePoolRunner devicePoolRunner;
     private final SwimlaneConsoleLogger swimlaneConsoleLogger;
     private final SummaryPrinter summaryPrinter;
-    private final FilenameCreator filenameCreator;
+    private final FileManager fileManager;
 
     public ForkRunner(RuntimeConfiguration runtimeConfiguration,
                       DeviceLoader deviceLoader,
@@ -50,7 +50,7 @@ public class ForkRunner {
                       DevicePoolRunner devicePoolRunner,
                       SwimlaneConsoleLogger swimlaneConsoleLogger,
                       SummaryPrinter summaryPrinter,
-                      FilenameCreator filenameCreator) {
+                      FileManager fileManager) {
         this.runtimeConfiguration = runtimeConfiguration;
         this.deviceLoader = deviceLoader;
         this.poolLoader = poolLoader;
@@ -59,7 +59,7 @@ public class ForkRunner {
         this.devicePoolRunner = devicePoolRunner;
         this.swimlaneConsoleLogger = swimlaneConsoleLogger;
         this.summaryPrinter = summaryPrinter;
-        this.filenameCreator = filenameCreator;
+        this.fileManager = fileManager;
     }
 
 	public boolean run() {
@@ -86,7 +86,7 @@ public class ForkRunner {
             poolExecutor = namedExecutor(numberOfPools, "PoolExecutor-%d");
 
 			// Only need emergency shutdown hook once tests have started.
-			ReportGeneratorHook reportGeneratorHook = new ReportGeneratorHook(runtimeConfiguration, filenameCreator,
+			ReportGeneratorHook reportGeneratorHook = new ReportGeneratorHook(runtimeConfiguration, fileManager,
                     devicePools, testClasses, summaryPrinter);
 			Runtime.getRuntime().addShutdownHook(reportGeneratorHook);
 

@@ -16,6 +16,7 @@ import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.RemoteAndroidTestRunner;
 import com.shazam.fork.model.TestClass;
 import com.shazam.fork.model.TestRunParameters;
+import com.shazam.fork.runtime.TestRunActivityWatchdog;
 
 import java.util.ArrayList;
 import java.util.Arrays;

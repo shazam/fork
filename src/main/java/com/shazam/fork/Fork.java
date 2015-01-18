@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-import static com.shazam.fork.Utils.millisSince;
+import static com.shazam.fork.Utils.millisSinceNanoTime;
 import static com.shazam.fork.injector.ConfigurationInjector.setConfiguration;
 import static com.shazam.fork.injector.ForkRunnerInjector.forkRunner;
 import static java.lang.System.nanoTime;
@@ -53,7 +53,7 @@ public final class Fork {
 			return false;
 		} finally {
 			AndroidDebugBridge.terminate();
-            long duration = millisSince(startOfTestsMs);
+            long duration = millisSinceNanoTime(startOfTestsMs);
             logger.info(formatPeriod(0, duration, "Total time taken: H 'hours' m 'minutes' s 'seconds'"));
 		}
 	}
