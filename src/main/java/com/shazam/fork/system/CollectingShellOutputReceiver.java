@@ -21,7 +21,7 @@ import java.nio.charset.Charset;
 /**
  * Simple output-collecting command receiver
  */
-public class StringBufferIShellOutputReceiver implements IShellOutputReceiver {
+public class CollectingShellOutputReceiver implements IShellOutputReceiver {
 	private final StringBuilder sb = new StringBuilder();
 
 	@Override
@@ -33,15 +33,14 @@ public class StringBufferIShellOutputReceiver implements IShellOutputReceiver {
 
 	@Override
 	public void flush() {
-		// Nothing special to do on command completion
 	}
 
 	@Override
 	public boolean isCancelled() {
-		return false; // No reason to cancel - perhaps
+		return false;
 	}
 
-	public StringBuilder getOutput() {
-		return sb;
+	public String getOutput() {
+		return sb.toString();
 	}
 }

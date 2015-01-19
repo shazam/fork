@@ -21,7 +21,7 @@ class TestClassProvider {
 	private final List<TestClass> testClasses;
 
 	public TestClassProvider(List<TestClass> testClasses) {
-		this.testClasses = new ArrayList<>(testClasses);
+		this.testClasses = new ArrayList<>(testClasses.subList(0, 1));
 	}
 
 	/**

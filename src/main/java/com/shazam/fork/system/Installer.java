@@ -38,8 +38,8 @@ public class Installer {
 	public void prepareInstallation(IDevice device) {
 		clearLogcat(device);
 		DdmPreferences.setTimeOut(30000);
-		reinstall(device, applicationPackage, apk);
-		reinstall(device, instrumentationPackage, testApk);
+//		reinstall(device, applicationPackage, apk);
+//		reinstall(device, instrumentationPackage, testApk);
 	}
 
 	private void reinstall(final IDevice device, final String appPackage, final File appApk) {
