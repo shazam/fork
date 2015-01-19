@@ -11,3 +11,7 @@ video {
     margin:0 auto 50px;
     display: block;
 }
+
+.video.pass {
+    display: none;
+}
