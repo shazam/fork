@@ -86,7 +86,7 @@ class TestSuiteRunnerTask implements Runnable {
 		} finally {
             logger.info("Device {} from pool {} finished", device.getSerial(), poolName);
 			deviceCountDownLatch.countDown();
-//            removeRemoteDirectory(deviceInterface, remoteDirectory);
+            removeRemoteDirectory(deviceInterface, remoteDirectory);
 		}
 	}
 

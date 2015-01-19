@@ -32,11 +32,14 @@ import static java.lang.System.nanoTime;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
+ * TODO: Currently does not kill screenrecord process, but records the first 20 seconds after a test starting.
+ * Need to do be able to find the PID and stop it. Only one test runs on a device, so only one screenrecord.
+ *
  * http://stackoverflow.com/questions/25185746/stop-adb-screenrecord-from-java
  */
 public class ScreenRecorderTestRunListener implements ITestRunListener {
     private static final Logger logger = LoggerFactory.getLogger(ScreenRecorderTestRunListener.class);
-    private static final int DURATION = 15;
+    private static final int DURATION = 20;
     private static final int BIT_RATE_MBPS = 1;
     private static final ScreenRecorderOptions RECORDER_OPTIONS = new ScreenRecorderOptions.Builder()
             .setTimeLimit(DURATION, SECONDS)
@@ -92,9 +95,9 @@ public class ScreenRecorderTestRunListener implements ITestRunListener {
 
     @Override
     public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
-//        if (!hasFailed) {
-//            cancellableReceiver.cancel();
-//        }
+        if (!hasFailed) {
+            cancellableReceiver.cancel();
+        }
     }
 
     @Override
@@ -126,16 +129,13 @@ public class ScreenRecorderTestRunListener implements ITestRunListener {
         @Override
         public void run() {
             try {
-                startRecordingTestVideo(); //blocking and long operation
-                if (outputReceiver.isCancelled()) {
-                    removeTestVideo();
-                } else {
+                startRecordingTestVideo();
+                if (!outputReceiver.isCancelled()) {
                     pullTestVideo();
-                    removeTestVideo();
                 }
-
+                removeTestVideo();
             } catch (Exception e) {
-                logger.error("Something went wrong", e);
+                logger.error("Something went wrong while screen recording", e);
             }
         }
 
@@ -147,9 +147,8 @@ public class ScreenRecorderTestRunListener implements ITestRunListener {
         }
 
         private void pullTestVideo() throws IOException, AdbCommandRejectedException, TimeoutException, SyncException {
-            long startNanos;
             logger.debug("Started pulling file {} to {}", remoteFilePath, localVideoFile);
-            startNanos = nanoTime();
+            long startNanos = nanoTime();
             deviceInterface.pullFile(remoteFilePath, localVideoFile.toString());
             logger.debug("Pulling finished in {}ms {}", millisSinceNanoTime(startNanos), remoteFilePath);
         }
