@@ -12,9 +12,8 @@
  */
 package com.shazam.fork.system;
 
-import com.android.ddmlib.DdmPreferences;
-import com.android.ddmlib.IDevice;
-import com.android.ddmlib.InstallException;
+import com.android.ddmlib.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +63,7 @@ public class Installer {
 		tryThrice(false, message, new Runnable() {
 			public void run() {
 				try {
-					device.executeShellCommand("logcat -c", new NoOpIShellOutputReceiver());
+					device.executeShellCommand("logcat -c", new NullOutputReceiver());
 				} catch (Exception e) {
 					throw new RuntimeException(message, e);
 				}

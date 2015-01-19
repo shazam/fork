@@ -19,11 +19,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-import static com.shazam.fork.Utils.millisSince;
+import static com.shazam.fork.Utils.millisSinceNanoTime;
 import static com.shazam.fork.injector.ConfigurationInjector.setConfiguration;
 import static com.shazam.fork.injector.ForkRunnerInjector.forkRunner;
 import static java.lang.System.nanoTime;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
+import static org.apache.commons.lang3.time.DurationFormatUtils.formatPeriod;
 
 /**
  * Represents a collection of devices and the test output to be executed.
@@ -42,7 +43,7 @@ public final class Fork {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public boolean run() {
-		long startOfTests = nanoTime();
+		long startOfTestsMs = nanoTime();
 		try {
             deleteDirectory(output);
             output.mkdirs();
@@ -52,7 +53,8 @@ public final class Fork {
 			return false;
 		} finally {
 			AndroidDebugBridge.terminate();
-            logger.info("Total time taken: {} ms", millisSince(startOfTests));
+            long duration = millisSinceNanoTime(startOfTestsMs);
+            logger.info(formatPeriod(0, duration, "Total time taken: H 'hours' m 'minutes' s 'seconds'"));
 		}
 	}
 }

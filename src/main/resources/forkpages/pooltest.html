@@ -19,6 +19,9 @@
                 <p>{{prettyClassName}} - Took {{timeTaken}}s on {{deviceSerial}} ({{deviceModelDespaced}})</p>
                 <p><a href="../{{plainPoolName}}.html">Other tests for this pool</a> - <a href="../../../logcat/{{plainPoolName}}/{{deviceSerial}}/{{plainClassName}}%23{{plainMethodName}}.log">Log file</a></p>
             </div>
+            <video class="video {{status}}" width="35%" height="35%" controls src="../../../screenrecord/{{plainPoolName}}/{{deviceSerial}}/{{plainClassName}}%23{{plainMethodName}}.mp4" type="video/mp4">
+                Is video supported in this browser?
+            </video>
             <form>
                 <input type="text" id="filter" class="regex" placeholder="Search for regular expression"/>
                 <input type="button" value="Hide" onclick="filterTable('none')">

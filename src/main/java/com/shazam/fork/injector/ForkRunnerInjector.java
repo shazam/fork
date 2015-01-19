@@ -17,7 +17,7 @@ import com.shazam.fork.ForkRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.shazam.fork.Utils.millisSince;
+import static com.shazam.fork.Utils.millisSinceNanoTime;
 import static com.shazam.fork.injector.DeviceLoaderInjector.deviceLoader;
 import static com.shazam.fork.injector.DevicePoolLoaderInjector.devicePoolLoader;
 import static com.shazam.fork.injector.DevicePoolRunnerInjector.devicePoolRunner;
@@ -34,7 +34,7 @@ public class ForkRunnerInjector {
     private static final Logger logger = LoggerFactory.getLogger(ForkRunnerInjector.class);
 
     public static ForkRunner forkRunner() {
-        long initializationStart = nanoTime();
+        long startNanos = nanoTime();
 
         ForkRunner forkRunner = new ForkRunner(
                 runtimeConfiguration(),
@@ -47,7 +47,7 @@ public class ForkRunnerInjector {
                 summaryPrinter(),
                 filenameCreator());
 
-        logger.debug("Initialization of ForkRunner took: {} milliseconds", millisSince(initializationStart));
+        logger.debug("Initialization of ForkRunner took: {} milliseconds", millisSinceNanoTime(startNanos));
 
         return forkRunner;
     }

@@ -50,6 +50,10 @@ public class Device {
 		return serial + " (" + model + ")";
 	}
 
+    public String getSimpleName() {
+        return getLongName().replaceAll("\\s+", "_");
+    }
+
 	public IDevice getDeviceInterface() {
 		return deviceInterface;
 	}

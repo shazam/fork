@@ -17,7 +17,7 @@ import com.android.ddmlib.testrunner.TestIdentifier;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.shazam.fork.Utils.millisSince;
+import static com.shazam.fork.Utils.millisSinceNanoTime;
 import static java.lang.System.nanoTime;
 
 /**
@@ -25,7 +25,6 @@ import static java.lang.System.nanoTime;
  *
  * FIXME: Find a better way of keeping track of test progress.
  */
-
 public class SwimlaneConsoleLogger {
 	private static final String STARTED_NO_FAILURE = "|";
     private static final char STARTED_FIRST_FAILURE = 'a';
@@ -135,7 +134,7 @@ public class SwimlaneConsoleLogger {
 			started = nanoTime();
 		}
 
-        StringBuilder b = new StringBuilder(minsSecs.format(new Date(millisSince(started))));
+        StringBuilder b = new StringBuilder(minsSecs.format(new Date(millisSinceNanoTime(started))));
         appendTotalProgress(b);
 
 		b.append(String.format(" %d ", failures));

@@ -14,7 +14,7 @@ package com.shazam.fork.geometry;
 
 import com.android.ddmlib.IDevice;
 import com.shazam.fork.model.DisplayGeometry;
-import com.shazam.fork.system.StringBufferIShellOutputReceiver;
+import com.shazam.fork.system.CollectingShellOutputReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,6 @@ import java.util.regex.PatternSyntaxException;
 /**
  * Runs a command on a device and sniffs its output for geometry by regex. Main aim is to determine shortest width.
  */
-//TODO Break this up.
 public class RegexDisplayGeometryRetrievalStrategy implements DisplayGeometryRetrievalStrategy {
     private static final Logger logger = LoggerFactory.getLogger(RegexDisplayGeometryRetrievalStrategy.class);
     private final String command;
@@ -45,14 +44,15 @@ public class RegexDisplayGeometryRetrievalStrategy implements DisplayGeometryRet
         return getDisplayGeometry(device, commandOutputLogger);
     }
 
+    //TODO Ugly method. Break this up.
     DisplayGeometry getDisplayGeometry(IDevice device, CommandOutputLogger commandOutputLogger) {
         DisplayGeometry displayGeometry = null;
-        StringBufferIShellOutputReceiver receiver = new StringBufferIShellOutputReceiver();
+        CollectingShellOutputReceiver receiver = new CollectingShellOutputReceiver();
         String serial = device.getSerialNumber();
 
         try {
             device.executeShellCommand(command, receiver);
-            String commandOutput = receiver.getOutput().toString();
+            String commandOutput = receiver.getOutput();
             commandOutputLogger.logCommandOutput(serial, commandOutput);
             Pattern xxnnn = Pattern.compile("(\\w+?)(\\d+)");
             for (String regex : regexes) {

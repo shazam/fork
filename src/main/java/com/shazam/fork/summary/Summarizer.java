@@ -14,7 +14,7 @@ package com.shazam.fork.summary;
 
 import com.google.common.base.Function;
 import com.shazam.fork.*;
-import com.shazam.fork.io.FilenameCreator;
+import com.shazam.fork.io.FileManager;
 import com.shazam.fork.model.*;
 
 import org.simpleframework.xml.Serializer;
@@ -35,17 +35,17 @@ public class Summarizer {
     private static final boolean STRICT = false;
 
     private final RuntimeConfiguration runtimeConfiguration;
-    private final FilenameCreator filenameCreator;
+    private final FileManager fileManager;
     private final Collection<DevicePool> devicePools;
     private final List<TestClass> testClasses;
     private final Serializer serializer;
 
     public Summarizer(RuntimeConfiguration runtimeConfiguration,
-                      FilenameCreator filenameCreator,
+                      FileManager fileManager,
                       Collection<DevicePool> devicePools,
                       List<TestClass> testClasses) {
         this.runtimeConfiguration = runtimeConfiguration;
-        this.filenameCreator = filenameCreator;
+        this.fileManager = fileManager;
         this.devicePools = devicePools;
 		this.testClasses = testClasses;
 		serializer = new Persister();
@@ -134,6 +134,6 @@ public class Summarizer {
 	}
 
 	private File[] getTestResultFiles(String poolName, String serial) {
-        return filenameCreator.getTestFilesForDevice(poolName, serial);
+        return fileManager.getTestFilesForDevice(poolName, serial);
 	}
 }

@@ -10,15 +10,27 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.shazam.fork.runtime;
+package com.shazam.fork.system;
 
-import static java.lang.String.format;
+import com.android.ddmlib.IShellOutputReceiver;
 
-@Deprecated
-public class TestFilenameFactory {
-	private static final String TEST_FILE_PREFIX = "test__%s__%s";
+public class CancellableShellOutputReceiver implements IShellOutputReceiver {
+    private boolean cancelled = false;
 
-	public static String createTestFilenamePrefix(String poolName, String serial) {
-		return format(TEST_FILE_PREFIX, poolName, serial);
-	}
+    @Override
+    public void addOutput(byte[] data, int offset, int length) {
+    }
+
+    @Override
+    public void flush() {
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    public void cancel() {
+        cancelled = true;
+    }
 }
