@@ -14,27 +14,23 @@ import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.io.FileManager;
 import com.shazam.fork.model.Device;
-import com.shazam.fork.system.CancellableShellOutputReceiver;
 
-import java.io.File;
 import java.util.Map;
 
-import static com.shazam.fork.io.FileType.SCREENRECORD;
-
-public class ScreenRecorderTestRunListener implements ITestRunListener {
+public class ScreenCaptureTestRunListener implements ITestRunListener {
     private final FileManager fileManager;
-    private final String pool;
-    private final Device device;
     private final IDevice deviceInterface;
+    private final String pool;
+    private final String serial;
 
+    private ScreenCapturer screenCapturer;
     private boolean hasFailed;
-    private ScreenRecorderStopper screenRecorderStopper;
 
-    public ScreenRecorderTestRunListener(FileManager fileManager, String pool, Device device) {
+    public ScreenCaptureTestRunListener(FileManager fileManager, String pool, Device device) {
         this.fileManager = fileManager;
+        this.deviceInterface = device.getDeviceInterface();
         this.pool = pool;
-        this.device = device;
-        deviceInterface = device.getDeviceInterface();
+        serial = device.getSerial();
     }
 
     @Override
@@ -44,10 +40,8 @@ public class ScreenRecorderTestRunListener implements ITestRunListener {
     @Override
     public void testStarted(TestIdentifier test) {
         hasFailed = false;
-        CancellableShellOutputReceiver cancellableReceiver = new CancellableShellOutputReceiver();
-        File localVideoFile = fileManager.createFile(SCREENRECORD, pool, device.getSerial(), test);
-        screenRecorderStopper = new ScreenRecorderStopper(deviceInterface, cancellableReceiver);
-        new Thread(new ScreenRecorder(test, localVideoFile, deviceInterface, cancellableReceiver)).start();
+        screenCapturer = new ScreenCapturer(deviceInterface, fileManager, pool, serial, test);
+        new Thread(screenCapturer).start();
     }
 
     @Override
@@ -57,21 +51,17 @@ public class ScreenRecorderTestRunListener implements ITestRunListener {
 
     @Override
     public void testAssumptionFailure(TestIdentifier test, String trace) {
-        screenRecorderStopper.cancelScreenRecord();
+        screenCapturer.stopCapturing(hasFailed);
     }
 
     @Override
     public void testIgnored(TestIdentifier test) {
-        screenRecorderStopper.cancelScreenRecord();
+        screenCapturer.stopCapturing(hasFailed);
     }
 
     @Override
     public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
-        if (!hasFailed) {
-            screenRecorderStopper.cancelScreenRecord();
-        } else {
-            screenRecorderStopper.stopScreenRecord();
-        }
+        screenCapturer.stopCapturing(hasFailed);
     }
 
     @Override

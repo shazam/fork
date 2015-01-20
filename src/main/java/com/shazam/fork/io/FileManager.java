@@ -12,8 +12,9 @@ package com.shazam.fork.io;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.model.TestClass;
 
-import java.io.File;
-import java.io.IOException;
+import org.apache.commons.io.filefilter.*;
+
+import java.io.*;
 import java.nio.file.Path;
 
 import static com.shazam.fork.io.FileType.TEST;
@@ -42,6 +43,16 @@ public class FileManager {
         return path.toFile().listFiles();
     }
 
+    public File createFile(FileType fileType, String pool, String serial, TestIdentifier testIdentifier, int sequenceNumber) {
+        try {
+            Path directory = createDirectory(fileType, pool, serial);
+            String filename = createFilenameForTest(testIdentifier, fileType, sequenceNumber);
+            return createFile(directory, filename);
+        } catch (IOException e) {
+            throw new CouldNotCreateDirectoryException(e);
+        }
+    }
+
     public File createFile(FileType fileType, String pool, String serial, TestIdentifier testIdentifier) {
         try {
             Path directory = createDirectory(fileType, pool, serial);
@@ -50,6 +61,15 @@ public class FileManager {
         } catch (IOException e) {
             throw new CouldNotCreateDirectoryException(e);
         }
+    }
+
+    public File[] getFiles(FileType fileType, String pool, String serial, TestIdentifier testIdentifier) {
+        FileFilter fileFilter = new AndFileFilter(
+                new PrefixFileFilter(testIdentifier.toString()),
+                new SuffixFileFilter(fileType.getSuffix()));
+
+        File deviceDirectory = get(output.getAbsolutePath(), fileType.getDirectory(), pool, serial).toFile();
+        return deviceDirectory.listFiles(fileFilter);
     }
 
     public File getFile(FileType fileType, String pool, String serial, TestIdentifier testIdentifier) {
@@ -75,6 +95,10 @@ public class FileManager {
     }
 
     private String createFilenameForTest(TestIdentifier testIdentifier, FileType fileType) {
-        return testIdentifier.toString() + "." + fileType.getSuffix();
+        return String.format("%s.%s", testIdentifier.toString(), fileType.getSuffix());
+    }
+
+    private String createFilenameForTest(TestIdentifier testIdentifier, FileType fileType, int sequenceNumber) {
+        return String.format("%s-%02d.%s", testIdentifier.toString(), sequenceNumber, fileType.getSuffix());
     }
 }

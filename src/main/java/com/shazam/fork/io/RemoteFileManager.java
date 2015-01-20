@@ -12,49 +12,49 @@
  */
 package com.shazam.fork.io;
 
-import com.android.ddmlib.IDevice;
-import com.android.ddmlib.NullOutputReceiver;
+import com.android.ddmlib.*;
 import com.android.ddmlib.testrunner.TestIdentifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//TODO Could we improve behaviour for different types of ADB exceptions?
+import java.io.IOException;
+
 public class RemoteFileManager {
-    private static final String MP4 = ".mp4";
-    private static final Logger logger = LoggerFactory.getLogger(RemoteFileManager.class);
-    private static final NullOutputReceiver NO_OP_RECEIVER = new NullOutputReceiver();
     public static final String FORK_DIRECTORY = "/sdcard/fork";
 
+    private static final Logger logger = LoggerFactory.getLogger(RemoteFileManager.class);
+    private static final NullOutputReceiver NO_OP_RECEIVER = new NullOutputReceiver();
+
     public static void removeRemotePath(IDevice device, String remotePath) {
+        executeCommand(device, "rm " + remotePath, "Could not delete remote file(s): " + remotePath);
+    }
+
+    public static void createRemoteDirectory(IDevice device) {
+        executeCommand(device, "mkdir " + FORK_DIRECTORY, "Could not create remote directory: " + FORK_DIRECTORY);
+    }
+
+    public static void removeRemoteDirectory(IDevice device) {
+        executeCommand(device, "rm -r " + FORK_DIRECTORY, "Could not delete remote directory: " + FORK_DIRECTORY);
+    }
+
+    private static void executeCommand(IDevice device, String command, String errorMessage) {
         try {
-            device.executeShellCommand("rm " + remotePath, NO_OP_RECEIVER);
-        } catch (Exception e) {
-            logger.error("Could not delete remote file(s): " + remotePath, e);
+            device.executeShellCommand(command, NO_OP_RECEIVER);
+        } catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
+            logger.error(errorMessage, e);
         }
     }
 
-    public static void createRemoteDirectory(IDevice device, String remoteDirectory) {
-        try {
-            device.executeShellCommand("mkdir " + remoteDirectory, NO_OP_RECEIVER);
-        } catch (Exception e) {
-            logger.error("Could not create remote directory: " + remoteDirectory, e);
-        }
+    public static String remoteVideoForTest(TestIdentifier test) {
+        return remoteFileForTest(videoFileName(test));
     }
 
-    public static void removeRemoteDirectory(IDevice device, String remoteDirectory) {
-        try {
-            device.executeShellCommand("rm -r " + remoteDirectory, NO_OP_RECEIVER);
-        } catch (Exception e) {
-            logger.error("Could not delete remote directory: " + remoteDirectory, e);
-        }
-    }
-
-    public static String remoteVideoForTest(String remoteFolder, TestIdentifier test) {
-        return remoteFolder + "/" + videoFileName(test);
+    private static String remoteFileForTest(String filename) {
+        return FORK_DIRECTORY + "/" + filename;
     }
 
     private static String videoFileName(TestIdentifier test) {
-        return test.getClassName() + "-" + test.getTestName() + MP4;
+        return String.format("%s-%s.mp4", test.getClassName(), test.getTestName());
     }
 }

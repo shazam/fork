@@ -54,7 +54,7 @@ public final class Fork {
 		} finally {
 			AndroidDebugBridge.terminate();
             long duration = millisSinceNanoTime(startOfTestsMs);
-            logger.info(formatPeriod(0, duration, "Total time taken: H 'hours' m 'minutes' s 'seconds'"));
+            logger.info(formatPeriod(0, duration, "'Total time taken:' H 'hours' m 'minutes' s 'seconds'"));
 		}
 	}
 }

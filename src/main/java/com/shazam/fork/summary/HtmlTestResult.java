@@ -29,4 +29,6 @@ public class HtmlTestResult {
 	public Collection<HtmlLogCatMessage> logcatMessages;
 	public String timeTaken;
 	public String[] trace;
+    public boolean diagnosticVideo;
+    public boolean diagnosticScreenshots;
 }
