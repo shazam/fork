@@ -15,10 +15,13 @@ package com.shazam.fork.summary;
 import com.android.ddmlib.logcat.LogCatMessage;
 import com.google.common.base.Function;
 import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Diagnostics;
 
 import javax.annotation.Nullable;
 
 import static com.google.common.collect.Collections2.transform;
+import static com.shazam.fork.model.Diagnostics.SCREENSHOTS;
+import static com.shazam.fork.model.Diagnostics.VIDEO;
 import static com.shazam.fork.summary.OutcomeAggregator.toPoolOutcome;
 import static org.apache.commons.lang3.text.WordUtils.capitalizeFully;
 
@@ -30,6 +33,7 @@ class HtmlConverters {
 		htmlSummary.subtitle = summary.getSubtitle();
 		htmlSummary.pools = transform(summary.getPoolSummaries(), toHtmlPoolSummary());
 		htmlSummary.suppressedTests = summary.getSuppressedTests();
+        htmlSummary.overallStatus = new OutcomeAggregator().aggregate(summary) ? "pass" : "fail";
 		return htmlSummary;
 	}
 
@@ -39,7 +43,7 @@ class HtmlConverters {
 			@Nullable
 			public HtmlPoolSummary apply(@Nullable PoolSummary poolSummary) {
 				HtmlPoolSummary htmlPoolSummary = new HtmlPoolSummary();
-                htmlPoolSummary.overallStatus = getPoolStatus(poolSummary);
+                htmlPoolSummary.poolStatus = getPoolStatus(poolSummary);
                 htmlPoolSummary.prettyPoolName = prettifyPoolName(poolSummary.getPoolName());
                 htmlPoolSummary.plainPoolName = poolSummary.getPoolName();
                 htmlPoolSummary.testCount = poolSummary.getTestResults().size();
@@ -73,6 +77,9 @@ class HtmlConverters {
 				Device device = input.getDevice();
 				htmlTestResult.deviceSerial = device.getSerial();
 				htmlTestResult.deviceModelDespaced = device.getModelName().replace(" ", "_");
+                Diagnostics supportedDiagnostics = device.getSupportedDiagnostics();
+                htmlTestResult.diagnosticVideo = VIDEO.equals(supportedDiagnostics);
+                htmlTestResult.diagnosticScreenshots = SCREENSHOTS.equals(supportedDiagnostics);
 				return htmlTestResult;
 			}
 		};

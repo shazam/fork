@@ -33,7 +33,8 @@ dependencies {
             'org.lesscss:lesscss:1.3.3',
             'com.github.spullara.mustache.java:compiler:0.8.12',
             'org.slf4j:slf4j-api:1.7.7',
-            'org.slf4j:slf4j-log4j12:1.7.7'
+            'org.slf4j:slf4j-log4j12:1.7.7',
+            'com.madgag:animated-gif-lib:1.2'
     )
 
     testCompile(

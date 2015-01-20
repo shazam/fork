@@ -26,6 +26,7 @@ import java.util.*;
 import javax.annotation.Nullable;
 
 import static com.google.common.collect.Collections2.transform;
+import static com.shazam.fork.model.Device.Builder.aDevice;
 import static com.shazam.fork.summary.PoolSummary.Builder.aPoolSummary;
 import static com.shazam.fork.summary.Summary.Builder.aSummary;
 import static com.shazam.fork.summary.TestResult.Builder.aTestResult;
@@ -83,7 +84,7 @@ public class Summarizer {
 	}
 
 	private Device getPoolWatchdog(String devicePoolName) {
-		return Device.Builder.aDevice()
+		return aDevice()
 					.withSerial(DevicePoolRunner.DROPPED_BY + devicePoolName)
 					.withManufacturer("Clumsy-" + devicePoolName)
 					.withModel("Clumsy=" + devicePoolName)

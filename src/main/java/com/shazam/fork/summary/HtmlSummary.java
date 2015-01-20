@@ -23,4 +23,5 @@ public class HtmlSummary {
 	public String title;
 	public String subtitle;
 	public ArrayList<String> suppressedTests;
+    public String overallStatus;
 }

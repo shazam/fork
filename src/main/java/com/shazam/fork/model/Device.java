@@ -14,6 +14,7 @@ package com.shazam.fork.model;
 
 import com.android.ddmlib.IDevice;
 
+import static com.shazam.fork.model.Diagnostics.computeDiagnostics;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
@@ -29,6 +30,7 @@ public class Device {
 	private final IDevice deviceInterface;
 	private final boolean isTablet;
 	private final DisplayGeometry geometry;
+    private final Diagnostics diagnostics;
 
 	public String getSerial() {
 		return serial;
@@ -50,10 +52,6 @@ public class Device {
 		return serial + " (" + model + ")";
 	}
 
-    public String getSimpleName() {
-        return getLongName().replaceAll("\\s+", "_");
-    }
-
 	public IDevice getDeviceInterface() {
 		return deviceInterface;
 	}
@@ -66,16 +64,20 @@ public class Device {
         return geometry;
     }
 
-	public static class Builder {
+    public Diagnostics getSupportedDiagnostics() {
+        return diagnostics;
+    }
+
+    public static class Builder {
         private String serial = "Unspecified serial";
         private String manufacturer = "Unspecified manufacturer";
         private String model = "Unspecified model";
-        private String apiLevel = "Unspecified API Level";
+        private String apiLevel;
 		private IDevice deviceInterface;
 		private boolean isTablet = false;
 		private DisplayGeometry geometry;
 
-		public static Builder aDevice() {
+        public static Builder aDevice() {
 			return new Builder();
 		}
 
@@ -140,6 +142,7 @@ public class Device {
 		deviceInterface = builder.deviceInterface;
 		isTablet = builder.isTablet;
 		geometry = builder.geometry;
+        diagnostics = computeDiagnostics(deviceInterface, apiLevel);
 	}
 
 	@Override

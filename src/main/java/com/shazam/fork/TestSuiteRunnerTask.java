@@ -16,7 +16,6 @@ import com.android.ddmlib.IDevice;
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.google.gson.Gson;
 import com.shazam.fork.io.FileManager;
-import com.shazam.fork.io.RemoteFileManager;
 import com.shazam.fork.model.*;
 import com.shazam.fork.runtime.*;
 import com.shazam.fork.system.Installer;
@@ -27,9 +26,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.concurrent.CountDownLatch;
 
-import static com.android.ddmlib.IDevice.Feature.SCREEN_RECORD;
 import static com.shazam.fork.io.RemoteFileManager.createRemoteDirectory;
 import static com.shazam.fork.io.RemoteFileManager.removeRemoteDirectory;
+import static com.shazam.fork.model.Diagnostics.VIDEO;
 import static com.shazam.fork.model.TestRunParameters.Builder.testRunParameters;
 
 class TestSuiteRunnerTask implements Runnable {
@@ -69,13 +68,12 @@ class TestSuiteRunnerTask implements Runnable {
 	public void run() {
         String serial = device.getSerial();
         IDevice deviceInterface = device.getDeviceInterface();
-        String remoteDirectory = RemoteFileManager.FORK_DIRECTORY;
         try {
             swimlaneConsoleLogger.setCount(serial, poolName, testClassProvider.size());
             installer.prepareInstallation(deviceInterface);
             // For when previous run crashed/disconnected and left files behind
-            removeRemoteDirectory(deviceInterface, remoteDirectory);
-            createRemoteDirectory(deviceInterface, remoteDirectory);
+            removeRemoteDirectory(deviceInterface);
+            createRemoteDirectory(deviceInterface);
 
             TestClass testClass;
             while ((testClass = testClassProvider.getNextTest()) != null) {
@@ -103,16 +101,16 @@ class TestSuiteRunnerTask implements Runnable {
                 device.getSerial(), testClass);
         ITestRunListener logTestRunListener = new LoggingTestRunListener(device.getSerial(), swimlaneConsoleLogger);
         ITestRunListener logCatTestRunListener = new LogCatTestRunListener(gson, fileManager, poolName, device);
-        ITestRunListener screenRecorderTestRunListener = getScreenRecorderTestRunListener(fileManager, poolName, device);
-        
-		TestRun testRun = new TestRun(
+        ITestRunListener screenTraceTestRunListener = getScreenTraceTestRunListener(fileManager, poolName, device);
+
+        TestRun testRun = new TestRun(
                 configuration,
                 poolName,
 				testRunParameters,
 				xmlTestRunListener,
                 logTestRunListener,
 				logCatTestRunListener,
-                screenRecorderTestRunListener);
+                screenTraceTestRunListener);
 		testRun.execute();
 	}
 
@@ -126,10 +124,10 @@ class TestSuiteRunnerTask implements Runnable {
         return xmlTestRunListener;
     }
 
-    private static ITestRunListener getScreenRecorderTestRunListener(FileManager fileManager, String pool, Device device) {
-        if (device.getDeviceInterface().supportsFeature(SCREEN_RECORD)) {
+    private static ITestRunListener getScreenTraceTestRunListener(FileManager fileManager, String pool, Device device) {
+        if (VIDEO.equals(device.getSupportedDiagnostics())) {
             return new ScreenRecorderTestRunListener(fileManager, pool, device);
         }
-        return new NoOpTestRunListener();
+        return new ScreenCaptureTestRunListener(fileManager, pool, device);
     }
 }

@@ -5,6 +5,7 @@ public enum FileType {
     RAW_LOG("logcat", "log"),
     JSON_LOG("logcat_json", "json"),
     SCREENSHOT ("screenshot", "png"),
+    ANIMATION ("animation", "gif"),
     SCREENRECORD ("screenrecord", "mp4"),
     ;
 

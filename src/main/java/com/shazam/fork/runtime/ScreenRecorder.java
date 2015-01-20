@@ -39,10 +39,9 @@ class ScreenRecorder implements Runnable {
     private final IDevice deviceInterface;
     private final IShellOutputReceiver outputReceiver;
 
-    public ScreenRecorder(String remoteDirectory, TestIdentifier test, File localVideoFile, IDevice deviceInterface,
+    public ScreenRecorder(TestIdentifier test, File localVideoFile, IDevice deviceInterface,
                           IShellOutputReceiver outputReceiver) {
-
-        remoteFilePath = remoteVideoForTest(remoteDirectory, test);
+        remoteFilePath = remoteVideoForTest(test);
         this.localVideoFile = localVideoFile;
         this.deviceInterface = deviceInterface;
         this.outputReceiver = outputReceiver;

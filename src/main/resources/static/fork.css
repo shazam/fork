@@ -7,11 +7,11 @@ th.message {
 	width: 50%;
 }
 
-video {
+.diagnostic {
     margin:0 auto 50px;
     display: block;
 }
 
-.video.pass {
+.diagnostic.pass {
     display: none;
 }
