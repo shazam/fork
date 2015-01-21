@@ -15,3 +15,11 @@ th.message {
 .diagnostic.pass {
     display: none;
 }
+
+pre.test.pass {
+    display: none;
+}
+
+pre.test.fail {
+    background: #FFDDDC;
+}
