@@ -37,21 +37,21 @@ class ScreenRecorder implements Runnable {
     private final String remoteFilePath;
     private final File localVideoFile;
     private final IDevice deviceInterface;
-    private final IShellOutputReceiver outputReceiver;
+    private final ScreenRecorderStopper screenRecorderStopper;
 
-    public ScreenRecorder(TestIdentifier test, File localVideoFile, IDevice deviceInterface,
-                          IShellOutputReceiver outputReceiver) {
+    public ScreenRecorder(TestIdentifier test, ScreenRecorderStopper screenRecorderStopper, File localVideoFile,
+                          IDevice deviceInterface) {
         remoteFilePath = remoteVideoForTest(test);
+        this.screenRecorderStopper = screenRecorderStopper;
         this.localVideoFile = localVideoFile;
         this.deviceInterface = deviceInterface;
-        this.outputReceiver = outputReceiver;
     }
 
     @Override
     public void run() {
         try {
             startRecordingTestVideo();
-            if (!outputReceiver.isCancelled()) {
+            if (screenRecorderStopper.hasFailed()) {
                 pullTestVideo();
             }
             removeTestVideo();
@@ -60,7 +60,9 @@ class ScreenRecorder implements Runnable {
         }
     }
 
-    private void startRecordingTestVideo() throws TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException {
+    private void startRecordingTestVideo() throws TimeoutException, AdbCommandRejectedException, IOException,
+            ShellCommandUnresponsiveException {
+        NullOutputReceiver outputReceiver = new NullOutputReceiver();
         logger.trace("Started recording video at: {}", remoteFilePath);
         long startNanos = nanoTime();
         deviceInterface.startScreenRecorder(remoteFilePath, RECORDER_OPTIONS, outputReceiver);

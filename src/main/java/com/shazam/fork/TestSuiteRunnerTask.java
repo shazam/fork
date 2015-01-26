@@ -102,6 +102,7 @@ class TestSuiteRunnerTask implements Runnable {
         ITestRunListener logTestRunListener = new LoggingTestRunListener(device.getSerial(), swimlaneConsoleLogger);
         ITestRunListener logCatTestRunListener = new LogCatTestRunListener(gson, fileManager, poolName, device);
         ITestRunListener screenTraceTestRunListener = getScreenTraceTestRunListener(fileManager, poolName, device);
+        ITestRunListener slowTestWarningTestRunListener = new SlowWarningTestRunListener();
 
         TestRun testRun = new TestRun(
                 configuration,
@@ -110,6 +111,7 @@ class TestSuiteRunnerTask implements Runnable {
 				xmlTestRunListener,
                 logTestRunListener,
 				logCatTestRunListener,
+                slowTestWarningTestRunListener,
                 screenTraceTestRunListener);
 		testRun.execute();
 	}
