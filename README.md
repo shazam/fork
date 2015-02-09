@@ -17,7 +17,6 @@ How it works
 We introduced the notion of *pools of devices*. These are now responsible for running a test suite instead of each device running the suite separately. That has two side effects: 
 * infinite scaling: your tests can speed up by as many devices and emulators as you can dedicate to your CI box. 
 * because test suites now get scheduled to run on a pool, not all tests will run on all devices. For that reason, we also introduced a way to create a pool per device, which offers full coverage (a.k.a. Spoon-mode) but typically takes longer, so we run it on a nightly basis.
-
 Fork works out-of-the-box, without any code changes.
 
 
@@ -40,7 +39,7 @@ This is the only way that will be supported in the future. First, you need to ad
 ```
 buildscript {
     dependencies {
-        classpath 'com.shazam.fork:fork-gradle-plugin:0.10.0'
+        classpath 'com.shazam.fork:fork-gradle-plugin:0.11.0'
     }
 }
 ```
@@ -103,10 +102,12 @@ gradlew forkDebugTest -Dfork.computed.sw=phablets=0,tablets=720
 ```
 The above will run tests on 2 pools, one named "phablets" and another called "tablets". The smallest width for the first pool will be 0 and for the latter 720 dpi.
 
+Diagnostics
+-----------
+(Example output to be provided)
 
 Limitations
 -----------
- * Multi-dex test APKs are not supported yet.
  * The scheduling still works on a single build box with ADB, so there still is a limit by how many devices & emulators can be simultaneously connected to ADB. Eventually, Fork could be tweaked to talk over HTTP with other build agents, that would then be connected to devices over ADB. That model would tie in nicely with multi-agent CI systems, like Jenkins.
 
 License
