@@ -16,10 +16,16 @@ import com.shazam.fork.TestClassScanner;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuredOutput;
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
+import static com.shazam.fork.injector.TestPackagePatternInjector.testPackagePattern;
 
 public class TestClassScannerInjector {
 
     public static TestClassScanner testClassScanner() {
-        return new TestClassScanner(configuration().getInstrumentationApk(), configuredOutput());
+        return new TestClassScanner(
+                configuration().getInstrumentationApk(),
+                configuredOutput(),
+                configuration().getTestClassPattern(),
+                testPackagePattern()
+        );
     }
 }

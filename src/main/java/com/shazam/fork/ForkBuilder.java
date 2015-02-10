@@ -9,7 +9,12 @@
  */
 package com.shazam.fork;
 
+import com.shazam.fork.model.InstrumentationInfo;
+
 import java.io.File;
+import java.util.regex.Pattern;
+
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -21,7 +26,9 @@ public class ForkBuilder {
     private File androidSdk;
     private File applicationApk;
     private File instrumentationApk;
-    private File output;
+    private File output = cleanFile("fork-output");
+    private Pattern testClassPattern = Pattern.compile("^((?!Abstract).)*Test$");
+    private Pattern testPackagePattern;
     private int idleTimeout = 2 * 60 * 1000; // Empirical default.
     private int testTimeout = 4 * 60 * 1000; // Empirical default.
     private int testIntervalTimeout = 30 * 1000; // Empirical default.
@@ -65,8 +72,30 @@ public class ForkBuilder {
      * @param output the output directory
      * @return this builder
      */
-    public ForkBuilder withOutputDirectory(File output) {
-        this.output = output;
+    public ForkBuilder withOutputDirectory(@Nullable File output) {
+        if (output != null) {
+            this.output = output;
+        }
+        return this;
+    }
+
+    /**
+     * Regex {@link Pattern} determining the class names to consider when finding tests to run.
+     */
+    public ForkBuilder withTestClassPattern(@Nullable Pattern testClassPattern) {
+        if (testClassPattern != null) {
+            this.testClassPattern = testClassPattern;
+        }
+        return this;
+    }
+
+    /**
+     * Regex {@link Pattern} determining the packages to consider when finding tests to run.
+     */
+    public ForkBuilder withTestPackagePattern(@Nullable Pattern testPackagePattern) {
+        if (testPackagePattern != null) {
+            this.testPackagePattern = testPackagePattern;
+        }
         return this;
     }
 
@@ -109,16 +138,26 @@ public class ForkBuilder {
         checkArgument(instrumentationApk.exists(), "Instrumentation APK file does not exist.");
         checkNotNull(output, "Output path is required.");
 
+        InstrumentationInfo instrumentationInfo = parseFromFile(instrumentationApk);
         Configuration configuration = new Configuration(
                 androidSdk,
                 applicationApk,
                 instrumentationApk,
-                parseFromFile(instrumentationApk),
+                instrumentationInfo,
                 output,
+                testClassPattern,
+                testPackagePattern,
                 idleTimeout,
                 testTimeout,
                 testIntervalTimeout);
         return new Fork(configuration);
     }
 
+    @SuppressWarnings("ReturnOfNull")
+    private static File cleanFile(String path) {
+        if (path == null) {
+            return null;
+        }
+        return new File(path);
+    }
 }

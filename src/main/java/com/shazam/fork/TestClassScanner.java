@@ -12,6 +12,7 @@
  */
 package com.shazam.fork;
 
+import com.shazam.fork.model.InstrumentationInfo;
 import com.shazam.fork.model.TestClass;
 import org.jf.dexlib.AnnotationDirectoryItem;
 import org.jf.dexlib.AnnotationItem;
@@ -35,22 +36,29 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copyLarge;
 
 public class TestClassScanner {
-    private static final Pattern TEST_CLASS_PATTERN = Pattern.compile("^((?!Abstract).)*Test;$");
+
     private static final String TEST = "test";
     public static final String CLASSES_PREFIX = "classes";
     public static final String DEX_EXTENSION = ".dex";
     private final File instrumentationApkFile;
     private File outputFolder;
+    private final Pattern testClassPattern;
+    private final Pattern testPackagePattern;
 
-	public TestClassScanner(File instrumentationApkFile, File outputFolder) {
-		this.instrumentationApkFile = instrumentationApkFile;
+    public TestClassScanner(File instrumentationApkFile,
+                            File outputFolder,
+                            Pattern testClassPattern,
+                            Pattern testPackagePattern) {
+        this.instrumentationApkFile = instrumentationApkFile;
         this.outputFolder = outputFolder;
-	}
+        this.testClassPattern = testClassPattern;
+        this.testPackagePattern = testPackagePattern;
+    }
 
-	public List<TestClass> scanForTestClasses() {
-		getDexClassesFromApk(instrumentationApkFile, outputFolder);
-		return getTestClassesFromDexFile(outputFolder);
-	}
+    public List<TestClass> scanForTestClasses() {
+        getDexClassesFromApk(instrumentationApkFile, outputFolder);
+        return getTestClassesFromDexFile(outputFolder);
+    }
 
     private static void getDexClassesFromApk(File apkFile, File outputFolder) {
         ZipFile zip = null;
@@ -83,7 +91,7 @@ public class TestClassScanner {
         }
     }
 
-    private static List<TestClass> getTestClassesFromDexFile(File dexFilesFolder) {
+    private List<TestClass> getTestClassesFromDexFile(File dexFilesFolder) {
         try {
             File[] dexFiles = dexFilesFolder.listFiles(new FilenameFilter() {
                 @Override
@@ -97,7 +105,9 @@ public class TestClassScanner {
                 List<ClassDefItem> items = dexFile.ClassDefsSection.getItems();
                 for (ClassDefItem classDefItem : items) {
                     final String typeDescriptor = classDefItem.getClassType().getTypeDescriptor();
-                    if (TEST_CLASS_PATTERN.matcher(typeDescriptor).matches()) {
+                    String className = DexUtils.getClassName(typeDescriptor);
+                    String packageName = DexUtils.getPackageName(typeDescriptor);
+                    if (testClassPattern.matcher(className).matches() && testPackagePattern.matcher(packageName).matches()) {
                         TestClass testClass = getTestClass(typeDescriptor);
                         testClasses.add(testClass);
                         try {
