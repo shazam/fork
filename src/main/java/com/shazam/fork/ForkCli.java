@@ -18,14 +18,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.regex.Pattern;
 
 import static com.shazam.fork.ForkBuilder.aFork;
 
 public class ForkCli {
+
     private static final Logger logger = LoggerFactory.getLogger(ForkCli.class);
-    private static final String DEFAULT_OUTPUT_DIRECTORY = "fork-output";
 
     public static class CommandLineArgs {
+
         @Parameter(names = { "--sdk" }, description = "Path to Android SDK")
         public File sdk = cleanFile(System.getenv("ANDROID_HOME"));
 
@@ -38,7 +40,14 @@ public class ForkCli {
         public File testApk;
 
         @Parameter(names = { "--output" }, description = "Output path", converter = FileConverter.class)
-        public File output = cleanFile(DEFAULT_OUTPUT_DIRECTORY);
+        public File output;
+
+        @Parameter(names = { "--testClassPattern" }, description = "Regex determining class names to consider when finding tests to run", converter = PatternConverter.class)
+        public Pattern testClassPattern;
+
+        @Parameter(names = { "--testPackagePattern" }, description = "Regex determining packages to consider when finding tests to run. " +
+                "Defaults to the instrumentation package.", converter = PatternConverter.class)
+        public Pattern testPackagePattern;
 
         @Parameter(names = { "--fail-on-failure" }, description = "Non-zero exit code on failure")
         public boolean failOnFailure;
@@ -53,6 +62,14 @@ public class ForkCli {
         @Override
         public File convert(String s) {
             return cleanFile(s);
+        }
+    }
+
+    public static class PatternConverter implements IStringConverter<Pattern> {
+
+        @Override
+        public Pattern convert(String string) {
+            return Pattern.compile(string);
         }
     }
 
@@ -87,6 +104,8 @@ public class ForkCli {
                 .withInstrumentationApk(parsedArgs.testApk)
                 .withOutputDirectory(parsedArgs.output)
                 .withAndroidSdk(parsedArgs.sdk)
+                .withTestClassPattern(parsedArgs.testClassPattern)
+                .withTestPackagePattern(parsedArgs.testPackagePattern)
                 .build();
 
         if (!fork.run() && parsedArgs.failOnFailure) {

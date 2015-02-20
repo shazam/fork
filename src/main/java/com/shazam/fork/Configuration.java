@@ -15,6 +15,7 @@ package com.shazam.fork;
 import com.shazam.fork.model.InstrumentationInfo;
 
 import java.io.File;
+import java.util.regex.Pattern;
 
 public class Configuration {
     private final File androidSdk;
@@ -22,17 +23,22 @@ public class Configuration {
     private final File instrumentationApk;
     private final InstrumentationInfo instrumentationInfo;
     private final File output;
+    private final Pattern testClassPattern;
+    private final Pattern testPackagePattern;
     private final int idleTimeout;
     private final int testTimeout;
     private final int testIntervalTimeout;
 
-    Configuration(File androidSdk, File applicationApk, File instrumentationApk, InstrumentationInfo instrumentationInfo,
-                  File output, int idleTimeout, int testTimeout, int testIntervalTimeout) {
+    Configuration(File androidSdk, File applicationApk, File instrumentationApk,
+                  InstrumentationInfo instrumentationInfo, File output, Pattern testClassPattern,
+                  Pattern testPackagePattern, int idleTimeout, int testTimeout, int testIntervalTimeout) {
         this.androidSdk = androidSdk;
         this.applicationApk = applicationApk;
         this.instrumentationApk = instrumentationApk;
         this.instrumentationInfo = instrumentationInfo;
         this.output = output;
+        this.testClassPattern = testClassPattern;
+        this.testPackagePattern = testPackagePattern;
         this.idleTimeout = idleTimeout;
         this.testTimeout = testTimeout;
         this.testIntervalTimeout = testIntervalTimeout;
@@ -56,6 +62,14 @@ public class Configuration {
 
     public File getOutput() {
         return output;
+    }
+
+    public Pattern getTestClassPattern() {
+        return testClassPattern;
+    }
+
+    public Pattern getTestPackagePattern() {
+        return testPackagePattern;
     }
 
     public int getIdleTimeout() {
