@@ -12,8 +12,7 @@
  */
 package com.shazam.fork;
 
-import com.android.ddmlib.testrunner.ITestRunListener;
-import com.android.ddmlib.testrunner.RemoteAndroidTestRunner;
+import com.android.ddmlib.testrunner.*;
 import com.shazam.fork.model.TestClass;
 import com.shazam.fork.model.TestRunParameters;
 import com.shazam.fork.runtime.TestRunActivityWatchdog;
@@ -25,31 +24,37 @@ import static java.lang.String.format;
 
 class TestRun {
     private final Configuration configuration;
-	private final String poolName;
+    private final RuntimeConfiguration runtimeConfiguration;
+    private final String poolName;
 	private final TestRunParameters testRunParameters;
 	private final ITestRunListener[] testRunListeners;
 
-    public TestRun(Configuration configuration, String poolName, TestRunParameters testRunParameters,
-                   ITestRunListener... testRunListeners) {
+    public TestRun(Configuration configuration, RuntimeConfiguration runtimeConfiguration, String poolName,
+                   TestRunParameters testRunParameters, ITestRunListener... testRunListeners) {
         this.configuration = configuration;
+        this.runtimeConfiguration = runtimeConfiguration;
         this.poolName = poolName;
 		this.testRunParameters = testRunParameters;
 		this.testRunListeners = testRunListeners;
 	}
 
 	public void execute() {
-		final RemoteAndroidTestRunner runner = new RemoteAndroidTestRunner(
+		RemoteAndroidTestRunner runner = new RemoteAndroidTestRunner(
 				testRunParameters.getTestPackage(),
 				testRunParameters.getTestRunner(),
 				testRunParameters.getDeviceInterface());
-		final TestClass test = testRunParameters.getTest();
-		final String testClassName = test.getClassName();
+		TestClass test = testRunParameters.getTest();
+		String testClassName = test.getClassName();
 		TestRunActivityWatchdog watchdog = new TestRunActivityWatchdog(configuration, runner, test, poolName,
                 testRunListeners, testRunParameters.getDeviceInterface().getSerialNumber());
 		ArrayList<ITestRunListener> mutableListeners = new ArrayList<>(Arrays.asList(testRunListeners));
 		mutableListeners.add(0, watchdog);
 		ITestRunListener[] dogInfestedListeners = mutableListeners.toArray(new ITestRunListener[mutableListeners.size()]);
 		try {
+            IRemoteAndroidTestRunner.TestSize testSize = runtimeConfiguration.getTestSize();
+            if (testSize != null) {
+                runner.setTestSize(testSize);
+            }
 			runner.setRunName(poolName);
 			runner.setClassName(testClassName);
 			runner.run(dogInfestedListeners);

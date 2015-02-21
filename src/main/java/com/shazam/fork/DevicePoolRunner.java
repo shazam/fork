@@ -15,14 +15,12 @@ package com.shazam.fork;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.gson.Gson;
 import com.shazam.fork.io.FileManager;
-import com.shazam.fork.model.Device;
-import com.shazam.fork.model.DevicePool;
-import com.shazam.fork.model.TestClass;
-import com.shazam.fork.model.TestMethod;
+import com.shazam.fork.model.*;
 import com.shazam.fork.runtime.ForkXmlTestRunListener;
 import com.shazam.fork.runtime.SwimlaneConsoleLogger;
 import com.shazam.fork.system.Installer;
 import com.shazam.fork.system.NoDevicesForPoolException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,14 +38,16 @@ public class DevicePoolRunner {
 	public static final String DROPPED_BY = "DroppedBy-";
 
     private final Configuration configuration;
+    private final RuntimeConfiguration runtimeConfiguration;
     private final Gson gson;
     private final Installer installer;
     private final SwimlaneConsoleLogger swimlaneConsoleLogger;
     private final FileManager fileManager;
 
-    public DevicePoolRunner(Configuration configuration, Gson gson, Installer installer, FileManager fileManager,
-                            SwimlaneConsoleLogger swimlaneConsoleLogger) {
+    public DevicePoolRunner(Configuration configuration, RuntimeConfiguration runtimeConfiguration, Gson gson,
+                            Installer installer, FileManager fileManager, SwimlaneConsoleLogger swimlaneConsoleLogger) {
         this.configuration = configuration;
+        this.runtimeConfiguration = runtimeConfiguration;
         this.gson = gson;
         this.fileManager = fileManager;
         this.installer = installer;
@@ -67,6 +67,7 @@ public class DevicePoolRunner {
 			for (Device device : devicePool.getDevices()) {
 				concurrentDeviceExecutor.execute(new TestSuiteRunnerTask(
                         configuration,
+                        runtimeConfiguration,
                         gson,
                         installer,
                         fileManager,

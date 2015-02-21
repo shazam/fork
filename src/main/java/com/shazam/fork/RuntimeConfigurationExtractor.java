@@ -1,14 +1,17 @@
 package com.shazam.fork;
 
+import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.shazam.fork.pooling.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.*;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
 
 import static com.google.common.collect.Collections2.filter;
 import static com.google.common.collect.Collections2.transform;
@@ -129,6 +132,14 @@ public class RuntimeConfigurationExtractor {
         documentRuntimeParameter(PARAMETER_REPORT_SUBTITLE, subtitle,
                 "Use -D{}=Subitle to specify a subtitle for the generated report");
         return subtitle;
+    }
+
+    @Nullable
+    public static IRemoteAndroidTestRunner.TestSize extractTestSize() {
+        String testSizeParam = valueFrom(PARAMETER_TEST_SIZE);
+        documentRuntimeParameter(PARAMETER_TEST_SIZE, testSizeParam,
+                "Use -D{}=(small|medium|large) to run test methods with the corresponding size annotation");
+        return IRemoteAndroidTestRunner.TestSize.getTestSize(testSizeParam);
     }
 
     private static void documentComputedPoolParameters(Collection<PoolingStrategy> poolingStrategies,

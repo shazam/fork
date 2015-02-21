@@ -29,6 +29,7 @@ public class RuntimeConfigurationInjector {
             .withExcludedSerials(extractExcludedSerials())
             .withTitle(extractTitle())
             .withSubtitle(extractSubtitle())
+            .withTestSize(extractTestSize())
             .build();
 
     public static RuntimeConfiguration runtimeConfiguration() {

@@ -1,5 +1,6 @@
 package com.shazam.fork;
 
+import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
 import com.shazam.fork.pooling.ComputedPoolsSelector;
 import com.shazam.fork.pooling.SerialBasedPools;
 
@@ -18,6 +19,7 @@ public class RuntimeConfiguration {
     private final Collection<String> excludedSerials;
     private final String title;
     private final String subtitle;
+    private final IRemoteAndroidTestRunner.TestSize testSize;
 
     private RuntimeConfiguration(Builder builder) {
         this.filterPattern = builder.filterPattern;
@@ -28,6 +30,7 @@ public class RuntimeConfiguration {
         this.createPoolForEachDevice = builder.createPoolForEachDevice;
         this.title = builder.title;
         this.subtitle = builder.subtitle;
+        this.testSize = builder.testSize;
     }
 
     public static class Builder {
@@ -39,6 +42,7 @@ public class RuntimeConfiguration {
         private boolean createPoolForEachDevice;
         private String title;
         private String subtitle;
+        private IRemoteAndroidTestRunner.TestSize testSize;
 
         public static Builder aRuntimeConfiguration() {
             return new Builder();
@@ -84,6 +88,11 @@ public class RuntimeConfiguration {
             return this;
         }
 
+        public Builder withTestSize(IRemoteAndroidTestRunner.TestSize testSize) {
+            this.testSize = testSize;
+            return this;
+        }
+
         public RuntimeConfiguration build() {
             return new RuntimeConfiguration(this);
         }
@@ -119,5 +128,9 @@ public class RuntimeConfiguration {
 
     public String getSubtitle() {
         return subtitle;
+    }
+
+    public IRemoteAndroidTestRunner.TestSize getTestSize() {
+        return testSize;
     }
 }
