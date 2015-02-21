@@ -3,6 +3,14 @@ language: java
 jdk:
   - oraclejdk8
 
+after_success:
+  - build-scripts/deploy_snapshot.sh
+
+env:
+  global:
+    - secure: "IBWM76W+P/6SYdclfagmghoBY0d8ej1JcczVlCPt8vIWEOKwXxpcOVwkD7Nq59nBrua8mOTXY9puTM9ZXHWxpUpVAjWwGmlUGpFExnXd6mhvEilCU13kXovx+rRtLcpampysqgWjikFw6jICylKGkJkCpBmqo31oikptyd7uKOI="
+    - secure: "SOZay3H1w7nXrfBgy5VkjbsQtr3xGRr+9ahKSujYZqy6m5McwswL2jgJz+y6znPnX/2uB/F9dCGp67R1Hymz7150V502uHc7ytOhCQA4lTb5eYhZKjPkyuTdBuwynUquez3qsLrwLV7ss5daSNkSmTubkeVDB2JD5ctW23UweD4="
+
 sudo: false
 
 cache:
