@@ -35,6 +35,7 @@ class TestSuiteRunnerTask implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(TestSuiteRunnerTask.class);
 
     private final Configuration configuration;
+    private final RuntimeConfiguration runtimeConfiguration;
     private final Gson gson;
     private final Installer installer;
     private final String poolName;
@@ -45,6 +46,7 @@ class TestSuiteRunnerTask implements Runnable {
     private final FileManager fileManager;
 
     public TestSuiteRunnerTask(Configuration configuration,
+                               RuntimeConfiguration runtimeConfiguration,
                                Gson gson,
                                Installer installer,
                                FileManager fileManager,
@@ -54,6 +56,7 @@ class TestSuiteRunnerTask implements Runnable {
                                CountDownLatch deviceCountDownLatch,
                                SwimlaneConsoleLogger swimlaneConsoleLogger) {
         this.configuration = configuration;
+        this.runtimeConfiguration = runtimeConfiguration;
         this.gson = gson;
         this.fileManager = fileManager;
         this.installer = installer;
@@ -106,6 +109,7 @@ class TestSuiteRunnerTask implements Runnable {
 
         TestRun testRun = new TestRun(
                 configuration,
+                runtimeConfiguration,
                 poolName,
 				testRunParameters,
 				xmlTestRunListener,
