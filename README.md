@@ -88,7 +88,7 @@ One of:
  * **fork.eachdevice=(true|false)** - to create a pool per device (a.k.a. Spoon mode). This is the default behaviour.
 
 Any of:
-* **android.test.classes=REGEX** - to specify a pattern for the classes/packages to run
+* **android.test.classes=REGEX** - comma separated regexes that specify a pattern for the classes/packages to run
 * **fork.excluded.serial=(Serial','?)** - to exclude specific devices from running any tests
 * **fork.report.title=Title** - to specify a title for the generated report
 * **fork.report.subtitle=Subitle** - to specify a subtitle for the generated report
