@@ -92,6 +92,7 @@ Any of:
 * **fork.excluded.serial=(Serial','?)** - to exclude specific devices from running any tests
 * **fork.report.title=Title** - to specify a title for the generated report
 * **fork.report.subtitle=Subitle** - to specify a subtitle for the generated report
+* **fork.test.size=(small|medium|large)** - to run test methods with the corresponding size annotation
 
 
 Examples
