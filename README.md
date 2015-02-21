@@ -124,3 +124,5 @@ License
 
 
  [1]: https://github.com/square/spoon
+
+[![Build Status](https://travis-ci.org/shazam/fork.svg?branch=master)](https://travis-ci.org/shazam/fork)
