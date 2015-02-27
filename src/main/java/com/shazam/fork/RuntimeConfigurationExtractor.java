@@ -139,7 +139,7 @@ public class RuntimeConfigurationExtractor {
         String testSizeParam = valueFrom(PARAMETER_TEST_SIZE);
         documentRuntimeParameter(PARAMETER_TEST_SIZE, testSizeParam,
                 "Use -D{}=(small|medium|large) to run test methods with the corresponding size annotation");
-        return IRemoteAndroidTestRunner.TestSize.getTestSize(testSizeParam);
+        return testSizeParam != null ? IRemoteAndroidTestRunner.TestSize.getTestSize(testSizeParam) : null;
     }
 
     private static void documentComputedPoolParameters(Collection<PoolingStrategy> poolingStrategies,
