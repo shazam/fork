@@ -64,11 +64,13 @@ Will potentially be unsupported, as it's the least developer friendly. Check out
 > gradlew run
 
 With the below options. The APK and test APK parameters are mandatory:
-    --apk               Application
-    --test-apk          Test application APK
-    --output            Output path
-    --fail-on-failure   Non-zero exit code on failure
-    --sdk               Path to Android SDK
+    --apk                   Path to application. This parameter is required.
+    --test-apk              Path to test application. This parameter is required.
+    --test-package-pattern  Regex determining packages to consider when finding tests to run. Defaults to instrumentation package.
+    --test-class-pattern    Regex determining class names to consider when finding tests to run. Defaults to ^((?!Abstract).)*Test$
+    --output                Output path. Defaults to "fork-output"
+    --fail-on-failure       Non-zero exit code on failure. Defaults to false.
+    --sdk                   Path to Android SDK. Defaults to the ANDROID_HOME environment variable.
 ```
 
 

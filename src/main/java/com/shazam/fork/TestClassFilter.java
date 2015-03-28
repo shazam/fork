@@ -43,7 +43,7 @@ public class TestClassFilter {
             String filterInRegex = filterIn.contains(".*") ? filterIn : ".*" + filterIn + ".*";
             boolean matched = false;
             for (TestClass testClass : testClassesFromDexFile) {
-                String testClassName = testClass.getClassName();
+                String testClassName = testClass.getName();
                 if (testClassName.equals(filterIn) || testClassName.matches(filterInRegex)) {
                     filteredIn.add(testClass);
                     matched = true;

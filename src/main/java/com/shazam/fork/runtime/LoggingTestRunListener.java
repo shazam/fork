@@ -64,13 +64,13 @@ public class LoggingTestRunListener implements ITestRunListener {
 
     @Override
     public void testAssumptionFailure(TestIdentifier test, String trace) {
-        logger.debug("test=%s", test);
-        logger.debug("assumption failure %s", trace);
+        logger.debug("test={}", test);
+        logger.debug("assumption failure {}", trace);
     }
 
     @Override
     public void testIgnored(TestIdentifier test) {
-        logger.debug("ignored test %s", test);
+        logger.debug("ignored test {}", test);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class Summary {
 	private final List<PoolSummary> poolSummaries;
 	private final String title;
 	private final String subtitle;
-	private final ArrayList<String> suppressedTests;
+	private final ArrayList<String> ignoredTests;
 
 	public List<PoolSummary> getPoolSummaries() {
 		return poolSummaries;
@@ -37,13 +37,13 @@ public class Summary {
 		return subtitle;
 	}
 
-	public ArrayList<String> getSuppressedTests() {
-		return suppressedTests;
+	public ArrayList<String> getIgnoredTests() {
+		return ignoredTests;
 	}
 
 	public static class Builder {
 		private final List<PoolSummary> poolSummaries = new ArrayList<>();
-        private final ArrayList<String> suppressedTests = new ArrayList<>();
+        private final ArrayList<String> ignoredTests = new ArrayList<>();
         private String title = "Report Title";
         private String subtitle = "Report Subtitle";
 
@@ -66,8 +66,8 @@ public class Summary {
 			return this;
 		}
 
-		public Builder addSuppressedTest(String s) {
-			this.suppressedTests.add(s);
+		public Builder addIgnoredTest(String s) {
+			this.ignoredTests.add(s);
 			return this;
 		}
 
@@ -85,6 +85,6 @@ public class Summary {
 		poolSummaries = builder.poolSummaries;
 		title = builder.title;
 		subtitle = builder.subtitle;
-		suppressedTests = builder.suppressedTests;
+		ignoredTests = builder.ignoredTests;
 	}
 }

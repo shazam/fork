@@ -59,23 +59,26 @@ public class Summarizer {
 			compileResultsForPool(devicePool, poolSummaryBuilder);
 			summaryBuilder.addPoolSummary(poolSummaryBuilder.build());
 		}
-		for (TestClass testClass : testClasses) {
-			StringBuilder methods = new StringBuilder();
-			for (TestMethod testMethod : testClass.getSuppressedMethods()) {
-				methods.append(" ").append(testMethod.getName());
-			}
-			if (methods.length() > 0) {
-				summaryBuilder.addSuppressedTest(testClass.getClassName() + ":" + methods);
-			}
-		}
-
+        addIgnoredTests(summaryBuilder);
         summaryBuilder.withTitle(runtimeConfiguration.getTitle());
         summaryBuilder.withSubtitle(runtimeConfiguration.getSubtitle());
 
 		return summaryBuilder.build();
 	}
 
-	private void compileResultsForPool(DevicePool devicePool, PoolSummary.Builder poolSummaryBuilder) {
+    private void addIgnoredTests(Summary.Builder summaryBuilder) {
+        for (TestClass testClass : testClasses) {
+            StringBuilder methods = new StringBuilder();
+            for (TestMethod testMethod : testClass.getIgnoredMethods()) {
+                methods.append(" ").append(testMethod.getName());
+            }
+            if (methods.length() > 0) {
+                summaryBuilder.addIgnoredTest(testClass.getName() + ":" + methods);
+            }
+        }
+    }
+
+    private void compileResultsForPool(DevicePool devicePool, PoolSummary.Builder poolSummaryBuilder) {
 		for (Device device: devicePool.getDevices()) {
 			compileResultsForDevice(devicePool, poolSummaryBuilder, device);
 		}

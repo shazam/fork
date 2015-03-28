@@ -22,6 +22,6 @@ public class HtmlSummary {
 	public Collection<HtmlPoolSummary> pools;
 	public String title;
 	public String subtitle;
-	public ArrayList<String> suppressedTests;
+	public ArrayList<String> ignoredTests;
     public String overallStatus;
 }

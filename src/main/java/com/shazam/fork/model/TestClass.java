@@ -13,52 +13,73 @@
 package com.shazam.fork.model;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+
+import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
+import static org.apache.commons.lang3.builder.ToStringStyle.DEFAULT_STYLE;
 
 /**
  * Holds test class and method information
  */
 public class TestClass {
-    private final String testClassName;
-	private final List<TestMethod> methods = new ArrayList<>();
+    private final String name;
+	private final Collection<TestMethod> methods;
 
-	public TestClass(String testClassName) {
-		this.testClassName = testClassName;
+    private TestClass(Builder builder) {
+        this.name = builder.name;
+        this.methods = builder.methods;
+    }
+
+    public String getName() {
+		return name;
 	}
 
-    public String getClassName() {
-		return testClassName;
-	}
-	public void addMethod(String methodString) {
-		this.methods.add(new TestMethod(methodString));
-	}
+    @Override
+    public String toString() {
+        return reflectionToString(this, DEFAULT_STYLE);
+    }
 
-    public List<TestMethod> getUnsuppressedMethods() {
-		List<TestMethod> unsuppressedMethods = new ArrayList<>();
+    public Collection<TestMethod> getUnignoredMethods() {
+        Collection<TestMethod> unignoredMethods = new ArrayList<>();
 		for (TestMethod method : methods) {
-			if (!method.isSuppressed()) {
-				unsuppressedMethods.add(method);
+			if (!method.isIgnored()) {
+				unignoredMethods.add(method);
 			}
 		}
-		return unsuppressedMethods;
+		return unignoredMethods;
 	}
 
-	public List<TestMethod> getSuppressedMethods() {
-		List<TestMethod> suppressedMethods = new ArrayList<>();
+	public Collection<TestMethod> getIgnoredMethods() {
+        Collection<TestMethod> ignoredMethods = new ArrayList<>();
 		for (TestMethod method : methods) {
-			if (method.isSuppressed()) {
-				suppressedMethods.add(method);
+			if (method.isIgnored()) {
+				ignoredMethods.add(method);
 			}
 		}
-		return suppressedMethods;
+		return ignoredMethods;
 	}
 
-	public TestMethod getMethod(String methodName) {
-		for (TestMethod method : methods) {
-			if (method.getName().equals(methodName)) {
-				return method;
-			}
-		}
-		return null;
-	}
+    public static class Builder {
+        private String name;
+        private Collection<TestMethod> methods = new ArrayList<>();
+
+        public static Builder testClass() {
+            return new Builder();
+        }
+
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder withMethods(Collection<TestMethod> testMethods) {
+            methods.clear();
+            methods.addAll(testMethods);
+            return this;
+        }
+
+        public TestClass build() {
+            return new TestClass(this);
+        }
+    }
 }

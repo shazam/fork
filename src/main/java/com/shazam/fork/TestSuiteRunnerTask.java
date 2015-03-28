@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 
 import static com.shazam.fork.io.RemoteFileManager.createRemoteDirectory;
@@ -40,7 +41,7 @@ class TestSuiteRunnerTask implements Runnable {
     private final Installer installer;
     private final String poolName;
     private final Device device;
-    private final TestClassProvider testClassProvider;
+    private final Queue<TestClass> testClassQueue;
     private final CountDownLatch deviceCountDownLatch;
     private final SwimlaneConsoleLogger swimlaneConsoleLogger;
     private final FileManager fileManager;
@@ -52,7 +53,7 @@ class TestSuiteRunnerTask implements Runnable {
                                FileManager fileManager,
                                String poolName,
                                Device device,
-                               TestClassProvider testClassProvider,
+                               Queue<TestClass> testClassQueue,
                                CountDownLatch deviceCountDownLatch,
                                SwimlaneConsoleLogger swimlaneConsoleLogger) {
         this.configuration = configuration;
@@ -62,7 +63,7 @@ class TestSuiteRunnerTask implements Runnable {
         this.installer = installer;
 		this.poolName = poolName;
 		this.device = device;
-		this.testClassProvider = testClassProvider;
+        this.testClassQueue = testClassQueue;
         this.deviceCountDownLatch = deviceCountDownLatch;
 		this.swimlaneConsoleLogger = swimlaneConsoleLogger;
 	}
@@ -72,14 +73,14 @@ class TestSuiteRunnerTask implements Runnable {
         String serial = device.getSerial();
         IDevice deviceInterface = device.getDeviceInterface();
         try {
-            swimlaneConsoleLogger.setCount(serial, poolName, testClassProvider.size());
+            swimlaneConsoleLogger.setCount(serial, poolName, testClassQueue.size());
             installer.prepareInstallation(deviceInterface);
             // For when previous run crashed/disconnected and left files behind
             removeRemoteDirectory(deviceInterface);
             createRemoteDirectory(deviceInterface);
 
             TestClass testClass;
-            while ((testClass = testClassProvider.getNextTest()) != null) {
+            while ((testClass = testClassQueue.poll()) != null) {
 				runIndividualTestClass(testClass);
 			}
 		} catch (Exception e) {

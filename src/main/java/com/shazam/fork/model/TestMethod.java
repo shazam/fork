@@ -12,24 +12,51 @@
  */
 package com.shazam.fork.model;
 
+import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
+import static org.apache.commons.lang3.builder.ToStringStyle.SIMPLE_STYLE;
+
 public class TestMethod {
-
     private final String name;
-    private boolean suppressed;
+    private final boolean ignored;
 
-    public TestMethod(String name) {
-        this.name = name;
+    private TestMethod(Builder builder) {
+        this.name = builder.name;
+        this.ignored = builder.ignored;
     }
 
     public String getName() {
         return name;
     }
 
-    public boolean isSuppressed() {
-        return suppressed;
+    public boolean isIgnored() {
+        return ignored;
     }
 
-    public void setSuppressed() {
-        this.suppressed = true;
+    @Override
+    public String toString() {
+        return reflectionToString(this, SIMPLE_STYLE);
+    }
+
+    public static class Builder {
+        private String name;
+        private boolean ignored = false;
+
+        public static Builder testMethod() {
+            return new Builder();
+        }
+
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder willBeIgnored() {
+            this.ignored = true;
+            return this;
+        }
+
+        public TestMethod build() {
+            return new TestMethod(this);
+        }
     }
 }
