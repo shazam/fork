@@ -14,9 +14,10 @@ package com.shazam.fork.injector;
 
 import com.shazam.fork.TestClassScanner;
 
-import static com.shazam.fork.injector.ConfigurationInjector.configuredOutput;
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
-import static com.shazam.fork.injector.TestPackagePatternInjector.testPackagePattern;
+import static com.shazam.fork.injector.ConfigurationInjector.configuredOutput;
+import static com.shazam.fork.injector.TestClassFactoryInjector.testClassFactory;
+import static com.shazam.fork.injector.TestClassMatcherInjector.testClassMatcher;
 
 public class TestClassScannerInjector {
 
@@ -24,8 +25,9 @@ public class TestClassScannerInjector {
         return new TestClassScanner(
                 configuration().getInstrumentationApk(),
                 configuredOutput(),
-                configuration().getTestClassPattern(),
-                testPackagePattern()
+                testClassMatcher(),
+                testClassFactory()
         );
     }
+
 }

@@ -15,6 +15,6 @@ public class TestPackagePatternInjector {
     }
 
     private static Pattern testPackagePattern(Configuration configuration) {
-        return Pattern.compile(configuration.getInstrumentationInfo().getApplicationPackage().replace(".", "\\.") + ".*");
+        return Pattern.compile(configuration.getInstrumentationInfo().getInstrumentationPackage().replace(".", "\\.") + ".*");
     }
 }

@@ -44,7 +44,7 @@ class TestRun {
 				testRunParameters.getTestRunner(),
 				testRunParameters.getDeviceInterface());
 		TestClass test = testRunParameters.getTest();
-		String testClassName = test.getClassName();
+		String testClassName = test.getName();
 		TestRunActivityWatchdog watchdog = new TestRunActivityWatchdog(configuration, runner, test, poolName,
                 testRunListeners, testRunParameters.getDeviceInterface().getSerialNumber());
 		ArrayList<ITestRunListener> mutableListeners = new ArrayList<>(Arrays.asList(testRunListeners));
@@ -62,7 +62,7 @@ class TestRun {
 			throw new RuntimeException(format("Error while running test class %s", test), e);
 		} finally {
 			watchdog.cancel();
-			watchdog.flagOutstandingAsErrors(format("Terminated test class early: %s suffered a catastrophy", test.getClassName()));
+			watchdog.flagOutstandingAsErrors(format("Terminated test class early: %s suffered a catastrophy", test.getName()));
 		}
 	}
 

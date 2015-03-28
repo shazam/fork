@@ -22,8 +22,7 @@ import com.shazam.fork.system.DeviceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
@@ -95,8 +94,8 @@ public class ForkRunner {
                     @Override
                     public void run() {
                         try {
-                            TestClassProvider testsProvider = new TestClassProvider(testClasses);
-                            devicePoolRunner.runTestsOnDevicePool(devicePool, testsProvider);
+                            Queue<TestClass> testQueue = new LinkedList<>(testClasses);
+                            devicePoolRunner.runTestsOnDevicePool(devicePool, testQueue);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         } finally {

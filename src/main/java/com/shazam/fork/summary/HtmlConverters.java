@@ -32,7 +32,7 @@ class HtmlConverters {
 		htmlSummary.title = summary.getTitle();
 		htmlSummary.subtitle = summary.getSubtitle();
 		htmlSummary.pools = transform(summary.getPoolSummaries(), toHtmlPoolSummary());
-		htmlSummary.suppressedTests = summary.getSuppressedTests();
+		htmlSummary.ignoredTests = summary.getIgnoredTests();
         htmlSummary.overallStatus = new OutcomeAggregator().aggregate(summary) ? "pass" : "fail";
 		return htmlSummary;
 	}

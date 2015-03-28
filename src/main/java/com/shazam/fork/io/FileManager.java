@@ -91,7 +91,7 @@ public class FileManager {
     }
 
     private String createFilenameForTestClass(TestClass testClass, FileType fileType) {
-        return testClass.getClassName() + "." + fileType.getSuffix();
+        return testClass.getName() + "." + fileType.getSuffix();
     }
 
     private String createFilenameForTest(TestIdentifier testIdentifier, FileType fileType) {

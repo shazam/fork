@@ -42,10 +42,10 @@ public class ForkCli {
         @Parameter(names = { "--output" }, description = "Output path", converter = FileConverter.class)
         public File output;
 
-        @Parameter(names = { "--testClassPattern" }, description = "Regex determining class names to consider when finding tests to run", converter = PatternConverter.class)
+        @Parameter(names = { "--test-class-pattern" }, description = "Regex determining class names to consider when finding tests to run", converter = PatternConverter.class)
         public Pattern testClassPattern;
 
-        @Parameter(names = { "--testPackagePattern" }, description = "Regex determining packages to consider when finding tests to run. " +
+        @Parameter(names = { "--test-package-pattern" }, description = "Regex determining packages to consider when finding tests to run. " +
                 "Defaults to the instrumentation package.", converter = PatternConverter.class)
         public Pattern testPackagePattern;
 

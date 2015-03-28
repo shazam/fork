@@ -55,7 +55,7 @@ public class TestRunActivityWatchdog implements ITestRunListener {
 		this.testRunListeners = testRunListeners;
 		this.device = device;
 		this.outstandingTestStarted = new HashMap<>();
-		for (TestMethod method : test.getUnsuppressedMethods()) {
+		for (TestMethod method : test.getUnignoredMethods()) {
 			outstandingTestStarted.put(method.getName(), false);
 		}
 		timer = new Timer("Watchdog for " + test, true);
@@ -76,7 +76,7 @@ public class TestRunActivityWatchdog implements ITestRunListener {
 			@Override
 			public void run() {
 				barked = true;
-                logger.warn("Cancelling {} on {} due to timeout after {}", test.getClassName(), device, reason);
+                logger.warn("Cancelling {} on {} due to timeout after {}", test.getName(), device, reason);
 				runner.cancel();
 			}
 		});
@@ -87,11 +87,11 @@ public class TestRunActivityWatchdog implements ITestRunListener {
 			@Override
 			public void run() {
 				barked = true;
-				logger.warn("Failing {}.{} on {} due to timeout after test started", test.getClassName(), method, device);
+				logger.warn("Failing {}.{} on {} due to timeout after test started", test.getName(), method, device);
 				runner.cancel();
 				// Fail cancelled test to try to capture logcat.
 				flagTestError(method, outstandingTestStarted.get(method), "Timed out: aborting " + method, testRunListeners);
-				observeTestCompleted(new TestIdentifier(test.getClassName(), method));
+				observeTestCompleted(new TestIdentifier(test.getName(), method));
 			}
 		});
 	}
@@ -150,7 +150,7 @@ public class TestRunActivityWatchdog implements ITestRunListener {
 	}
 
 	private void flagTestError(String testMethod, boolean previouslyStarted, String lastWatchdogFailure, ITestRunListener... testRunListeners) {
-		TestIdentifier identifier = new TestIdentifier(test.getClassName(), testMethod);
+		TestIdentifier identifier = new TestIdentifier(test.getName(), testMethod);
 		for (ITestRunListener testRunListener : testRunListeners) {
 			if (!previouslyStarted) {
 				testRunListener.testStarted(identifier);
@@ -183,13 +183,10 @@ public class TestRunActivityWatchdog implements ITestRunListener {
 
     @Override
     public void testAssumptionFailure(TestIdentifier test, String trace) {
-        logger.debug("test=%s", test);
-        logger.debug("assumption failure %s", trace);
     }
 
     @Override
     public void testIgnored(TestIdentifier test) {
-        logger.debug("ignored test %s", test);
     }
 
     @Override

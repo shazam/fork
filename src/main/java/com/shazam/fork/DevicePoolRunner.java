@@ -24,8 +24,7 @@ import com.shazam.fork.system.NoDevicesForPoolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
@@ -54,7 +53,7 @@ public class DevicePoolRunner {
 		this.swimlaneConsoleLogger = swimlaneConsoleLogger;
 	}
 
-	public void runTestsOnDevicePool(DevicePool devicePool, TestClassProvider testsProvider) throws NoDevicesForPoolException,
+	public void runTestsOnDevicePool(DevicePool devicePool, Queue<TestClass> testClassQueue) throws NoDevicesForPoolException,
             InterruptedException {
 		ExecutorService concurrentDeviceExecutor = null;
 		try {
@@ -73,13 +72,13 @@ public class DevicePoolRunner {
                         fileManager,
                         devicePool.getName(),
                         device,
-						testsProvider,
+						testClassQueue,
 						deviceInPoolCountDownLatch,
                         swimlaneConsoleLogger));
 			}
 			deviceInPoolCountDownLatch.await();
 		} finally {
-			failAnyDroppedClasses(devicePool, testsProvider);
+			failAnyDroppedClasses(devicePool, testClassQueue);
 			if (concurrentDeviceExecutor != null) {
 				concurrentDeviceExecutor.shutdown();
 			}
@@ -93,15 +92,16 @@ public class DevicePoolRunner {
 	 *
 	 *  In particular, not triggering the console listener will probably make the flaky report better.
 	 */
-	private void failAnyDroppedClasses(DevicePool devicePool, TestClassProvider testsProvider) {
+	private void failAnyDroppedClasses(DevicePool devicePool, Queue<TestClass> testClassQueue) {
 		HashMap<String, String> emptyHash = new HashMap<>();
-		for (TestClass nextTest; (nextTest = testsProvider.getNextTest()) != null;) {
-			String className = nextTest.getClassName();
+        TestClass nextTest;
+		while ((nextTest = testClassQueue.poll()) != null) {
+			String className = nextTest.getName();
 			String poolName = devicePool.getName();
 			ForkXmlTestRunListener xmlGenerator = getForkXmlTestRunListener(fileManager, configuration.getOutput(),
                     poolName, DROPPED_BY + poolName, nextTest);
 
-			List<TestMethod> methods = nextTest.getUnsuppressedMethods();
+			Collection<TestMethod> methods = nextTest.getUnignoredMethods();
 			xmlGenerator.testRunStarted(poolName, methods.size());
 			for (TestMethod method : methods) {
 				String methodName = method.getName();
