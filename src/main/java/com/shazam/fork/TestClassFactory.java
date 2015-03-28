@@ -55,7 +55,8 @@ public class TestClassFactory {
     }
 
     private Collection<TestMethod> extractTestMethods(AnnotationDirectoryItem annotations) {
-        Collection<AnnotationDirectoryItem.MethodAnnotation> testMethods = filter(annotations.getMethodAnnotations(), testMethodsPredicate());
+        Collection<AnnotationDirectoryItem.MethodAnnotation> testMethods = filter(
+                annotations.getMethodAnnotations(), testMethodsPredicate());
         return transform(testMethods, convertToForkTestMethod(isClassIgnored(annotations)));
     }
 
@@ -67,13 +68,7 @@ public class TestClassFactory {
                     return false;
                 }
                 AnnotationItem[] annotations = input.annotationSet.getAnnotations();
-                for (AnnotationItem annotation : annotations) {
-                    if (TEST_TYPE.equals(stringType(annotation))) {
-                        return true;
-                    }
-                }
-
-                return false;
+                return containsTestAnnotation(annotations);
             }
         };
     }
@@ -99,12 +94,7 @@ public class TestClassFactory {
                 }
 
                 AnnotationItem[] annotationItems = input.annotationSet.getAnnotations();
-                for (AnnotationItem annotation : annotationItems) {
-                    if (TEST_TYPE_IGNORE.equals(stringType(annotation))) {
-                        return true;
-                    }
-                }
-                return false;
+                return containsIgnoreAnnotation(annotationItems);
             }
         };
     }
@@ -115,6 +105,20 @@ public class TestClassFactory {
             return false;
         }
         AnnotationItem[] annotations = classAnnotations.getAnnotations();
+        return containsIgnoreAnnotation(annotations);
+    }
+
+    private boolean containsTestAnnotation(AnnotationItem[] annotations) {
+        for (AnnotationItem annotation : annotations) {
+            if (TEST_TYPE.equals(stringType(annotation))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean containsIgnoreAnnotation(AnnotationItem[] annotations) {
         for (AnnotationItem annotation : annotations) {
             if (TEST_TYPE_IGNORE.equals(stringType(annotation))) {
                 return true;
