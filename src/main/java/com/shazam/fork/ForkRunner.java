@@ -33,8 +33,7 @@ public class ForkRunner {
 
     private final RuntimeConfiguration runtimeConfiguration;
     private final PoolLoader poolLoader;
-    private final TestClassScanner testClassScanner;
-    private final TestClassFilter testClassFilter;
+    private final TestClassLoader testClassLoader;
     private final DevicePoolRunner devicePoolRunner;
     private final SwimlaneConsoleLogger swimlaneConsoleLogger;
     private final SummaryPrinter summaryPrinter;
@@ -42,16 +41,14 @@ public class ForkRunner {
 
     public ForkRunner(RuntimeConfiguration runtimeConfiguration,
                       PoolLoader poolLoader,
-                      TestClassScanner testClassScanner,
-                      TestClassFilter testClassFilter,
+                      TestClassLoader testClassLoader,
                       DevicePoolRunner devicePoolRunner,
                       SwimlaneConsoleLogger swimlaneConsoleLogger,
                       SummaryPrinter summaryPrinter,
                       FileManager fileManager) {
         this.runtimeConfiguration = runtimeConfiguration;
         this.poolLoader = poolLoader;
-        this.testClassScanner = testClassScanner;
-		this.testClassFilter = testClassFilter;
+        this.testClassLoader = testClassLoader;
         this.devicePoolRunner = devicePoolRunner;
         this.swimlaneConsoleLogger = swimlaneConsoleLogger;
         this.summaryPrinter = summaryPrinter;
@@ -67,13 +64,11 @@ public class ForkRunner {
 				return false;
 			}
 
-			List<TestClass> allTestClasses = testClassScanner.scanForTestClasses();
-            final List<TestClass> testClasses = testClassFilter.anyUserFilter(allTestClasses);
-
-			int numberOfPools = devicePools.size();
+            int numberOfPools = devicePools.size();
 			final CountDownLatch poolCountDownLatch = new CountDownLatch(numberOfPools);
             poolExecutor = namedExecutor(numberOfPools, "PoolExecutor-%d");
 
+            final List<TestClass> testClasses = testClassLoader.loadTestClasses();
 			// Only need emergency shutdown hook once tests have started.
 			ReportGeneratorHook reportGeneratorHook = new ReportGeneratorHook(runtimeConfiguration, fileManager,
                     devicePools, testClasses, summaryPrinter);

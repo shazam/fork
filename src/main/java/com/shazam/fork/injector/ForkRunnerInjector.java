@@ -24,8 +24,7 @@ import static com.shazam.fork.injector.PoolLoaderInjector.poolLoader;
 import static com.shazam.fork.injector.RuntimeConfigurationInjector.runtimeConfiguration;
 import static com.shazam.fork.injector.SummaryPrinterInjector.summaryPrinter;
 import static com.shazam.fork.injector.SwimlaneConsoleLoggerInjector.swimlaneConsoleLogger;
-import static com.shazam.fork.injector.TestClassFilterInjector.testClassFilter;
-import static com.shazam.fork.injector.TestClassScannerInjector.testClassScanner;
+import static com.shazam.fork.injector.TestClassLoaderInjector.testClassLoader;
 import static java.lang.System.nanoTime;
 
 public class ForkRunnerInjector {
@@ -38,8 +37,7 @@ public class ForkRunnerInjector {
         ForkRunner forkRunner = new ForkRunner(
                 runtimeConfiguration(),
                 poolLoader(),
-                testClassScanner(),
-                testClassFilter(),
+                testClassLoader(),
                 devicePoolRunner(),
                 swimlaneConsoleLogger(),
                 summaryPrinter(),

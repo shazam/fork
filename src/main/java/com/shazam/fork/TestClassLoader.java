@@ -7,41 +7,24 @@
  *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
+
 package com.shazam.fork;
 
 import com.shazam.fork.model.TestClass;
 
-import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Hands the next class to run to each given device.
- */
-class TestClassProvider {
-	private final List<TestClass> testClasses;
+public class TestClassLoader {
+    private final TestClassScanner scanner;
+    private final TestClassFilter filter;
 
-	public TestClassProvider(List<TestClass> testClasses) {
-		this.testClasses = new ArrayList<>(testClasses);
-	}
+    public TestClassLoader(TestClassScanner scanner, TestClassFilter filter) {
+        this.scanner = scanner;
+        this.filter = filter;
+    }
 
-	/**
-	 * The total number of test classes.
-	 *
-	 * @return the number of tests
-	 */
-	public int size() {
-		return testClasses.size();
-	}
-
-	/**
-	 * Returns the next test class available for running.
-	 *
-	 * @return the next test class instance
-	 */
-	public synchronized TestClass getNextTest() {
-		if (!testClasses.isEmpty()) {
-			return testClasses.remove(0);
-		}
-		return null;
-	}
+    public List<TestClass> loadTestClasses() {
+        List<TestClass> allTestClasses = scanner.scanForTestClasses();
+        return filter.anyUserFilter(allTestClasses);
+    }
 }

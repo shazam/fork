@@ -17,7 +17,7 @@ import com.shazam.fork.RuntimeConfiguration;
 import static com.shazam.fork.RuntimeConfiguration.Builder.aRuntimeConfiguration;
 import static com.shazam.fork.RuntimeConfigurationExtractor.*;
 import static com.shazam.fork.injector.PoolingStrategyInjector.poolingStrategies;
-import static com.shazam.injector.fork.pooling.ComputedPoolsConfigurationFactoryInjector.computedPoolsConfigurationFactory;
+import static com.shazam.fork.injector.ComputedPoolsConfigurationFactoryInjector.computedPoolsConfigurationFactory;
 
 public class RuntimeConfigurationInjector {
 
