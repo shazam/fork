@@ -22,7 +22,10 @@ public enum Diagnostics {
         if (deviceInterface == null || apiLevel == null) {
             return NONE;
         }
-        boolean supportsScreenRecord = deviceInterface.supportsFeature(SCREEN_RECORD);
+
+        boolean supportsScreenRecord =
+                deviceInterface.supportsFeature(SCREEN_RECORD) &&
+                !"Genymotion".equals(deviceInterface.getProperty("ro.product.manufacturer"));
         if (supportsScreenRecord) {
             return VIDEO;
         }
