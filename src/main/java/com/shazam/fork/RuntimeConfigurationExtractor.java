@@ -78,32 +78,14 @@ public class RuntimeConfigurationExtractor {
     }
 
     @Nullable
-    public static ComputedPoolsSelector extractComputedPoolsSelector(Collection<PoolingStrategy> poolingStrategies) {
+    public static ComputedPoolsConfiguration extractComputedPoolsConfiguration(
+            Collection<ComputedPoolingStrategy> poolingStrategies,
+            ComputedPoolsConfigurationFactory factory) {
         Properties properties = System.getProperties();
         Collection<String> keys = extractKeysWithComputedPools(properties);
 
         documentComputedPoolParameters(poolingStrategies, keys);
-        ComputedPoolsSelector selector = null;
-
-        for (String key : keys) {
-            if (selector != null) {
-                throw new RuntimeException("Only one computed pool supported at a time");
-            }
-
-            Bounds bounds = getBounds(properties, key);
-
-            for (PoolingStrategy poolingStrategy : poolingStrategies) {
-                if (key.equals(PARAMETER_POOL_COMPUTED + poolingStrategy.getBaseName())) {
-                    selector = new SmallestComputedPoolsSelector(bounds, poolingStrategy);
-                }
-            }
-
-            if (selector == null) {
-                throw new RuntimeException("Unrecognised computed pool: " + key);
-            }
-        }
-
-        return selector;
+        return factory.createConfiguration(PARAMETER_POOL_COMPUTED, keys, properties, poolingStrategies);
     }
 
     /**
@@ -142,13 +124,13 @@ public class RuntimeConfigurationExtractor {
         return testSizeParam != null ? IRemoteAndroidTestRunner.TestSize.getTestSize(testSizeParam) : null;
     }
 
-    private static void documentComputedPoolParameters(Collection<PoolingStrategy> poolingStrategies,
+    private static void documentComputedPoolParameters(Collection<ComputedPoolingStrategy> poolingStrategies,
                                                        Collection<String> keys) {
         documentRuntimeParameter(PARAMETER_POOL_COMPUTED, keys,
                 "Use -D{}STRATEGY=(PoolName=LowerBound\',\'?)* to automatically create pools based on device characteristics");
         if (keys == null || keys.isEmpty()) {
-            for (PoolingStrategy poolingStrategy : poolingStrategies) {
-                logger.warn("STRATEGY:={} - {}", poolingStrategy.getBaseName(), poolingStrategy.help());
+            for (ComputedPoolingStrategy computedPoolingStrategy : poolingStrategies) {
+                logger.warn("STRATEGY:={} - {}", computedPoolingStrategy.getBaseName(), computedPoolingStrategy.help());
             }
         }
     }
@@ -170,26 +152,6 @@ public class RuntimeConfigurationExtractor {
                 return key != null && key.startsWith(prefix);
             }
         });
-    }
-
-    private static Bounds getBounds(Properties properties, String key) {
-        String[] boundaries = ((String) properties.get(key)).split(",");
-        Bound[] boundArray = new Bound[boundaries.length];
-        for (int i = 0; i < boundaries.length; ++i) {
-            String[] bits = boundaries[i].split("=");
-            boolean isNamed = bits.length > 1;
-            String name = isNamed ? bits[0] : null;
-            int lower = Integer.parseInt(isNamed ? bits[1] : bits[0]);
-            boundArray[i] = new Bound(lower, name);
-        }
-        Arrays.sort(boundArray, new Comparator<Bound>() {
-
-            @Override
-            public int compare(Bound o1, Bound o2) {
-                return o1.getLower() - o2.getLower();
-            }
-        });
-        return new Bounds(boundArray);
     }
 
     private static String valueFrom(String propertyKey) {

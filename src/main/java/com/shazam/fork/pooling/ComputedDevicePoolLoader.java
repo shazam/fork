@@ -31,12 +31,11 @@ import static com.shazam.fork.model.DevicePool.Builder.aDevicePool;
  * <dl><dt>-Dfork.computed.sw=phone=0,tablet=720</dt><dd>named pools: phone 0-719 tablet 720-up</dd></dl>
  * <dl><dt>-Dfork.computed.api=15</dt><dd>api pools: 0-14, 15-up</dd></dl>
  */
-//FIXME: Class with no Unit Tests
 public class ComputedDevicePoolLoader implements DevicePoolLoader {
     private static final Logger logger = LoggerFactory.getLogger(ComputedDevicePoolLoader.class);
-    private final ComputedPoolsSelector computedPoolsSelector;
+    private final ComputedPoolsConfiguration computedPoolsSelector;
 
-	public ComputedDevicePoolLoader(ComputedPoolsSelector computedPoolsSelector) {
+	public ComputedDevicePoolLoader(ComputedPoolsConfiguration computedPoolsSelector) {
         this.computedPoolsSelector = computedPoolsSelector;
 	}
 

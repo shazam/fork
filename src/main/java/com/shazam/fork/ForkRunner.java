@@ -13,11 +13,11 @@
 package com.shazam.fork;
 
 import com.shazam.fork.io.FileManager;
-import com.shazam.fork.model.*;
-import com.shazam.fork.pooling.DevicePoolLoader;
+import com.shazam.fork.model.DevicePool;
+import com.shazam.fork.model.TestClass;
+import com.shazam.fork.pooling.PoolLoader;
 import com.shazam.fork.runtime.SwimlaneConsoleLogger;
 import com.shazam.fork.summary.*;
-import com.shazam.fork.system.DeviceLoader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +32,7 @@ public class ForkRunner {
     private static final Logger logger = LoggerFactory.getLogger(ForkRunner.class);
 
     private final RuntimeConfiguration runtimeConfiguration;
-    private final DeviceLoader deviceLoader;
-    private final DevicePoolLoader poolLoader;
+    private final PoolLoader poolLoader;
     private final TestClassScanner testClassScanner;
     private final TestClassFilter testClassFilter;
     private final DevicePoolRunner devicePoolRunner;
@@ -42,8 +41,7 @@ public class ForkRunner {
     private final FileManager fileManager;
 
     public ForkRunner(RuntimeConfiguration runtimeConfiguration,
-                      DeviceLoader deviceLoader,
-                      DevicePoolLoader poolLoader,
+                      PoolLoader poolLoader,
                       TestClassScanner testClassScanner,
                       TestClassFilter testClassFilter,
                       DevicePoolRunner devicePoolRunner,
@@ -51,7 +49,6 @@ public class ForkRunner {
                       SummaryPrinter summaryPrinter,
                       FileManager fileManager) {
         this.runtimeConfiguration = runtimeConfiguration;
-        this.deviceLoader = deviceLoader;
         this.poolLoader = poolLoader;
         this.testClassScanner = testClassScanner;
 		this.testClassFilter = testClassFilter;
@@ -64,14 +61,7 @@ public class ForkRunner {
 	public boolean run() {
 		ExecutorService poolExecutor = null;
 		try {
-			// Get all connected devices & pools, fail if none
-            Devices devices = deviceLoader.loadDevices();
-            if (devices.getDevices().isEmpty()) {
-                logger.error("No devices found, so marking as failure");
-                return false;
-            }
-
-			Collection<DevicePool> devicePools = poolLoader.loadPools(devices);
+			Collection<DevicePool> devicePools = poolLoader.loadPools();
 			if (devicePools.isEmpty()) {
 				logger.error("No device pools found, so marking as failure");
 				return false;

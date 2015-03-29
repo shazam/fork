@@ -20,7 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class BoundsTest {
 
-	private final PoolingStrategy dummyNameOnly = new PoolingStrategy() {
+	private final ComputedPoolingStrategy dummyNameOnly = new ComputedPoolingStrategy() {
 		@Override
 		public boolean canPool(Device device) {
 			return true;

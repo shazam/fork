@@ -15,27 +15,27 @@ package com.shazam.fork.pooling;
 import com.shazam.fork.model.Device;
 
 /**
- * Expresses pooling 'by smallest screen width' strategy.
+ * Expresses pooling by API level.
  */
-public class PoolBySmallestWidth implements PoolingStrategy {
+public class ComputedPoolingByApi implements ComputedPoolingStrategy {
 
     @Override
     public boolean canPool(Device device) {
-        return device.getGeometry() != null;
+        return true;
     }
 
     @Override
     public int getParameter(Device device) {
-        return device.getGeometry().getSwDp();
+        return Integer.parseInt(device.getApiLevel());
     }
 
     @Override
     public String getBaseName() {
-        return "sw";
+        return "api";
     }
 
     @Override
     public String help() {
-        return "by smallest width, e.g.phablet=0,tablet=720";
+        return "by api, e.g. gingerbread_and_earlier=0,honeycomb_and_later=11)";
     }
 }

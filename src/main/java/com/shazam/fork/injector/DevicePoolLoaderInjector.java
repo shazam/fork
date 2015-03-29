@@ -33,8 +33,8 @@ public class DevicePoolLoaderInjector {
             devicePoolLoaders.add(new SerialBasedDevicePoolLoader(serialBasedPools));
         }
 
-        if (runtimeConfiguration.getComputedPoolsSelector() != null) {
-            devicePoolLoaders.add(new ComputedDevicePoolLoader(runtimeConfiguration.getComputedPoolsSelector()));
+        if (runtimeConfiguration.getComputedPoolsConfiguration() != null) {
+            devicePoolLoaders.add(new ComputedDevicePoolLoader(runtimeConfiguration.getComputedPoolsConfiguration()));
         }
 
         if (runtimeConfiguration.isUsingTabletFlag()) {

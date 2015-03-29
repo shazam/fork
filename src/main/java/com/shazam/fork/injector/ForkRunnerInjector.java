@@ -18,10 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.shazam.fork.Utils.millisSinceNanoTime;
-import static com.shazam.fork.injector.DeviceLoaderInjector.deviceLoader;
-import static com.shazam.fork.injector.DevicePoolLoaderInjector.devicePoolLoader;
 import static com.shazam.fork.injector.DevicePoolRunnerInjector.devicePoolRunner;
 import static com.shazam.fork.injector.FilenameCreatorInjector.filenameCreator;
+import static com.shazam.fork.injector.PoolLoaderInjector.poolLoader;
 import static com.shazam.fork.injector.RuntimeConfigurationInjector.runtimeConfiguration;
 import static com.shazam.fork.injector.SummaryPrinterInjector.summaryPrinter;
 import static com.shazam.fork.injector.SwimlaneConsoleLoggerInjector.swimlaneConsoleLogger;
@@ -38,8 +37,7 @@ public class ForkRunnerInjector {
 
         ForkRunner forkRunner = new ForkRunner(
                 runtimeConfiguration(),
-                deviceLoader(),
-                devicePoolLoader(),
+                poolLoader(),
                 testClassScanner(),
                 testClassFilter(),
                 devicePoolRunner(),

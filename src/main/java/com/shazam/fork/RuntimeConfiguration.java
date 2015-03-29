@@ -1,8 +1,8 @@
 package com.shazam.fork;
 
 import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
-import com.shazam.fork.pooling.ComputedPoolsSelector;
 import com.shazam.fork.pooling.SerialBasedPools;
+import com.shazam.fork.pooling.ComputedPoolsConfiguration;
 
 import java.util.Collection;
 
@@ -14,7 +14,7 @@ public class RuntimeConfiguration {
     private final String filterPattern;
     private final boolean useTabletFlag;
     private final SerialBasedPools serialBasedPools;
-    private final ComputedPoolsSelector computedPoolsSelector;
+    private final ComputedPoolsConfiguration computedPoolsConfiguration;
     private final boolean createPoolForEachDevice;
     private final Collection<String> excludedSerials;
     private final String title;
@@ -25,7 +25,7 @@ public class RuntimeConfiguration {
         this.filterPattern = builder.filterPattern;
         this.useTabletFlag = builder.useTabletFlag;
         this.serialBasedPools = builder.serialBasedPools;
-        this.computedPoolsSelector = builder.computedPoolsSelector;
+        this.computedPoolsConfiguration = builder.computedPoolsConfiguration;
         this.excludedSerials = builder.excludedSerials;
         this.createPoolForEachDevice = builder.createPoolForEachDevice;
         this.title = builder.title;
@@ -37,7 +37,7 @@ public class RuntimeConfiguration {
         private String filterPattern;
         private boolean useTabletFlag;
         private SerialBasedPools serialBasedPools;
-        private ComputedPoolsSelector computedPoolsSelector;
+        private ComputedPoolsConfiguration computedPoolsConfiguration;
         private Collection<String> excludedSerials;
         private boolean createPoolForEachDevice;
         private String title;
@@ -63,8 +63,8 @@ public class RuntimeConfiguration {
             return this;
         }
 
-        public Builder withComputedPoolsSelector(ComputedPoolsSelector computedPoolsSelector) {
-            this.computedPoolsSelector = computedPoolsSelector;
+        public Builder withcomputedPoolsConfiguration(ComputedPoolsConfiguration computedPoolsSelector) {
+            this.computedPoolsConfiguration = computedPoolsSelector;
             return this;
         }
 
@@ -110,8 +110,8 @@ public class RuntimeConfiguration {
         return serialBasedPools;
     }
 
-    public ComputedPoolsSelector getComputedPoolsSelector() {
-        return computedPoolsSelector;
+    public ComputedPoolsConfiguration getComputedPoolsConfiguration() {
+        return computedPoolsConfiguration;
     }
 
     public boolean isCreatingPoolForEachDevice() {

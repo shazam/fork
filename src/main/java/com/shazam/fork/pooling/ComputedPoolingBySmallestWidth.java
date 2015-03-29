@@ -14,14 +14,28 @@ package com.shazam.fork.pooling;
 
 import com.shazam.fork.model.Device;
 
-import java.util.Collection;
-
 /**
- * Returns the name for the pool appropriate for the device
+ * Expresses pooling 'by smallest screen width' strategy.
  */
-public interface ComputedPoolsSelector {
+public class ComputedPoolingBySmallestWidth implements ComputedPoolingStrategy {
 
-	String poolForDevice(Device device);
+    @Override
+    public boolean canPool(Device device) {
+        return device.getGeometry() != null;
+    }
 
-	Collection<String> allPools();
+    @Override
+    public int getParameter(Device device) {
+        return device.getGeometry().getSwDp();
+    }
+
+    @Override
+    public String getBaseName() {
+        return "sw";
+    }
+
+    @Override
+    public String help() {
+        return "by smallest width, e.g.phablet=0,tablet=720";
+    }
 }

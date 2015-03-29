@@ -12,17 +12,18 @@
  */
 package com.shazam.fork.injector;
 
-import com.shazam.fork.pooling.PoolByApi;
-import com.shazam.fork.pooling.PoolBySmallestWidth;
-import com.shazam.fork.pooling.PoolingStrategy;
+import com.shazam.fork.pooling.ComputedPoolingByApi;
+import com.shazam.fork.pooling.ComputedPoolingBySmallestWidth;
+import com.shazam.fork.pooling.ComputedPoolingStrategy;
 
 import java.util.Collection;
 
 import static java.util.Arrays.asList;
 
 public class PoolingStrategyInjector {
-    public static Collection<PoolingStrategy> poolingStrategies() {
-        return asList(new PoolBySmallestWidth(), new PoolByApi());
+
+    public static Collection<ComputedPoolingStrategy> poolingStrategies() {
+        return asList(new ComputedPoolingBySmallestWidth(), new ComputedPoolingByApi());
 
     }
 }

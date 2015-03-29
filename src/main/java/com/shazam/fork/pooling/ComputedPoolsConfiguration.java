@@ -19,28 +19,26 @@ import java.util.Collection;
 /**
  * Return the name of the pool for the device determined by the array of bounds and the PoolingStrategy
  */
-public class SmallestComputedPoolsSelector implements ComputedPoolsSelector {
+public class ComputedPoolsConfiguration {
 
 	private final Bounds bounds;
-	private final PoolingStrategy poolingStrategy;
+	private final ComputedPoolingStrategy computedPoolingStrategy;
 
-	public SmallestComputedPoolsSelector(Bounds bounds, PoolingStrategy poolingStrategy) {
+	public ComputedPoolsConfiguration(Bounds bounds, ComputedPoolingStrategy computedPoolingStrategy) {
 		this.bounds = bounds;
-		this.poolingStrategy = poolingStrategy;
+		this.computedPoolingStrategy = computedPoolingStrategy;
 	}
 
-	@Override
 	public String poolForDevice(Device device) {
-		if (!poolingStrategy.canPool(device)) {
+		if (!computedPoolingStrategy.canPool(device)) {
 			return null;
 		}
-		int small = poolingStrategy.getParameter(device);
+		int small = computedPoolingStrategy.getParameter(device);
 		int i = bounds.findEnclosingBoundIndex(small);
-		return bounds.getName(i, poolingStrategy);
+		return bounds.getName(i, computedPoolingStrategy);
 	}
 
-	@Override
 	public Collection<String> allPools() {
-		return bounds.allNames(poolingStrategy);
+		return bounds.allNames(computedPoolingStrategy);
 	}
 }

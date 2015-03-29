@@ -28,9 +28,9 @@ public class Bounds {
         bounds = asList(boundArray);
     }
 
-    public String getName(int i, PoolingStrategy poolingStrategy) {
+    public String getName(int i, ComputedPoolingStrategy computedPoolingStrategy) {
         Bound lower = (i == 0) ? new Bound(0, null) : bounds.get(i - 1);
-        return lower.getName() + poolingStrategy.getBaseName() + lower.getLower()
+        return lower.getName() + computedPoolingStrategy.getBaseName() + lower.getLower()
                 + ((i < bounds.size()) ? "-" + (bounds.get(i).getLower() - 1) : "-up");
     }
 
@@ -42,10 +42,10 @@ public class Bounds {
         return i;
     }
 
-    public Collection<String> allNames(PoolingStrategy poolingStrategy) {
+    public Collection<String> allNames(ComputedPoolingStrategy computedPoolingStrategy) {
         List<String> list = new ArrayList<>();
         for (int i = 1; i <= bounds.size(); ++i) {
-            list.add(getName(i, poolingStrategy));
+            list.add(getName(i, computedPoolingStrategy));
         }
         return list;
     }

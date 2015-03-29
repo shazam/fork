@@ -17,7 +17,7 @@ import com.shazam.fork.model.Device;
 /**
  * How to compute a pool for a device
  */
-public interface PoolingStrategy {
+public interface ComputedPoolingStrategy {
 
 	boolean canPool(Device device);
 
