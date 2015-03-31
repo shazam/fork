@@ -12,7 +12,7 @@
  */
 package com.shazam.fork.pooling;
 
-import com.shazam.fork.model.DevicePool;
+import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.Devices;
 
 import java.util.Collection;
@@ -27,5 +27,5 @@ public interface DevicePoolLoader {
      * @param devices the devices that this pool loader can apply to
 	 * @return the pools loaded from this loader
 	 */
-	Collection<DevicePool> loadPools(Devices devices);
+	Collection<Pool> loadPools(Devices devices);
 }

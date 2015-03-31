@@ -63,7 +63,7 @@ public class RuntimeConfiguration {
             return this;
         }
 
-        public Builder withcomputedPoolsConfiguration(ComputedPoolsConfiguration computedPoolsSelector) {
+        public Builder withComputedPoolsConfiguration(ComputedPoolsConfiguration computedPoolsSelector) {
             this.computedPoolsConfiguration = computedPoolsSelector;
             return this;
         }

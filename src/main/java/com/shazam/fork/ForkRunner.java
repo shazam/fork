@@ -12,17 +12,20 @@
  */
 package com.shazam.fork;
 
-import com.shazam.fork.io.FileManager;
-import com.shazam.fork.model.DevicePool;
-import com.shazam.fork.model.TestClass;
+import com.shazam.fork.model.*;
 import com.shazam.fork.pooling.PoolLoader;
-import com.shazam.fork.runtime.SwimlaneConsoleLogger;
+import com.shazam.fork.listeners.SwimlaneConsoleLogger;
+import com.shazam.fork.runner.PoolTestRunner;
+import com.shazam.fork.runner.PoolTestRunnerFactory;
+import com.shazam.fork.suite.TestClassLoader;
 import com.shazam.fork.summary.*;
+import com.shazam.fork.system.io.FileManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
@@ -34,77 +37,66 @@ public class ForkRunner {
     private final RuntimeConfiguration runtimeConfiguration;
     private final PoolLoader poolLoader;
     private final TestClassLoader testClassLoader;
-    private final DevicePoolRunner devicePoolRunner;
     private final SwimlaneConsoleLogger swimlaneConsoleLogger;
     private final SummaryPrinter summaryPrinter;
     private final FileManager fileManager;
+    private final PoolTestRunnerFactory poolTestRunnerFactory;
 
     public ForkRunner(RuntimeConfiguration runtimeConfiguration,
                       PoolLoader poolLoader,
                       TestClassLoader testClassLoader,
-                      DevicePoolRunner devicePoolRunner,
                       SwimlaneConsoleLogger swimlaneConsoleLogger,
                       SummaryPrinter summaryPrinter,
-                      FileManager fileManager) {
+                      FileManager fileManager,
+                      PoolTestRunnerFactory poolTestRunnerFactory) {
         this.runtimeConfiguration = runtimeConfiguration;
         this.poolLoader = poolLoader;
         this.testClassLoader = testClassLoader;
-        this.devicePoolRunner = devicePoolRunner;
         this.swimlaneConsoleLogger = swimlaneConsoleLogger;
         this.summaryPrinter = summaryPrinter;
         this.fileManager = fileManager;
+        this.poolTestRunnerFactory = poolTestRunnerFactory;
     }
 
-	public boolean run() {
-		ExecutorService poolExecutor = null;
-		try {
-			Collection<DevicePool> devicePools = poolLoader.loadPools();
-			if (devicePools.isEmpty()) {
-				logger.error("No device pools found, so marking as failure");
-				return false;
-			}
+    public boolean run() {
+        ExecutorService poolExecutor = null;
+        try {
+            Collection<Pool> pools = poolLoader.loadPools();
+            if (pools.isEmpty()) {
+                logger.error("No device pools found, so marking as failure");
+                return false;
+            }
 
-            int numberOfPools = devicePools.size();
-			final CountDownLatch poolCountDownLatch = new CountDownLatch(numberOfPools);
+            int numberOfPools = pools.size();
+            CountDownLatch poolCountDownLatch = new CountDownLatch(numberOfPools);
             poolExecutor = namedExecutor(numberOfPools, "PoolExecutor-%d");
 
-            final List<TestClass> testClasses = testClassLoader.loadTestClasses();
-			// Only need emergency shutdown hook once tests have started.
-			ReportGeneratorHook reportGeneratorHook = new ReportGeneratorHook(runtimeConfiguration, fileManager,
-                    devicePools, testClasses, summaryPrinter);
-			Runtime.getRuntime().addShutdownHook(reportGeneratorHook);
+            List<TestClass> testClasses = testClassLoader.loadTestClasses();
+            // Only need emergency shutdown hook once tests have started.
+            ReportGeneratorHook reportGeneratorHook = new ReportGeneratorHook(runtimeConfiguration, fileManager,
+                    pools, testClasses, summaryPrinter);
+            Runtime.getRuntime().addShutdownHook(reportGeneratorHook);
 
-			for (final DevicePool devicePool : devicePools) {
-				poolExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Queue<TestClass> testQueue = new LinkedList<>(testClasses);
-                            devicePoolRunner.runTestsOnDevicePool(devicePool, testQueue);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        } finally {
-                            poolCountDownLatch.countDown();
-                            logger.info("Pools remaining: " + poolCountDownLatch.getCount());
-                        }
-                    }
-                });
-			}
-			poolCountDownLatch.await();
-			swimlaneConsoleLogger.complete();
+            for (Pool pool : pools) {
+                PoolTestRunner poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(pool, testClasses, poolCountDownLatch);
+                poolExecutor.execute(poolTestRunner);
+            }
+            poolCountDownLatch.await();
+            swimlaneConsoleLogger.complete();
 
-			Summary summary = reportGeneratorHook.generateReportOnlyOnce();
-			boolean overallSuccess = summary != null && new OutcomeAggregator().aggregate(summary);
-			logger.info("Overall success: " + overallSuccess);
+            Summary summary = reportGeneratorHook.generateReportOnlyOnce();
+            boolean overallSuccess = summary != null && new OutcomeAggregator().aggregate(summary);
+            logger.info("Overall success: " + overallSuccess);
+            return overallSuccess;
 
-			return overallSuccess;
-		} catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error while Fork runner was executing", e);
-			return false;
-		} finally {
-			if (poolExecutor != null) {
-				poolExecutor.shutdown();
-			}
-		}
-	}
+            return false;
+
+        } finally {
+            if (poolExecutor != null) {
+                poolExecutor.shutdown();
+            }
+        }
+    }
 }

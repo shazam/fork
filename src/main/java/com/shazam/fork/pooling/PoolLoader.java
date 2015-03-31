@@ -10,36 +10,46 @@
 
 package com.shazam.fork.pooling;
 
-import com.shazam.fork.model.DevicePool;
+import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.Devices;
-import com.shazam.fork.system.DeviceLoader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
+import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 
 public class PoolLoader {
     private static final Logger logger = LoggerFactory.getLogger(PoolLoader.class);
 
-    private DeviceLoader deviceLoader;
-    private DevicePoolLoader devicePoolLoader;
+    private final DeviceLoader deviceLoader;
+    private final DevicePoolLoader devicePoolLoader;
 
     public PoolLoader(DeviceLoader deviceLoader, DevicePoolLoader devicePoolLoader) {
         this.deviceLoader = deviceLoader;
         this.devicePoolLoader = devicePoolLoader;
     }
 
-    public Collection<DevicePool> loadPools() {
+    public Collection<Pool> loadPools() throws NoDevicesForPoolException {
         Devices devices = deviceLoader.loadDevices();
         if (devices.getDevices().isEmpty()) {
             logger.error("No devices found, returning empty pools");
             return emptyList();
         }
 
-        return devicePoolLoader.loadPools(devices);
+        Collection<Pool> pools = devicePoolLoader.loadPools(devices);
+        validatePools(pools);
+        return pools;
+    }
+
+    private void validatePools(Collection<Pool> pools) throws NoDevicesForPoolException {
+        for (Pool pool : pools) {
+            if (pool.isEmpty()) {
+                throw new NoDevicesForPoolException(format("No connected devices in pool %s", pool.getName()));
+            }
+        }
     }
 
 }

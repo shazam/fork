@@ -13,13 +13,13 @@
 package com.shazam.fork.pooling;
 
 import com.shazam.fork.model.Device;
-import com.shazam.fork.model.DevicePool;
+import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.Devices;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static com.shazam.fork.model.DevicePool.Builder.aDevicePool;
+import static com.shazam.fork.model.Pool.Builder.aDevicePool;
 import static java.util.Collections.emptyList;
 
 /**
@@ -34,16 +34,16 @@ public class EveryoneGetsAPoolLoader implements DevicePoolLoader {
     }
 
 	@Override
-	public Collection<DevicePool> loadPools(Devices devices) {
+	public Collection<Pool> loadPools(Devices devices) {
         if (!creatingPoolForEachDevice) {
             return emptyList();
         }
 
-        ArrayList<DevicePool> devicePools = new ArrayList<>();
+        ArrayList<Pool> pools = new ArrayList<>();
         for (Device device : devices.getDevices()) {
-            DevicePool pool = aDevicePool().addDevice(device).withName(device.getSerial()).build();
-            devicePools.add(pool);
+            Pool pool = aDevicePool().addDevice(device).withName(device.getSerial()).build();
+            pools.add(pool);
         }
-		return devicePools;
+		return pools;
 	}
 }

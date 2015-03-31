@@ -13,9 +13,10 @@
 package com.shazam.fork.summary;
 
 import com.google.common.base.Function;
-import com.shazam.fork.*;
-import com.shazam.fork.io.FileManager;
+import com.shazam.fork.RuntimeConfiguration;
 import com.shazam.fork.model.*;
+import com.shazam.fork.runner.PoolTestRunner;
+import com.shazam.fork.system.io.FileManager;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
@@ -31,32 +32,32 @@ import static com.shazam.fork.summary.PoolSummary.Builder.aPoolSummary;
 import static com.shazam.fork.summary.Summary.Builder.aSummary;
 import static com.shazam.fork.summary.TestResult.Builder.aTestResult;
 
-public class Summarizer {
+class Summarizer {
 
     private static final boolean STRICT = false;
 
     private final RuntimeConfiguration runtimeConfiguration;
     private final FileManager fileManager;
-    private final Collection<DevicePool> devicePools;
+    private final Collection<Pool> pools;
     private final List<TestClass> testClasses;
     private final Serializer serializer;
 
-    public Summarizer(RuntimeConfiguration runtimeConfiguration,
+    Summarizer(RuntimeConfiguration runtimeConfiguration,
                       FileManager fileManager,
-                      Collection<DevicePool> devicePools,
+                      Collection<Pool> pools,
                       List<TestClass> testClasses) {
         this.runtimeConfiguration = runtimeConfiguration;
         this.fileManager = fileManager;
-        this.devicePools = devicePools;
+        this.pools = pools;
 		this.testClasses = testClasses;
 		serializer = new Persister();
 	}
 
-	public Summary compileSummary() {
+	Summary compileSummary() {
 		Summary.Builder summaryBuilder = aSummary();
-		for (DevicePool devicePool : devicePools) {
-			PoolSummary.Builder poolSummaryBuilder = aPoolSummary().withPoolName(devicePool.getName());
-			compileResultsForPool(devicePool, poolSummaryBuilder);
+		for (Pool pool : pools) {
+			PoolSummary.Builder poolSummaryBuilder = aPoolSummary().withPoolName(pool.getName());
+			compileResultsForPool(pool, poolSummaryBuilder);
 			summaryBuilder.addPoolSummary(poolSummaryBuilder.build());
 		}
         addIgnoredTests(summaryBuilder);
@@ -78,24 +79,24 @@ public class Summarizer {
         }
     }
 
-    private void compileResultsForPool(DevicePool devicePool, PoolSummary.Builder poolSummaryBuilder) {
-		for (Device device: devicePool.getDevices()) {
-			compileResultsForDevice(devicePool, poolSummaryBuilder, device);
+    private void compileResultsForPool(Pool pool, PoolSummary.Builder poolSummaryBuilder) {
+		for (Device device: pool.getDevices()) {
+			compileResultsForDevice(pool, poolSummaryBuilder, device);
 		}
-		Device watchdog = getPoolWatchdog(devicePool.getName());
-		compileResultsForDevice(devicePool, poolSummaryBuilder, watchdog);
+		Device watchdog = getPoolWatchdog(pool.getName());
+		compileResultsForDevice(pool, poolSummaryBuilder, watchdog);
 	}
 
 	private Device getPoolWatchdog(String devicePoolName) {
 		return aDevice()
-					.withSerial(DevicePoolRunner.DROPPED_BY + devicePoolName)
+					.withSerial(PoolTestRunner.DROPPED_BY + devicePoolName)
 					.withManufacturer("Clumsy-" + devicePoolName)
 					.withModel("Clumsy=" + devicePoolName)
 					.build();
 	}
 
-	private void compileResultsForDevice(DevicePool devicePool, PoolSummary.Builder poolSummaryBuilder, Device device) {
-		String poolName = devicePool.getName();
+	private void compileResultsForDevice(Pool pool, PoolSummary.Builder poolSummaryBuilder, Device device) {
+		String poolName = pool.getName();
 		File[] deviceResultFiles = getTestResultFiles(poolName, device.getSerial());
         if (deviceResultFiles == null) {
             return;

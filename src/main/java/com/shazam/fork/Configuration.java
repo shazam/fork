@@ -29,7 +29,7 @@ public class Configuration {
     private final int testTimeout;
     private final int testIntervalTimeout;
 
-    Configuration(File androidSdk, File applicationApk, File instrumentationApk,
+    public Configuration(File androidSdk, File applicationApk, File instrumentationApk,
                   InstrumentationInfo instrumentationInfo, File output, Pattern testClassPattern,
                   Pattern testPackagePattern, int idleTimeout, int testTimeout, int testIntervalTimeout) {
         this.androidSdk = androidSdk;

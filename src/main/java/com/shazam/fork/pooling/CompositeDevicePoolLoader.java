@@ -12,8 +12,9 @@
  */
 package com.shazam.fork.pooling;
 
-import com.shazam.fork.model.DevicePool;
+import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.Devices;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,23 +33,23 @@ public class CompositeDevicePoolLoader implements DevicePoolLoader {
     }
 
 	@Override
-	public Collection<DevicePool> loadPools(Devices devices) {
-        Collection<DevicePool> devicePools = new ArrayList<>();
+	public Collection<Pool> loadPools(Devices devices) {
+        Collection<Pool> pools = new ArrayList<>();
 		for (DevicePoolLoader devicePoolLoader : devicePoolLoaders) {
-			devicePools = devicePoolLoader.loadPools(devices);
-			if (!devicePools.isEmpty()) {
+			pools = devicePoolLoader.loadPools(devices);
+			if (!pools.isEmpty()) {
                 logger.info("Picked {}", devicePoolLoader.getClass().getSimpleName());
 				break;
 			}
 		}
-		log(devicePools);
-		return devicePools;
+		log(pools);
+		return pools;
 	}
 
-    private void log(Collection<DevicePool> configuredDevicePools) {
-        logger.info("Number of device pools: " + configuredDevicePools.size());
-		for (DevicePool devicePool : configuredDevicePools) {
-            logger.debug(devicePool.toString());
+    private void log(Collection<Pool> configuredPools) {
+        logger.info("Number of device pools: " + configuredPools.size());
+		for (Pool pool : configuredPools) {
+            logger.debug(pool.toString());
 		}
 	}
 }

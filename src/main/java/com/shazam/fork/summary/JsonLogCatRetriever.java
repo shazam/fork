@@ -16,13 +16,11 @@ import com.android.ddmlib.logcat.LogCatMessage;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.shazam.fork.io.FileType;
-import com.shazam.fork.io.FileManager;
+import com.shazam.fork.system.io.FileManager;
+import com.shazam.fork.system.io.FileType;
 
 import java.io.*;
 import java.util.List;
-
-import static java.lang.String.format;
 
 public class JsonLogCatRetriever implements LogCatRetriever {
     private final Gson gson;
