@@ -24,6 +24,9 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 public class Utils {
 
+    private Utils() {
+    }
+
     public static ExecutorService namedExecutor(int numberOfThreads, String nameFormat) {
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat(nameFormat).build();
         return newFixedThreadPool(numberOfThreads, namedThreadFactory);

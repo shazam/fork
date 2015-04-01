@@ -18,15 +18,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.shazam.fork.Utils.millisSinceNanoTime;
-import static com.shazam.fork.injector.DeviceLoaderInjector.deviceLoader;
-import static com.shazam.fork.injector.DevicePoolLoaderInjector.devicePoolLoader;
-import static com.shazam.fork.injector.DevicePoolRunnerInjector.devicePoolRunner;
-import static com.shazam.fork.injector.FilenameCreatorInjector.filenameCreator;
 import static com.shazam.fork.injector.RuntimeConfigurationInjector.runtimeConfiguration;
-import static com.shazam.fork.injector.SummaryPrinterInjector.summaryPrinter;
-import static com.shazam.fork.injector.SwimlaneConsoleLoggerInjector.swimlaneConsoleLogger;
-import static com.shazam.fork.injector.TestClassFilterInjector.testClassFilter;
-import static com.shazam.fork.injector.TestClassScannerInjector.testClassScanner;
+import static com.shazam.fork.injector.listeners.SwimlaneConsoleLoggerInjector.swimlaneConsoleLogger;
+import static com.shazam.fork.injector.pooling.PoolLoaderInjector.poolLoader;
+import static com.shazam.fork.injector.runner.PoolTestRunnerFactoryInjector.poolTestRunnerFactory;
+import static com.shazam.fork.injector.suite.TestClassLoaderInjector.testClassLoader;
+import static com.shazam.fork.injector.summary.SummaryPrinterInjector.summaryPrinter;
+import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 import static java.lang.System.nanoTime;
 
 public class ForkRunnerInjector {
@@ -38,14 +36,12 @@ public class ForkRunnerInjector {
 
         ForkRunner forkRunner = new ForkRunner(
                 runtimeConfiguration(),
-                deviceLoader(),
-                devicePoolLoader(),
-                testClassScanner(),
-                testClassFilter(),
-                devicePoolRunner(),
+                poolLoader(),
+                testClassLoader(),
                 swimlaneConsoleLogger(),
                 summaryPrinter(),
-                filenameCreator());
+                fileManager(),
+                poolTestRunnerFactory());
 
         logger.debug("Initialization of ForkRunner took: {} milliseconds", millisSinceNanoTime(startNanos));
 

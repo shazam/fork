@@ -13,7 +13,7 @@
 package com.shazam.fork.pooling;
 
 import com.shazam.fork.model.Device;
-import com.shazam.fork.model.DevicePool;
+import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.Devices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import static com.shazam.fork.model.DevicePool.Builder.aDevicePool;
+import static com.shazam.fork.model.Pool.Builder.aDevicePool;
 
 /**
  * Allocate devices into pools specified by nominated strategy:
@@ -31,23 +31,22 @@ import static com.shazam.fork.model.DevicePool.Builder.aDevicePool;
  * <dl><dt>-Dfork.computed.sw=phone=0,tablet=720</dt><dd>named pools: phone 0-719 tablet 720-up</dd></dl>
  * <dl><dt>-Dfork.computed.api=15</dt><dd>api pools: 0-14, 15-up</dd></dl>
  */
-//FIXME: Class with no Unit Tests
 public class ComputedDevicePoolLoader implements DevicePoolLoader {
     private static final Logger logger = LoggerFactory.getLogger(ComputedDevicePoolLoader.class);
-    private final ComputedPoolsSelector computedPoolsSelector;
+    private final ComputedPoolsConfiguration computedPoolsSelector;
 
-	public ComputedDevicePoolLoader(ComputedPoolsSelector computedPoolsSelector) {
+	public ComputedDevicePoolLoader(ComputedPoolsConfiguration computedPoolsSelector) {
         this.computedPoolsSelector = computedPoolsSelector;
 	}
 
-	public Collection<DevicePool> loadPools(Devices devices) {
-        Collection<DevicePool> pools = createComputedPools(devices);
+	public Collection<Pool> loadPools(Devices devices) {
+        Collection<Pool> pools = createComputedPools(devices);
         ensureAllPoolsAreRepresented(pools);
         return pools;
     }
 
-    private Collection<DevicePool> createComputedPools(Devices devices) {
-        Map<String, DevicePool.Builder> pools = new HashMap<>();
+    private Collection<Pool> createComputedPools(Devices devices) {
+        Map<String, Pool.Builder> pools = new HashMap<>();
         for (Device device : devices.getDevices()) {
             String poolName = computedPoolsSelector.poolForDevice(device);
             if (poolName != null) {
@@ -65,19 +64,19 @@ public class ComputedDevicePoolLoader implements DevicePoolLoader {
         return createDevicePools(pools);
     }
 
-    private Collection<DevicePool> createDevicePools(Map<String, DevicePool.Builder> pools) {
-        Collection<DevicePool> builtPools = new HashSet<>();
-        for (DevicePool.Builder builder : pools.values()) {
+    private Collection<Pool> createDevicePools(Map<String, Pool.Builder> pools) {
+        Collection<Pool> builtPools = new HashSet<>();
+        for (Pool.Builder builder : pools.values()) {
             builtPools.add(builder.build());
         }
         return builtPools;
     }
 
-    private void ensureAllPoolsAreRepresented(Collection<DevicePool> devicePools) {
+    private void ensureAllPoolsAreRepresented(Collection<Pool> pools) {
         for (String poolName : computedPoolsSelector.allPools()) {
             boolean found = false;
-            for (DevicePool devicePool : devicePools) {
-                if (devicePool.getName().equals(poolName)) {
+            for (Pool pool : pools) {
+                if (pool.getName().equals(poolName)) {
                     found = true;
                     break;
                 }

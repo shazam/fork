@@ -61,7 +61,7 @@ public class TestClass {
 
     public static class Builder {
         private String name;
-        private Collection<TestMethod> methods = new ArrayList<>();
+        private final Collection<TestMethod> methods = new ArrayList<>();
 
         public static Builder testClass() {
             return new Builder();

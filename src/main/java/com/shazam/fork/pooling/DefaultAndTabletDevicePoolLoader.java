@@ -13,13 +13,13 @@
 package com.shazam.fork.pooling;
 
 import com.shazam.fork.model.Device;
-import com.shazam.fork.model.DevicePool;
+import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.Devices;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static com.shazam.fork.model.DevicePool.Builder.aDevicePool;
+import static com.shazam.fork.model.Pool.Builder.aDevicePool;
 import static java.util.Collections.emptyList;
 
 /**
@@ -36,14 +36,14 @@ public class DefaultAndTabletDevicePoolLoader implements DevicePoolLoader {
         this.useTabletFlag = useTabletFlag;
     }
 
-	public Collection<DevicePool> loadPools(Devices devices) {
+	public Collection<Pool> loadPools(Devices devices) {
 		if (!useTabletFlag) {
             return emptyList();
         }
 
-        Collection<DevicePool> devicePools = new ArrayList<>();
-        DevicePool.Builder defaultPoolBuilder = aDevicePool().withName(DEFAULT_POOL_NAME);
-        DevicePool.Builder tabletPoolBuilder = aDevicePool().withName(TABLETS);
+        Collection<Pool> pools = new ArrayList<>();
+        Pool.Builder defaultPoolBuilder = aDevicePool().withName(DEFAULT_POOL_NAME);
+        Pool.Builder tabletPoolBuilder = aDevicePool().withName(TABLETS);
 
         for (Device device : devices.getDevices()) {
             if (device.isTablet()) {
@@ -52,9 +52,9 @@ public class DefaultAndTabletDevicePoolLoader implements DevicePoolLoader {
                 defaultPoolBuilder.addDevice(device);
             }
         }
-        defaultPoolBuilder.addIfNotEmpty(devicePools);
-        tabletPoolBuilder.addIfNotEmpty(devicePools);
-		return devicePools;
+        defaultPoolBuilder.addIfNotEmpty(pools);
+        tabletPoolBuilder.addIfNotEmpty(pools);
+		return pools;
 	}
 
 }
