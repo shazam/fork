@@ -15,26 +15,23 @@ package com.shazam.fork.runner;
 import com.android.ddmlib.testrunner.*;
 import com.shazam.fork.Configuration;
 import com.shazam.fork.RuntimeConfiguration;
-import com.shazam.fork.model.*;
-import com.shazam.fork.listeners.TestRunActivityWatchdog;
+import com.shazam.fork.model.TestClass;
+import com.shazam.fork.model.TestRunParameters;
 
 import java.util.*;
 
 import static java.lang.String.format;
 
 class TestRun {
-    private final Configuration configuration;
     private final RuntimeConfiguration runtimeConfiguration;
     private final String poolName;
 	private final TestRunParameters testRunParameters;
 	private final List<ITestRunListener> testRunListeners;
 
-    public TestRun(Configuration configuration,
-                   RuntimeConfiguration runtimeConfiguration,
+    public TestRun(RuntimeConfiguration runtimeConfiguration,
                    String poolName,
                    TestRunParameters testRunParameters,
                    Collection<ITestRunListener> testRunListeners) {
-        this.configuration = configuration;
         this.runtimeConfiguration = runtimeConfiguration;
         this.poolName = poolName;
 		this.testRunParameters = testRunParameters;
@@ -48,7 +45,6 @@ class TestRun {
 				testRunParameters.getDeviceInterface());
 
 		TestClass test = testRunParameters.getTest();
-        TestRunActivityWatchdog watchdog = watchdog(runner, test);
         String testClassName = test.getName();
 		try {
             IRemoteAndroidTestRunner.TestSize testSize = runtimeConfiguration.getTestSize();
@@ -57,22 +53,9 @@ class TestRun {
             }
 			runner.setRunName(poolName);
 			runner.setClassName(testClassName);
-			runner.run(testRunListenersAdding(watchdog));
+			runner.run(testRunListeners);
 		} catch (Exception e) {
 			throw new RuntimeException(format("Error while running test class %s", test), e);
-		} finally {
-			watchdog.cancel();
-			watchdog.flagOutstandingAsErrors(format("Terminated test class early: %s suffered a catastrophy", test.getName()));
 		}
 	}
-
-    private TestRunActivityWatchdog watchdog(RemoteAndroidTestRunner runner, TestClass test) {
-        return new TestRunActivityWatchdog(configuration, runner, test, poolName,
-                testRunListeners, testRunParameters.getDeviceInterface().getSerialNumber());
-    }
-
-    private List<ITestRunListener> testRunListenersAdding(ITestRunListener testRunListener) {
-        testRunListeners.add(0, testRunListener);
-        return testRunListeners;
-    }
 }

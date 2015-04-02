@@ -14,11 +14,9 @@ package com.shazam.fork.injector.listeners;
 
 import com.shazam.fork.listeners.SwimlaneConsoleLogger;
 
-import static com.shazam.fork.injector.listeners.TimeoutAlertInjector.timeoutAlert;
-
 public class SwimlaneConsoleLoggerInjector {
 
     public static SwimlaneConsoleLogger swimlaneConsoleLogger() {
-        return new SwimlaneConsoleLogger(timeoutAlert());
+        return new SwimlaneConsoleLogger();
     }
 }

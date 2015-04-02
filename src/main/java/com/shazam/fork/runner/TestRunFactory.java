@@ -47,7 +47,6 @@ public class TestRunFactory {
         List<ITestRunListener> testRunListeners = testRunListenersFactory.createTestListeners(testClass, device, poolName);
 
         return new TestRun(
-                configuration,
                 runtimeConfiguration,
                 poolName,
                 testRunParameters,
