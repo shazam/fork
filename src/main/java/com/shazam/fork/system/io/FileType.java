@@ -12,7 +12,7 @@ public enum FileType {
     private final String directory;
     private final String suffix;
 
-    private FileType(String directory, String suffix) {
+    FileType(String directory, String suffix) {
         this.directory = directory;
         this.suffix = suffix;
     }

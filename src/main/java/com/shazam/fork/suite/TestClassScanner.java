@@ -46,11 +46,16 @@ public class TestClassScanner {
     }
 
     public List<TestClass> scanForTestClasses() {
-        File[] instrumentationDexFiles = getDexFiles(instrumentationApkFile, outputFolder);
-        return getTestClassesFrom(instrumentationDexFiles);
+        try {
+            File[] instrumentationDexFiles = getDexFiles(instrumentationApkFile, outputFolder);
+            return getTestClassesFrom(instrumentationDexFiles);
+        } catch (IOException e) {
+            throw new RuntimeException("Error when trying to scan " + instrumentationApkFile.getAbsolutePath()
+                    + " for test classes.", e);
+        }
     }
 
-    private File[] getDexFiles(File instrumentationApkFile, File dexFilesFolder) {
+    private File[] getDexFiles(File instrumentationApkFile, File dexFilesFolder) throws IOException {
         dumpDexFilesFromApk(instrumentationApkFile, dexFilesFolder);
         return dexFilesFolder.listFiles(new FilenameFilter() {
             @Override
@@ -60,7 +65,7 @@ public class TestClassScanner {
         });
     }
 
-    private void dumpDexFilesFromApk(File apkFile, File outputFolder) {
+    private void dumpDexFilesFromApk(File apkFile, File outputFolder) throws IOException {
         ZipFile zip = null;
         InputStream classesDexInputStream = null;
         FileOutputStream fileOutputStream = null;
@@ -82,8 +87,6 @@ public class TestClassScanner {
                     break;
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             closeQuietly(classesDexInputStream);
             closeQuietly(fileOutputStream);
@@ -91,23 +94,19 @@ public class TestClassScanner {
         }
     }
 
-    private List<TestClass> getTestClassesFrom(File[] dexFiles) {
-        try {
-            List<TestClass> testClasses = new ArrayList<>();
-            for (File file : dexFiles) {
-                DexFile dexFile = new DexFile(file);
-                List<ClassDefItem> items = dexFile.ClassDefsSection.getItems();
-                for (ClassDefItem classDefItem : items) {
-                    String typeDescriptor = classDefItem.getClassType().getTypeDescriptor();
-                    if (testClassMatcher.matchesPatterns(typeDescriptor)) {
-                        TestClass testClass = testClassFactory.createTestFromDexClass(classDefItem);
-                        testClasses.add(testClass);
-                    }
+    private List<TestClass> getTestClassesFrom(File[] dexFiles) throws IOException {
+        List<TestClass> testClasses = new ArrayList<>();
+        for (File file : dexFiles) {
+            DexFile dexFile = new DexFile(file);
+            List<ClassDefItem> items = dexFile.ClassDefsSection.getItems();
+            for (ClassDefItem classDefItem : items) {
+                String typeDescriptor = classDefItem.getClassType().getTypeDescriptor();
+                if (testClassMatcher.matchesPatterns(typeDescriptor)) {
+                    TestClass testClass = testClassFactory.createTestFromDexClass(classDefItem);
+                    testClasses.add(testClass);
                 }
             }
-            return testClasses;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
+        return testClasses;
     }
 }

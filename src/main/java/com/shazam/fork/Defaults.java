@@ -8,16 +8,13 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.shazam.fork.injector.suite;
+package com.shazam.fork;
 
-import com.shazam.fork.Configuration;
-import com.shazam.fork.suite.TestClassMatcher;
+import java.util.regex.Pattern;
 
-import static com.shazam.fork.injector.ConfigurationInjector.configuration;
-
-class TestClassMatcherInjector {
-    static TestClassMatcher testClassMatcher() {
-        Configuration configuration = configuration();
-        return new TestClassMatcher(configuration.getTestPackagePattern(), configuration.getTestClassPattern());
-    }
+class Defaults {
+    public static final int TEST_OUTPUT_TIMEOUT_MILLIS = 60 * 1000;
+    public static final Pattern TEST_CLASS_PATTERN = Pattern.compile("^((?!Abstract).)*Test$");
+    public static final String TEST_OUTPUT = "fork-output";
+    public static final String ANDROID_SDK = System.getenv("ANDROID_HOME");
 }

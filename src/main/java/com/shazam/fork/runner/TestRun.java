@@ -12,26 +12,28 @@
  */
 package com.shazam.fork.runner;
 
+import com.android.ddmlib.*;
 import com.android.ddmlib.testrunner.*;
-import com.shazam.fork.RuntimeConfiguration;
 import com.shazam.fork.model.TestClass;
 import com.shazam.fork.model.TestRunParameters;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 import java.util.Collection;
 
 import static java.lang.String.format;
 
 class TestRun {
-    private final RuntimeConfiguration runtimeConfiguration;
+	private static final Logger logger = LoggerFactory.getLogger(TestRun.class);
     private final String poolName;
 	private final TestRunParameters testRunParameters;
 	private final Collection<ITestRunListener> testRunListeners;
 
-    public TestRun(RuntimeConfiguration runtimeConfiguration,
-                   String poolName,
-                   TestRunParameters testRunParameters,
-                   Collection<ITestRunListener> testRunListeners) {
-        this.runtimeConfiguration = runtimeConfiguration;
+    public TestRun(String poolName,
+				   TestRunParameters testRunParameters,
+				   Collection<ITestRunListener> testRunListeners) {
         this.poolName = poolName;
 		this.testRunParameters = testRunParameters;
 		this.testRunListeners = testRunListeners;
@@ -45,15 +47,18 @@ class TestRun {
 
 		TestClass test = testRunParameters.getTest();
         String testClassName = test.getName();
+		IRemoteAndroidTestRunner.TestSize testSize = testRunParameters.getTestSize();
+		if (testSize != null) {
+			runner.setTestSize(testSize);
+		}
+		runner.setRunName(poolName);
+		runner.setClassName(testClassName);
+		runner.setMaxtimeToOutputResponse(testRunParameters.getTestOutputTimeout());
 		try {
-            IRemoteAndroidTestRunner.TestSize testSize = runtimeConfiguration.getTestSize();
-            if (testSize != null) {
-                runner.setTestSize(testSize);
-            }
-			runner.setRunName(poolName);
-			runner.setClassName(testClassName);
 			runner.run(testRunListeners);
-		} catch (Exception e) {
+		} catch (ShellCommandUnresponsiveException | TimeoutException e) {
+			logger.warn("Test: " + testClassName + " got stuck. You can increase the timeout in settings if it's too strict");
+		} catch (AdbCommandRejectedException | IOException e) {
 			throw new RuntimeException(format("Error while running test class %s", test), e);
 		}
 	}

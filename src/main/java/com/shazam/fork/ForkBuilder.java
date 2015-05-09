@@ -18,20 +18,17 @@ import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.shazam.fork.Utils.cleanFile;
 import static com.shazam.fork.model.InstrumentationInfo.parseFromFile;
 
 public class ForkBuilder {
-
-    /** Build a test suite for the specified devices and output. */
-    private File androidSdk;
+    private File androidSdk = cleanFile(Defaults.ANDROID_SDK);
     private File applicationApk;
     private File instrumentationApk;
-    private File output = cleanFile("fork-output");
-    private Pattern testClassPattern = Pattern.compile("^((?!Abstract).)*Test$");
-    private Pattern testPackagePattern;
-    private int idleTimeout = 2 * 60 * 1000; // Empirical default.
-    private int testTimeout = 4 * 60 * 1000; // Empirical default.
-    private int testIntervalTimeout = 30 * 1000; // Empirical default.
+    private File output = cleanFile(Defaults.TEST_OUTPUT);
+    private Pattern testClassPattern = Defaults.TEST_CLASS_PATTERN;
+    private Pattern testPackagePattern; // Will default to test APK's package name when it's known
+    private int testOutputTimeout = Defaults.TEST_OUTPUT_TIMEOUT_MILLIS;
 
     public static ForkBuilder aFork() {
         return new ForkBuilder();
@@ -39,8 +36,6 @@ public class ForkBuilder {
 
     /**
      * Path to the local Android SDK directory.
-     * @param androidSdk android SDK location
-     * @return this builder
      */
     public ForkBuilder withAndroidSdk(File androidSdk) {
         this.androidSdk = androidSdk;
@@ -49,8 +44,6 @@ public class ForkBuilder {
 
     /**
      * Path to application APK.
-     * @param apk the location of the production APK
-     * @return this builder
      */
     public ForkBuilder withApplicationApk(File apk) {
         applicationApk = apk;
@@ -59,8 +52,6 @@ public class ForkBuilder {
 
     /**
      * Path to the instrumentation APK.
-     * @param apk the location of the instrumentation APK
-     * @return this builder
      */
     public ForkBuilder withInstrumentationApk(File apk) {
         instrumentationApk = apk;
@@ -68,9 +59,7 @@ public class ForkBuilder {
     }
 
     /**
-     * Path to output directory.
-     * @param output the output directory
-     * @return this builder
+     * Path to output directory where reports will be saved.
      */
     public ForkBuilder withOutputDirectory(@Nullable File output) {
         if (output != null) {
@@ -100,32 +89,12 @@ public class ForkBuilder {
     }
 
     /**
-     * Maximum inactivity of a device
-     * @param idleTimeout the period in millis
+     * Maximum time between test output from ADB.
+     * @param testOutputTimeout the period in millis
      * @return this builder
      */
-    public ForkBuilder withIdleTimeout(int idleTimeout) {
-        this.idleTimeout = idleTimeout;
-        return this;
-    }
-
-    /**
-     * Maximum time a test can take
-     * @param testTimeout the period in millis
-     * @return this builder
-     */
-    public ForkBuilder withTestTimeout(int testTimeout) {
-        this.testTimeout = testTimeout;
-        return this;
-    }
-
-    /**
-     * Millis for maximum time between two tests
-     * @param testIntervalTimeout the period in millis
-     * @return this builder
-     */
-    public ForkBuilder withTestIntervalTimeout(int testIntervalTimeout) {
-        this.testIntervalTimeout = testIntervalTimeout;
+    public ForkBuilder withTestOutputTimeout(int testOutputTimeout) {
+        this.testOutputTimeout = testOutputTimeout;
         return this;
     }
 
@@ -137,8 +106,10 @@ public class ForkBuilder {
         checkNotNull(instrumentationApk, "Instrumentation APK is required.");
         checkArgument(instrumentationApk.exists(), "Instrumentation APK file does not exist.");
         checkNotNull(output, "Output path is required.");
+        checkArgument(testOutputTimeout >= 0, "Timeout must be non-negative.");
 
         InstrumentationInfo instrumentationInfo = parseFromFile(instrumentationApk);
+        testPackagePattern = setPackageFromConfigOrDefaultToTestPackage(instrumentationInfo.getInstrumentationPackage());
         Configuration configuration = new Configuration(
                 androidSdk,
                 applicationApk,
@@ -147,17 +118,16 @@ public class ForkBuilder {
                 output,
                 testClassPattern,
                 testPackagePattern,
-                idleTimeout,
-                testTimeout,
-                testIntervalTimeout);
+                testOutputTimeout
+        );
         return new Fork(configuration);
     }
 
-    @SuppressWarnings("ReturnOfNull")
-    private static File cleanFile(String path) {
-        if (path == null) {
-            return null;
+    private Pattern setPackageFromConfigOrDefaultToTestPackage(String instrumentationPackage) {
+        if (testPackagePattern != null) {
+            return testPackagePattern;
         }
-        return new File(path);
+
+        return Pattern.compile(instrumentationPackage.replace(".", "\\.") + ".*");
     }
 }

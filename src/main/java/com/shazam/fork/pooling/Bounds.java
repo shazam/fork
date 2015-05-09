@@ -50,7 +50,4 @@ public class Bounds {
         return list;
     }
 
-    public void add(Bound bound) {
-        bounds.add(bound);
-    }
 }

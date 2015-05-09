@@ -13,6 +13,7 @@
 package com.shazam.fork;
 
 import com.beust.jcommander.*;
+import com.beust.jcommander.converters.IntegerConverter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.util.regex.Pattern;
 
 import static com.shazam.fork.ForkBuilder.aFork;
+import static com.shazam.fork.Utils.cleanFile;
 
 public class ForkCli {
 
@@ -28,8 +30,8 @@ public class ForkCli {
 
     public static class CommandLineArgs {
 
-        @Parameter(names = { "--sdk" }, description = "Path to Android SDK")
-        public File sdk = cleanFile(System.getenv("ANDROID_HOME"));
+        @Parameter(names = { "--sdk" }, description = "Path to Android SDK", converter = FileConverter.class)
+        public File sdk;
 
         @Parameter(names = { "--apk" }, description = "Application APK", converter = FileConverter.class,
                 required = true)
@@ -42,15 +44,20 @@ public class ForkCli {
         @Parameter(names = { "--output" }, description = "Output path", converter = FileConverter.class)
         public File output;
 
-        @Parameter(names = { "--test-class-pattern" }, description = "Regex determining class names to consider when finding tests to run", converter = PatternConverter.class)
+        @Parameter(names = { "--test-class-pattern" }, description = "Regex determining class names to consider when finding tests to run",
+                converter = PatternConverter.class)
         public Pattern testClassPattern;
 
         @Parameter(names = { "--test-package-pattern" }, description = "Regex determining packages to consider when finding tests to run. " +
                 "Defaults to the instrumentation package.", converter = PatternConverter.class)
         public Pattern testPackagePattern;
 
+        @Parameter(names = { "--test-timeout" }, description = "The maximum amount of time during which the tests are " +
+                "allowed to not output any response, in milliseconds", converter = IntegerConverter.class)
+        public int testOutputTimeout = -1;
+
         @Parameter(names = { "--fail-on-failure" }, description = "Non-zero exit code on failure")
-        public boolean failOnFailure;
+        public boolean failOnFailure = true;
 
         @Parameter(names = { "-h", "--help" }, description = "Command help", help = true, hidden = true)
         public boolean help;
@@ -73,14 +80,6 @@ public class ForkCli {
         }
     }
 
-    @SuppressWarnings("ReturnOfNull")
-    private static File cleanFile(String path) {
-        if (path == null) {
-            return null;
-        }
-        return new File(path);
-    }
-
     public static void main(String... args) {
         CommandLineArgs parsedArgs = new CommandLineArgs();
         JCommander jc = new JCommander(parsedArgs);
@@ -99,17 +98,37 @@ public class ForkCli {
             return;
         }
 
-        Fork fork = aFork()
+        ForkBuilder forkBuilder = aFork()
                 .withApplicationApk(parsedArgs.apk)
-                .withInstrumentationApk(parsedArgs.testApk)
-                .withOutputDirectory(parsedArgs.output)
-                .withAndroidSdk(parsedArgs.sdk)
-                .withTestClassPattern(parsedArgs.testClassPattern)
-                .withTestPackagePattern(parsedArgs.testPackagePattern)
-                .build();
+                .withInstrumentationApk(parsedArgs.testApk);
 
+        overrideDefaultsIfSet(forkBuilder, parsedArgs);
+
+        Fork fork = forkBuilder.build();
         if (!fork.run() && parsedArgs.failOnFailure) {
             System.exit(1);
+        }
+    }
+
+    private static void overrideDefaultsIfSet(ForkBuilder forkBuilder, CommandLineArgs parsedArgs) {
+        if (parsedArgs.sdk != null) {
+            forkBuilder.withAndroidSdk(parsedArgs.sdk);
+        }
+
+        if (parsedArgs.output != null) {
+            forkBuilder.withOutputDirectory(parsedArgs.output);
+        }
+
+        if (parsedArgs.testClassPattern != null) {
+            forkBuilder.withTestClassPattern(parsedArgs.testClassPattern);
+        }
+
+        if (parsedArgs.testPackagePattern != null) {
+            forkBuilder.withTestPackagePattern(parsedArgs.testPackagePattern);
+        }
+
+        if (parsedArgs.testOutputTimeout > -1) {
+            forkBuilder.withTestOutputTimeout(parsedArgs.testOutputTimeout);
         }
     }
 }

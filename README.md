@@ -69,25 +69,24 @@ With the below options. The APK and test APK parameters are mandatory:
     --test-package-pattern  Regex determining packages to consider when finding tests to run. Defaults to instrumentation package.
     --test-class-pattern    Regex determining class names to consider when finding tests to run. Defaults to ^((?!Abstract).)*Test$
     --output                Output path. Defaults to "fork-output"
+    --test-timeout          The maximum amount of time during which the tests are allowed to not output any response, in milliseconds
     --fail-on-failure       Non-zero exit code on failure. Defaults to false.
     --sdk                   Path to Android SDK. Defaults to the ANDROID_HOME environment variable.
 ```
 
 
-Pooling and other parameters
+Pooling and runtime parameters
 ----------------------------
 
-With either way of executing Fork (Gradle/standalone/maven) you can specify these common runtime parameters:
+With either way of executing Fork (Gradle / standalone / maven) you can specify how the pools are created by setting a combination of these environment variables:
 
 One of:
- * **fork.tablet=(true|false)** - to configure pools depending on their manufacturer's 'tablet' flag (ro.build.characteristics)
- * **fork.pool.POOL_NAME=(Serial','?)** - to add devices with a given serial to a pool with given name,e.g. hdpi=01234567,abcdefgh
- * **fork.computed.STRATEGY=(PoolName=LowerBound','?)** - to automatically create pools based on device characteristics, where
-
-	STRATEGY:=sw - by smallest width, e.g.phablet=0,tablet=720
-
-	STRATEGY:=api - by api, e.g. gingerbread_and_earlier=0,honeycomb_and_later=11)
- * **fork.eachdevice=(true|false)** - to create a pool per device (a.k.a. Spoon mode). This is the default behaviour.
+* **fork.tablet=(true|false)** - to configure pools depending on their manufacturer's 'tablet' flag (ro.build.characteristics)
+* **fork.pool.POOL_NAME=(Serial','?)** - to add devices with a given serial to a pool with given name,e.g. hdpi=01234567,abcdefgh
+* **fork.computed.STRATEGY=(PoolName=LowerBound','?)** - to automatically create pools based on device characteristics, where
+  * STRATEGY:=sw - by smallest width, e.g.phablet=0,tablet=720
+  * STRATEGY:=api - by api, e.g. gingerbread_and_earlier=0,honeycomb_and_later=11)
+* **fork.eachdevice=(true|false)** - to create a pool per device (a.k.a. Spoon mode). This is the default behaviour.
 
 Any of:
 * **android.test.classes=REGEX** - comma separated regexes that specify a pattern for the classes/packages to run
