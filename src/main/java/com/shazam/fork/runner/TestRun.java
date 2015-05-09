@@ -13,12 +13,11 @@
 package com.shazam.fork.runner;
 
 import com.android.ddmlib.testrunner.*;
-import com.shazam.fork.Configuration;
 import com.shazam.fork.RuntimeConfiguration;
 import com.shazam.fork.model.TestClass;
 import com.shazam.fork.model.TestRunParameters;
 
-import java.util.*;
+import java.util.Collection;
 
 import static java.lang.String.format;
 
@@ -26,7 +25,7 @@ class TestRun {
     private final RuntimeConfiguration runtimeConfiguration;
     private final String poolName;
 	private final TestRunParameters testRunParameters;
-	private final List<ITestRunListener> testRunListeners;
+	private final Collection<ITestRunListener> testRunListeners;
 
     public TestRun(RuntimeConfiguration runtimeConfiguration,
                    String poolName,
@@ -35,7 +34,7 @@ class TestRun {
         this.runtimeConfiguration = runtimeConfiguration;
         this.poolName = poolName;
 		this.testRunParameters = testRunParameters;
-		this.testRunListeners = new ArrayList<>(testRunListeners);
+		this.testRunListeners = testRunListeners;
 	}
 
 	public void execute() {
