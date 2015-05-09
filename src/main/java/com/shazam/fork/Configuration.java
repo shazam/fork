@@ -17,6 +17,8 @@ import com.shazam.fork.model.InstrumentationInfo;
 import java.io.File;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nonnull;
+
 public class Configuration {
     private final File androidSdk;
     private final File applicationApk;
@@ -25,13 +27,16 @@ public class Configuration {
     private final File output;
     private final Pattern testClassPattern;
     private final Pattern testPackagePattern;
-    private final int idleTimeout;
-    private final int testTimeout;
-    private final int testIntervalTimeout;
+    private final int testOutputTimeout;
 
-    public Configuration(File androidSdk, File applicationApk, File instrumentationApk,
-                  InstrumentationInfo instrumentationInfo, File output, Pattern testClassPattern,
-                  Pattern testPackagePattern, int idleTimeout, int testTimeout, int testIntervalTimeout) {
+    public Configuration(@Nonnull File androidSdk,
+                         @Nonnull File applicationApk,
+                         @Nonnull File instrumentationApk,
+                         @Nonnull InstrumentationInfo instrumentationInfo,
+                         @Nonnull File output,
+                         @Nonnull Pattern testClassPattern,
+                         @Nonnull Pattern testPackagePattern,
+                         int testOutputTimeout) {
         this.androidSdk = androidSdk;
         this.applicationApk = applicationApk;
         this.instrumentationApk = instrumentationApk;
@@ -39,48 +44,45 @@ public class Configuration {
         this.output = output;
         this.testClassPattern = testClassPattern;
         this.testPackagePattern = testPackagePattern;
-        this.idleTimeout = idleTimeout;
-        this.testTimeout = testTimeout;
-        this.testIntervalTimeout = testIntervalTimeout;
+        this.testOutputTimeout = testOutputTimeout;
     }
 
+    @Nonnull
     public File getAndroidSdk() {
         return androidSdk;
     }
 
+    @Nonnull
     public File getApplicationApk() {
         return applicationApk;
     }
 
+    @Nonnull
     public File getInstrumentationApk() {
         return instrumentationApk;
     }
 
+    @Nonnull
     public InstrumentationInfo getInstrumentationInfo() {
         return instrumentationInfo;
     }
 
+    @Nonnull
     public File getOutput() {
         return output;
     }
 
+    @Nonnull
     public Pattern getTestClassPattern() {
         return testClassPattern;
     }
 
+    @Nonnull
     public Pattern getTestPackagePattern() {
         return testPackagePattern;
     }
 
-    public int getIdleTimeout() {
-        return idleTimeout;
-    }
-
-    public int getTestTimeout() {
-        return testTimeout;
-    }
-
-    public int getTestIntervalTimeout() {
-        return testIntervalTimeout;
+    public int getTestOutputTimeout() {
+        return testOutputTimeout;
     }
 }

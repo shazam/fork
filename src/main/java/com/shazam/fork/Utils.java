@@ -14,6 +14,7 @@ package com.shazam.fork;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 
@@ -35,5 +36,12 @@ public class Utils {
     public static long millisSinceNanoTime(long startNanos) {
         long elapsedNanos = nanoTime() - startNanos;
         return MILLISECONDS.convert(elapsedNanos, NANOSECONDS);
+    }
+
+    static File cleanFile(String path) {
+        if (path == null) {
+            return null;
+        }
+        return new File(path);
     }
 }

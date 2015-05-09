@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.annotation.Nonnull;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class InstrumentationInfo {
@@ -58,6 +60,7 @@ public final class InstrumentationInfo {
      * @param apkTestFile the instrumentation APK
      * @return the instrumentation info instance
      */
+	@Nonnull
 	public static InstrumentationInfo parseFromFile(File apkTestFile) {
 		InputStream is = null;
 		try {

@@ -42,12 +42,13 @@ public class TestRunFactory {
                 .withTest(testClass)
                 .withTestPackage(instrumentationInfo.getInstrumentationPackage())
                 .withTestRunner(instrumentationInfo.getTestRunnerClass())
+                .withTestSize(runtimeConfiguration.getTestSize())
+                .withTestOutputTimeout(configuration.getTestOutputTimeout())
                 .build();
 
         List<ITestRunListener> testRunListeners = testRunListenersFactory.createTestListeners(testClass, device, poolName);
 
         return new TestRun(
-                runtimeConfiguration,
                 poolName,
                 testRunParameters,
                 testRunListeners);

@@ -13,11 +13,16 @@
 package com.shazam.fork.model;
 
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
+
+import javax.annotation.Nullable;
 
 public class TestRunParameters {
 	private final TestClass test;
 	private final String testPackage;
 	private final String testRunner;
+	private final IRemoteAndroidTestRunner.TestSize testSize;
+	private final int testOutputTimeout;
 	private final IDevice deviceInterface;
 
 	public TestClass getTest() {
@@ -32,6 +37,15 @@ public class TestRunParameters {
 		return testRunner;
 	}
 
+	@Nullable
+	public IRemoteAndroidTestRunner.TestSize getTestSize() {
+		return testSize;
+	}
+
+	public int getTestOutputTimeout() {
+		return testOutputTimeout;
+	}
+
 	public IDevice getDeviceInterface() {
 		return deviceInterface;
 	}
@@ -40,7 +54,9 @@ public class TestRunParameters {
 		private TestClass test;
 		private String testPackage;
 		private String testRunner;
+		private IRemoteAndroidTestRunner.TestSize testSize;
 		private IDevice deviceInterface;
+		private int testOutputTimeout;
 
 		public static Builder testRunParameters() {
 			return new Builder();
@@ -61,6 +77,16 @@ public class TestRunParameters {
 			return this;
 		}
 
+		public Builder withTestSize(IRemoteAndroidTestRunner.TestSize testSize) {
+			this.testSize = testSize;
+			return this;
+		}
+
+		public Builder withTestOutputTimeout(int testOutputTimeout) {
+			this.testOutputTimeout = testOutputTimeout;
+			return this;
+		}
+
 		public Builder withDeviceInterface(IDevice deviceInterface) {
 			this.deviceInterface = deviceInterface;
 			return this;
@@ -75,6 +101,8 @@ public class TestRunParameters {
 		test = builder.test;
 		testPackage = builder.testPackage;
 		testRunner = builder.testRunner;
+		testSize = builder.testSize;
+		testOutputTimeout = builder.testOutputTimeout;
 		deviceInterface = builder.deviceInterface;
 	}
 }
