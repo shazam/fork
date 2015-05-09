@@ -84,8 +84,8 @@ One of:
 * **fork.tablet=(true|false)** - to configure pools depending on their manufacturer's 'tablet' flag (ro.build.characteristics)
 * **fork.pool.POOL_NAME=(Serial','?)** - to add devices with a given serial to a pool with given name,e.g. hdpi=01234567,abcdefgh
 * **fork.computed.STRATEGY=(PoolName=LowerBound','?)** - to automatically create pools based on device characteristics, where
-** STRATEGY:=sw - by smallest width, e.g.phablet=0,tablet=720
-** STRATEGY:=api - by api, e.g. gingerbread_and_earlier=0,honeycomb_and_later=11)
+  * STRATEGY:=sw - by smallest width, e.g.phablet=0,tablet=720
+  * STRATEGY:=api - by api, e.g. gingerbread_and_earlier=0,honeycomb_and_later=11)
 * **fork.eachdevice=(true|false)** - to create a pool per device (a.k.a. Spoon mode). This is the default behaviour.
 
 Any of:
