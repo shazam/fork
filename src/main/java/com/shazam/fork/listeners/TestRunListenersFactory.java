@@ -20,6 +20,7 @@ import com.shazam.fork.system.io.FileManager;
 import java.io.File;
 import java.util.List;
 
+import static com.shazam.fork.model.Diagnostics.SCREENSHOTS;
 import static com.shazam.fork.model.Diagnostics.VIDEO;
 import static java.util.Arrays.asList;
 
@@ -54,10 +55,15 @@ public class TestRunListenersFactory {
         return xmlTestRunListener;
     }
 
-    private static ITestRunListener getScreenTraceTestRunListener(FileManager fileManager, String pool, Device device) {
+    private ITestRunListener getScreenTraceTestRunListener(FileManager fileManager, String pool, Device device) {
         if (VIDEO.equals(device.getSupportedDiagnostics())) {
             return new ScreenRecorderTestRunListener(fileManager, pool, device);
         }
-        return new ScreenCaptureTestRunListener(fileManager, pool, device);
+
+        if (SCREENSHOTS.equals(device.getSupportedDiagnostics()) && configuration.canFallbackToScreenshots()) {
+            return new ScreenCaptureTestRunListener(fileManager, pool, device);
+        }
+
+        return new NoOpITestRunListener();
     }
 }

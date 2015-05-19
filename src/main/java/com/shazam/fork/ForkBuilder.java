@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.shazam.fork.Utils.cleanFile;
-import static com.shazam.fork.model.InstrumentationInfo.parseFromFile;
+import static com.shazam.fork.system.axmlparser.InstumentationInfoFactory.parseFromFile;
 
 public class ForkBuilder {
     private File androidSdk = cleanFile(Defaults.ANDROID_SDK);
@@ -29,6 +29,7 @@ public class ForkBuilder {
     private Pattern testClassPattern = Defaults.TEST_CLASS_PATTERN;
     private Pattern testPackagePattern; // Will default to test APK's package name when it's known
     private int testOutputTimeout = Defaults.TEST_OUTPUT_TIMEOUT_MILLIS;
+    private boolean fallbackToScreenshots = true;
 
     public static ForkBuilder aFork() {
         return new ForkBuilder();
@@ -98,6 +99,11 @@ public class ForkBuilder {
         return this;
     }
 
+    public ForkBuilder withFallbackToScreenshots(boolean fallbackToScreenshots) {
+        this.fallbackToScreenshots = fallbackToScreenshots;
+        return this;
+    }
+
     public Fork build() {
         checkNotNull(androidSdk, "SDK is required.");
         checkArgument(androidSdk.exists(), "SDK directory does not exist.");
@@ -118,7 +124,8 @@ public class ForkBuilder {
                 output,
                 testClassPattern,
                 testPackagePattern,
-                testOutputTimeout
+                testOutputTimeout,
+                fallbackToScreenshots
         );
         return new Fork(configuration);
     }
