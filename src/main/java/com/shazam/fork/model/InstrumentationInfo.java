@@ -12,7 +12,7 @@
  */
 package com.shazam.fork.model;
 
-import com.squareup.spoon.axmlparser.AXMLParser;
+import com.shazam.fork.system.axmlparser.AXMLParser;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;

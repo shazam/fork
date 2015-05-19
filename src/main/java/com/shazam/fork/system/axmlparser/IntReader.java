@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.spoon.axmlparser;
+package com.shazam.fork.system.axmlparser;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -23,6 +23,7 @@ import java.io.InputStream;
  * Simple helper class that allows reading of integers.
  * @author Dmitry Skiba
  */
+@SuppressWarnings("ALL")
 public final class IntReader {
 
     public IntReader() {

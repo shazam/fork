@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.spoon.axmlparser;
+package com.shazam.fork.system.axmlparser;
 
 import java.io.IOException;
 
@@ -21,6 +21,7 @@ import java.io.IOException;
  * Block of strings, used in binary xml and arsc.
  * @author Dmitry Skiba
  */
+@SuppressWarnings("ALL")
 public class StringBlock {
 
     /**
