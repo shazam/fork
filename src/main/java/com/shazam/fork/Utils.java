@@ -18,6 +18,8 @@ import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 
+import javax.annotation.Nullable;
+
 import static java.lang.System.nanoTime;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -38,6 +40,7 @@ public class Utils {
         return MILLISECONDS.convert(elapsedNanos, NANOSECONDS);
     }
 
+    @Nullable
     static File cleanFile(String path) {
         if (path == null) {
             return null;

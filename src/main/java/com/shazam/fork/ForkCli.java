@@ -56,6 +56,10 @@ public class ForkCli {
                 "allowed to not output any response, in milliseconds", converter = IntegerConverter.class)
         public int testOutputTimeout = -1;
 
+        @Parameter(names = { "--fallback-to-screenshots" }, description = "Allowed to fallback to screenshots when video" +
+                " recording is not supported")
+        public boolean fallbackToScreenshots= true;
+
         @Parameter(names = { "--fail-on-failure" }, description = "Non-zero exit code on failure")
         public boolean failOnFailure = true;
 
@@ -100,7 +104,8 @@ public class ForkCli {
 
         ForkBuilder forkBuilder = aFork()
                 .withApplicationApk(parsedArgs.apk)
-                .withInstrumentationApk(parsedArgs.testApk);
+                .withInstrumentationApk(parsedArgs.testApk)
+                .withFallbackToScreenshots(parsedArgs.fallbackToScreenshots);
 
         overrideDefaultsIfSet(forkBuilder, parsedArgs);
 
