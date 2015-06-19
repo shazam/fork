@@ -36,7 +36,11 @@ public class Utils {
     }
 
     public static long millisSinceNanoTime(long startNanos) {
-        long elapsedNanos = nanoTime() - startNanos;
+        return millisBetweenNanoTimes(startNanos, nanoTime());
+    }
+
+    public static long millisBetweenNanoTimes(long startNanos, long endNanos) {
+        long elapsedNanos = endNanos - startNanos;
         return MILLISECONDS.convert(elapsedNanos, NANOSECONDS);
     }
 

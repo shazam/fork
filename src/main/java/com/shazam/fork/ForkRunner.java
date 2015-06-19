@@ -12,9 +12,11 @@
  */
 package com.shazam.fork;
 
-import com.shazam.fork.model.*;
+import com.shazam.fork.listeners.PoolProgressTracker;
+import com.shazam.fork.listeners.ProgressReporter;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestClass;
 import com.shazam.fork.pooling.PoolLoader;
-import com.shazam.fork.listeners.SwimlaneConsoleLogger;
 import com.shazam.fork.runner.PoolTestRunner;
 import com.shazam.fork.runner.PoolTestRunnerFactory;
 import com.shazam.fork.suite.TestClassLoader;
@@ -37,25 +39,25 @@ public class ForkRunner {
     private final RuntimeConfiguration runtimeConfiguration;
     private final PoolLoader poolLoader;
     private final TestClassLoader testClassLoader;
-    private final SwimlaneConsoleLogger swimlaneConsoleLogger;
     private final SummaryPrinter summaryPrinter;
     private final FileManager fileManager;
     private final PoolTestRunnerFactory poolTestRunnerFactory;
+    private final ProgressReporter progressReporter;
 
     public ForkRunner(RuntimeConfiguration runtimeConfiguration,
                       PoolLoader poolLoader,
                       TestClassLoader testClassLoader,
-                      SwimlaneConsoleLogger swimlaneConsoleLogger,
                       SummaryPrinter summaryPrinter,
                       FileManager fileManager,
-                      PoolTestRunnerFactory poolTestRunnerFactory) {
+                      PoolTestRunnerFactory poolTestRunnerFactory,
+                      ProgressReporter progressReporter) {
         this.runtimeConfiguration = runtimeConfiguration;
         this.poolLoader = poolLoader;
         this.testClassLoader = testClassLoader;
-        this.swimlaneConsoleLogger = swimlaneConsoleLogger;
         this.summaryPrinter = summaryPrinter;
         this.fileManager = fileManager;
         this.poolTestRunnerFactory = poolTestRunnerFactory;
+        this.progressReporter = progressReporter;
     }
 
     public boolean run() {
@@ -77,12 +79,15 @@ public class ForkRunner {
                     pools, testClasses, summaryPrinter);
             Runtime.getRuntime().addShutdownHook(reportGeneratorHook);
 
+            progressReporter.start();
             for (Pool pool : pools) {
-                PoolTestRunner poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(pool, testClasses, poolCountDownLatch);
+                progressReporter.addPoolProgress(pool, new PoolProgressTracker(testClasses.size()));
+                PoolTestRunner poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(pool, testClasses,
+                        poolCountDownLatch, progressReporter);
                 poolExecutor.execute(poolTestRunner);
             }
             poolCountDownLatch.await();
-            swimlaneConsoleLogger.complete();
+            progressReporter.stop();
 
             Summary summary = reportGeneratorHook.generateReportOnlyOnce();
             boolean overallSuccess = summary != null && new OutcomeAggregator().aggregate(summary);

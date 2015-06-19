@@ -27,6 +27,7 @@ public class Configuration {
     private final File output;
     private final Pattern testClassPattern;
     private final Pattern testPackagePattern;
+    private final String testPackage;
     private final int testOutputTimeout;
     private final boolean fallbackToScreenshots;
 
@@ -37,6 +38,7 @@ public class Configuration {
                          @Nonnull File output,
                          @Nonnull Pattern testClassPattern,
                          @Nonnull Pattern testPackagePattern,
+                         @Nonnull String testPackage,
                          int testOutputTimeout,
                          boolean fallbackToScreenshots) {
         this.androidSdk = androidSdk;
@@ -46,6 +48,7 @@ public class Configuration {
         this.output = output;
         this.testClassPattern = testClassPattern;
         this.testPackagePattern = testPackagePattern;
+        this.testPackage = testPackage;
         this.testOutputTimeout = testOutputTimeout;
         this.fallbackToScreenshots = fallbackToScreenshots;
     }
@@ -83,6 +86,10 @@ public class Configuration {
     @Nonnull
     public Pattern getTestPackagePattern() {
         return testPackagePattern;
+    }
+
+    public String getTestPackage() {
+        return testPackage;
     }
 
     public int getTestOutputTimeout() {

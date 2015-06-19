@@ -8,16 +8,31 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.shazam.fork.injector.runner;
+package com.shazam.fork.listeners;
 
-import com.shazam.fork.runner.DeviceTestRunnerFactory;
+public class PoolProgressTracker {
 
-import static com.shazam.fork.injector.system.InstallerInjector.installer;
-import static com.shazam.fork.injector.runner.TestRunFactoryInjector.testRunFactory;
+    private final int totalTests;
+    private int failedTests;
+    private int completedTests;
 
-public class DeviceTestRunnerFactoryInjector {
+    public PoolProgressTracker(int totalTests) {
+        this.totalTests = totalTests;
+    }
 
-    public static DeviceTestRunnerFactory deviceTestRunnerFactory() {
-        return new DeviceTestRunnerFactory(installer(), testRunFactory());
+    void completedTest() {
+        completedTests++;
+    }
+
+    void failedTest() {
+        failedTests++;
+    }
+
+    float getProgress() {
+        return (float) completedTests / (float) totalTests;
+    }
+
+    public int getNumberOfFailedTests() {
+        return failedTests;
     }
 }

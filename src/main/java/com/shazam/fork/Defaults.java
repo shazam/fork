@@ -10,11 +10,9 @@
 
 package com.shazam.fork;
 
-import java.util.regex.Pattern;
-
 class Defaults {
     public static final int TEST_OUTPUT_TIMEOUT_MILLIS = 60 * 1000;
-    public static final Pattern TEST_CLASS_PATTERN = Pattern.compile("^((?!Abstract).)*Test$");
+    public static final String TEST_CLASS_REGEX = "^((?!Abstract).)*Test$";
     public static final String TEST_OUTPUT = "fork-output";
     public static final String ANDROID_SDK = System.getenv("ANDROID_HOME");
 }

@@ -15,11 +15,10 @@ import com.shazam.fork.listeners.TestRunListenersFactory;
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 import static com.shazam.fork.injector.GsonInjector.gson;
-import static com.shazam.fork.injector.listeners.SwimlaneConsoleLoggerInjector.swimlaneConsoleLogger;
 
 public class TestRunListenersFactoryInjector {
 
     public static TestRunListenersFactory testRunListenersFactory() {
-        return new TestRunListenersFactory(configuration(), fileManager(), swimlaneConsoleLogger(), gson());
+        return new TestRunListenersFactory(configuration(), fileManager(), gson());
     }
 }

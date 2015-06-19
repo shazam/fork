@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.regex.Pattern;
 
 import static com.shazam.fork.ForkBuilder.aFork;
 import static com.shazam.fork.Utils.cleanFile;
@@ -44,13 +43,12 @@ public class ForkCli {
         @Parameter(names = { "--output" }, description = "Output path", converter = FileConverter.class)
         public File output;
 
-        @Parameter(names = { "--test-class-pattern" }, description = "Regex determining class names to consider when finding tests to run",
-                converter = PatternConverter.class)
-        public Pattern testClassPattern;
+        @Parameter(names = { "--test-class-regex" }, description = "Regex determining class names to consider when finding tests to run")
+        public String testClassRegex;
 
-        @Parameter(names = { "--test-package-pattern" }, description = "Regex determining packages to consider when finding tests to run. " +
-                "Defaults to the instrumentation package.", converter = PatternConverter.class)
-        public Pattern testPackagePattern;
+        @Parameter(names = { "--test-package" }, description = "The package where your tests are located. " +
+                "Defaults to the instrumentation package.")
+        public String testPackage;
 
         @Parameter(names = { "--test-timeout" }, description = "The maximum amount of time during which the tests are " +
                 "allowed to not output any response, in milliseconds", converter = IntegerConverter.class)
@@ -73,14 +71,6 @@ public class ForkCli {
         @Override
         public File convert(String s) {
             return cleanFile(s);
-        }
-    }
-
-    public static class PatternConverter implements IStringConverter<Pattern> {
-
-        @Override
-        public Pattern convert(String string) {
-            return Pattern.compile(string);
         }
     }
 
@@ -124,12 +114,12 @@ public class ForkCli {
             forkBuilder.withOutputDirectory(parsedArgs.output);
         }
 
-        if (parsedArgs.testClassPattern != null) {
-            forkBuilder.withTestClassPattern(parsedArgs.testClassPattern);
+        if (parsedArgs.testClassRegex != null) {
+            forkBuilder.withTestClassRegex(parsedArgs.testClassRegex);
         }
 
-        if (parsedArgs.testPackagePattern != null) {
-            forkBuilder.withTestPackagePattern(parsedArgs.testPackagePattern);
+        if (parsedArgs.testPackage != null) {
+            forkBuilder.withTestPackage(parsedArgs.testPackage);
         }
 
         if (parsedArgs.testOutputTimeout > -1) {

@@ -13,11 +13,17 @@ package com.shazam.fork.injector.suite;
 import com.shazam.fork.Configuration;
 import com.shazam.fork.suite.TestClassMatcher;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 
 class TestClassMatcherInjector {
+    private static final Logger log = LoggerFactory.getLogger(TestClassMatcherInjector.class);
+
     static TestClassMatcher testClassMatcher() {
         Configuration configuration = configuration();
+        log.info("Fork will try to find tests in {} from your instrumentation APK.", configuration.getTestPackage());
         return new TestClassMatcher(configuration.getTestPackagePattern(), configuration.getTestClassPattern());
     }
 }

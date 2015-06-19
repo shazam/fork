@@ -11,7 +11,9 @@
 package com.shazam.fork.runner;
 
 import com.shazam.fork.Configuration;
-import com.shazam.fork.model.*;
+import com.shazam.fork.listeners.ProgressReporter;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestClass;
 import com.shazam.fork.system.io.FileManager;
 
 import java.util.LinkedList;
@@ -31,14 +33,17 @@ public class PoolTestRunnerFactory {
         this.deviceTestRunnerFactory = deviceTestRunnerFactory;
     }
 
-    public PoolTestRunner createPoolTestRunner(Pool pool, List<TestClass> testClasses, CountDownLatch poolCountDownLatch) {
+    public PoolTestRunner createPoolTestRunner(Pool pool,
+                                               List<TestClass> testClasses,
+                                               CountDownLatch poolCountDownLatch,
+                                               ProgressReporter progressReporter) {
         return new PoolTestRunner(
                 configuration,
                 fileManager,
                 deviceTestRunnerFactory,
                 pool,
                 new LinkedList<>(testClasses),
-                poolCountDownLatch
-        );
+                poolCountDownLatch,
+                progressReporter);
     }
 }

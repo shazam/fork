@@ -14,8 +14,8 @@ package com.shazam.fork.runner;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.Configuration;
+import com.shazam.fork.listeners.*;
 import com.shazam.fork.model.*;
-import com.shazam.fork.listeners.ForkXmlTestRunListener;
 import com.shazam.fork.system.io.FileManager;
 
 import org.slf4j.Logger;
@@ -25,8 +25,8 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
-import static com.shazam.fork.listeners.TestRunListenersFactory.getForkXmlTestRunListener;
 import static com.shazam.fork.Utils.namedExecutor;
+import static com.shazam.fork.listeners.TestRunListenersFactory.getForkXmlTestRunListener;
 
 public class PoolTestRunner implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(PoolTestRunner.class);
@@ -35,43 +35,48 @@ public class PoolTestRunner implements Runnable {
     private final Configuration configuration;
     private final FileManager fileManager;
     private final Pool pool;
-    private final LinkedList<TestClass> testClasses;
+    private final Queue<TestClass> testClasses;
     private final CountDownLatch poolCountDownLatch;
     private final DeviceTestRunnerFactory deviceTestRunnerFactory;
+    private final ProgressReporter progressReporter;
 
     public PoolTestRunner(Configuration configuration,
                           FileManager fileManager,
                           DeviceTestRunnerFactory deviceTestRunnerFactory, Pool pool,
-                          LinkedList<TestClass> testClasses,
-                          CountDownLatch poolCountDownLatch) {
+                          Queue<TestClass> testClasses,
+                          CountDownLatch poolCountDownLatch,
+                          ProgressReporter progressReporter) {
         this.configuration = configuration;
         this.fileManager = fileManager;
         this.pool = pool;
         this.testClasses = testClasses;
         this.poolCountDownLatch = poolCountDownLatch;
         this.deviceTestRunnerFactory = deviceTestRunnerFactory;
+        this.progressReporter = progressReporter;
     }
 
     public void run() {
         ExecutorService concurrentDeviceExecutor = null;
+        String poolName = pool.getName();
         try {
             int devicesInPool = pool.size();
             concurrentDeviceExecutor = namedExecutor(devicesInPool, "DeviceExecutor-%d");
             CountDownLatch deviceCountDownLatch = new CountDownLatch(devicesInPool);
+            logger.info("Pool {} started", poolName);
             for (Device device : pool.getDevices()) {
                 Runnable deviceTestRunner = deviceTestRunnerFactory.createDeviceTestRunner(pool, testClasses,
-                        deviceCountDownLatch, device);
+                        deviceCountDownLatch, device, progressReporter);
                 concurrentDeviceExecutor.execute(deviceTestRunner);
             }
             deviceCountDownLatch.await();
         } catch (InterruptedException e) {
-            logger.warn("Pool {} was interrupted while running", pool.getName());
+            logger.warn("Pool {} was interrupted while running", poolName);
         } finally {
             failAnyDroppedClasses(pool, testClasses);
             if (concurrentDeviceExecutor != null) {
                 concurrentDeviceExecutor.shutdown();
             }
-            logger.info("Pool {} finished", pool.getName());
+            logger.info("Pool {} finished", poolName);
             poolCountDownLatch.countDown();
             logger.info("Pools remaining: {}", poolCountDownLatch.getCount());
         }

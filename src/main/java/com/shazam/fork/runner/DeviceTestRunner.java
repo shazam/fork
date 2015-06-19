@@ -13,9 +13,8 @@
 package com.shazam.fork.runner;
 
 import com.android.ddmlib.IDevice;
-import com.shazam.fork.listeners.SwimlaneConsoleLogger;
-import com.shazam.fork.model.Device;
-import com.shazam.fork.model.TestClass;
+import com.shazam.fork.listeners.ProgressReporter;
+import com.shazam.fork.model.*;
 import com.shazam.fork.system.adb.Installer;
 
 import org.slf4j.Logger;
@@ -31,35 +30,33 @@ public class DeviceTestRunner implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(DeviceTestRunner.class);
 
     private final Installer installer;
-    private final String poolName;
+    private final Pool pool;
     private final Device device;
     private final Queue<TestClass> queueOfTestsInPool;
     private final CountDownLatch deviceCountDownLatch;
-    private final SwimlaneConsoleLogger swimlaneConsoleLogger;
+    private final ProgressReporter progressReporter;
     private final TestRunFactory testRunFactory;
 
     public DeviceTestRunner(Installer installer,
-                            String poolName,
+                            Pool pool,
                             Device device,
                             Queue<TestClass> queueOfTestsInPool,
                             CountDownLatch deviceCountDownLatch,
-                            SwimlaneConsoleLogger swimlaneConsoleLogger,
+                            ProgressReporter progressReporter,
                             TestRunFactory testRunFactory) {
         this.installer = installer;
-		this.poolName = poolName;
+		this.pool = pool;
 		this.device = device;
         this.queueOfTestsInPool = queueOfTestsInPool;
         this.deviceCountDownLatch = deviceCountDownLatch;
-		this.swimlaneConsoleLogger = swimlaneConsoleLogger;
+        this.progressReporter = progressReporter;
         this.testRunFactory = testRunFactory;
     }
 
 	@Override
 	public void run() {
-        String serial = device.getSerial();
         IDevice deviceInterface = device.getDeviceInterface();
         try {
-            swimlaneConsoleLogger.setCount(serial, poolName, queueOfTestsInPool.size());
             installer.prepareInstallation(deviceInterface);
             // For when previous run crashed/disconnected and left files behind
             removeRemoteDirectory(deviceInterface);
@@ -67,11 +64,11 @@ public class DeviceTestRunner implements Runnable {
 
             TestClass testClass;
             while ((testClass = queueOfTestsInPool.poll()) != null) {
-                TestRun testRun = testRunFactory.createTestRun(testClass, device, poolName);
+                TestRun testRun = testRunFactory.createTestRun(testClass, device, pool, progressReporter);
                 testRun.execute();
             }
 		} finally {
-            logger.info("Device {} from pool {} finished", device.getSerial(), poolName);
+            logger.info("Device {} from pool {} finished", device.getSerial(), pool.getName());
 			deviceCountDownLatch.countDown();
 		}
 	}

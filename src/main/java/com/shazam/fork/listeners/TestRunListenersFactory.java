@@ -13,8 +13,7 @@ package com.shazam.fork.listeners;
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.google.gson.Gson;
 import com.shazam.fork.Configuration;
-import com.shazam.fork.model.Device;
-import com.shazam.fork.model.TestClass;
+import com.shazam.fork.model.*;
 import com.shazam.fork.system.io.FileManager;
 
 import java.io.File;
@@ -28,21 +27,22 @@ public class TestRunListenersFactory {
 
     private final Configuration configuration;
     private final FileManager fileManager;
-    private final SwimlaneConsoleLogger swimlaneConsoleLogger;
     private final Gson gson;
 
-    public TestRunListenersFactory(Configuration configuration, FileManager fileManager,
-                                   SwimlaneConsoleLogger swimlaneConsoleLogger, Gson gson) {
+    public TestRunListenersFactory(Configuration configuration,
+                                   FileManager fileManager,
+                                   Gson gson) {
         this.configuration = configuration;
         this.fileManager = fileManager;
-        this.swimlaneConsoleLogger = swimlaneConsoleLogger;
         this.gson = gson;
     }
 
-    public List<ITestRunListener> createTestListeners(TestClass testClass, Device device, String poolName) {
+    public List<ITestRunListener> createTestListeners(TestClass testClass, Device device, Pool pool, ProgressReporter progressReporter) {
+        String poolName = pool.getName();
         return asList(
+                new ProgressTestRunListener(pool, progressReporter),
                 getForkXmlTestRunListener(fileManager, configuration.getOutput(), poolName, device.getSerial(), testClass),
-                new LoggingTestRunListener(device.getSerial(), swimlaneConsoleLogger),
+                new ConsoleLoggingTestRunListener(configuration.getTestPackage(), device.getSerial(), progressReporter),
                 new LogCatTestRunListener(gson, fileManager, poolName, device),
                 new SlowWarningTestRunListener(),
                 getScreenTraceTestRunListener(fileManager, poolName, device));

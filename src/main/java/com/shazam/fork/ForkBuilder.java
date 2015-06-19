@@ -26,8 +26,8 @@ public class ForkBuilder {
     private File applicationApk;
     private File instrumentationApk;
     private File output = cleanFile(Defaults.TEST_OUTPUT);
-    private Pattern testClassPattern = Defaults.TEST_CLASS_PATTERN;
-    private Pattern testPackagePattern; // Will default to test APK's package name when it's known
+    private String testClassRegex = Defaults.TEST_CLASS_REGEX;
+    private String testPackage; // Will default to test APK's package name as soon as it's known
     private int testOutputTimeout = Defaults.TEST_OUTPUT_TIMEOUT_MILLIS;
     private boolean fallbackToScreenshots = true;
 
@@ -72,9 +72,9 @@ public class ForkBuilder {
     /**
      * Regex {@link Pattern} determining the class names to consider when finding tests to run.
      */
-    public ForkBuilder withTestClassPattern(@Nullable Pattern testClassPattern) {
-        if (testClassPattern != null) {
-            this.testClassPattern = testClassPattern;
+    public ForkBuilder withTestClassRegex(@Nullable String testClassRegex) {
+        if (testClassRegex != null) {
+            this.testClassRegex = testClassRegex;
         }
         return this;
     }
@@ -82,9 +82,9 @@ public class ForkBuilder {
     /**
      * Regex {@link Pattern} determining the packages to consider when finding tests to run.
      */
-    public ForkBuilder withTestPackagePattern(@Nullable Pattern testPackagePattern) {
-        if (testPackagePattern != null) {
-            this.testPackagePattern = testPackagePattern;
+    public ForkBuilder withTestPackage(@Nullable String testPackage) {
+        if (testPackage != null) {
+            this.testPackage = testPackage;
         }
         return this;
     }
@@ -115,26 +115,30 @@ public class ForkBuilder {
         checkArgument(testOutputTimeout >= 0, "Timeout must be non-negative.");
 
         InstrumentationInfo instrumentationInfo = parseFromFile(instrumentationApk);
-        testPackagePattern = setPackageFromConfigOrDefaultToTestPackage(instrumentationInfo.getInstrumentationPackage());
+        String testPackage = configuredOrInstrumentationPackage(instrumentationInfo.getInstrumentationPackage());
         Configuration configuration = new Configuration(
                 androidSdk,
                 applicationApk,
                 instrumentationApk,
                 instrumentationInfo,
                 output,
-                testClassPattern,
-                testPackagePattern,
+                Pattern.compile(testClassRegex),
+                compilePatternFor(testPackage),
+                testPackage,
                 testOutputTimeout,
                 fallbackToScreenshots
         );
         return new Fork(configuration);
     }
 
-    private Pattern setPackageFromConfigOrDefaultToTestPackage(String instrumentationPackage) {
-        if (testPackagePattern != null) {
-            return testPackagePattern;
+    private String configuredOrInstrumentationPackage(String instrumentationPackage) {
+        if (testPackage != null) {
+            return testPackage;
         }
+        return instrumentationPackage;
+    }
 
-        return Pattern.compile(instrumentationPackage.replace(".", "\\.") + ".*");
+    private Pattern compilePatternFor(String packageString) {
+        return Pattern.compile(packageString.replace(".", "\\.") + ".*");
     }
 }

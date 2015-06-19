@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 
 import static java.lang.String.format;
 
@@ -29,11 +29,11 @@ class TestRun {
 	private static final Logger logger = LoggerFactory.getLogger(TestRun.class);
     private final String poolName;
 	private final TestRunParameters testRunParameters;
-	private final Collection<ITestRunListener> testRunListeners;
+	private final List<ITestRunListener> testRunListeners;
 
     public TestRun(String poolName,
 				   TestRunParameters testRunParameters,
-				   Collection<ITestRunListener> testRunListeners) {
+				   List<ITestRunListener> testRunListeners) {
         this.poolName = poolName;
 		this.testRunParameters = testRunParameters;
 		this.testRunListeners = testRunListeners;
