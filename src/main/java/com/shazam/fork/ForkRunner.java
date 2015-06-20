@@ -12,17 +12,14 @@
  */
 package com.shazam.fork;
 
-import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestClass;
 import com.shazam.fork.pooling.NoDevicesForPoolException;
 import com.shazam.fork.pooling.PoolLoader;
-import com.shazam.fork.runner.PoolTestRunner;
-import com.shazam.fork.runner.PoolTestRunnerFactory;
-import com.shazam.fork.suite.TestClassScanningException;
+import com.shazam.fork.runner.*;
 import com.shazam.fork.suite.TestClassLoader;
-import com.shazam.fork.summary.*;
-import com.shazam.fork.system.io.FileManager;
+import com.shazam.fork.suite.TestClassScanningException;
+import com.shazam.fork.summary.SummaryGeneratorHook;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,28 +34,22 @@ import static com.shazam.fork.Utils.namedExecutor;
 public class ForkRunner {
     private static final Logger logger = LoggerFactory.getLogger(ForkRunner.class);
 
-    private final RuntimeConfiguration runtimeConfiguration;
     private final PoolLoader poolLoader;
     private final TestClassLoader testClassLoader;
-    private final SummaryPrinter summaryPrinter;
-    private final FileManager fileManager;
     private final PoolTestRunnerFactory poolTestRunnerFactory;
     private final ProgressReporter progressReporter;
+    private final SummaryGeneratorHook summaryGeneratorHook;
 
-    public ForkRunner(RuntimeConfiguration runtimeConfiguration,
-                      PoolLoader poolLoader,
+    public ForkRunner(PoolLoader poolLoader,
                       TestClassLoader testClassLoader,
-                      SummaryPrinter summaryPrinter,
-                      FileManager fileManager,
                       PoolTestRunnerFactory poolTestRunnerFactory,
-                      ProgressReporter progressReporter) {
-        this.runtimeConfiguration = runtimeConfiguration;
+                      ProgressReporter progressReporter,
+                      SummaryGeneratorHook summaryGeneratorHook) {
         this.poolLoader = poolLoader;
         this.testClassLoader = testClassLoader;
-        this.summaryPrinter = summaryPrinter;
-        this.fileManager = fileManager;
         this.poolTestRunnerFactory = poolTestRunnerFactory;
         this.progressReporter = progressReporter;
+        this.summaryGeneratorHook = summaryGeneratorHook;
     }
 
     public boolean run() {
@@ -70,11 +61,7 @@ public class ForkRunner {
             poolExecutor = namedExecutor(numberOfPools, "PoolExecutor-%d");
 
             List<TestClass> testClasses = testClassLoader.loadTestClasses();
-
-            // Only need emergency shutdown hook once tests have started.
-            SummaryGeneratorHook summaryGeneratorHook = new SummaryGeneratorHook(runtimeConfiguration, fileManager,
-                    pools, testClasses, summaryPrinter);
-            Runtime.getRuntime().addShutdownHook(summaryGeneratorHook);
+            summaryGeneratorHook.registerHook(pools, testClasses);
 
             progressReporter.start();
             for (Pool pool : pools) {

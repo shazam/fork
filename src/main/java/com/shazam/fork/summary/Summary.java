@@ -15,76 +15,80 @@ package com.shazam.fork.summary;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 
 public class Summary {
-	private final List<PoolSummary> poolSummaries;
-	private final String title;
-	private final String subtitle;
-	private final ArrayList<String> ignoredTests;
+    private final List<PoolSummary> poolSummaries;
+    private final String title;
+    private final String subtitle;
+    private final ArrayList<String> ignoredTests;
 
-	public List<PoolSummary> getPoolSummaries() {
-		return poolSummaries;
-	}
+    @Nonnull
+    public List<PoolSummary> getPoolSummaries() {
+        return poolSummaries;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public String getSubtitle() {
-		return subtitle;
-	}
+    public String getSubtitle() {
+        return subtitle;
+    }
 
-	public ArrayList<String> getIgnoredTests() {
-		return ignoredTests;
-	}
+    @Nonnull
+    public ArrayList<String> getIgnoredTests() {
+        return ignoredTests;
+    }
 
-	public static class Builder {
-		private final List<PoolSummary> poolSummaries = new ArrayList<>();
+    public static class Builder {
+        private final List<PoolSummary> poolSummaries = new ArrayList<>();
         private final ArrayList<String> ignoredTests = new ArrayList<>();
         private String title = "Report Title";
         private String subtitle = "Report Subtitle";
 
-		public static Builder aSummary() {
-			return new Builder();
-		}
+        public static Builder aSummary() {
+            return new Builder();
+        }
 
-		public Builder addPoolSummary(PoolSummary poolSummary) {
-			poolSummaries.add(poolSummary);
-			return this;
-		}
+        public Builder addPoolSummary(PoolSummary poolSummary) {
+            poolSummaries.add(poolSummary);
+            return this;
+        }
 
-		public Builder withTitle(String title) {
-			this.title = title;
-			return this;
-		}
+        public Builder withTitle(String title) {
+            this.title = title;
+            return this;
+        }
 
-		public Builder withSubtitle(String subtitle) {
-			this.subtitle = subtitle;
-			return this;
-		}
+        public Builder withSubtitle(String subtitle) {
+            this.subtitle = subtitle;
+            return this;
+        }
 
-		public Builder addIgnoredTest(String s) {
-			this.ignoredTests.add(s);
-			return this;
-		}
+        public Builder addIgnoredTest(String s) {
+            this.ignoredTests.add(s);
+            return this;
+        }
 
-		public Summary build() {
-			return new Summary(this);
-		}
-	}
+        public Summary build() {
+            return new Summary(this);
+        }
+    }
 
-	@Override
-	public String toString() {
-		return reflectionToString(this, MULTI_LINE_STYLE);
-	}
+    @Override
+    public String toString() {
+        return reflectionToString(this, MULTI_LINE_STYLE);
+    }
 
-	private Summary(Builder builder) {
-		poolSummaries = builder.poolSummaries;
-		title = builder.title;
-		subtitle = builder.subtitle;
-		ignoredTests = builder.ignoredTests;
-	}
+    private Summary(Builder builder) {
+        poolSummaries = builder.poolSummaries;
+        title = builder.title;
+        subtitle = builder.subtitle;
+        ignoredTests = builder.ignoredTests;
+    }
 }

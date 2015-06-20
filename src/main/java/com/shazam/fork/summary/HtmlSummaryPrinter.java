@@ -161,14 +161,10 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 					poolsDir.mkdirs();
 					File testFile = new File(poolsDir, testResult.plainClassName + "__" + testResult.plainMethodName + ".html");
 					writer = new FileWriter(testFile);
-					try {
-						TestIdentifier testIdentifier = new TestIdentifier(testResult.plainClassName, testResult.plainMethodName);
-						List<LogCatMessage> logCatMessages = retriever.retrieveLogCat(pool.plainPoolName, testResult.deviceSerial, testIdentifier);
-						testResult.logcatMessages = transform(logCatMessages, toHtmlLogCatMessages());
-						mustache.execute(writer, new Object[] {testResult, pool});
-					} finally {
-						testResult.logcatMessages = null;
-					}
+					TestIdentifier testIdentifier = new TestIdentifier(testResult.plainClassName, testResult.plainMethodName);
+					List<LogCatMessage> logCatMessages = retriever.retrieveLogCat(pool.plainPoolName, testResult.deviceSerial, testIdentifier);
+					testResult.logcatMessages = transform(logCatMessages, toHtmlLogCatMessages());
+					mustache.execute(writer, new Object[] {testResult, pool});
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				} finally {

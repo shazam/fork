@@ -26,36 +26,40 @@ import static com.shazam.fork.summary.TestResult.ResultStatus.PASS;
 
 public class OutcomeAggregator {
 
-	public boolean aggregate(Summary summary) {
-		final List<PoolSummary> poolSummaries = summary.getPoolSummaries();
-		Collection<Boolean> poolOutcomes = transform(poolSummaries, toPoolOutcome());
-		return and(poolOutcomes);
-	}
+    public boolean aggregate(Summary summary) {
+        if (summary == null || summary.getPoolSummaries().isEmpty()) {
+            return false;
+        }
 
-	public static Function<? super PoolSummary, Boolean> toPoolOutcome() {
-		return new Function<PoolSummary, Boolean>() {
-			@Override
-			@Nullable
-			public Boolean apply(@Nullable PoolSummary input) {
-				final Collection<TestResult> testResults = input.getTestResults();
-				final Collection<Boolean> testOutcomes = transform(testResults, toResultOutcome());
-				return and(testOutcomes);
-			}
-		};
-	}
+        List<PoolSummary> poolSummaries = summary.getPoolSummaries();
+        Collection<Boolean> poolOutcomes = transform(poolSummaries, toPoolOutcome());
+        return and(poolOutcomes);
+    }
 
-	private static Function<TestResult, Boolean> toResultOutcome() {
-		return new Function<TestResult, Boolean>() {
-			@Override
-			@Nullable
-			public Boolean apply(@Nullable TestResult input) {
-				return PASS.equals(input.getResultStatus());
-			}
-		};
-	}
+    public static Function<? super PoolSummary, Boolean> toPoolOutcome() {
+        return new Function<PoolSummary, Boolean>() {
+            @Override
+            @Nullable
+            public Boolean apply(@Nullable PoolSummary input) {
+                final Collection<TestResult> testResults = input.getTestResults();
+                final Collection<Boolean> testOutcomes = transform(testResults, toTestOutcome());
+                return and(testOutcomes);
+            }
+        };
+    }
+
+    private static Function<TestResult, Boolean> toTestOutcome() {
+        return new Function<TestResult, Boolean>() {
+            @Override
+            @Nullable
+            public Boolean apply(@Nullable TestResult input) {
+                return PASS.equals(input.getResultStatus());
+            }
+        };
+    }
 
     private static Boolean and(final Collection<Boolean> booleans) {
-		return BooleanUtils.and(booleans.toArray(new Boolean[booleans.size()]));
-	}
+        return BooleanUtils.and(booleans.toArray(new Boolean[booleans.size()]));
+    }
 
 }

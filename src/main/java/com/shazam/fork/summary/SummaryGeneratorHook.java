@@ -12,9 +12,8 @@
  */
 package com.shazam.fork.summary;
 
-import com.shazam.fork.RuntimeConfiguration;
-import com.shazam.fork.model.*;
-import com.shazam.fork.system.io.FileManager;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestClass;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,29 +22,50 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Making this a shutdown hook, to generate reports even when the VM is killed. This may also be called normally
+ * by the program execution, in which case we don't re-generate the reports.
+ */
 public class SummaryGeneratorHook extends Thread {
     private static final Logger logger = LoggerFactory.getLogger(SummaryGeneratorHook.class);
 
     private final AtomicBoolean hasNotRunYet = new AtomicBoolean(true);
-    private final RuntimeConfiguration runtimeConfiguration;
-    private final FileManager fileManager;
-    private final Collection<Pool> pools;
-    private final List<TestClass> testClasses;
-    private final SummaryPrinter summaryPrinter;
+    private final Summarizer summarizer;
 
-    public SummaryGeneratorHook(RuntimeConfiguration runtimeConfiguration,
-                                FileManager fileManager,
-                                Collection<Pool> pools,
-                                List<TestClass> testClasses,
-                                SummaryPrinter summaryPrinter) {
-        this.runtimeConfiguration = runtimeConfiguration;
-        this.fileManager = fileManager;
-        this.pools = pools;
-		this.testClasses = testClasses;
-        this.summaryPrinter = summaryPrinter;
+    private Collection<Pool> pools;
+    private List<TestClass> testClasses;
+
+    public SummaryGeneratorHook(Summarizer summarizer) {
+        this.summarizer = summarizer;
     }
 
-	@Override
+    /**
+     * Sets the pools and test classes for which a summary will be created either at normal execution or as a
+     * shutdown hook.
+     *
+     * @param pools the pools to consider for the summary
+     * @param testClasses the test classes for the summary
+     */
+    public void registerHook(Collection<Pool> pools, List<TestClass> testClasses) {
+        this.pools = pools;
+        this.testClasses = testClasses;
+        Runtime.getRuntime().addShutdownHook(this);
+    }
+
+    /**
+     * This only gets executed once, but needs to check the flag in case it finished normally and then shutdown.
+     * It can only be called after {@link SummaryGeneratorHook#registerHook(Collection, List)}.
+     *
+     * @return <code>true</code> - if tests have passed
+     */
+    public boolean defineOutcome() {
+        if (hasNotRunYet.compareAndSet(true, false)) {
+            return summarizer.summarize(pools, testClasses);
+        }
+        return false;
+    }
+
+    @Override
 	public void run() {
 		if (hasNotRunYet.get()) {
 			logger.info("************************************************************************************");
@@ -53,21 +73,5 @@ public class SummaryGeneratorHook extends Thread {
 			logger.info("************************************************************************************");
 			defineOutcome();
 		}
-	}
-
-    /**
-     * This only gets executed once, but needs to check the flag in case it finished normally and then shutdown.
-     *
-     * @return a result summary
-     */
-	public boolean defineOutcome() {
-        if (hasNotRunYet.compareAndSet(true, false)) {
-			Summarizer summarizer = new Summarizer(runtimeConfiguration, fileManager, pools,
-                    testClasses);
-			Summary summary = summarizer.compileSummary();
-            summaryPrinter.print(summary);
-            return summary != null && new OutcomeAggregator().aggregate(summary);
-		}
-		return false;
 	}
 }
