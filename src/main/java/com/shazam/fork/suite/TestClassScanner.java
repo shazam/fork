@@ -45,12 +45,16 @@ public class TestClassScanner {
         this.testClassFactory = testClassFactory;
     }
 
-    public List<TestClass> scanForTestClasses() throws CouldNotScanTestClassesException {
+    public List<TestClass> scanForTestClasses() throws CouldNotReadTestDexFileException, NoTestClassesFoundException {
         try {
             File[] instrumentationDexFiles = getDexFiles(instrumentationApkFile, outputFolder);
-            return getTestClassesFrom(instrumentationDexFiles);
+            List<TestClass> testClassesInDexFiles = getTestClassesFrom(instrumentationDexFiles);
+            if (testClassesInDexFiles.isEmpty()) {
+                throw new NoTestClassesFoundException("No tests classes were found in the dex files.");
+            }
+            return testClassesInDexFiles;
         } catch (IOException e) {
-            throw new CouldNotScanTestClassesException("Error when trying to scan " + instrumentationApkFile.getAbsolutePath()
+            throw new CouldNotReadTestDexFileException("Error when trying to scan " + instrumentationApkFile.getAbsolutePath()
                     + " for test classes.", e);
         }
     }

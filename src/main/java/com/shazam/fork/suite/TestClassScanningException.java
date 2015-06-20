@@ -10,21 +10,12 @@
 
 package com.shazam.fork.suite;
 
-import com.shazam.fork.model.TestClass;
-
-import java.util.List;
-
-public class TestClassLoader {
-    private final TestClassScanner scanner;
-    private final TestClassFilter filter;
-
-    public TestClassLoader(TestClassScanner scanner, TestClassFilter filter) {
-        this.scanner = scanner;
-        this.filter = filter;
+public class TestClassScanningException extends Exception {
+    public TestClassScanningException(String message) {
+        super(message);
     }
 
-    public List<TestClass> loadTestClasses() throws TestClassScanningException {
-        List<TestClass> allTestClasses = scanner.scanForTestClasses();
-        return filter.anyUserFilter(allTestClasses);
+    public TestClassScanningException(String message, Exception exception) {
+        super(message, exception);
     }
 }

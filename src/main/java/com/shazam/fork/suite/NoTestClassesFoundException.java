@@ -10,21 +10,9 @@
 
 package com.shazam.fork.suite;
 
-import com.shazam.fork.model.TestClass;
+public class NoTestClassesFoundException extends TestClassScanningException {
 
-import java.util.List;
-
-public class TestClassLoader {
-    private final TestClassScanner scanner;
-    private final TestClassFilter filter;
-
-    public TestClassLoader(TestClassScanner scanner, TestClassFilter filter) {
-        this.scanner = scanner;
-        this.filter = filter;
-    }
-
-    public List<TestClass> loadTestClasses() throws TestClassScanningException {
-        List<TestClass> allTestClasses = scanner.scanForTestClasses();
-        return filter.anyUserFilter(allTestClasses);
+    public NoTestClassesFoundException(String message) {
+        super(message);
     }
 }

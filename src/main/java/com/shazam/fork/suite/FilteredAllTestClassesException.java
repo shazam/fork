@@ -10,8 +10,9 @@
 
 package com.shazam.fork.suite;
 
-public class CouldNotScanTestClassesException extends Exception {
-    public CouldNotScanTestClassesException(String message, Exception exception) {
-        super(message, exception);
+public class FilteredAllTestClassesException extends TestClassScanningException {
+
+    public FilteredAllTestClassesException(String message) {
+        super(message);
     }
 }

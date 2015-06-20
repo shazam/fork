@@ -32,12 +32,13 @@ public class TestClassFilter {
         this.filterPattern = filterPattern;
     }
 
-    public List<TestClass> anyUserFilter(List<TestClass> testClassesFromDexFile) {
+    public List<TestClass> anyUserFilter(List<TestClass> testClassesFromDexFile) throws FilteredAllTestClassesException {
+        logger.info("Applying filter: {}", filterPattern);
 		if (filterPattern == null) {
             return testClassesFromDexFile;
 		}
 
-        Set<TestClass> filteredIn = new HashSet<>();
+        Set<TestClass> filteredTestClasses = new HashSet<>();
         StringBuilder missingButSpecified = new StringBuilder();
         for (String filterIn : filterPattern.split(",")) {
             String filterInRegex = filterIn.contains(".*") ? filterIn : ".*" + filterIn + ".*";
@@ -45,7 +46,7 @@ public class TestClassFilter {
             for (TestClass testClass : testClassesFromDexFile) {
                 String testClassName = testClass.getName();
                 if (testClassName.equals(filterIn) || testClassName.matches(filterInRegex)) {
-                    filteredIn.add(testClass);
+                    filteredTestClasses.add(testClass);
                     matched = true;
                 }
             }
@@ -59,6 +60,11 @@ public class TestClassFilter {
         if (missingButSpecified.length() > 0) {
             logger.warn("Filters specified but did not match any classes: " + missingButSpecified);
         }
-        return new ArrayList<>(filteredIn);
+
+        ArrayList<TestClass> testClasses = new ArrayList<>(filteredTestClasses);
+        if (testClasses.isEmpty()) {
+            throw new FilteredAllTestClassesException("No test classes left after filtering");
+        }
+        return testClasses;
 	}
 }
