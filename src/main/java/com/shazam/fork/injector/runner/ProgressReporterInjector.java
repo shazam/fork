@@ -8,28 +8,14 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.shazam.fork.listeners;
+package com.shazam.fork.injector.runner;
 
-import com.shazam.fork.model.Pool;
+import com.shazam.fork.runner.ProgressReporter;
+import com.shazam.fork.runner.OverallProgressReporter;
 
-public interface ProgressReporter {
+public class ProgressReporterInjector {
 
-    void start();
-
-    void stop();
-
-    void addPoolProgress(Pool pool, PoolProgressTracker poolProgressTracker);
-
-    PoolProgressTracker getProgressTrackerFor(Pool pool);
-
-    /**
-     * The time tests have been executing so far.
-     *
-     * @return the execution time in millis
-     */
-    long millisSinceTestsStarted();
-
-    int getFailures();
-
-    float getProgress();
+    public static ProgressReporter progressReporter() {
+        return new OverallProgressReporter();
+    }
 }

@@ -39,6 +39,10 @@ public class TestClass {
         return reflectionToString(this, DEFAULT_STYLE);
     }
 
+    public Collection<TestMethod> getMethods() {
+        return methods;
+    }
+
     public Collection<TestMethod> getUnignoredMethods() {
         Collection<TestMethod> unignoredMethods = new ArrayList<>();
 		for (TestMethod method : methods) {

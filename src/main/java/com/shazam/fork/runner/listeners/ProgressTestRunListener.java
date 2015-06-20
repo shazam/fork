@@ -8,36 +8,37 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.shazam.fork.listeners;
+package com.shazam.fork.runner.listeners;
 
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.runner.PoolProgressTracker;
+import com.shazam.fork.runner.ProgressReporter;
 
 import java.util.Map;
 
-import static com.shazam.fork.Utils.millisSinceNanoTime;
-import static java.lang.System.nanoTime;
+class ProgressTestRunListener implements ITestRunListener {
 
-class SlowWarningTestRunListener implements ITestRunListener {
-    private static final Logger logger = LoggerFactory.getLogger(SlowWarningTestRunListener.class);
-    private static final long TEST_LENGTH_THRESHOLD_MILLIS = 30 * 1000;
-    private long startTime;
+    private final PoolProgressTracker poolProgressTracker;
+
+    ProgressTestRunListener(Pool pool, ProgressReporter progressReporter) {
+        poolProgressTracker = progressReporter.getProgressTrackerFor(pool);
+    }
 
     @Override
     public void testRunStarted(String runName, int testCount) {
+
     }
 
     @Override
     public void testStarted(TestIdentifier test) {
-        startTime = nanoTime();
+
     }
 
     @Override
     public void testFailed(TestIdentifier test, String trace) {
-
+        poolProgressTracker.failedTest();
     }
 
     @Override
@@ -52,11 +53,7 @@ class SlowWarningTestRunListener implements ITestRunListener {
 
     @Override
     public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
-        long testDuration = millisSinceNanoTime(startTime);
-        if (testDuration > TEST_LENGTH_THRESHOLD_MILLIS) {
-            logger.warn("Slow test ({}ms): {} {}" , testDuration, test.getClassName(), test.getTestName());
-
-        }
+        poolProgressTracker.completedTest();
     }
 
     @Override

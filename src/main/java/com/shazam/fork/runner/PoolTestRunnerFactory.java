@@ -11,7 +11,6 @@
 package com.shazam.fork.runner;
 
 import com.shazam.fork.Configuration;
-import com.shazam.fork.listeners.ProgressReporter;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestClass;
 import com.shazam.fork.system.io.FileManager;
@@ -37,6 +36,10 @@ public class PoolTestRunnerFactory {
                                                List<TestClass> testClasses,
                                                CountDownLatch poolCountDownLatch,
                                                ProgressReporter progressReporter) {
+
+        int totalTests = countTests(testClasses);
+        progressReporter.addPoolProgress(pool, new PoolProgressTracker(totalTests));
+
         return new PoolTestRunner(
                 configuration,
                 fileManager,
@@ -45,5 +48,13 @@ public class PoolTestRunnerFactory {
                 new LinkedList<>(testClasses),
                 poolCountDownLatch,
                 progressReporter);
+    }
+
+    private int countTests(List<TestClass> testClasses) {
+        int sum = 0;
+        for (TestClass testClass : testClasses) {
+            sum += testClass.getMethods().size();
+        }
+        return sum;
     }
 }

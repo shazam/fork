@@ -10,7 +10,7 @@
 
 package com.shazam.fork.injector.listeners;
 
-import com.shazam.fork.listeners.TestRunListenersFactory;
+import com.shazam.fork.runner.listeners.TestRunListenersFactory;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;

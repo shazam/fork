@@ -8,23 +8,28 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.shazam.fork.suite;
+package com.shazam.fork.runner;
 
-import com.shazam.fork.model.TestClass;
+import com.shazam.fork.model.Pool;
 
-import java.util.List;
+public interface ProgressReporter {
 
-public class TestClassLoader {
-    private final TestClassScanner scanner;
-    private final TestClassFilter filter;
+    void start();
 
-    public TestClassLoader(TestClassScanner scanner, TestClassFilter filter) {
-        this.scanner = scanner;
-        this.filter = filter;
-    }
+    void stop();
 
-    public List<TestClass> loadTestClasses() throws CouldNotScanTestClassesException {
-        List<TestClass> allTestClasses = scanner.scanForTestClasses();
-        return filter.anyUserFilter(allTestClasses);
-    }
+    void addPoolProgress(Pool pool, PoolProgressTracker poolProgressTracker);
+
+    PoolProgressTracker getProgressTrackerFor(Pool pool);
+
+    /**
+     * The time tests have been executing so far.
+     *
+     * @return the execution time in millis
+     */
+    long millisSinceTestsStarted();
+
+    int getFailures();
+
+    float getProgress();
 }

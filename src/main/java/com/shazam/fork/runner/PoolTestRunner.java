@@ -14,8 +14,8 @@ package com.shazam.fork.runner;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.Configuration;
-import com.shazam.fork.listeners.*;
 import com.shazam.fork.model.*;
+import com.shazam.fork.runner.listeners.ForkXmlTestRunListener;
 import com.shazam.fork.system.io.FileManager;
 
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
 import static com.shazam.fork.Utils.namedExecutor;
-import static com.shazam.fork.listeners.TestRunListenersFactory.getForkXmlTestRunListener;
+import static com.shazam.fork.runner.listeners.TestRunListenersFactory.getForkXmlTestRunListener;
 
 public class PoolTestRunner implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(PoolTestRunner.class);

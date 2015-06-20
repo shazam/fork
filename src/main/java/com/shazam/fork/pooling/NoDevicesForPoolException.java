@@ -12,7 +12,7 @@
  */
 package com.shazam.fork.pooling;
 
-class NoDevicesForPoolException extends Exception {
+public class NoDevicesForPoolException extends Exception {
 
 	NoDevicesForPoolException(String message) {
 		super(message);

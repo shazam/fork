@@ -15,7 +15,6 @@ package com.shazam.fork.runner;
 import com.android.ddmlib.*;
 import com.android.ddmlib.testrunner.*;
 import com.shazam.fork.model.TestClass;
-import com.shazam.fork.model.TestRunParameters;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

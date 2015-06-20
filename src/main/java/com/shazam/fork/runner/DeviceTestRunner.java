@@ -13,7 +13,6 @@
 package com.shazam.fork.runner;
 
 import com.android.ddmlib.IDevice;
-import com.shazam.fork.listeners.ProgressReporter;
 import com.shazam.fork.model.*;
 import com.shazam.fork.system.adb.Installer;
 

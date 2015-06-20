@@ -42,10 +42,8 @@ class Summarizer {
     private final List<TestClass> testClasses;
     private final Serializer serializer;
 
-    Summarizer(RuntimeConfiguration runtimeConfiguration,
-                      FileManager fileManager,
-                      Collection<Pool> pools,
-                      List<TestClass> testClasses) {
+    Summarizer(RuntimeConfiguration runtimeConfiguration, FileManager fileManager, Collection<Pool> pools,
+               List<TestClass> testClasses) {
         this.runtimeConfiguration = runtimeConfiguration;
         this.fileManager = fileManager;
         this.pools = pools;

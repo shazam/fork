@@ -45,12 +45,12 @@ public class TestClassScanner {
         this.testClassFactory = testClassFactory;
     }
 
-    public List<TestClass> scanForTestClasses() {
+    public List<TestClass> scanForTestClasses() throws CouldNotScanTestClassesException {
         try {
             File[] instrumentationDexFiles = getDexFiles(instrumentationApkFile, outputFolder);
             return getTestClassesFrom(instrumentationDexFiles);
         } catch (IOException e) {
-            throw new RuntimeException("Error when trying to scan " + instrumentationApkFile.getAbsolutePath()
+            throw new CouldNotScanTestClassesException("Error when trying to scan " + instrumentationApkFile.getAbsolutePath()
                     + " for test classes.", e);
         }
     }
