@@ -55,8 +55,8 @@ public class ForkCli {
         public int testOutputTimeout = -1;
 
         @Parameter(names = { "--fallback-to-screenshots" }, description = "Allowed to fallback to screenshots when video" +
-                " recording is not supported")
-        public boolean fallbackToScreenshots= true;
+                " recording is not supported" , arity = 1)
+        public boolean fallbackToScreenshots = true;
 
         @Parameter(names = { "--fail-on-failure" }, description = "Non-zero exit code on failure")
         public boolean failOnFailure = true;

@@ -45,7 +45,8 @@ class ScreenRecorderTestRunListener implements ITestRunListener {
         hasFailed = false;
         File localVideoFile = fileManager.createFile(SCREENRECORD, pool, device.getSerial(), test);
         screenRecorderStopper = new ScreenRecorderStopper(deviceInterface);
-        new Thread(new ScreenRecorder(test, screenRecorderStopper, localVideoFile, deviceInterface)).start();
+        ScreenRecorder screenRecorder = new ScreenRecorder(test, screenRecorderStopper, localVideoFile, deviceInterface);
+        new Thread(screenRecorder, "ScreenRecorder").start();
     }
 
     @Override

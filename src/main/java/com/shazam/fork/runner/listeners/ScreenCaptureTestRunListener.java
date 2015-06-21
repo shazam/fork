@@ -41,7 +41,7 @@ class ScreenCaptureTestRunListener implements ITestRunListener {
     public void testStarted(TestIdentifier test) {
         hasFailed = false;
         screenCapturer = new ScreenCapturer(deviceInterface, fileManager, pool, serial, test);
-        new Thread(screenCapturer).start();
+        new Thread(screenCapturer, "ScreenCapturer").start();
     }
 
     @Override

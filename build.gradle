@@ -54,7 +54,7 @@ jar {
                 'Built-Date': new Date(),
                 'Built-JDK': System.getProperty('java.version'),
                 'Built-Gradle': gradle.gradleVersion,
-                'Main-class': 'com.shazam.fork.ForkCli'
+                'Main-class': mainClassName
     }
 }
 
