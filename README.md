@@ -27,8 +27,8 @@ Running Fork
 
 There are two ways to run Fork with your builds.
 
-### [Gradle plugin](https://github.com/shazam/fork-gradle-plugin) (recommended)
-This is the only way that will be supported in the future. First, you need to add a build-script dependency:
+### Gradle plugin (recommended)
+First, you need to add a build-script dependency:
 
 ```
 buildscript {
@@ -46,34 +46,57 @@ apply plugin: 'fork'
 You're now done. You can enable smart pooling by adding runtime parameters (*Pooling and other parameters* section). If you had any instrumentation test tasks before, the plugin has added Fork tasks. You can verify by running:
 
 ```
-gradlew tasks #(and optionally | grep fork)
+gradlew tasks | grep fork
 ```
+
+You can specify runtime configuration for Fork with the Fork DSL. Simply add a block to your build.gradle, _e.g.,_:
+
+```groovy
+fork {
+    baseOutputDir "/my_custom_dir"
+}
+```
+
+Property Name          | Property Type     | Default value
+---------------------- | ----------------- | -------------
+baseOutputDir          | File              | "fork"
+testPackage            | String            | (Your instrumentation APK package)
+testClassRegex         | String            | "^((?!Abstract).)*Test$"
+testOutputTimeout      | int               | 60000
+ignoreFailures         | boolean           | false
+fallbackToScreenshots  | boolean           | true
 
 ### Standalone
 Will potentially be unsupported, as it's the least developer friendly. Check out the Fork project and execute:
 
 ```
-> gradlew run
+> gradlew fork-runner:run -Pargs='ARGUMENTS LIST'
 
-With the below options. The APK and test APK parameters are mandatory:
-    --apk                   Path to application. This parameter is required.
-    --test-apk              Path to test application. This parameter is required.
-    --test-package-pattern  Regex determining packages to consider when finding tests to run. Defaults to instrumentation package.
-    --test-class-pattern    Regex determining class names to consider when finding tests to run. Defaults to ^((?!Abstract).)*Test$
-    --output                Output path. Defaults to "fork-output"
-    --test-timeout          The maximum amount of time during which the tests are allowed to not output any response, in milliseconds
-    --fail-on-failure       Non-zero exit code on failure. Defaults to false.
-    --sdk                   Path to Android SDK. Defaults to the ANDROID_HOME environment variable.
+With the below options.       The APK and test APK parameters are mandatory:
+    --sdk                     Path to Android SDK. Defaults to the ANDROID_HOME environment variable.
+    --apk                     Path to application. This parameter is required.
+    --test-apk                Path to test application. This parameter is required.
+    --output                  Output path. Defaults to "fork-output"
+    --test-package            The package to consider when finding tests to run. Defaults to instrumentation package.
+    --test-class-regex        Regex determining class names to consider when finding tests to run. Defaults to ^((?!Abstract).)*Test$
+    --test-timeout            The maximum amount of time during which the tests are allowed to not output any response, in milliseconds
+    --fail-on-failure         Non-zero exit code on failure. Defaults to false.
+    --fallback-to-screenshots If a device does not support videos, define if you'd like animated GIFs (experimental). Defaults to true.
 ```
 
+For example:
+```
+> gradlew fork-runner:run -Pargs='--apk /path/to/production.APK --test-apk /path/to/test.APK'
+
+```
 
 Configuring pools and runtime
 ----------------------------
 One of the most useful characteristics of the library is the way it creates the device pools. There are different options, to automatically create pools by API level, shortest width dimension and whether devices are self-described as tablets. On top of that, users can also manually create pools based on serial numbers, for maximum flexibility.
 
-With either way of executing Fork (Gradle / standalone / maven) you can specify how the pools are created by setting a combination of these environment variables:
+With either way of executing Fork (Gradle / standalone) you can specify how the pools are created by setting a combination of these environment variables:
 
-One of:
+One pooling option from:
 * **fork.tablet=(true|false)** - to configure pools depending on their manufacturer's 'tablet' flag (ro.build.characteristics)
 * **fork.pool.POOL_NAME=(Serial','?)** - to add devices with a given serial to a pool with given name,e.g. hdpi=01234567,abcdefgh
 * **fork.computed.STRATEGY=(PoolName=LowerBound','?)** - to automatically create pools based on device characteristics, where
@@ -81,13 +104,14 @@ One of:
   * STRATEGY:=api - by api, e.g. gingerbread_and_earlier=0,honeycomb_and_later=11)
 * **fork.eachdevice=(true|false)** - to create a pool per device (a.k.a. Spoon mode). This is the default behaviour.
 
-Any of:
+Any combination of other options from:
 * **android.test.classes=REGEX** - comma separated regexes that specify a pattern for the classes/packages to run
 * **fork.excluded.serial=(Serial','?)** - to exclude specific devices from running any tests
 * **fork.report.title=Title** - to specify a title for the generated report
 * **fork.report.subtitle=Subitle** - to specify a subtitle for the generated report
 * **fork.test.size=(small|medium|large)** - to run test methods with the corresponding size annotation
 
+*Note:* The Fork runtime parameter ```android.test.classes``` is applied _after_ both the ```testClassRegex``` and ```testPackage``` filters have been applied.
 
 Examples
 -----------
