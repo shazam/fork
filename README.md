@@ -22,15 +22,7 @@ We introduced the notion of *pools of devices*. These are now responsible for ru
 Fork works out-of-the-box, without any code changes.
 
 
-
-Pooling
--------
-
-One of the most useful characteristics of the library is the way it creates the device pools. There are different options, to automatically create pools by API level, shortest width dimension and whether devices are self-described as tablets. On top of that, users can also manually create pools based on serial numbers, for maximum flexibility.
-
-
-
-How to run Fork
+Running Fork
 ---------------
 
 There are two ways to run Fork with your builds.
@@ -56,8 +48,6 @@ You're now done. You can enable smart pooling by adding runtime parameters (*Poo
 ```
 gradlew tasks #(and optionally | grep fork)
 ```
-### Maven plugin (work in progress)
-Watch this space.
 
 ### Standalone
 Will potentially be unsupported, as it's the least developer friendly. Check out the Fork project and execute:
@@ -77,8 +67,9 @@ With the below options. The APK and test APK parameters are mandatory:
 ```
 
 
-Pooling and runtime parameters
+Configuring pools and runtime
 ----------------------------
+One of the most useful characteristics of the library is the way it creates the device pools. There are different options, to automatically create pools by API level, shortest width dimension and whether devices are self-described as tablets. On top of that, users can also manually create pools based on serial numbers, for maximum flexibility.
 
 With either way of executing Fork (Gradle / standalone / maven) you can specify how the pools are created by setting a combination of these environment variables:
 
