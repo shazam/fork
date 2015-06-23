@@ -33,11 +33,11 @@ public class TestClassFilter {
     }
 
     public List<TestClass> anyUserFilter(List<TestClass> testClassesFromDexFile) throws FilteredAllTestClassesException {
-        logger.info("Applying filter: {}", filterPattern);
 		if (filterPattern == null) {
             return testClassesFromDexFile;
 		}
 
+        logger.info("Applying filter: {}", filterPattern);
         Set<TestClass> filteredTestClasses = new HashSet<>();
         StringBuilder missingButSpecified = new StringBuilder();
         for (String filterIn : filterPattern.split(",")) {
