@@ -63,6 +63,16 @@ public class FileManager {
         }
     }
 
+    public File createSummaryFile() {
+        try {
+            Path path = get(output.getAbsolutePath(), "summary");
+            Path directory = createDirectories(path);
+            return createFile(directory, String.format("fork-%s.json", System.currentTimeMillis()));
+        } catch (IOException e) {
+            throw new CouldNotCreateDirectoryException(e);
+        }
+    }
+
     public File[] getFiles(FileType fileType, String pool, String serial, TestIdentifier testIdentifier) {
         FileFilter fileFilter = new AndFileFilter(
                 new PrefixFileFilter(testIdentifier.toString()),
@@ -100,5 +110,9 @@ public class FileManager {
 
     private String createFilenameForTest(TestIdentifier testIdentifier, FileType fileType, int sequenceNumber) {
         return String.format("%s-%02d.%s", testIdentifier.toString(), sequenceNumber, fileType.getSuffix());
+    }
+
+    private String createFilename(FileType fileType) {
+        return String.format("%s.%s", fileType.getDirectory(), fileType.getSuffix());
     }
 }

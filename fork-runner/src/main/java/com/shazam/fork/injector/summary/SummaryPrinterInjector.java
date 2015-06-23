@@ -12,25 +12,28 @@
  */
 package com.shazam.fork.injector.summary;
 
-import com.shazam.fork.summary.CompositeSummaryPrinter;
-import com.shazam.fork.summary.LogSummaryPrinter;
-import com.shazam.fork.summary.HtmlSummaryPrinter;
-import com.shazam.fork.summary.SummaryPrinter;
+import com.shazam.fork.summary.*;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuredOutput;
+import static com.shazam.fork.injector.GsonInjector.gson;
 import static com.shazam.fork.injector.summary.LogCatRetrieverInjector.logCatRetriever;
+import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 
 public class SummaryPrinterInjector {
 
     public static SummaryPrinter summaryPrinter() {
-        return new CompositeSummaryPrinter(consoleSummaryPrinter(), htmlSummaryPrinter());
+        return new CompositeSummaryPrinter(consoleSummaryPrinter(), htmlSummaryPrinter(), jsonSummarySerializer());
     }
 
-    private static LogSummaryPrinter consoleSummaryPrinter() {
+    private static SummaryPrinter consoleSummaryPrinter() {
         return new LogSummaryPrinter();
     }
 
     private static SummaryPrinter htmlSummaryPrinter() {
         return new HtmlSummaryPrinter(configuredOutput(), logCatRetriever());
+    }
+
+    private static SummaryPrinter jsonSummarySerializer() {
+        return new JsonSummarySerializer(fileManager(), gson());
     }
 }

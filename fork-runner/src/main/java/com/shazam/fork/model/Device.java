@@ -27,7 +27,7 @@ public class Device {
 	private final String manufacturer;
 	private final String model;
 	private final String apiLevel;
-	private final IDevice deviceInterface;
+	private final transient IDevice deviceInterface;
 	private final boolean isTablet;
 	private final DisplayGeometry geometry;
     private final Diagnostics diagnostics;
