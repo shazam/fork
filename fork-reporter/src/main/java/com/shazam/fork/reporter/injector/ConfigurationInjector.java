@@ -8,7 +8,19 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-include ':fork-common'
-include ':fork-runner'
-include ':fork-gradle-plugin'
-include ':fork-reporter'
+package com.shazam.fork.reporter.injector;
+
+import com.shazam.fork.reporter.Configuration;
+
+public class ConfigurationInjector {
+
+    private static Configuration configuration;
+
+    public static void setConfiguration(Configuration configuration) {
+        ConfigurationInjector.configuration = configuration;
+    }
+
+    public static Configuration configuration() {
+        return configuration;
+    }
+}
