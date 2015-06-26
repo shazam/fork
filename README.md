@@ -33,7 +33,7 @@ First, you need to add a build-script dependency:
 ```
 buildscript {
     dependencies {
-        classpath 'com.shazam.fork:fork-gradle-plugin:1.0.0'
+        classpath 'com.shazam.fork:fork-gradle-plugin:1.1.0-SNAPSHOT'
     }
 }
 ```
