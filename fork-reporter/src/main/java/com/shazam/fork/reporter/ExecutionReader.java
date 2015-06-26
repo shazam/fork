@@ -10,30 +10,56 @@
 
 package com.shazam.fork.reporter;
 
-import java.io.File;
+import com.google.gson.Gson;
+import com.shazam.fork.summary.Summary;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.Function;
+
+import static com.shazam.fork.CommonDefaults.FORK;
+import static com.shazam.fork.reporter.Execution.Builder.execution;
+import static com.shazam.fork.reporter.Executions.Builder.executions;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.io.FilenameUtils.getBaseName;
 
 public class ExecutionReader {
+    private static final Logger logger = LoggerFactory.getLogger(ExecutionReader.class);
 
     private final FileManager fileManager;
+    private final Gson gson;
 
-    public ExecutionReader(FileManager fileManager) {
+    public ExecutionReader(FileManager fileManager, Gson gson) {
         this.fileManager = fileManager;
+        this.gson = gson;
     }
 
     public Executions readExecutions() {
         List<File> individualSummaries = fileManager.getIndividualSummaries();
+        List<Execution> executions = individualSummaries.stream()
+                .map(getFileSummaryFunction())
+                .collect(toList());
 
-        List<Summary> collect = individualSummaries.stream().map(file -> {
-            //TODO Parse file into Summary
-            return new Summary();
-        }).collect(Collectors.toList());
-
-        // TODO read in all of them into Summaries and then make an Executions object (concurrently).
-        return null;
+        return executions().withExecutions(executions).build();
     }
 
-    private class Summary {
+    private Function<File, Execution> getFileSummaryFunction() {
+        return file -> {
+            try {
+                String timestampString = getBaseName(file.getName()).replaceAll(FORK, "");
+                logger.debug("Reading summary file: {}", file.toString());
+                Reader reader = new FileReader(file);
+                Summary summary = gson.fromJson(reader, Summary.class);
+                return execution()
+                        .withTimestamp(Long.parseLong(timestampString))
+                        .withSummary(summary)
+                        .build();
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        };
     }
 }

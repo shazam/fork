@@ -15,8 +15,8 @@ import com.shazam.fork.model.Pool;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.shazam.fork.Utils.millisBetweenNanoTimes;
-import static com.shazam.fork.Utils.millisSinceNanoTime;
+import static com.shazam.fork.utils.Utils.millisBetweenNanoTimes;
+import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
 import static java.lang.System.nanoTime;
 
 /**

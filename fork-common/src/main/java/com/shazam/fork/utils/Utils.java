@@ -8,16 +8,21 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.shazam.fork.reporter.injector;
+package com.shazam.fork.utils;
 
-import com.shazam.fork.reporter.ExecutionReader;
+import static java.lang.System.nanoTime;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
-import static com.shazam.fork.reporter.injector.FileManagerInjector.fileManager;
-import static com.shazam.fork.reporter.injector.GsonInjector.gson;
+public class Utils {
 
-public class ExecutionReaderInjector {
-
-    public static ExecutionReader executionReader() {
-        return new ExecutionReader(fileManager(), gson());
+    public static long millisSinceNanoTime(long startNanos) {
+        return millisBetweenNanoTimes(startNanos, nanoTime());
     }
+
+    public static long millisBetweenNanoTimes(long startNanos, long endNanos) {
+        long elapsedNanos = endNanos - startNanos;
+        return MILLISECONDS.convert(elapsedNanos, NANOSECONDS);
+    }
+
 }

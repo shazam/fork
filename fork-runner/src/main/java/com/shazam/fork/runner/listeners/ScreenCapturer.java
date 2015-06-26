@@ -26,7 +26,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import static com.shazam.fork.Utils.millisSinceNanoTime;
+import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
 import static com.shazam.fork.system.io.FileType.ANIMATION;
 import static com.shazam.fork.system.io.FileType.SCREENSHOT;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;

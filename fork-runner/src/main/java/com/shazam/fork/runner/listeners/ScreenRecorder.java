@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 
-import static com.shazam.fork.Utils.millisSinceNanoTime;
+import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
 import static com.shazam.fork.system.io.RemoteFileManager.remoteVideoForTest;
 import static com.shazam.fork.system.io.RemoteFileManager.removeRemotePath;
 import static java.lang.System.nanoTime;

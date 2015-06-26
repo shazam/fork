@@ -10,14 +10,13 @@
 
 package com.shazam.fork.reporter.injector;
 
-import com.shazam.fork.reporter.ExecutionReader;
+import com.shazam.fork.reporter.FileManager;
 
-import static com.shazam.fork.reporter.injector.FileManagerInjector.fileManager;
-import static com.shazam.fork.reporter.injector.GsonInjector.gson;
+import static com.shazam.fork.reporter.injector.ConfigurationInjector.configuration;
 
-public class ExecutionReaderInjector {
+public class FileManagerInjector {
 
-    public static ExecutionReader executionReader() {
-        return new ExecutionReader(fileManager(), gson());
+    public static FileManager fileManager() {
+        return new FileManager(configuration().getInput());
     }
 }

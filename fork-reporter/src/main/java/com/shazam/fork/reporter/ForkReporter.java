@@ -10,14 +10,21 @@
 
 package com.shazam.fork.reporter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 
 import static com.shazam.fork.reporter.injector.ConfigurationInjector.setConfiguration;
 import static com.shazam.fork.reporter.injector.ExecutionReaderInjector.executionReader;
 import static com.shazam.fork.reporter.injector.FlakinessCalculatorInjector.flakinessCalculator;
 import static com.shazam.fork.reporter.injector.FlakinessReportPrinterInjector.flakinessReportPrinter;
+import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
+import static java.lang.System.nanoTime;
 
 public class ForkReporter {
+    private static final Logger logger = LoggerFactory.getLogger(ForkReporter.class);
+
     private final ExecutionReader reader;
     private FlakinessCalculator flakinessCalculator;
     private FlakinessReportPrinter flakinessReportPrinter;
@@ -30,9 +37,16 @@ public class ForkReporter {
     }
 
     public void createReport() {
-        Executions executions = reader.readExecutions();
-        FlakinessReport flakinessReport = flakinessCalculator.calculate(executions);
-        flakinessReportPrinter.printReport(flakinessReport);
+        long startOfTestsMs = nanoTime();
+
+        try {
+            Executions executions = reader.readExecutions();
+            FlakinessReport flakinessReport = flakinessCalculator.calculate(executions);
+            flakinessReportPrinter.printReport(flakinessReport);
+        } finally {
+            long duration = millisSinceNanoTime(startOfTestsMs);
+            logger.info("Total time taken: {} milliseconds", duration);
+        }
     }
 
     public static class Builder {

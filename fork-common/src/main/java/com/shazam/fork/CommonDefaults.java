@@ -8,16 +8,10 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.shazam.fork.reporter.injector;
+package com.shazam.fork;
 
-import com.shazam.fork.reporter.ExecutionReader;
-
-import static com.shazam.fork.reporter.injector.FileManagerInjector.fileManager;
-import static com.shazam.fork.reporter.injector.GsonInjector.gson;
-
-public class ExecutionReaderInjector {
-
-    public static ExecutionReader executionReader() {
-        return new ExecutionReader(fileManager(), gson());
-    }
+public class CommonDefaults {
+    public static final String FORK = "fork-";
+    public static final String JSON = "json";
+    public static final String FORK_SUMMARY_FILENAME_FORMAT = FORK + "%s." + JSON;
 }

@@ -25,22 +25,20 @@ dependencies {
             "com.google.guava:guava:$GUAVA_VERSION",
             "com.android.tools.ddms:ddmlib:$DDMLIB_VERSION",
             "org.slf4j:slf4j-log4j12:$SLF4J_VERSION",
-    )
-    compile(
-            'com.google.code.gson:gson:2.3.1',
+            "com.google.code.gson:gson:$GSON_VERSION",
+            "commons-io:commons-io:$COMMONS_IO_VERSION",
+            "org.apache.commons:commons-lang3:$COMMONS_LANG_VERSION",
             'org.simpleframework:simple-xml:2.7.1',
             'com.github.spullara.mustache.java:compiler:0.8.0',
             'com.madgag:animated-gif-lib:1.2',
-            'org.apache.commons:commons-lang3:3.4',
-            'commons-io:commons-io:2.4'
     )
 
     compile('org.lesscss:lesscss:1.7.0.1.1') {
         exclude module: 'slf4j-simple'
     }
 
-    testCompile('org.hamcrest:hamcrest-all:1.3')
-    testCompile('junit:junit:4.12') {
+    testCompile("org.hamcrest:hamcrest-all:$HAMCREST_VERSION")
+    testCompile("junit:junit:$JUNIT_VERSION") {
         exclude module:'hamcrest-core'
     }
 }

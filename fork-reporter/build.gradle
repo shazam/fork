@@ -22,6 +22,9 @@ dependencies {
     compile(
             "com.beust:jcommander:$JCOMMANDER_VERSION",
             "org.slf4j:slf4j-log4j12:$SLF4J_VERSION",
+            "com.google.code.gson:gson:$GSON_VERSION",
+            "commons-io:commons-io:$COMMONS_IO_VERSION",
+            "org.apache.commons:commons-lang3:$COMMONS_LANG_VERSION",
     )
 }
 

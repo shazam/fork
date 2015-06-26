@@ -10,12 +10,28 @@
 
 package com.shazam.fork.reporter;
 
+import org.apache.commons.io.filefilter.*;
+
 import java.io.File;
+import java.io.FileFilter;
 import java.util.List;
 
+import static com.shazam.fork.CommonDefaults.FORK;
+import static com.shazam.fork.CommonDefaults.JSON;
+import static java.util.Arrays.asList;
+
 public class FileManager {
+    private final File inputDirectory;
+
+    public FileManager(File inputDirectory) {
+        this.inputDirectory = inputDirectory;
+    }
 
     public List<File> getIndividualSummaries() {
-        return null;
+        FileFilter fileFilter = new AndFileFilter(
+                new PrefixFileFilter(FORK),
+                new SuffixFileFilter(JSON));
+
+        return asList(inputDirectory.listFiles(fileFilter));
     }
 }

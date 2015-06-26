@@ -10,5 +10,46 @@
 
 package com.shazam.fork.reporter;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
+import static org.apache.commons.lang3.builder.ToStringStyle.NO_CLASS_NAME_STYLE;
+
 public class Executions {
+    private final List<Execution> executions;
+
+    private Executions(Builder builder) {
+        this.executions = builder.executions;
+    }
+
+    @Nonnull
+    public List<Execution> getExecutions() {
+        return executions;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, NO_CLASS_NAME_STYLE);
+    }
+
+    public static class Builder {
+        private List<Execution> executions = new ArrayList<>();
+
+        public static Builder executions() {
+            return new Builder();
+        }
+
+        public Builder withExecutions(@Nonnull List<Execution> executions) {
+            this.executions = executions;
+            return this;
+        }
+
+        public Executions build() {
+            return new Executions(this);
+        }
+    }
 }

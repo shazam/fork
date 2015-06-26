@@ -10,14 +10,12 @@
 
 package com.shazam.fork.reporter.injector;
 
-import com.shazam.fork.reporter.ExecutionReader;
+import com.google.gson.Gson;
 
-import static com.shazam.fork.reporter.injector.FileManagerInjector.fileManager;
-import static com.shazam.fork.reporter.injector.GsonInjector.gson;
+public class GsonInjector {
+    private static final Gson GSON = new Gson();
 
-public class ExecutionReaderInjector {
-
-    public static ExecutionReader executionReader() {
-        return new ExecutionReader(fileManager(), gson());
+    public static Gson gson() {
+        return GSON;
     }
 }
