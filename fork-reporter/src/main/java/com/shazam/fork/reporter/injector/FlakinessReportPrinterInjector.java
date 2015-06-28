@@ -12,9 +12,16 @@ package com.shazam.fork.reporter.injector;
 
 
 import com.shazam.fork.reporter.FlakinessReportPrinter;
+import com.shazam.fork.reporter.HtmlFlakinessReportPrinter;
+
+import java.io.File;
+
+import static com.shazam.fork.reporter.injector.ConfigurationInjector.configuration;
+import static com.shazam.fork.reporter.injector.HtmlGeneratorInjector.htmlGenerator;
 
 public class FlakinessReportPrinterInjector {
     public static FlakinessReportPrinter flakinessReportPrinter() {
-        return new FlakinessReportPrinter();
+        File output = configuration().getOutput();
+        return new HtmlFlakinessReportPrinter(output, htmlGenerator());
     }
 }

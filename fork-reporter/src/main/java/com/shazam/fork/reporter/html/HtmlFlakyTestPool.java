@@ -8,9 +8,18 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.shazam.fork.reporter;
+package com.shazam.fork.reporter.html;
 
-public interface FlakinessReportPrinter {
+import java.util.List;
 
-    void printReport(FlakinessReport flakinessReport);
+public class HtmlFlakyTestPool {
+    public final String poolName;
+    public final List<String> buildIds;
+    public final List<TestHistory> testHistories;
+
+    public HtmlFlakyTestPool(String poolName, List<String> buildIds, List<TestHistory> testHistories) {
+        this.poolName = poolName;
+        this.buildIds = buildIds;
+        this.testHistories = testHistories;
+    }
 }

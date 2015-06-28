@@ -8,9 +8,15 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.shazam.fork.reporter;
+package com.shazam.fork.injector.summary;
 
-public interface FlakinessReportPrinter {
+import com.github.mustachejava.DefaultMustacheFactory;
+import com.shazam.fork.io.HtmlGenerator;
 
-    void printReport(FlakinessReport flakinessReport);
+public class HtmlGeneratorInjector {
+    private static final DefaultMustacheFactory MUSTACHE_FACTORY = new DefaultMustacheFactory();
+
+    public static HtmlGenerator htmlGenerator() {
+        return new HtmlGenerator(MUSTACHE_FACTORY);
+    }
 }

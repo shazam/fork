@@ -1,0 +1,96 @@
+body {
+  margin: 0px;
+  color: #222;
+  font: 14px/19px Roboto, sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+.birds-eye {
+  width: 100%;
+  table-layout: fixed;
+  border-spacing: 1px;
+}
+
+.birds-eye .description {
+  width: 32.5%;
+}
+
+.birds-eye td, th {
+  padding: 0px;
+}
+
+.birds-eye .build {
+  font-weight: normal;
+}
+
+.rotated-text {
+  display: inline-block;
+  overflow: hidden;
+  width: 1.5em;
+  line-height: 1.5;
+}
+
+.rotated-text__inner {
+  display: inline-block;
+  white-space: nowrap;
+  transform: translate(0,100%) rotate(-90deg);
+  transform-origin: 0 0;
+}
+
+.rotated-text__inner:before {
+  content: "";
+  float: left;
+  margin-top: 100%;
+}
+
+.birds-eye td {
+  height: 30px;
+  line-height: 0.78;
+}
+
+.birds-eye .testlabel {
+  text-align: right;
+  padding-right: 11px;
+}
+
+.birds-eye .method {
+  display: block;
+}
+
+.birds-eye .class {
+  font-size: xx-small;
+  letter-spacing: -0.05em;
+  font-weight: lighter;
+}
+
+.birds-eye .test.pass {
+  background-color: #b9e9b9;
+}
+
+.birds-eye .test.pass:hover {
+  background-color: #99c999;
+}
+
+.birds-eye .test.fail {
+  background-color: #e9b9b9;
+}
+
+.birds-eye .test.fail:hover {
+  background-color: #c99999;
+}
+
+.birds-eye .test.missing {
+  background-color: #bbbbbb;
+}
+
+.birds-eye .test.missing:hover {
+  background-color: #999999;
+}
+
+.birds-eye .test a {
+  display: block;
+  text-decoration: none;
+  height: 100%;
+  width: 100%;
+}
