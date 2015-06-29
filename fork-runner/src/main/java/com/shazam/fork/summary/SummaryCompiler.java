@@ -70,13 +70,12 @@ public class SummaryCompiler {
     }
 
     private void compileResultsForDevice(Pool pool, PoolSummary.Builder poolSummaryBuilder, Device device) {
-        String poolName = pool.getName();
-        File[] deviceResultFiles = fileManager.getTestFilesForDevice(poolName, device.getSerial());
+        File[] deviceResultFiles = fileManager.getTestFilesForDevice(pool.getName(), device.getSerial());
         if (deviceResultFiles == null) {
             return;
         }
         for (File file : deviceResultFiles) {
-            Collection<TestResult> testResults = parseTestResultsFromFile(file, device, poolName);
+            Collection<TestResult> testResults = parseTestResultsFromFile(file, device);
             poolSummaryBuilder.addTestResults(testResults);
         }
     }
@@ -97,26 +96,25 @@ public class SummaryCompiler {
         }
     }
 
-	private Collection<TestResult> parseTestResultsFromFile(File file, Device device, String poolName) {
+	private Collection<TestResult> parseTestResultsFromFile(File file, Device device) {
 		try {
 			TestSuite testSuite = serializer.read(TestSuite.class, file, STRICT);
 			List<TestCase> testCases = testSuite.getTestCases();
 			if ((testCases == null) || testCases.isEmpty()) {
 				return new ArrayList<>(0);
 			}
-			return transform(testCases, toTestResult(device, poolName));
+			return transform(testCases, toTestResult(device));
 		} catch (Exception e) {
 			throw new RuntimeException("Error when parsing file: " + file.getAbsolutePath(), e);
 		}
 	}
 
-	private Function<TestCase, TestResult> toTestResult(final Device device, final String poolName) {
+	private Function<TestCase, TestResult> toTestResult(final Device device) {
 		return new Function<TestCase, TestResult>() {
 			@SuppressWarnings("NullableProblems")
             @Override
 			public TestResult apply(@Nonnull TestCase testCase) {
 				return aTestResult()
-						.withPoolName(poolName)
 						.withDevice(device)
 						.withTestClass(testCase.getClassname())
 						.withTestMethod(testCase.getName())

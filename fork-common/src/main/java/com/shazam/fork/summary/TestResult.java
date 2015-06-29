@@ -23,14 +23,9 @@ public class TestResult {
     private final String testMethod;
     private final String errorTrace;
     private final String failureTrace;
-    private final String poolName;
 
     public Device getDevice() {
         return device;
-    }
-
-    public String getPoolName() {
-        return poolName;
     }
 
     public float getTimeTaken() {
@@ -73,7 +68,6 @@ public class TestResult {
         private String testMethod;
         private String errorTrace;
         private String failureTrace;
-        private String poolName;
 
         public static Builder aTestResult() {
             return new Builder();
@@ -113,11 +107,6 @@ public class TestResult {
             return this;
         }
 
-        public Builder withPoolName(String poolName) {
-            this.poolName = poolName;
-            return this;
-        }
-
         public TestResult build() {
             return new TestResult(this);
         }
@@ -131,6 +120,5 @@ public class TestResult {
         testMethod = builder.testMethod;
         errorTrace = builder.errorTrace;
         failureTrace = builder.failureTrace;
-        poolName = builder.poolName;
     }
 }

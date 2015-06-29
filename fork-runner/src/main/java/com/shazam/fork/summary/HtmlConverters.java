@@ -44,10 +44,11 @@ class HtmlConverters {
 			public HtmlPoolSummary apply(@Nullable PoolSummary poolSummary) {
 				HtmlPoolSummary htmlPoolSummary = new HtmlPoolSummary();
                 htmlPoolSummary.poolStatus = getPoolStatus(poolSummary);
-                htmlPoolSummary.prettyPoolName = prettifyPoolName(poolSummary.getPoolName());
-                htmlPoolSummary.plainPoolName = poolSummary.getPoolName();
+				String poolName = poolSummary.getPoolName();
+				htmlPoolSummary.prettyPoolName = prettifyPoolName(poolName);
+                htmlPoolSummary.plainPoolName = poolName;
                 htmlPoolSummary.testCount = poolSummary.getTestResults().size();
-                htmlPoolSummary.testResults = transform(poolSummary.getTestResults(), toHtmlTestResult());
+                htmlPoolSummary.testResults = transform(poolSummary.getTestResults(), toHtmlTestResult(poolName));
 				return htmlPoolSummary;
 			}
 
@@ -58,7 +59,7 @@ class HtmlConverters {
         };
 	}
 
-	private static Function<TestResult, HtmlTestResult> toHtmlTestResult() {
+	private static Function<TestResult, HtmlTestResult> toHtmlTestResult(final String poolName) {
 		return new Function<TestResult, HtmlTestResult>(){
 			@Override
 			@Nullable
@@ -70,7 +71,7 @@ class HtmlConverters {
 				htmlTestResult.timeTaken = String.format("%.2f", input.getTimeTaken());
 				htmlTestResult.plainMethodName = input.getTestMethod();
 				htmlTestResult.plainClassName = input.getTestClass();
-				htmlTestResult.poolName = input.getPoolName();
+				htmlTestResult.poolName = poolName;
 				htmlTestResult.trace = input.getTrace().split("\n");
 				// Keeping logcats in memory is hugely wasteful. Now they're read at page-creation.
 				// htmlTestResult.logcatMessages = transform(input.getLogCatMessages(), toHtmlLogCatMessages());
