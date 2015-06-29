@@ -10,14 +10,10 @@
 
 package com.shazam.fork.reporter.model;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-
-import static org.apache.commons.lang3.builder.ToStringStyle.NO_CLASS_NAME_STYLE;
 
 public class Executions {
     private final List<Execution> executions;
@@ -29,11 +25,6 @@ public class Executions {
     @Nonnull
     public List<Execution> getExecutions() {
         return executions;
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, NO_CLASS_NAME_STYLE);
     }
 
     public static class Builder {
