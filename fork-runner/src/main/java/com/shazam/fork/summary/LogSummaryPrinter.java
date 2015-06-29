@@ -13,7 +13,7 @@
 package com.shazam.fork.summary;
 
 import com.google.common.base.Predicate;
-import com.shazam.fork.summary.TestResult.ResultStatus;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,9 +23,9 @@ import java.util.Collection;
 import javax.annotation.Nullable;
 
 import static com.google.common.collect.Collections2.filter;
-import static com.shazam.fork.summary.TestResult.ResultStatus.ERROR;
-import static com.shazam.fork.summary.TestResult.ResultStatus.FAIL;
-import static com.shazam.fork.summary.TestResult.ResultStatus.PASS;
+import static com.shazam.fork.summary.ResultStatus.ERROR;
+import static com.shazam.fork.summary.ResultStatus.FAIL;
+import static com.shazam.fork.summary.ResultStatus.PASS;
 import static java.lang.String.format;
 
 public class LogSummaryPrinter implements SummaryPrinter {

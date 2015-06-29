@@ -8,18 +8,8 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.shazam.fork.reporter.html;
+package com.shazam.fork.summary;
 
-import java.util.List;
-
-public class TestHistory {
-    public final String className;
-    public final String methodName;
-    public final List<HtmlTestInstance> htmlTestInstances;
-
-    public TestHistory(String className, String methodName, List<HtmlTestInstance> htmlTestInstances) {
-        this.className = className;
-        this.methodName = methodName;
-        this.htmlTestInstances = htmlTestInstances;
-    }
+public enum ResultStatus {
+    PASS, FAIL, ERROR
 }

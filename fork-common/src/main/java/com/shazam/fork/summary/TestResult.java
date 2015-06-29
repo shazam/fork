@@ -66,10 +66,6 @@ public class TestResult {
         }
     }
 
-    public enum ResultStatus {
-        PASS, FAIL, ERROR
-    }
-
     public static class Builder {
         private Device device;
         private float timeTaken;

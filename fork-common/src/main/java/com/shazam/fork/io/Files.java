@@ -12,14 +12,13 @@ package com.shazam.fork.io;
 
 import java.io.*;
 
-import static java.lang.Thread.currentThread;
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 
 public class Files {
 
     public static void copyResource(String fromDir, String assetName, File toDir) {
-        InputStream resourceAsStream = currentThread().getContextClassLoader().getResourceAsStream(fromDir + assetName);
+        InputStream resourceAsStream = Files.class.getResourceAsStream(fromDir + assetName);
         File assetFile = new File(toDir, assetName);
         try {
             copyInputStreamToFile(resourceAsStream, assetFile);

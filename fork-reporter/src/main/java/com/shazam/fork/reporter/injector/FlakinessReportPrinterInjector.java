@@ -18,10 +18,11 @@ import java.io.File;
 
 import static com.shazam.fork.reporter.injector.ConfigurationInjector.configuration;
 import static com.shazam.fork.reporter.injector.HtmlGeneratorInjector.htmlGenerator;
+import static com.shazam.fork.reporter.injector.TestFlakinessToHtmlReportConverterInjector.converter;
 
 public class FlakinessReportPrinterInjector {
     public static FlakinessReportPrinter flakinessReportPrinter() {
         File output = configuration().getOutput();
-        return new HtmlFlakinessReportPrinter(output, htmlGenerator());
+        return new HtmlFlakinessReportPrinter(output, htmlGenerator(), converter());
     }
 }

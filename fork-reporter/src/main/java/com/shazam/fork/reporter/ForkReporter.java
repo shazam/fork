@@ -10,6 +10,9 @@
 
 package com.shazam.fork.reporter;
 
+import com.shazam.fork.reporter.model.Executions;
+import com.shazam.fork.reporter.model.FlakinessReport;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

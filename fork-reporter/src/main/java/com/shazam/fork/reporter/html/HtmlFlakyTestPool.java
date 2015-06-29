@@ -15,9 +15,9 @@ import java.util.List;
 public class HtmlFlakyTestPool {
     public final String poolName;
     public final List<String> buildIds;
-    public final List<TestHistory> testHistories;
+    public final List<HtmlTestHistory> testHistories;
 
-    public HtmlFlakyTestPool(String poolName, List<String> buildIds, List<TestHistory> testHistories) {
+    public HtmlFlakyTestPool(String poolName, List<String> buildIds, List<HtmlTestHistory> testHistories) {
         this.poolName = poolName;
         this.buildIds = buildIds;
         this.testHistories = testHistories;

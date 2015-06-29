@@ -11,6 +11,8 @@
 package com.shazam.fork.reporter;
 
 import com.google.gson.Gson;
+import com.shazam.fork.reporter.model.Execution;
+import com.shazam.fork.reporter.model.Executions;
 import com.shazam.fork.summary.Summary;
 
 import org.slf4j.Logger;
@@ -21,8 +23,8 @@ import java.util.List;
 import java.util.function.Function;
 
 import static com.shazam.fork.CommonDefaults.FORK;
-import static com.shazam.fork.reporter.Execution.Builder.execution;
-import static com.shazam.fork.reporter.Executions.Builder.executions;
+import static com.shazam.fork.reporter.model.Execution.Builder.execution;
+import static com.shazam.fork.reporter.model.Executions.Builder.executions;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 

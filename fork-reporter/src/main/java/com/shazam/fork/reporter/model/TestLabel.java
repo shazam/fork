@@ -8,48 +8,45 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.shazam.fork.reporter;
+package com.shazam.fork.reporter.model;
 
-import com.shazam.fork.summary.Summary;
+public class TestLabel {
+    private final String className;
+    private final String method;
 
-public class Execution {
-
-    private final long timestamp;
-    private final Summary summary;
-
-    private Execution(Builder builder) {
-        this.timestamp = builder.timestamp;
-        this.summary = builder.summary;
+    public String getClassName() {
+        return className;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public String getMethod() {
+        return method;
     }
 
-    public Summary getSummary() {
-        return summary;
+    private TestLabel(Builder builder) {
+        this.className = builder.className;
+        this.method = builder.method;
     }
 
     public static class Builder {
-        private long timestamp;
-        private Summary summary;
+        private String className;
+        private String method;
 
-        public static Builder execution() {
+        public static Builder testLabel() {
             return new Builder();
         }
 
-        public Builder withTimestamp(long timestamp) {
-            this.timestamp = timestamp;
+        public Builder withClassName(String className) {
+            this.className = className;
             return this;
         }
 
-        public Builder withSummary(Summary summary) {
-            this.summary = summary;
+        public Builder withMethod(String method) {
+            this.method = method;
             return this;
         }
 
-        public Execution build() {
-            return new Execution(this);
+        public TestLabel build() {
+            return new TestLabel(this);
         }
     }
 }
