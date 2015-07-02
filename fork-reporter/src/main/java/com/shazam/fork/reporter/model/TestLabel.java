@@ -10,16 +10,45 @@
 
 package com.shazam.fork.reporter.model;
 
-public class TestLabel {
-    private final String className;
-    private final String method;
+import com.google.common.base.Objects;
 
+import javax.annotation.Nonnull;
+
+import static com.google.common.base.Objects.equal;
+
+public class TestLabel {
+    @Nonnull private final String className;
+    @Nonnull private final String method;
+
+    @Nonnull
     public String getClassName() {
         return className;
     }
 
+    @Nonnull
     public String getMethod() {
         return method;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(className, method);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof TestLabel)) {
+            return false;
+        }
+
+        TestLabel otherTestLabel = (TestLabel) obj;
+
+        return equal(className, otherTestLabel.getClassName()) &&
+                equal(method, otherTestLabel.getMethod());
     }
 
     private TestLabel(Builder builder) {
@@ -28,19 +57,19 @@ public class TestLabel {
     }
 
     public static class Builder {
-        private String className;
-        private String method;
+        private String className = "";
+        private String method = "";
 
         public static Builder testLabel() {
             return new Builder();
         }
 
-        public Builder withClassName(String className) {
+        public Builder withClassName(@Nonnull String className) {
             this.className = className;
             return this;
         }
 
-        public Builder withMethod(String method) {
+        public Builder withMethod(@Nonnull String method) {
             this.method = method;
             return this;
         }

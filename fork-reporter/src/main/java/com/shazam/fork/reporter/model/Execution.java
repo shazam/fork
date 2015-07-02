@@ -14,16 +14,16 @@ import com.shazam.fork.summary.Summary;
 
 public class Execution {
 
-    private final long timestamp;
+    private final String buildId;
     private final Summary summary;
 
     private Execution(Builder builder) {
-        this.timestamp = builder.timestamp;
         this.summary = builder.summary;
+        this.buildId = builder.buildId;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public String getBuildId() {
+        return buildId;
     }
 
     public Summary getSummary() {
@@ -31,15 +31,15 @@ public class Execution {
     }
 
     public static class Builder {
-        private long timestamp;
         private Summary summary;
+        private String buildId;
 
         public static Builder execution() {
             return new Builder();
         }
 
-        public Builder withTimestamp(long timestamp) {
-            this.timestamp = timestamp;
+        public Builder withBuildId(String buildId) {
+            this.buildId = buildId;
             return this;
         }
 

@@ -19,17 +19,20 @@ body {
 
 
 @media (min-width: 1200px) {
-  .container {
+  .hero-unit {
     width: 1170px;
   }
 }
 
 .container {
+  width: 95%;
   margin-right: auto;
   margin-left: auto;
 }
 
 .hero-unit {
+  margin-right: auto;
+  margin-left: auto;
   padding: 15px 30px;
   margin-bottom: 30px;
   font-size: 18px;

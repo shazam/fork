@@ -20,6 +20,7 @@ dependencies {
             "com.google.guava:guava:$GUAVA_VERSION",
             "com.android.tools.ddms:ddmlib:$DDMLIB_VERSION",
             "commons-io:commons-io:$COMMONS_IO_VERSION",
+            "org.apache.commons:commons-lang3:$COMMONS_LANG_VERSION",
             "com.github.spullara.mustache.java:compiler:$MUSTACHE_VERSION",
     )
 }

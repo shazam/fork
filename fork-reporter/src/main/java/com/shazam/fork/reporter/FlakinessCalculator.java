@@ -10,82 +10,87 @@
 
 package com.shazam.fork.reporter;
 
-import com.google.common.collect.ArrayTable;
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.shazam.fork.reporter.model.*;
-import com.shazam.fork.summary.ResultStatus;
+import com.shazam.fork.summary.*;
 
-import java.util.List;
+import java.util.*;
 
 import static com.shazam.fork.reporter.model.Build.Builder.aBuild;
 import static com.shazam.fork.reporter.model.FlakinessReport.Builder.flakinessReport;
 import static com.shazam.fork.reporter.model.PoolHistory.Builder.poolHistory;
 import static com.shazam.fork.reporter.model.TestInstance.Builder.testInstance;
 import static com.shazam.fork.reporter.model.TestLabel.Builder.testLabel;
-import static java.util.Arrays.asList;
+import static com.shazam.fork.utils.ReadableNames.readablePoolName;
+import static java.util.stream.Collectors.toList;
 
 public class FlakinessCalculator {
-    public FlakinessReport calculate(Executions executions) {
-        return HARDCODED_flakinessReport();
-    }
 
-    private FlakinessReport HARDCODED_flakinessReport() {
-        List<PoolHistory> poolHistories = asList(
-                HARDCODED_poolHistory1(),
-                HARDCODED_poolHistory1()
-        );
+    public FlakinessReport calculate(Executions executions) throws FlakinessCalculationException {
+        List<Execution> executionsList = executions.getExecutions();
+        List<Build> builds = new ArrayList<>(executionsList.size());
+        Set<TestLabel> testLabels = new HashSet<>();
+        Set<String> poolNames = new HashSet<>();
+
+        HashMap<String, Table<TestLabel, Build, TestInstance>> rawResultsTable = reduceResults(executionsList, builds, testLabels, poolNames);
+        //TODO Score and sort table rows.
+        List<PoolHistory> poolHistories = getPoolHistories(rawResultsTable);
+
         return flakinessReport()
-                .withName("Shazam on Android Master")
+                .withName("Shazam on Android")
                 .withPoolHistories(poolHistories)
                 .build();
     }
 
-    private PoolHistory HARDCODED_poolHistory1() {
-        List<TestLabel> tests = tests();
-        List<Build> builds = builds();
+    private HashMap<String, Table<TestLabel, Build, TestInstance>> reduceResults(
+            List<Execution> executionsList,
+            List<Build> builds,
+            Set<TestLabel> testLabels,
+            Set<String> poolNames) {
+        HashMap<String, Table<TestLabel, Build, TestInstance>> poolToFlakinessTableMap = new HashMap<>();
+        for (Execution execution : executionsList) {
+            String buildId = execution.getBuildId();
+            Build build = aBuild().withBuildId(buildId).build();
+            builds.add(build);
 
-        Table<TestLabel, Build, TestInstance> table = ArrayTable.<TestLabel, Build, TestInstance>create(tests, builds);
-        for (TestLabel testLabel : tests) {
-            for (Build build : builds) {
-                TestInstance testInstance = testInstance()
-                        .withResultStatus(ResultStatus.PASS)
-                        .withLink("#")
-                        .build();
-                table.put(testLabel, build, testInstance);
+            List<PoolSummary> poolSummaries = execution.getSummary().getPoolSummaries();
+            for (PoolSummary poolSummary : poolSummaries) {
+                String poolName = poolSummary.getPoolName();
+                poolNames.add(poolName);
+                Table<TestLabel, Build, TestInstance> table = getOrCreateTable(poolToFlakinessTableMap, poolName);
+                for (TestResult testResult : poolSummary.getTestResults()) {
+                    TestLabel testLabel = testLabel()
+                            .withClassName(testResult.getTestClass())
+                            .withMethod(testResult.getTestMethod())
+                            .build();
+                    testLabels.add(testLabel);
+
+                    ResultStatus resultStatus = testResult.getResultStatus();
+                    TestInstance testInstance = testInstance().withResultStatus(resultStatus).build();
+                    table.put(testLabel, build, testInstance);
+                }
             }
         }
-
-        return poolHistory()
-                .withName("all=sw0-up")
-                .withReadableName("Phones Sw0 up")
-                .withHistoryTable(table)
-                .build();
+        return poolToFlakinessTableMap;
     }
 
-    private List<TestLabel> tests() {
-        return asList(
-                label("com.shazam.android.acceptancetests.musicdetails.streaming.MusicDetailsTaggingWithRdioTest", "userDoesNotSeeAdAfterSuccessfulTag"),
-                label("com.shazam.android.acceptancetests.SanityTest", "hasFacebookInstalled"),
-                label("com.shazam.android.acceptancetests.musicdetails.streaming.RdioTest", "userCanListenToMusic"),
-                label("com.shazam.android.acceptancetests.notifications.gcm.Notificationstest", "goesToExploreScreen")
-        );
+    private Table<TestLabel, Build, TestInstance> getOrCreateTable(HashMap<String, Table<TestLabel, Build, TestInstance>> poolToFlakinessTableMap, String poolName) {
+        Table<TestLabel, Build, TestInstance> table = poolToFlakinessTableMap.get(poolName);
+        if (table == null) {
+            table = HashBasedTable.create();
+            poolToFlakinessTableMap.put(poolName, table);
+        }
+        return table;
     }
 
-    private TestLabel label(String testClass, String method) {
-        return testLabel()
-                .withClassName(testClass)
-                .withMethod(method)
-                .build();
+    private List<PoolHistory> getPoolHistories(HashMap<String, Table<TestLabel, Build, TestInstance>> rawResultsTable) {
+        return rawResultsTable.entrySet().stream()
+                .map(poolToTable -> poolHistory()
+                        .withName(poolToTable.getKey())
+                        .withReadableName(readablePoolName(poolToTable.getKey()))
+                        .withHistoryTable(poolToTable.getValue())
+                        .build())
+                .collect(toList());
     }
-
-    private List<Build> builds() {
-        return asList(build("1751"), build("1752"), build("1753"), build("1754"), build("1755"));
-    }
-
-    private Build build(String buildId) {
-        return aBuild()
-                .withBuildId(buildId)
-                .build();
-    }
-
 }

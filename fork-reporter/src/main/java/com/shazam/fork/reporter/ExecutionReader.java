@@ -51,12 +51,12 @@ public class ExecutionReader {
     private Function<File, Execution> getFileSummaryFunction() {
         return file -> {
             try {
-                String timestampString = getBaseName(file.getName()).replaceAll(FORK, "");
+                String buildId = getBaseName(file.getName()).replaceAll(FORK, "");
                 logger.debug("Reading summary file: {}", file.toString());
                 Reader reader = new FileReader(file);
                 Summary summary = gson.fromJson(reader, Summary.class);
                 return execution()
-                        .withTimestamp(Long.parseLong(timestampString))
+                        .withBuildId(buildId)
                         .withSummary(summary)
                         .build();
             } catch (FileNotFoundException e) {
