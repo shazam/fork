@@ -14,9 +14,11 @@ import com.shazam.fork.reporter.model.Status;
 
 public class HtmlTestInstance {
     public final String status;
+    public final String link;
 
-    public HtmlTestInstance(Status status) {
+    public HtmlTestInstance(Status status, String link) {
         this.status = status.name().toLowerCase();
+        this.link = link;
     }
 
 }

@@ -10,6 +10,8 @@
 
 package com.shazam.fork.reporter;
 
+import javax.annotation.Nonnull;
+
 import static com.shazam.fork.reporter.Constants.BUILD_ID_TOKEN;
 
 public class TokenBuildLinkCreator implements BuildLinkCreator {
@@ -21,7 +23,7 @@ public class TokenBuildLinkCreator implements BuildLinkCreator {
     }
 
     @Override
-    public String createLink(String buildId) {
+    public String createLink(@Nonnull String buildId) {
         return baseUrl.replace(BUILD_ID_TOKEN, buildId);
     }
 }

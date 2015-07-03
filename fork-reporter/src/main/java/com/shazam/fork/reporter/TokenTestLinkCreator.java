@@ -10,13 +10,23 @@
 
 package com.shazam.fork.reporter;
 
+import com.shazam.fork.reporter.model.TestLabel;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface BuildLinkCreator {
+import static org.apache.commons.lang3.StringUtils.stripEnd;
 
-    @Nullable
-    String createLink(@Nonnull String buildId);
+public class TokenTestLinkCreator implements TestLinkCreator {
+    private static final String TEST_PATH = "/html/pools/%s/%s__%s.html";
 
-    BuildLinkCreator NO_OP = buildId -> null;
+    @Override
+    public String createLinkToTest(@Nullable String buildLink, @Nonnull String poolName, @Nonnull TestLabel testLabel) {
+        if (buildLink == null) {
+            return null;
+        }
+
+        String baseTestUrl = stripEnd(buildLink, "/") + TEST_PATH;
+        return String.format(baseTestUrl, poolName, testLabel.getClassName(), testLabel.getMethod());
+    }
 }

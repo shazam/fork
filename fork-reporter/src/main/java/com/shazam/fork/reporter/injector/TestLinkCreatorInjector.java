@@ -10,14 +10,14 @@
 
 package com.shazam.fork.reporter.injector;
 
-import com.shazam.fork.reporter.FlakinessSorter;
+import com.shazam.fork.reporter.TestLinkCreator;
+import com.shazam.fork.reporter.TokenTestLinkCreator;
 
-import static com.shazam.fork.reporter.injector.BuildLinkCreatorInjector.buildLinkCreator;
-import static com.shazam.fork.reporter.injector.ConfigurationInjector.configuration;
-import static com.shazam.fork.reporter.injector.TestLinkCreatorInjector.testLinkCreator;
-
-public class FlakinessSorterInjector {
-    public static FlakinessSorter flakinessSorter() {
-        return new FlakinessSorter(configuration().getTitle(), buildLinkCreator(), testLinkCreator());
+public class TestLinkCreatorInjector {
+    public static TestLinkCreator testLinkCreator() {
+        if (ConfigurationInjector.configuration().shouldCreateLinks()) {
+            return new TokenTestLinkCreator();
+        }
+        return TestLinkCreator.NO_OP;
     }
 }

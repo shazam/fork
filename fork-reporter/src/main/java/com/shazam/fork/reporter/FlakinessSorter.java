@@ -32,10 +32,12 @@ public class FlakinessSorter {
 
     private final String title;
     private final BuildLinkCreator buildLinkCreator;
+    private final TestLinkCreator testLinkCreator;
 
-    public FlakinessSorter(String title, BuildLinkCreator buildLinkCreator) {
+    public FlakinessSorter(String title, BuildLinkCreator buildLinkCreator, TestLinkCreator testLinkCreator) {
         this.title = title;
         this.buildLinkCreator = buildLinkCreator;
+        this.testLinkCreator = testLinkCreator;
     }
 
     public FlakinessReport sort(Executions executions) throws FlakinessCalculationException {
@@ -68,9 +70,10 @@ public class FlakinessSorter {
         HashMap<String, Table<TestLabel, Build, TestInstance>> poolToFlakinessTableMap = new HashMap<>();
         for (Execution execution : executionsList) {
             String buildId = execution.getBuildId();
+            String buildLink = buildLinkCreator.createLink(buildId);
             Build build = aBuild()
                     .withBuildId(buildId)
-                    .withLink(buildLinkCreator.createLink(buildId))
+                    .withLink(buildLink)
                     .build();
             builds.add(build);
 
@@ -87,7 +90,10 @@ public class FlakinessSorter {
                     testLabels.add(testLabel);
 
                     ResultStatus resultStatus = testResult.getResultStatus();
-                    TestInstance testInstance = testInstance().withResultStatus(resultStatus).build();
+                    TestInstance testInstance = testInstance()
+                            .withResultStatus(resultStatus)
+                            .withLink(testLinkCreator.createLinkToTest(buildLink, poolSummary.getPoolName(), testLabel))
+                            .build();
                     table.put(testLabel, build, testInstance);
                 }
             }

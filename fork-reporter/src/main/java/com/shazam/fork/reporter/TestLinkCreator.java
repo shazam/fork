@@ -8,16 +8,16 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.shazam.fork.reporter.injector;
+package com.shazam.fork.reporter;
 
-import com.shazam.fork.reporter.FlakinessSorter;
+import com.shazam.fork.reporter.model.TestLabel;
 
-import static com.shazam.fork.reporter.injector.BuildLinkCreatorInjector.buildLinkCreator;
-import static com.shazam.fork.reporter.injector.ConfigurationInjector.configuration;
-import static com.shazam.fork.reporter.injector.TestLinkCreatorInjector.testLinkCreator;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public class FlakinessSorterInjector {
-    public static FlakinessSorter flakinessSorter() {
-        return new FlakinessSorter(configuration().getTitle(), buildLinkCreator(), testLinkCreator());
-    }
+public interface TestLinkCreator {
+    @Nullable
+    String createLinkToTest(@Nullable String buildLink, @Nonnull String poolName, @Nonnull TestLabel testLabel);
+
+    TestLinkCreator NO_OP = (buildLink, poolName, testLabel) -> null;
 }

@@ -58,7 +58,10 @@ public class TestToHtmlFlakinessReportConverter {
         return testLabels.stream()
                 .map(scoredTestLabel -> {
                     List<HtmlTestInstance> htmlTestInstances = builds.stream()
-                            .map(build -> new HtmlTestInstance(table.get(scoredTestLabel, build).getStatus()))
+                            .map(build -> {
+                                TestInstance testInstance = table.get(scoredTestLabel, build);
+                                return new HtmlTestInstance(testInstance.getStatus(), testInstance.getLink());
+                            })
                             .collect(toList());
                     TestLabel testLabel = scoredTestLabel.getTestLabel();
                     return new HtmlTestHistory(testLabel.getClassName(), testLabel.getMethod(), htmlTestInstances);

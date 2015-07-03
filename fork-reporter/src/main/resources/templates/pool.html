@@ -52,7 +52,9 @@
                   </td>
                   {{#htmlTestInstances}}
                   <td class="test {{status}}">
-                      <a href="#">&nbsp;</a>
+                      {{#link}}
+                        <a href="{{link}}" target="_parent">&nbsp;</a>
+                      {{/link}}
                   </td>
                   {{/htmlTestInstances}}
               </tr>
