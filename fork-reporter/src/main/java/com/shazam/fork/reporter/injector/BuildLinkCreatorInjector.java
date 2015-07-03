@@ -8,20 +8,18 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.shazam.fork.reporter.html;
+package com.shazam.fork.reporter.injector;
 
-import com.shazam.fork.reporter.model.Build;
+import com.shazam.fork.reporter.BuildLinkCreator;
+import com.shazam.fork.reporter.TokenBuildLinkCreator;
 
-import java.util.List;
+import static com.shazam.fork.reporter.injector.ConfigurationInjector.configuration;
 
-public class HtmlFlakyTestPool {
-    public final String poolName;
-    public final List<Build> builds;
-    public final List<HtmlTestHistory> testHistories;
-
-    public HtmlFlakyTestPool(String poolName, List<Build> builds, List<HtmlTestHistory> testHistories) {
-        this.poolName = poolName;
-        this.builds = builds;
-        this.testHistories = testHistories;
+public class BuildLinkCreatorInjector {
+    public static BuildLinkCreator buildLinkCreator() {
+        if (configuration().shouldCreateLinks()) {
+            return new TokenBuildLinkCreator(configuration().getBaseUrl());
+        }
+        return BuildLinkCreator.NO_OP;
     }
 }

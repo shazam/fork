@@ -28,15 +28,20 @@
           <thead>
               <tr>
                   <th class="description"></th>
-                  {{#buildIds}}
+                  {{#builds}}
                   <th class="build">
                       <span class="rotated-text">
                         <span class="rotated-text__inner">
-                          {{.}}
+                            {{#link}}
+                                <a href="{{link}}" target="_parent">{{buildId}}</a>
+                            {{/link}}
+                            {{^link}}
+                                {{buildId}}
+                            {{/link}}
                         </span>
                       </span>
                   </th>
-                  {{/buildIds}}
+                  {{/builds}}
           </thead>
           <tbody>
               {{#testHistories}}

@@ -65,7 +65,8 @@ public class ForkReporterCli {
         public String title;
 
         @Parameter(names = { "--baseUrl" }, description = "The base URL where the report will be pointing to. " +
-                "This URL is templated and needs to contain a {BUILD_ID} token for linking to the correct build." +
+                "This URL is templated so needs to contain a {BUILD_ID} token for linking to the correct build. " +
+                "The location it points to should contain an /html folder that fork creates at each execution." +
                 "E.g. http://build-server.com/master/{BUILD_ID}/fork/", required = false)
         public String baseUrl;
 

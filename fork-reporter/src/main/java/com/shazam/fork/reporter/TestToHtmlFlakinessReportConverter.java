@@ -13,7 +13,6 @@ package com.shazam.fork.reporter;
 import com.google.common.collect.Table;
 import com.shazam.fork.reporter.html.*;
 import com.shazam.fork.reporter.model.*;
-import com.shazam.fork.utils.ReadableNames;
 
 import java.util.List;
 import java.util.Set;
@@ -44,37 +43,27 @@ public class TestToHtmlFlakinessReportConverter {
 
     private HtmlFlakyTestPool convertToPoolHtml(PoolHistory poolHistory) {
         Table<ScoredTestLabel, Build, TestInstance> table = poolHistory.getHistoryTable();
-        Set<Build> builds = table.columnKeySet();
+        List<Build> buildList = table.columnKeySet().stream().collect(toList());
         Set<ScoredTestLabel> testLabels = table.rowKeySet();
 
         return new HtmlFlakyTestPool(
                 poolHistory.getName(),
-                stringBuildIds(builds),
-                createHtmlTestHistories(table, builds, testLabels));
-    }
-
-    private List<String> stringBuildIds(Set<Build> builds) {
-        return builds.stream()
-                .map(build -> build.getBuildId())
-                .collect(toList());
+                buildList,
+                createHtmlTestHistories(table, buildList, testLabels));
     }
 
     private List<HtmlTestHistory> createHtmlTestHistories(Table<ScoredTestLabel, Build, TestInstance> table,
-                                                          Set<Build> builds,
+                                                          List<Build> builds,
                                                           Set<ScoredTestLabel> testLabels) {
         return testLabels.stream()
                 .map(scoredTestLabel -> {
                     List<HtmlTestInstance> htmlTestInstances = builds.stream()
-                            .map(build -> htmlTestInstanceFrom(table.get(scoredTestLabel, build)))
+                            .map(build -> new HtmlTestInstance(table.get(scoredTestLabel, build).getStatus()))
                             .collect(toList());
                     TestLabel testLabel = scoredTestLabel.getTestLabel();
                     return new HtmlTestHistory(testLabel.getClassName(), testLabel.getMethod(), htmlTestInstances);
                 })
                 .collect(toList());
 
-    }
-
-    private HtmlTestInstance htmlTestInstanceFrom(TestInstance testInstance) {
-        return new HtmlTestInstance(testInstance.getStatus());
     }
 }

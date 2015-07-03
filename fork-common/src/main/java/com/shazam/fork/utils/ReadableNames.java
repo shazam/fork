@@ -22,10 +22,6 @@ public class ReadableNames {
         return capitalize(title);
     }
 
-    private static String capitalize(String name) {
-        return capitalizeFully(name.replaceAll("[\\W]|_", " "));
-    }
-
     public static String readableClassName(String testClass) {
         final int lastIndexOfDot = testClass.lastIndexOf('.');
         if (lastIndexOfDot != -1) {
@@ -41,5 +37,9 @@ public class ReadableNames {
                 .replaceAll("(\\p{Ll})(\\p{Lu})","$1 $2")
                 .replaceAll("(\\p{Lu})(\\p{Lu})","$1 $2");
         return capitalizeFully(testMethod);
+    }
+
+    private static String capitalize(String name) {
+        return capitalizeFully(name.replaceAll("[\\W]|_", " "));
     }
 }

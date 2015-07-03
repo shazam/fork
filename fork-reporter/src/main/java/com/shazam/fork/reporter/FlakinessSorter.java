@@ -15,6 +15,9 @@ import com.shazam.fork.reporter.model.*;
 import com.shazam.fork.summary.*;
 
 import java.util.*;
+import java.util.function.Function;
+
+import javax.annotation.Nonnull;
 
 import static com.google.common.collect.TreeBasedTable.create;
 import static com.shazam.fork.reporter.model.Build.Builder.aBuild;
@@ -28,9 +31,11 @@ import static java.util.stream.Collectors.toList;
 public class FlakinessSorter {
 
     private final String title;
+    private final BuildLinkCreator buildLinkCreator;
 
-    public FlakinessSorter(String title) {
+    public FlakinessSorter(String title, BuildLinkCreator buildLinkCreator) {
         this.title = title;
+        this.buildLinkCreator = buildLinkCreator;
     }
 
     public FlakinessReport sort(Executions executions) throws FlakinessCalculationException {
@@ -39,20 +44,9 @@ public class FlakinessSorter {
         Set<TestLabel> testLabelsFullIndex = new HashSet<>();
         Set<String> poolNamesFullIndex = new HashSet<>();
 
-
-        HashMap<String, Table<TestLabel, Build, TestInstance>> rawResultsTable = reduceResults(executionsList,
-                buildsFullIndex, testLabelsFullIndex, poolNamesFullIndex);
-
-        List<PoolHistory> poolHistories = rawResultsTable.entrySet().stream()
-                .map(tableEntry -> {
-                    TreeBasedTable<ScoredTestLabel, Build, TestInstance> sortedTable = sortTable(tableEntry.getValue(),
-                            buildsFullIndex, testLabelsFullIndex);
-                    return poolHistory()
-                            .withName(tableEntry.getKey())
-                            .withHistoryTable(sortedTable)
-                            .build();
-                })
-                .collect(toList());
+        List<UnsortedPoolHistory> unsortedPoolHistories = reduceToUnsortedHistories(executionsList, buildsFullIndex,
+                testLabelsFullIndex, poolNamesFullIndex);
+        List<PoolHistory> poolHistories = sortHistories(unsortedPoolHistories, buildsFullIndex, testLabelsFullIndex);
 
         return flakinessReport()
                 .withTitle(title)
@@ -60,7 +54,13 @@ public class FlakinessSorter {
                 .build();
     }
 
-    private HashMap<String, Table<TestLabel, Build, TestInstance>> reduceResults(
+    private List<PoolHistory> sortHistories(List<UnsortedPoolHistory> unsortedPoolHistories, List<Build> buildsFullIndex, Set<TestLabel> testLabelsFullIndex) {
+        return unsortedPoolHistories.stream()
+                .map(sortPoolHistory(buildsFullIndex, testLabelsFullIndex))
+                .collect(toList());
+    }
+
+    private List<UnsortedPoolHistory> reduceToUnsortedHistories(
             List<Execution> executionsList,
             List<Build> builds,
             Set<TestLabel> testLabels,
@@ -68,7 +68,10 @@ public class FlakinessSorter {
         HashMap<String, Table<TestLabel, Build, TestInstance>> poolToFlakinessTableMap = new HashMap<>();
         for (Execution execution : executionsList) {
             String buildId = execution.getBuildId();
-            Build build = aBuild().withBuildId(buildId).build();
+            Build build = aBuild()
+                    .withBuildId(buildId)
+                    .withLink(buildLinkCreator.createLink(buildId))
+                    .build();
             builds.add(build);
 
             List<PoolSummary> poolSummaries = execution.getSummary().getPoolSummaries();
@@ -89,7 +92,10 @@ public class FlakinessSorter {
                 }
             }
         }
-        return poolToFlakinessTableMap;
+
+        return poolToFlakinessTableMap.entrySet().stream()
+                .map(entry -> new UnsortedPoolHistory(entry.getKey(), entry.getValue()))
+                .collect(toList());
     }
 
     private Table<TestLabel, Build, TestInstance> getOrCreateTable(HashMap<String, Table<TestLabel, Build, TestInstance>> poolToFlakinessTableMap, String poolName) {
@@ -101,6 +107,18 @@ public class FlakinessSorter {
         return table;
     }
 
+    @Nonnull
+    private Function<UnsortedPoolHistory, PoolHistory> sortPoolHistory(List<Build> buildsFullIndex, Set<TestLabel> testLabelsFullIndex) {
+        return tableEntry -> {
+            TreeBasedTable<ScoredTestLabel, Build, TestInstance> sortedTable = sortTable(tableEntry.getHistoryTable(),
+                    buildsFullIndex, testLabelsFullIndex);
+            return poolHistory()
+                    .withName(tableEntry.getName())
+                    .withHistoryTable(sortedTable)
+                    .build();
+        };
+    }
+
     private TreeBasedTable<ScoredTestLabel, Build, TestInstance> sortTable(Table<TestLabel, Build, TestInstance> rawResultsTable,
                                                                            List<Build> buildsFullIndex,
                                                                            Set<TestLabel> testLabelsFullIndex) {
@@ -110,14 +128,7 @@ public class FlakinessSorter {
                 (build1, build2) -> build1.getBuildId().compareTo(build2.getBuildId()));
 
         for (TestLabel testLabel : testLabelsFullIndex) {
-            List<TestInstance> testInstances = new ArrayList<>(buildsFullIndex.size());
-            for (Build build : buildsFullIndex) {
-                TestInstance testInstance = rawResultsTable.get(testLabel, build);
-                if (testInstance == null) {
-                    testInstance = testInstance().build();
-                }
-                testInstances.add(testInstance);
-            }
+            List<TestInstance> testInstances = collectInstancesOfTest(rawResultsTable, buildsFullIndex, testLabel);
 
             TestScore testScore = TestScore.from(testLabel, testInstances);
             ScoredTestLabel scoredTestLabel = scoredTestLabel()
@@ -129,5 +140,17 @@ public class FlakinessSorter {
             }
         }
         return sortedTable;
+    }
+
+    @Nonnull
+    private List<TestInstance> collectInstancesOfTest(Table<TestLabel, Build, TestInstance> rawResultsTable,
+                                                      List<Build> buildsFullIndex,
+                                                      TestLabel testLabel) {
+        return buildsFullIndex.stream()
+                .map(build -> {
+                    TestInstance testInstance = rawResultsTable.get(testLabel, build);
+                    return (testInstance == null ? testInstance().build() : testInstance);
+                })
+                .collect(toList());
     }
 }
