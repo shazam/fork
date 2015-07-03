@@ -45,6 +45,8 @@ public class ForkReporterCli {
         ForkReporter forkReporter = forkReporter()
                 .withInput(parsedArgs.input)
                 .withOutput(parsedArgs.output)
+                .withTitle(parsedArgs.title)
+                .withBuildId(parsedArgs.baseUrl)
                 .build();
         forkReporter.createReport();
 
@@ -58,6 +60,14 @@ public class ForkReporterCli {
         @Parameter(names = { "--output" }, description = "The folder where all of the HTML reports will be saved",
                 converter = FileConverter.class, required = true)
         public File output;
+
+        @Parameter(names = { "--title" }, description = "The title of the report", required = false)
+        public String title;
+
+        @Parameter(names = { "--baseUrl" }, description = "The base URL where the report will be pointing to. " +
+                "This URL is templated and needs to contain a {BUILD_ID} token for linking to the correct build." +
+                "E.g. http://build-server.com/master/{BUILD_ID}/fork/", required = false)
+        public String baseUrl;
 
         @Parameter(names = { "-h", "--help" }, description = "Command help", help = true, hidden = true)
         public boolean help;

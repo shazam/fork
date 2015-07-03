@@ -15,7 +15,15 @@ import static org.apache.commons.lang3.text.WordUtils.capitalizeFully;
 public class ReadableNames {
 
     public static String readablePoolName(String poolName) {
-        return capitalizeFully(poolName.replaceAll("[\\W]|_", " "));
+        return capitalize(poolName);
+    }
+
+    public static String readableTitle(String title) {
+        return capitalize(title);
+    }
+
+    private static String capitalize(String name) {
+        return capitalizeFully(name.replaceAll("[\\W]|_", " "));
     }
 
     public static String readableClassName(String testClass) {

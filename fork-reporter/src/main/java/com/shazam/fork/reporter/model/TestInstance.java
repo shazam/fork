@@ -12,12 +12,17 @@ package com.shazam.fork.reporter.model;
 
 import com.shazam.fork.summary.ResultStatus;
 
+import javax.annotation.Nonnull;
+
+import static com.shazam.fork.reporter.model.Status.*;
+
 public class TestInstance {
-    private final ResultStatus resultStatus;
+    private final Status status;
     private final String link;
 
-    public ResultStatus getResultStatus() {
-        return resultStatus;
+    @Nonnull
+    public Status getStatus() {
+        return status;
     }
 
     public String getLink() {
@@ -25,12 +30,12 @@ public class TestInstance {
     }
 
     private TestInstance(Builder builder) {
-        this.resultStatus = builder.resultStatus;
+        this.status = builder.resultStatus;
         this.link = builder.link;
     }
 
     public static class Builder {
-        private ResultStatus resultStatus;
+        private Status resultStatus = Status.MISSING;
         private String link;
 
         public static Builder testInstance() {
@@ -38,7 +43,7 @@ public class TestInstance {
         }
 
         public Builder withResultStatus(ResultStatus resultStatus) {
-            this.resultStatus = resultStatus;
+            this.resultStatus = fromResultStatus(resultStatus);
             return this;
         }
 
@@ -49,6 +54,16 @@ public class TestInstance {
 
         public TestInstance build() {
             return new TestInstance(this);
+        }
+    }
+
+    private static Status fromResultStatus(ResultStatus resultStatus) {
+        if (resultStatus == null) {
+            return MISSING;
+        } else if (resultStatus == ResultStatus.ERROR || resultStatus == ResultStatus.FAIL) {
+            return FAIL;
+        } else {
+            return PASS;
         }
     }
 }

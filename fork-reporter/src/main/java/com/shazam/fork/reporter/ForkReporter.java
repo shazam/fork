@@ -10,20 +10,19 @@
 
 package com.shazam.fork.reporter;
 
-import com.shazam.fork.reporter.model.*;
+import com.shazam.fork.reporter.model.Executions;
+import com.shazam.fork.reporter.model.FlakinessReport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.shazam.fork.reporter.injector.ConfigurationInjector.setConfiguration;
 import static com.shazam.fork.reporter.injector.ExecutionReaderInjector.executionReader;
-import static com.shazam.fork.reporter.injector.FlakinessCalculatorInjector.flakinessCalculator;
 import static com.shazam.fork.reporter.injector.FlakinessReportPrinterInjector.flakinessReportPrinter;
-import static com.shazam.fork.reporter.model.TestLabel.Builder.testLabel;
+import static com.shazam.fork.reporter.injector.FlakinessSorterInjector.flakinessSorter;
 import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
 import static java.lang.System.nanoTime;
 
@@ -31,13 +30,13 @@ public class ForkReporter {
     private static final Logger logger = LoggerFactory.getLogger(ForkReporter.class);
 
     private final ExecutionReader reader;
-    private FlakinessCalculator flakinessCalculator;
+    private FlakinessSorter flakinessSorter;
     private FlakinessReportPrinter flakinessReportPrinter;
 
     private ForkReporter(Configuration configuration) {
         setConfiguration(configuration);
         reader = executionReader();
-        flakinessCalculator = flakinessCalculator();
+        flakinessSorter = flakinessSorter();
         flakinessReportPrinter = flakinessReportPrinter();
     }
 
@@ -46,7 +45,7 @@ public class ForkReporter {
 
         try {
             Executions executions = reader.readExecutions();
-            FlakinessReport flakinessReport = flakinessCalculator.calculate(executions);
+            FlakinessReport flakinessReport = flakinessSorter.sort(executions);
             flakinessReportPrinter.printReport(flakinessReport);
         } catch (FlakinessCalculationException e) {
             logger.error("Error while calculating flakiness", e);
@@ -59,6 +58,8 @@ public class ForkReporter {
     public static class Builder {
         private File input;
         private File output;
+        private String title = "";
+        private String baseUrl = "";
 
         public static Builder forkReporter() {
             return new Builder();
@@ -74,8 +75,20 @@ public class ForkReporter {
             return this;
         }
 
+        public Builder withTitle(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public Builder withBuildId(String baseUrl) {
+            if (!isNullOrEmpty(baseUrl)) {
+                this.baseUrl = baseUrl;
+            }
+            return this;
+        }
+
         public ForkReporter build() {
-            Configuration configuration = new Configuration(input, output);
+            Configuration configuration = new Configuration(input, output, title, baseUrl);
             return new ForkReporter(configuration);
         }
     }

@@ -14,6 +14,8 @@ package com.shazam.fork.summary;
 
 import com.shazam.fork.model.Device;
 
+import javax.annotation.Nonnull;
+
 import static com.google.common.base.Strings.isNullOrEmpty;
 
 public class TestResult {
@@ -40,6 +42,7 @@ public class TestResult {
         return testMethod;
     }
 
+    @Nonnull
     public ResultStatus getResultStatus() {
         if (!isNullOrEmpty(errorTrace)) {
             return ResultStatus.ERROR;

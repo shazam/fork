@@ -14,31 +14,24 @@ import com.google.common.collect.Table;
 
 public class PoolHistory {
     private final String name;
-    private final String readableName;
-    private final Table<TestLabel, Build, TestInstance> historyTable;
+    private final Table<ScoredTestLabel, Build, TestInstance> historyTable;
 
     public String getName() {
         return name;
     }
 
-    public String getReadableName() {
-        return readableName;
-    }
-
-    public Table<TestLabel, Build, TestInstance> getHistoryTable() {
+    public Table<ScoredTestLabel, Build, TestInstance> getHistoryTable() {
         return historyTable;
     }
 
     private PoolHistory(Builder builder) {
         this.name = builder.name;
-        this.readableName = builder.readableName;
         this.historyTable = builder.historyTable;
     }
 
     public static class Builder {
         private String name;
-        private String readableName;
-        private Table<TestLabel, Build, TestInstance> historyTable;
+        private Table<ScoredTestLabel, Build, TestInstance> historyTable;
 
         public static Builder poolHistory() {
             return new Builder();
@@ -49,12 +42,7 @@ public class PoolHistory {
             return this;
         }
 
-        public Builder withReadableName(String readableName) {
-            this.readableName = readableName;
-            return this;
-        }
-
-        public Builder withHistoryTable(Table<TestLabel, Build, TestInstance> historyTable) {
+        public Builder withHistoryTable(Table<ScoredTestLabel, Build, TestInstance> historyTable) {
             this.historyTable = historyTable;
             return this;
         }

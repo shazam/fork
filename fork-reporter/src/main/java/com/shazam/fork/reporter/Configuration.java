@@ -12,13 +12,19 @@ package com.shazam.fork.reporter;
 
 import java.io.File;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 public class Configuration {
     private final File input;
     private final File output;
+    private final String title;
+    private final String baseUrl;
 
-    public Configuration(File input, File output) {
+    public Configuration(File input, File output, String title, String baseUrl) {
         this.input = input;
         this.output = output;
+        this.title = title;
+        this.baseUrl = baseUrl;
     }
 
     public File getOutput() {
@@ -27,5 +33,17 @@ public class Configuration {
 
     public File getInput() {
         return input;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public boolean shouldCreateLinks() {
+        return !isNullOrEmpty(baseUrl);
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
     }
 }

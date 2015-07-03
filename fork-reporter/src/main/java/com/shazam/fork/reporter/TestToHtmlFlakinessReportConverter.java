@@ -13,21 +13,26 @@ package com.shazam.fork.reporter;
 import com.google.common.collect.Table;
 import com.shazam.fork.reporter.html.*;
 import com.shazam.fork.reporter.model.*;
-import com.shazam.fork.summary.ResultStatus;
+import com.shazam.fork.utils.ReadableNames;
 
 import java.util.List;
 import java.util.Set;
 
-import static com.shazam.fork.reporter.html.HtmlTestInstance.Status.*;
+import static com.shazam.fork.utils.ReadableNames.readablePoolName;
+import static com.shazam.fork.utils.ReadableNames.readableTitle;
 import static java.util.stream.Collectors.toList;
 
 public class TestToHtmlFlakinessReportConverter {
 
     public HtmlFlakyTestIndex convertToIndex(FlakinessReport flakinessReport) {
         List<PoolOption> options = flakinessReport.getPoolHistories().stream()
-                .map(poolHistory -> new PoolOption(poolHistory.getName(), poolHistory.getReadableName()))
+                .map(poolHistory -> {
+                    String poolName = poolHistory.getName();
+                    return new PoolOption(poolName, readablePoolName(poolName));
+                })
                 .collect(toList());
-        return new HtmlFlakyTestIndex(flakinessReport.getName(), options);
+        String title = readableTitle(flakinessReport.getTitle());
+        return new HtmlFlakyTestIndex(title, options);
     }
 
     public List<HtmlFlakyTestPool> convertToPools(FlakinessReport flakinessReport) {
@@ -38,9 +43,9 @@ public class TestToHtmlFlakinessReportConverter {
     }
 
     private HtmlFlakyTestPool convertToPoolHtml(PoolHistory poolHistory) {
-        Table<TestLabel, Build, TestInstance> table = poolHistory.getHistoryTable();
+        Table<ScoredTestLabel, Build, TestInstance> table = poolHistory.getHistoryTable();
         Set<Build> builds = table.columnKeySet();
-        Set<TestLabel> testLabels = table.rowKeySet();
+        Set<ScoredTestLabel> testLabels = table.rowKeySet();
 
         return new HtmlFlakyTestPool(
                 poolHistory.getName(),
@@ -54,14 +59,15 @@ public class TestToHtmlFlakinessReportConverter {
                 .collect(toList());
     }
 
-    private List<HtmlTestHistory> createHtmlTestHistories(Table<TestLabel, Build, TestInstance> table,
+    private List<HtmlTestHistory> createHtmlTestHistories(Table<ScoredTestLabel, Build, TestInstance> table,
                                                           Set<Build> builds,
-                                                          Set<TestLabel> testLabels) {
+                                                          Set<ScoredTestLabel> testLabels) {
         return testLabels.stream()
-                .map(testLabel -> {
+                .map(scoredTestLabel -> {
                     List<HtmlTestInstance> htmlTestInstances = builds.stream()
-                            .map(build -> htmlTestInstanceFrom(table.get(testLabel, build)))
+                            .map(build -> htmlTestInstanceFrom(table.get(scoredTestLabel, build)))
                             .collect(toList());
+                    TestLabel testLabel = scoredTestLabel.getTestLabel();
                     return new HtmlTestHistory(testLabel.getClassName(), testLabel.getMethod(), htmlTestInstances);
                 })
                 .collect(toList());
@@ -69,13 +75,6 @@ public class TestToHtmlFlakinessReportConverter {
     }
 
     private HtmlTestInstance htmlTestInstanceFrom(TestInstance testInstance) {
-        HtmlTestInstance.Status status = PASS;
-        if (testInstance == null) {
-            status = MISSING;
-        } else if (testInstance.getResultStatus() == ResultStatus.ERROR || testInstance.getResultStatus() == ResultStatus.FAIL) {
-            status = FAIL;
-        }
-
-        return new HtmlTestInstance(status);
+        return new HtmlTestInstance(testInstance.getStatus());
     }
 }

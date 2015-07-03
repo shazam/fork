@@ -10,10 +10,12 @@
 
 package com.shazam.fork.reporter.injector;
 
-import com.shazam.fork.reporter.FlakinessCalculator;
+import com.shazam.fork.reporter.FlakinessSorter;
 
-public class FlakinessCalculatorInjector {
-    public static FlakinessCalculator flakinessCalculator() {
-        return new FlakinessCalculator();
+import static com.shazam.fork.reporter.injector.ConfigurationInjector.configuration;
+
+public class FlakinessSorterInjector {
+    public static FlakinessSorter flakinessSorter() {
+        return new FlakinessSorter(configuration().getTitle());
     }
 }

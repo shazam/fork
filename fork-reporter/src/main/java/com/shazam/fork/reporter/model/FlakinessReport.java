@@ -13,11 +13,11 @@ package com.shazam.fork.reporter.model;
 import java.util.List;
 
 public class FlakinessReport {
-    private final String name;
+    private final String title;
     private final List<PoolHistory> poolHistories;
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public List<PoolHistory> getPoolHistories() {
@@ -25,20 +25,20 @@ public class FlakinessReport {
     }
 
     private FlakinessReport(Builder builder) {
-        this.name = builder.name;
+        this.title = builder.title;
         this.poolHistories = builder.poolHistories;
     }
 
     public static class Builder {
-        private String name;
+        private String title;
         private List<PoolHistory> poolHistories;
 
         public static Builder flakinessReport() {
             return new Builder();
         }
 
-        public Builder withName(String name) {
-            this.name = name;
+        public Builder withTitle(String title) {
+            this.title = title;
             return this;
         }
 
