@@ -8,9 +8,13 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-include ':fork-common'
-include ':fork-runner'
-include ':fork-gradle-plugin'
-include ':fork-reporter'
-include ':fork-reporter-jenkins-gradle-plugin'
-include ':fork-reporter-jenkins'
+package com.shazam.fork.reporter.gradle;
+
+public class ForkJenkinsReportExtension {
+
+    public String reportTitle;
+    public String jenkinsUrl;
+    public String jenkinsUsername;
+    public String jenkinsPassword;
+    public String jenkinsJobName;
+}
