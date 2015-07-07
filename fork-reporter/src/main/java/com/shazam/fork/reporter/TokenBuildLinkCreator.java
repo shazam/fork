@@ -12,7 +12,7 @@ package com.shazam.fork.reporter;
 
 import javax.annotation.Nonnull;
 
-import static com.shazam.fork.reporter.Constants.BUILD_ID_TOKEN;
+import static com.shazam.fork.CommonDefaults.BUILD_ID_TOKEN;
 
 public class TokenBuildLinkCreator implements BuildLinkCreator {
 

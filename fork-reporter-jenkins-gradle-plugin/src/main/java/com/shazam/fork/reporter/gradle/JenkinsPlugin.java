@@ -13,33 +13,15 @@ package com.shazam.fork.reporter.gradle;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
-import java.io.File;
-
-import groovy.lang.Closure;
-
 public class JenkinsPlugin implements Plugin<Project> {
-    private static final String FORK_REPORTER_JENKINS_EXTENSION = "forkJenkinsReport";
 
     @Override
     public void apply(final Project project) {
-        project.getExtensions().add(FORK_REPORTER_JENKINS_EXTENSION, ForkJenkinsReportExtension.class);
-
-        ForkJenkinsReportTask forkJenkinsReport = project.getTasks().create("forkJenkinsReport", ForkJenkinsReportTask.class);
-        forkJenkinsReport.configure(new Closure(forkJenkinsReport) {
-            @Override
-            public Object call() {
-                ForkJenkinsReportTask forkJenkinsReportTask = (ForkJenkinsReportTask) getOwner();
-                ForkJenkinsReportExtension extension = (ForkJenkinsReportExtension) project.getExtensions().getByName(FORK_REPORTER_JENKINS_EXTENSION);
-                forkJenkinsReportTask.reportTitle = extension.reportTitle;
-                forkJenkinsReportTask.jenkinsUrl = extension.jenkinsUrl;
-                forkJenkinsReportTask.jenkinsUsername = extension.jenkinsUsername;
-                forkJenkinsReportTask.jenkinsPassword = extension.jenkinsPassword;
-                forkJenkinsReportTask.jenkinsJobName = extension.jenkinsJobName;
-                forkJenkinsReportTask.input = new File(project.getBuildDir(), "forkFlakinessReportTemp");
-                forkJenkinsReportTask.output = new File(project.getBuildDir(), "forkFlakinessReport");
-
-                return forkJenkinsReportTask.dependsOn();
-            }
-        });
+        project.getExtensions().create("forkJenkins", ForkJenkinsReportExtension.class);
+        project.getTasks().create("forkJenkinsReport", ForkJenkinsReportTask.class,
+                forkJenkinsReportTask -> {
+                    forkJenkinsReportTask.setGroup("Reporting");
+                    forkJenkinsReportTask.setDescription("Creates a report of test flakiness, based on the history of Fork test runs");
+                });
     }
 }

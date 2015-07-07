@@ -17,4 +17,5 @@ public class ForkJenkinsReportExtension {
     public String jenkinsUsername;
     public String jenkinsPassword;
     public String jenkinsJobName;
+    public String jenkinsReportTitle;
 }

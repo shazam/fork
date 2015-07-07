@@ -19,13 +19,13 @@ buildscript {
     }
 }
 
-
 apply plugin: 'java'
 apply plugin: 'fork-jenkins-gradle-plugin'
 apply from: '../build-scripts/gradle-mvn-push.gradle'
 
-forkJenkinsReport {
+forkJenkins {
     reportTitle = "Shazam On Android flakiness report"
     jenkinsUrl = "http://android-jenkins.uk.shazamteam.net:8080/"
     jenkinsJobName = "Android-master"
+    jenkinsReportTitle = "Fork_Report"
 }

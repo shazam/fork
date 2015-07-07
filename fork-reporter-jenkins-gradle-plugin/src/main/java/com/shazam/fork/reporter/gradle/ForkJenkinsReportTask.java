@@ -10,38 +10,51 @@
 
 package com.shazam.fork.reporter.gradle;
 
-import com.offbytwo.jenkins.JenkinsServer;
-import com.offbytwo.jenkins.model.*;
-
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.tasks.*;
+import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+
+import static com.shazam.fork.reporter.ForkReporter.Builder.forkReporter;
+import static org.apache.commons.io.FileUtils.deleteDirectory;
 
 public class ForkJenkinsReportTask extends DefaultTask {
+    private static final String FORK_OUTPUT_DIR = "forkReport";
+    private static final String DOWNLOAD_DIR = "json";
+    private static final String REPORT_DIR = "html";
 
-    String reportTitle;
-    String jenkinsUrl;
-    String jenkinsUsername;
-    String jenkinsPassword;
-    String jenkinsJobName;
-    @InputDirectory File input;
-    @OutputDirectory File output;
-
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @TaskAction
     public void runForkJenkins() {
-        System.out.println("Runnign Fork's Jenkins extraction");
+        ForkJenkinsReportExtension extension = getProject().getExtensions().getByType(ForkJenkinsReportExtension.class);
+        File forkOutputDir = new File(getProject().getBuildDir(), FORK_OUTPUT_DIR);
+        createDir(forkOutputDir);
+        File downloadDir = new File(forkOutputDir, DOWNLOAD_DIR);
+        createDir(downloadDir);
+        File htmlDir = new File(forkOutputDir, REPORT_DIR);
+        createDir(htmlDir);
+
+        JenkinsDownloader jenkinsDownloader = new JenkinsDownloader(downloadDir, extension);
+        jenkinsDownloader.downloadJenkinsFiles();
+
+        forkReporter()
+                .withTitle(extension.reportTitle)
+                .withInput(downloadDir)
+                .withOutput(htmlDir)
+                .withBaseUrl(jenkinsDownloader.createBaseUrl())
+                .build()
+                .createReport();
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void createDir(File dir) {
         try {
-            JenkinsServer jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUsername, jenkinsPassword);
-            JobWithDetails job = jenkinsServer.getJob(jenkinsJobName);
-            BuildWithDetails details = job.getBuilds().get(0).details();
-            details.toString();
-        } catch (URISyntaxException | IOException e) {
-            throw new GradleException("Could not get reports from Jenkins Server", e);
+            deleteDirectory(dir);
+            dir.mkdirs();
+        } catch (IOException e) {
+            throw new GradleException("Could not create directory: " + dir.toString(), e);
         }
     }
 }

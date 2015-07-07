@@ -46,7 +46,7 @@ public class ForkReporterCli {
                 .withInput(parsedArgs.input)
                 .withOutput(parsedArgs.output)
                 .withTitle(parsedArgs.title)
-                .withBuildId(parsedArgs.baseUrl)
+                .withBaseUrl(parsedArgs.baseUrl)
                 .build();
         forkReporter.createReport();
 

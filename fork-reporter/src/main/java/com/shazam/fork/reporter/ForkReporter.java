@@ -80,7 +80,7 @@ public class ForkReporter {
             return this;
         }
 
-        public Builder withBuildId(String baseUrl) {
+        public Builder withBaseUrl(String baseUrl) {
             if (!isNullOrEmpty(baseUrl)) {
                 this.baseUrl = baseUrl;
             }
