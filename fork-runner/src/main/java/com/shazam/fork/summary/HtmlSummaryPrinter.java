@@ -14,26 +14,20 @@ package com.shazam.fork.summary;
 
 import com.android.ddmlib.logcat.LogCatMessage;
 import com.android.ddmlib.testrunner.TestIdentifier;
-import com.github.mustachejava.DefaultMustacheFactory;
-import com.github.mustachejava.Mustache;
-import com.github.mustachejava.MustacheFactory;
 import com.google.common.io.Resources;
+import com.shazam.fork.io.HtmlGenerator;
 
 import org.lesscss.LessCompiler;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.collect.Collections2.transform;
+import static com.shazam.fork.io.Files.copyResource;
 import static com.shazam.fork.summary.HtmlConverters.toHtmlLogCatMessages;
 import static com.shazam.fork.summary.HtmlConverters.toHtmlSummary;
-import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
-import static org.apache.commons.io.IOUtils.closeQuietly;
 
 public class HtmlSummaryPrinter implements SummaryPrinter {
 	private static final String HTML_OUTPUT = "html";
@@ -55,14 +49,14 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 	};
 	private final File htmlOutput;
 	private final File staticOutput;
-	private final MustacheFactory mustacheFactory;
 	private final LogCatRetriever retriever;
+    private final HtmlGenerator htmlGenerator;
 
-	public HtmlSummaryPrinter(File rootOutput, LogCatRetriever retriever) {
+    public HtmlSummaryPrinter(File rootOutput, LogCatRetriever retriever, HtmlGenerator htmlGenerator) {
 		this.retriever = retriever;
-		htmlOutput = new File(rootOutput, HTML_OUTPUT);
+        this.htmlGenerator = htmlGenerator;
+        htmlOutput = new File(rootOutput, HTML_OUTPUT);
 		staticOutput = new File(htmlOutput, STATIC);
-		mustacheFactory = new DefaultMustacheFactory();
 	}
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
@@ -72,30 +66,18 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 		copyAssets();
 		generateCssFromLess();
 		HtmlSummary htmlSummary = toHtmlSummary(summary);
-		generateIndexHtml(htmlSummary);
-		generatePoolHtml(htmlSummary);
-		generatePoolTestHtml(htmlSummary);
+        htmlGenerator.generateHtml("forkpages/index.html", htmlOutput, INDEX_FILENAME, htmlSummary);
+        generatePoolHtml(htmlSummary);
+		generatePoolTestsHtml(htmlSummary);
 	}
 
 	private void copyAssets() {
 		for (String asset : STATIC_ASSETS) {
-			copy(asset);
-		}
+            copyResource("/static/", asset, staticOutput);
+        }
 	}
 
-	private void copy(String asset) {
-		InputStream resourceAsStream = getClass().getResourceAsStream("/static/" + asset);
-		final File assetFile = new File(staticOutput, asset);
-		try {
-			copyInputStreamToFile(resourceAsStream, assetFile);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			closeQuietly(resourceAsStream);
-		}
-	}
-
-	private void generateCssFromLess() {
+    private void generateCssFromLess() {
 		try {
 			LessCompiler compiler = new LessCompiler();
 			String less = Resources.toString(getClass().getResource("/spoon.less"), UTF_8);
@@ -107,20 +89,6 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 		}
 	}
 
-	private void generateIndexHtml(HtmlSummary htmlSummary) {
-		FileWriter writer = null;
-		try {
-			Mustache mustache = mustacheFactory.compile("forkpages/index.html");
-			File indexFile = new File(htmlOutput, INDEX_FILENAME);
-			writer = new FileWriter(indexFile);
-			mustache.execute(writer, htmlSummary);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			closeQuietly(writer);
-		}
-	}
-
     /**
      * Generates an HTML page for each pool, with multiple tests
      *
@@ -128,22 +96,13 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
      */
 	@SuppressWarnings("ResultOfMethodCallIgnored")
     private void generatePoolHtml(HtmlSummary htmlSummary) {
-		FileWriter writer = null;
-		Mustache mustache = mustacheFactory.compile("forkpages/pool.html");
-		File poolsDir = new File(htmlOutput, "pools");
-		poolsDir.mkdirs();
-		for (HtmlPoolSummary pool : htmlSummary.pools) {
-			try {
-				File indexFile = new File(poolsDir, pool.plainPoolName + ".html");
-				writer = new FileWriter(indexFile);
-				mustache.execute(writer, pool);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			} finally {
-				closeQuietly(writer);
-			}
-		}
-	}
+        File poolsDir = new File(htmlOutput, "pools");
+        poolsDir.mkdirs();
+        for (HtmlPoolSummary pool : htmlSummary.pools) {
+            String name = pool.plainPoolName + ".html";
+            htmlGenerator.generateHtml("forkpages/pool.html", poolsDir, name, htmlSummary);
+        }
+    }
 
 	/**
      * Genarates an HTML page for each test of each pool.
@@ -151,26 +110,21 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 	 * @param htmlSummary the summary containing the results
 	 */
 	@SuppressWarnings("ResultOfMethodCallIgnored")
-    private void generatePoolTestHtml(HtmlSummary htmlSummary) {
-		FileWriter writer = null;
-		Mustache mustache = mustacheFactory.compile("forkpages/pooltest.html");
-		for (HtmlPoolSummary pool : htmlSummary.pools) {
-			for (HtmlTestResult testResult : pool.testResults) {
-				try {
-					File poolsDir = new File(htmlOutput, "pools/" + pool.plainPoolName);
-					poolsDir.mkdirs();
-					File testFile = new File(poolsDir, testResult.plainClassName + "__" + testResult.plainMethodName + ".html");
-					writer = new FileWriter(testFile);
-					TestIdentifier testIdentifier = new TestIdentifier(testResult.plainClassName, testResult.plainMethodName);
-					List<LogCatMessage> logCatMessages = retriever.retrieveLogCat(pool.plainPoolName, testResult.deviceSerial, testIdentifier);
-					testResult.logcatMessages = transform(logCatMessages, toHtmlLogCatMessages());
-					mustache.execute(writer, new Object[] {testResult, pool});
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				} finally {
-					closeQuietly(writer);
-				}
-			}
-		}
+    private void generatePoolTestsHtml(HtmlSummary htmlSummary) {
+        for (HtmlPoolSummary pool : htmlSummary.pools) {
+            File poolTestsDir = new File(htmlOutput, "pools/" + pool.plainPoolName);
+            poolTestsDir.mkdirs();
+            for (HtmlTestResult testResult : pool.testResults) {
+                String fileName = testResult.plainClassName + "__" + testResult.plainMethodName + ".html";
+                addLogcats(testResult, pool);
+                htmlGenerator.generateHtml("forkpages/pooltest.html", poolTestsDir, fileName, testResult, pool);
+            }
+        }
 	}
+
+    private void addLogcats(HtmlTestResult testResult, HtmlPoolSummary pool) {
+        TestIdentifier testIdentifier = new TestIdentifier(testResult.plainClassName, testResult.plainMethodName);
+        List<LogCatMessage> logCatMessages = retriever.retrieveLogCat(pool.plainPoolName, testResult.deviceSerial, testIdentifier);
+        testResult.logcatMessages = transform(logCatMessages, toHtmlLogCatMessages());
+    }
 }

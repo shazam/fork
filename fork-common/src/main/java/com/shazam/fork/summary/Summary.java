@@ -17,9 +17,6 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
-import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
-
 
 public class Summary {
     private final List<PoolSummary> poolSummaries;
@@ -78,11 +75,6 @@ public class Summary {
         public Summary build() {
             return new Summary(this);
         }
-    }
-
-    @Override
-    public String toString() {
-        return reflectionToString(this, MULTI_LINE_STYLE);
     }
 
     private Summary(Builder builder) {

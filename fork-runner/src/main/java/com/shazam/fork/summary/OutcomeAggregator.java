@@ -22,7 +22,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import static com.google.common.collect.Collections2.transform;
-import static com.shazam.fork.summary.TestResult.ResultStatus.PASS;
+import static com.shazam.fork.summary.ResultStatus.PASS;
 
 public class OutcomeAggregator {
 

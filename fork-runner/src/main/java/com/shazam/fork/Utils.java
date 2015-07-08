@@ -20,10 +20,7 @@ import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.Nullable;
 
-import static java.lang.System.nanoTime;
 import static java.util.concurrent.Executors.newFixedThreadPool;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 public class Utils {
 
@@ -33,15 +30,6 @@ public class Utils {
     public static ExecutorService namedExecutor(int numberOfThreads, String nameFormat) {
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat(nameFormat).build();
         return newFixedThreadPool(numberOfThreads, namedThreadFactory);
-    }
-
-    public static long millisSinceNanoTime(long startNanos) {
-        return millisBetweenNanoTimes(startNanos, nanoTime());
-    }
-
-    public static long millisBetweenNanoTimes(long startNanos, long endNanos) {
-        long elapsedNanos = endNanos - startNanos;
-        return MILLISECONDS.convert(elapsedNanos, NANOSECONDS);
     }
 
     @Nullable

@@ -17,6 +17,7 @@ import org.apache.commons.io.filefilter.*;
 import java.io.*;
 import java.nio.file.Path;
 
+import static com.shazam.fork.CommonDefaults.FORK_SUMMARY_FILENAME_FORMAT;
 import static com.shazam.fork.system.io.FileType.TEST;
 import static java.nio.file.Files.createDirectories;
 import static java.nio.file.Paths.get;
@@ -67,7 +68,7 @@ public class FileManager {
         try {
             Path path = get(output.getAbsolutePath(), "summary");
             Path directory = createDirectories(path);
-            return createFile(directory, String.format("fork-%s.json", System.currentTimeMillis()));
+            return createFile(directory, String.format(FORK_SUMMARY_FILENAME_FORMAT, System.currentTimeMillis()));
         } catch (IOException e) {
             throw new CouldNotCreateDirectoryException(e);
         }
@@ -110,9 +111,5 @@ public class FileManager {
 
     private String createFilenameForTest(TestIdentifier testIdentifier, FileType fileType, int sequenceNumber) {
         return String.format("%s-%02d.%s", testIdentifier.toString(), sequenceNumber, fileType.getSuffix());
-    }
-
-    private String createFilename(FileType fileType) {
-        return String.format("%s.%s", fileType.getDirectory(), fileType.getSuffix());
     }
 }

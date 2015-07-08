@@ -23,7 +23,7 @@ import static com.google.common.collect.Collections2.transform;
 import static com.shazam.fork.model.Diagnostics.SCREENSHOTS;
 import static com.shazam.fork.model.Diagnostics.VIDEO;
 import static com.shazam.fork.summary.OutcomeAggregator.toPoolOutcome;
-import static org.apache.commons.lang3.text.WordUtils.capitalizeFully;
+import static com.shazam.fork.utils.ReadableNames.*;
 
 class HtmlConverters {
 
@@ -44,10 +44,11 @@ class HtmlConverters {
 			public HtmlPoolSummary apply(@Nullable PoolSummary poolSummary) {
 				HtmlPoolSummary htmlPoolSummary = new HtmlPoolSummary();
                 htmlPoolSummary.poolStatus = getPoolStatus(poolSummary);
-                htmlPoolSummary.prettyPoolName = prettifyPoolName(poolSummary.getPoolName());
-                htmlPoolSummary.plainPoolName = poolSummary.getPoolName();
+				String poolName = poolSummary.getPoolName();
+				htmlPoolSummary.prettyPoolName = readablePoolName(poolName);
+                htmlPoolSummary.plainPoolName = poolName;
                 htmlPoolSummary.testCount = poolSummary.getTestResults().size();
-                htmlPoolSummary.testResults = transform(poolSummary.getTestResults(), toHtmlTestResult());
+                htmlPoolSummary.testResults = transform(poolSummary.getTestResults(), toHtmlTestResult(poolName));
 				return htmlPoolSummary;
 			}
 
@@ -58,19 +59,19 @@ class HtmlConverters {
         };
 	}
 
-	private static Function<TestResult, HtmlTestResult> toHtmlTestResult() {
+	private static Function<TestResult, HtmlTestResult> toHtmlTestResult(final String poolName) {
 		return new Function<TestResult, HtmlTestResult>(){
 			@Override
 			@Nullable
 			public HtmlTestResult apply(@Nullable TestResult input) {
 				HtmlTestResult htmlTestResult = new HtmlTestResult();
 				htmlTestResult.status = input.getResultStatus().name().toLowerCase();
-				htmlTestResult.prettyClassName = prettifyClassName(input.getTestClass());
-				htmlTestResult.prettyMethodName = prettifyMethodName(input.getTestMethod());
+				htmlTestResult.prettyClassName = readableClassName(input.getTestClass());
+				htmlTestResult.prettyMethodName = readableTestMethodName(input.getTestMethod());
 				htmlTestResult.timeTaken = String.format("%.2f", input.getTimeTaken());
 				htmlTestResult.plainMethodName = input.getTestMethod();
 				htmlTestResult.plainClassName = input.getTestClass();
-				htmlTestResult.poolName = input.getPoolName();
+				htmlTestResult.poolName = poolName;
 				htmlTestResult.trace = input.getTrace().split("\n");
 				// Keeping logcats in memory is hugely wasteful. Now they're read at page-creation.
 				// htmlTestResult.logcatMessages = transform(input.getLogCatMessages(), toHtmlLogCatMessages());
@@ -101,26 +102,5 @@ class HtmlConverters {
 				return htmlLogCatMessage;
 			}
 		};
-	}
-
-	private static String prettifyPoolName(String poolName) {
-		return capitalizeFully(poolName.replaceAll("[\\W]|_", " "));
-	}
-
-	private static String prettifyClassName(String testClass) {
-		final int lastIndexOfDot = testClass.lastIndexOf('.');
-		if (lastIndexOfDot != -1) {
-			testClass = testClass.substring(lastIndexOfDot+1);
-		}
-		return testClass;
-	}
-
-	private static String prettifyMethodName(String testMethod) {
-		testMethod = testMethod
-			.replaceFirst("test", "")
-			.replaceAll("_", ", ")
-			.replaceAll("(\\p{Ll})(\\p{Lu})","$1 $2")
-			.replaceAll("(\\p{Lu})(\\p{Lu})","$1 $2");
-		return capitalizeFully(testMethod);
 	}
 }

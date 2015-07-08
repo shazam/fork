@@ -14,10 +14,7 @@ package com.shazam.fork.model;
 
 import com.android.ddmlib.IDevice;
 
-import static com.shazam.fork.model.Diagnostics.computeDiagnostics;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
-import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 /**
  * Representation of a device and its details.
@@ -87,21 +84,21 @@ public class Device {
 		}
 
 		public Builder withManufacturer(String manufacturer) {
-			if (isNotBlank(manufacturer)) {
+			if (!isNullOrEmpty(manufacturer)) {
 				this.manufacturer = manufacturer;
 			}
 			return this;
 		}
 
 		public Builder withModel(String model) {
-			if (isNotBlank(model)) {
+			if (!isNullOrEmpty(model)) {
 				this.model = model;
 			}
 			return this;
 		}
 
 		public Builder withApiLevel(String apiLevel) {
-			if (isNotBlank(apiLevel)) {
+			if (!isNullOrEmpty(apiLevel)) {
 				this.apiLevel = apiLevel;
 			}
 			return this;
@@ -118,7 +115,7 @@ public class Device {
          * @return this builder
          */
 		public Builder withTabletCharacteristic(String characteristics) {
-			if (isNotBlank(characteristics) && characteristics.contains("tablet")) {
+			if (!isNullOrEmpty(characteristics) && characteristics.contains("tablet")) {
 				isTablet = true;
 			}
 			return this;
@@ -142,11 +139,6 @@ public class Device {
 		deviceInterface = builder.deviceInterface;
 		isTablet = builder.isTablet;
 		geometry = builder.geometry;
-        diagnostics = computeDiagnostics(deviceInterface, apiLevel);
-	}
-
-	@Override
-	public String toString() {
-		return reflectionToString(this, SHORT_PREFIX_STYLE);
+        diagnostics = Diagnostics.computeDiagnostics(deviceInterface, apiLevel);
 	}
 }

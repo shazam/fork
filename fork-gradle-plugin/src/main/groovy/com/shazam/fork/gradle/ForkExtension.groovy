@@ -12,8 +12,6 @@
  */
 package com.shazam.fork.gradle
 
-import java.util.regex.Pattern
-
 /**
  * Fork extension.
  */

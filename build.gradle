@@ -18,6 +18,7 @@ ext.targetCompatibility = JavaVersion.VERSION_1_7
 subprojects {
     buildscript {
         repositories {
+            mavenLocal()
             mavenCentral()
         }
     }
@@ -26,6 +27,7 @@ subprojects {
     version = VERSION_NAME
 
     repositories {
+        mavenLocal()
         mavenCentral()
     }
 

@@ -17,7 +17,7 @@ import com.shazam.fork.ForkRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.shazam.fork.Utils.millisSinceNanoTime;
+import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
 import static com.shazam.fork.injector.runner.ProgressReporterInjector.progressReporter;
 import static com.shazam.fork.injector.pooling.PoolLoaderInjector.poolLoader;
 import static com.shazam.fork.injector.runner.PoolTestRunnerFactoryInjector.poolTestRunnerFactory;

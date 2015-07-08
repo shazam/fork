@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-import static com.shazam.fork.Utils.millisSinceNanoTime;
+import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
 import static java.lang.System.nanoTime;
 
 class SlowWarningTestRunListener implements ITestRunListener {

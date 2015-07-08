@@ -18,27 +18,23 @@ sourceCompatibility = rootProject.sourceCompatibility
 targetCompatibility = rootProject.sourceCompatibility
 
 dependencies {
+    compile project(':fork-common')
     compile(
-            'com.beust:jcommander:1.30',
-            'com.google.code.findbugs:jsr305:3.0.0',
-            'com.android.tools.ddms:ddmlib:24.2.3',
-            'com.google.code.gson:gson:2.3.1',
+            "com.beust:jcommander:$JCOMMANDER_VERSION",
+            "org.slf4j:slf4j-log4j12:$SLF4J_VERSION",
+            "com.google.code.gson:gson:$GSON_VERSION",
             'org.simpleframework:simple-xml:2.7.1',
-            'com.google.guava:guava:18.0',
-            'com.github.spullara.mustache.java:compiler:0.8.0',
-            'org.slf4j:slf4j-log4j12:1.7.12',
             'com.madgag:animated-gif-lib:1.2',
-            'org.apache.commons:commons-lang3:3.4',
-            'commons-io:commons-io:2.4'
     )
 
     compile('org.lesscss:lesscss:1.7.0.1.1') {
         exclude module: 'slf4j-simple'
     }
 
-    testCompile(
-            'org.hamcrest:hamcrest-all:1.3',
-            'junit:junit-dep:4.11')
+    testCompile("org.hamcrest:hamcrest-all:$HAMCREST_VERSION")
+    testCompile("junit:junit:$JUNIT_VERSION") {
+        exclude module:'hamcrest-core'
+    }
 }
 
 jar {

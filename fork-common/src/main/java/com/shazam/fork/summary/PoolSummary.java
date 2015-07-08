@@ -15,9 +15,6 @@ package com.shazam.fork.summary;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
-import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
-
 public class PoolSummary {
 	private final String poolName;
 	private final Collection<TestResult> testResults;
@@ -43,11 +40,6 @@ public class PoolSummary {
 			return this;
 		}
 
-		public Builder addTestResult(TestResult testResult) {
-			testResults.add(testResult);
-			return this;
-		}
-
 		public Builder addTestResults(Collection<TestResult> testResults) {
 			this.testResults.addAll(testResults);
 			return this;
@@ -56,11 +48,6 @@ public class PoolSummary {
 		public PoolSummary build() {
 			return new PoolSummary(this);
 		}
-	}
-
-	@Override
-	public String toString() {
-		return reflectionToString(this, MULTI_LINE_STYLE);
 	}
 
 	private PoolSummary(Builder builder) {
