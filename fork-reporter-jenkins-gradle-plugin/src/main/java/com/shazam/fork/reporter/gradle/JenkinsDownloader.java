@@ -64,10 +64,12 @@ class JenkinsDownloader {
     private JenkinsServer getJenkinsServer() {
         try {
             URI serverUri = new URI(extension.jenkinsUrl);
-            if (isNullOrEmpty(extension.jenkinsUsername) || isNullOrEmpty(extension.jenkinsPassword)) {
+            String username = extension.jenkinsUsername;
+            String password = extension.jenkinsPassword;
+            if (isNullOrEmpty(username) || isNullOrEmpty(password)) {
                 return new JenkinsServer(serverUri);
             }
-            return new JenkinsServer(serverUri);
+            return new JenkinsServer(serverUri, username, password);
         } catch (URISyntaxException e) {
             throw new GradleException("Error when creating URI for Jenkins server on: " + extension.jenkinsUrl, e);
         }
