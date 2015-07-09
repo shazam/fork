@@ -11,11 +11,11 @@
 package com.shazam.fork.reporter;
 
 import com.google.common.collect.Table;
+import com.google.common.collect.TreeBasedTable;
 import com.shazam.fork.reporter.html.*;
 import com.shazam.fork.reporter.model.*;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.shazam.fork.utils.ReadableNames.readablePoolName;
 import static com.shazam.fork.utils.ReadableNames.readableTitle;
@@ -42,9 +42,9 @@ public class TestToHtmlFlakinessReportConverter {
     }
 
     private HtmlFlakyTestPool convertToPoolHtml(PoolHistory poolHistory) {
-        Table<ScoredTestLabel, Build, TestInstance> table = poolHistory.getHistoryTable();
+        TreeBasedTable<ScoredTestLabel, Build, TestInstance> table = poolHistory.getHistoryTable();
         List<Build> buildList = table.columnKeySet().stream().collect(toList());
-        Set<ScoredTestLabel> testLabels = table.rowKeySet();
+        SortedSet<ScoredTestLabel> testLabels = table.rowKeySet();
 
         return new HtmlFlakyTestPool(
                 poolHistory.getName(),
@@ -54,7 +54,7 @@ public class TestToHtmlFlakinessReportConverter {
 
     private List<HtmlTestHistory> createHtmlTestHistories(Table<ScoredTestLabel, Build, TestInstance> table,
                                                           List<Build> builds,
-                                                          Set<ScoredTestLabel> testLabels) {
+                                                          SortedSet<ScoredTestLabel> testLabels) {
         return testLabels.stream()
                 .map(scoredTestLabel -> {
                     List<HtmlTestInstance> htmlTestInstances = builds.stream()

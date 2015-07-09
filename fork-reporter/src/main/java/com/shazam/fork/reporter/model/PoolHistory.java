@@ -10,17 +10,17 @@
 
 package com.shazam.fork.reporter.model;
 
-import com.google.common.collect.Table;
+import com.google.common.collect.TreeBasedTable;
 
 public class PoolHistory {
     private final String name;
-    private final Table<ScoredTestLabel, Build, TestInstance> historyTable;
+    private final TreeBasedTable<ScoredTestLabel, Build, TestInstance> historyTable;
 
     public String getName() {
         return name;
     }
 
-    public Table<ScoredTestLabel, Build, TestInstance> getHistoryTable() {
+    public TreeBasedTable<ScoredTestLabel, Build, TestInstance> getHistoryTable() {
         return historyTable;
     }
 
@@ -31,7 +31,7 @@ public class PoolHistory {
 
     public static class Builder {
         private String name;
-        private Table<ScoredTestLabel, Build, TestInstance> historyTable;
+        private TreeBasedTable<ScoredTestLabel, Build, TestInstance> historyTable;
 
         public static Builder poolHistory() {
             return new Builder();
@@ -42,7 +42,7 @@ public class PoolHistory {
             return this;
         }
 
-        public Builder withHistoryTable(Table<ScoredTestLabel, Build, TestInstance> historyTable) {
+        public Builder withHistoryTable(TreeBasedTable<ScoredTestLabel, Build, TestInstance> historyTable) {
             this.historyTable = historyTable;
             return this;
         }
