@@ -57,6 +57,7 @@ body {
 .birds-eye .testlabel {
   text-align: right;
   padding-right: 11px;
+  background-color: whitesmoke;
 }
 
 .birds-eye .method {
