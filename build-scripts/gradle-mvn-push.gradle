@@ -90,13 +90,12 @@ artifacts {
     archives javadocJar, sourcesJar
 }
 
-
-task installToMavenLocal(type: Upload) {
-    description "Installs the artifacts to the local Maven repository."
-    configuration = configurations['archives']
+install {
     repositories {
-        mavenDeployer {
-            repository url: "file://${System.properties['user.home']}/.m2/repository"
+        mavenInstaller {
+            pom.groupId = GROUP
+            pom.artifactId = POM_ARTIFACT_ID
+            pom.version = VERSION_NAME
         }
     }
 }
