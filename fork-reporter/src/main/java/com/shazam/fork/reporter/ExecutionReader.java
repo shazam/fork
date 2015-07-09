@@ -25,6 +25,7 @@ import java.util.function.Function;
 import static com.shazam.fork.CommonDefaults.FORK;
 import static com.shazam.fork.reporter.model.Execution.Builder.execution;
 import static com.shazam.fork.reporter.model.Executions.Builder.executions;
+import static java.util.Collections.sort;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 
@@ -41,6 +42,7 @@ public class ExecutionReader {
 
     public Executions readExecutions() {
         List<File> individualSummaries = fileManager.getIndividualSummaries();
+        sort(individualSummaries);
         List<Execution> executions = individualSummaries.stream()
                 .map(getFileSummaryFunction())
                 .collect(toList());
