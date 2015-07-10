@@ -130,6 +130,10 @@ The reports produced by the Flakiness Reporter eventually make it trivial to fin
 ## How it works
 The Flakiness Reporter collects Fork output files, matches test runs over previous builds and sorts them according to their flakiness. Links are also created to each test of each test run, for easy navigation to diagnostics.
 
+## Sample output
+The output after a successful run of the Flakiness Reporter looks like the following:
+![Fork Flakiness Reporter](static/flakiness.png)
+
 ## Running the Flakiness Reporter (Jenkins)
 The Gradle plugin that allows the Reporter to run can be applied to a standalone project, since it doesn't directly depend on your Android project. For convenience, however, that is a good compromise.
 
@@ -189,10 +193,6 @@ This requires [Jenkins's HTML Publisher Plugin][2]. To be able to link to the ri
 ![Fork HTML reports archiving](static/archive-html.png)
 
 **Note:**The [forkJenkins.jenkinsReportTitle](#gradle-plugin-configuration) parameter of the gradle configuration has to match the Report Title added here.
-
-## Diagnostics
-The output after a successful run of the Flakiness Reporter looks like the following:
-![Fork Flakiness Reporter](static/flakiness.png)
 
 #License
 
