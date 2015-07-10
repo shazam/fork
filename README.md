@@ -1,30 +1,27 @@
 [![Build Status](https://travis-ci.org/shazam/fork.svg?branch=master)](https://travis-ci.org/shazam/fork)
 
-Fork
-====
+Fork & Flakiness Reporter
+===============
+The Fork project consists of two libraries:
 
-Fork is the fastest way to execute Android instrumentation test suites.
+* [**Fork**](#fork) offers the fastest way to execute Android instrumentation test suites.
+* [**Flakiness Reporter**](#flakiness-reporter) produces readable reports about test flakiness on tests suites previously executed by Fork.
 
 
-Description
------------
-
+# Fork
 When running instrumentation tests, there is a significant time overhead for developers, especially on larger test suites. Existing solutions were not satisfactory for quick feedback before pushing code to VCS and for CI purposes.
 
 We are big fans of [Spoon][1] and were using it for our plans, so we used it as our starting point. However, Spoon had similar issues to the Gradle and Maven test execution plugins, in the sense that it executes all tests on all of the connected devices (and emulators). We decided to tweak that naive scheduling to achieve much faster test execution.
 
 
-How it works
-------------
+## How it works
 We introduced the notion of *pools of devices*. These are now responsible for running a test suite instead of each device running the suite separately. That has two side effects: 
 * infinite scaling: your tests can speed up by as many devices and emulators as you can dedicate to your CI box. 
 * because test suites now get scheduled to run on a pool, not all tests will run on all devices. For that reason, we also introduced a way to create a pool per device, which offers full coverage (a.k.a. Spoon-mode) but typically takes longer, so we run it on a nightly basis.
 Fork works out-of-the-box, without any code changes.
 
 
-Running Fork
----------------
-
+## Running Fork
 There are two ways to run Fork with your builds.
 
 ### Gradle plugin (recommended)
@@ -90,8 +87,7 @@ For example:
 
 ```
 
-Configuring pools and runtime
-----------------------------
+## Configuring pools and runtime
 One of the most useful characteristics of the library is the way it creates the device pools. There are different options, to automatically create pools by API level, shortest width dimension and whether devices are self-described as tablets. On top of that, users can also manually create pools based on serial numbers, for maximum flexibility.
 
 With either way of executing Fork (Gradle / standalone) you can specify how the pools are created by setting a combination of these environment variables:
@@ -113,24 +109,92 @@ Any combination of other options from:
 
 *Note:* The Fork runtime parameter ```android.test.classes``` is applied _after_ both the ```testClassRegex``` and ```testPackage``` filters have been applied.
 
-Examples
------------
+## Examples
 A common case can be that you want to create two pools, one for phones & small tablets (7" and below) and one for large tablets. You could execute:
 ```
 gradlew forkDebugTest -Dfork.computed.sw=phablets=0,tablets=720
 ```
 The above will run tests on 2 pools, one named "phablets" and another called "tablets". The smallest width for the first pool will be 0 and for the latter 720 dpi.
 
-Diagnostics
------------
+## Diagnostics
 (Example output to be provided)
 
-Limitations
------------
+## Limitations
  * The scheduling still works on a single build box with ADB, so there still is a limit by how many devices & emulators can be simultaneously connected to ADB. Eventually, Fork could be tweaked to talk over HTTP with other build agents, that would then be connected to devices over ADB. That model would tie in nicely with multi-agent CI systems, like Jenkins.
 
-License
---------
+# Flakiness Reporter
+One common problem with UI tests is the test flakiness from either the environment they run on or badly written tests. To help track down tests that are misbehaving, we are introducing the Flakiness reporter.
+
+The reports produced by the Flakiness Reporter eventually make it trivial to find flaky tests and link to them and their diagnostics. Currently Jenkins is supported and it should be really easy to extend it to other types of CI servers.
+
+## How it works
+The Flakiness Reporter collects Fork output files, matches test runs over previous builds and sorts them according to their flakiness. Links are also created to each test of each test run, for easy navigation to diagnostics.
+
+## Running the Flakiness Reporter (Jenkins)
+The Gradle plugin that allows the Reporter to run can be applied to a standalone project, since it doesn't directly depend on your Android project. For convenience, however, that is a good compromise.
+
+Currently, the Reporter supports Jenkins but plugins can be written to be used with other CI servers.
+
+To be able to use the Flakiness Reporter add these dependencies:
+```
+buildscript {
+    dependencies {
+        classpath "com.shazam.fork:fork-reporter-jenkins-gradle-plugin:1.1.0-SNAPSHOT"
+    }
+    repositories {
+        maven { url "http://repo.jenkins-ci.org/public/" }
+    }
+}
+```
+
+Apply the Jenkins Flakiness Reporter plugin
+```
+apply plugin: 'fork-jenkins-gradle-plugin'
+```
+
+You can easily execute the Reporter with the following command.
+```
+gradlew forkJenkinsReport
+```
+
+### Gradle plugin configuration
+To allow the Reporter communicate with your Jenkins server, you need to configure it with some basic details about your Jenkins Plan
+
+Property Name          | Property Type  |  Description
+---------------------- | -------------- | ---------------------------
+reportTitle            | String         |  The title you want your report to have
+jenkinsUrl             | String         |  The base URL of your Jenkins Server
+jenkinsJobName         | String         |  The name of the job you want to be tracked
+jenkinsReportTitle     | String         |  Optional, used to link to Fork diagnostics. [The report title you use to archive Fork's report folder](#publish-forks-html-report)
+
+An example of a configuration:
+```groovy
+forkJenkins {
+    reportTitle = "My project's awesome flakiness report"
+    jenkinsUrl = "http://my-jenkins.server.net:8080/"
+    jenkinsJobName = "Master"
+    jenkinsReportTitle = "Fork_Report"
+ }
+```
+
+### Jenkins configuration
+In your post-build action section in Jenkins, do the following two actions.
+
+#### Archive Fork's summary file as an artifact
+The Reporter works with summary files from Fork runs. For them to be accessible, they need to be archived like below:
+![Fork summary archiving](static/archive-artifact.png)
+
+#### Publish Fork's HTML report
+This requires [Jenkins's HTML Publisher Plugin][2]. To be able to link to the right test runs, use a clear title.
+![Fork HTML reports archiving](static/archive-html.png)
+
+**Note** The forkJenkins.jenkinsReportTitle parameter of the gradle configuration has to match the report title added here.
+
+## Diagnostics
+The output after a successful run of the Flakiness Reporter looks like the following:
+![Fork Flakiness Reporter](static/flakiness.png)
+
+#License
 
     Copyright 2015 Shazam Entertainment Limited.
 
@@ -142,4 +206,5 @@ License
 
 
  [1]: https://github.com/square/spoon
+ [2]: https://wiki.jenkins-ci.org/display/JENKINS/HTML+Publisher+Plugin
 
