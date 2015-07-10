@@ -188,7 +188,7 @@ The Reporter works with summary files from Fork runs. For them to be accessible,
 This requires [Jenkins's HTML Publisher Plugin][2]. To be able to link to the right test runs, use a clear title.
 ![Fork HTML reports archiving](static/archive-html.png)
 
-**Note** The forkJenkins.jenkinsReportTitle parameter of the gradle configuration has to match the report title added here.
+**Note:**The [forkJenkins.jenkinsReportTitle](#gradle-plugin-configuration) parameter of the gradle configuration has to match the Report Title added here.
 
 ## Diagnostics
 The output after a successful run of the Flakiness Reporter looks like the following:
