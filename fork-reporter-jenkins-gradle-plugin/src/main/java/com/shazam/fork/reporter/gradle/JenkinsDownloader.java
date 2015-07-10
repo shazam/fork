@@ -90,14 +90,23 @@ class JenkinsDownloader {
     }
 
     String createBaseUrl() {
-        if (isNullOrEmpty(extension.jenkinsReportTitle)) {
+        String jenkinsReportTitle = encodeReportTitle(extension.jenkinsReportTitle);
+        if (isNullOrEmpty(jenkinsReportTitle)) {
             return null;
         }
         String pattern = "%s/job/%s/%s/%s";
         String url = stripEnd(extension.jenkinsUrl, "/");
         String encodedJobName = encode(extension.jenkinsJobName);
 
-        return String.format(pattern, url, encodedJobName, BUILD_ID_TOKEN, extension.jenkinsReportTitle);
+        return String.format(pattern, url, encodedJobName, BUILD_ID_TOKEN, jenkinsReportTitle);
+    }
+
+    /**
+     * Jenkins doesn't properly URL encode the report titles. The only noticable change is it replaces spaces with
+     * underscores.
+     */
+    private String encodeReportTitle(String jenkinsReportTitle) {
+        return jenkinsReportTitle.replaceAll("\\s", "_");
     }
 
     @SuppressWarnings("deprecation")
