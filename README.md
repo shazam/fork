@@ -173,7 +173,7 @@ forkJenkins {
     reportTitle = "My project's awesome flakiness report"
     jenkinsUrl = "http://my-jenkins.server.net:8080/"
     jenkinsJobName = "Master"
-    jenkinsReportTitle = "Fork_Report"
+    jenkinsReportTitle = "Fork Report"
  }
 ```
 
