@@ -50,8 +50,8 @@ body {
 }
 
 .birds-eye td {
-  height: 30px;
-  line-height: 0.78;
+  height: 34px;
+  line-height: 0.90;
 }
 
 .birds-eye .testlabel {
@@ -65,8 +65,8 @@ body {
 }
 
 .birds-eye .class {
-  font-size: xx-small;
-  letter-spacing: -0.05em;
+  font-size: x-small;
+  letter-spacing: -0.03em;
   font-weight: lighter;
 }
 
