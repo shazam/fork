@@ -17,20 +17,21 @@ import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.gson.Gson;
 import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
 import com.shazam.fork.system.io.FileManager;
 
 import java.util.*;
 
 class LogCatTestRunListener implements ITestRunListener {
     private final FileManager fileManager;
-    private final String pool;
+    private final Pool pool;
 	private final Device device;
 	private final LogCatReceiverTask logCatReceiverTask;
 	private final LogCatListener logCatListener;
 	private final List<LogCatMessage> logCatMessages;
     private final Gson gson;
 
-    public LogCatTestRunListener(Gson gson, FileManager fileManager, String pool, Device device) {
+    public LogCatTestRunListener(Gson gson, FileManager fileManager, Pool pool, Device device) {
         this.gson = gson;
         this.fileManager = fileManager;
         this.pool = pool;
@@ -71,8 +72,8 @@ class LogCatTestRunListener implements ITestRunListener {
 			copyOfLogCatMessages.addAll(logCatMessages);
 		}
         LogCatWriter logCatWriter = new CompositeLogCatWriter(
-                new JsonLogCatWriter(gson, fileManager, pool, device.getSerial()),
-                new RawLogCatWriter(fileManager, pool, device.getSerial()));
+                new JsonLogCatWriter(gson, fileManager, pool, device),
+                new RawLogCatWriter(fileManager, pool, device));
         LogCatSerializer logCatSerializer = new LogCatSerializer(test, logCatWriter);
 		logCatSerializer.serializeLogs(copyOfLogCatMessages);
 	}

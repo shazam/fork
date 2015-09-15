@@ -10,7 +10,7 @@
 package com.shazam.fork.system.io;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
-import com.shazam.fork.model.TestClass;
+import com.shazam.fork.model.*;
 
 import org.apache.commons.io.filefilter.*;
 
@@ -29,9 +29,9 @@ public class FileManager {
         this.output = output;
     }
 
-    public File createFileForTest(String pool, String deviceSerial, TestClass testClass) {
+    public File createFileForTest(Pool pool, Device device, TestClass testClass) {
         try {
-            Path directory = createDirectory(TEST, pool, deviceSerial);
+            Path directory = createDirectory(TEST, pool, device);
             String filename = createFilenameForTestClass(testClass, TEST);
             return createFile(directory, filename);
         } catch (IOException e) {
@@ -39,14 +39,14 @@ public class FileManager {
         }
     }
 
-    public File[] getTestFilesForDevice(String pool, String serial) {
+    public File[] getTestFilesForDevice(Pool pool, Device serial) {
         Path path = getDirectory(TEST, pool, serial);
         return path.toFile().listFiles();
     }
 
-    public File createFile(FileType fileType, String pool, String serial, TestIdentifier testIdentifier, int sequenceNumber) {
+    public File createFile(FileType fileType, Pool pool, Device device, TestIdentifier testIdentifier, int sequenceNumber) {
         try {
-            Path directory = createDirectory(fileType, pool, serial);
+            Path directory = createDirectory(fileType, pool, device);
             String filename = createFilenameForTest(testIdentifier, fileType, sequenceNumber);
             return createFile(directory, filename);
         } catch (IOException e) {
@@ -54,9 +54,9 @@ public class FileManager {
         }
     }
 
-    public File createFile(FileType fileType, String pool, String serial, TestIdentifier testIdentifier) {
+    public File createFile(FileType fileType, Pool pool, Device device, TestIdentifier testIdentifier) {
         try {
-            Path directory = createDirectory(fileType, pool, serial);
+            Path directory = createDirectory(fileType, pool, device);
             String filename = createFilenameForTest(testIdentifier, fileType);
             return createFile(directory, filename);
         } catch (IOException e) {
@@ -74,12 +74,12 @@ public class FileManager {
         }
     }
 
-    public File[] getFiles(FileType fileType, String pool, String serial, TestIdentifier testIdentifier) {
+    public File[] getFiles(FileType fileType, Pool pool, Device device, TestIdentifier testIdentifier) {
         FileFilter fileFilter = new AndFileFilter(
                 new PrefixFileFilter(testIdentifier.toString()),
                 new SuffixFileFilter(fileType.getSuffix()));
 
-        File deviceDirectory = get(output.getAbsolutePath(), fileType.getDirectory(), pool, serial).toFile();
+        File deviceDirectory = get(output.getAbsolutePath(), fileType.getDirectory(), pool.getName(), device.getSerial()).toFile();
         return deviceDirectory.listFiles(fileFilter);
     }
 
@@ -89,12 +89,12 @@ public class FileManager {
         return path.toFile();
     }
 
-    private Path createDirectory(FileType test, String pool, String deviceSerial) throws IOException {
-        return createDirectories(getDirectory(test, pool, deviceSerial));
+    private Path createDirectory(FileType test, Pool pool, Device device) throws IOException {
+        return createDirectories(getDirectory(test, pool, device));
     }
 
-    private Path getDirectory(FileType fileType, String pool, String deviceSerial) {
-        return get(output.getAbsolutePath(), fileType.getDirectory(), pool, deviceSerial);
+    private Path getDirectory(FileType fileType, Pool pool, Device device) {
+        return get(output.getAbsolutePath(), fileType.getDirectory(), pool.getName(), device.getSerial());
     }
 
     private File createFile(Path directory, String filename) {

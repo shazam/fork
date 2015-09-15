@@ -13,6 +13,7 @@ package com.shazam.fork.runner.listeners;
 import com.android.ddmlib.*;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.madgag.gif.fmsware.AnimatedGifEncoder;
+import com.shazam.fork.model.*;
 import com.shazam.fork.system.io.FileManager;
 
 import org.slf4j.Logger;
@@ -37,18 +38,18 @@ class ScreenCapturer implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(ScreenCapturer.class);
     private final IDevice deviceInterface;
     private final FileManager fileManager;
-    private final String pool;
-    private final String serial;
+    private final Pool pool;
+    private final Device device;
     private final TestIdentifier test;
 
     private boolean capturing;
     private boolean hasFailed;
 
-    ScreenCapturer(IDevice deviceInterface, FileManager fileManager, String pool, String serial, TestIdentifier test) {
+    ScreenCapturer(IDevice deviceInterface, FileManager fileManager, Pool pool, Device device, TestIdentifier test) {
         this.deviceInterface = deviceInterface;
         this.fileManager = fileManager;
         this.pool = pool;
-        this.serial = serial;
+        this.device = device;
         this.test = test;
     }
 
@@ -61,9 +62,9 @@ class ScreenCapturer implements Runnable {
             pauseTillNextScreenCapture();
         }
 
-        List<File> files = asList(fileManager.getFiles(SCREENSHOT, pool, serial, test));
+        List<File> files = asList(fileManager.getFiles(SCREENSHOT, pool, device, test));
         if (hasFailed) {
-            File file = fileManager.createFile(ANIMATION, pool, serial, test);
+            File file = fileManager.createFile(ANIMATION, pool, device, test);
             createGif(files, file);
         }
         deleteFiles(files);
@@ -82,7 +83,7 @@ class ScreenCapturer implements Runnable {
             logger.trace("Started getting screenshot");
             long startNanos = nanoTime();
             RawImage screenshot = deviceInterface.getScreenshot();
-            File file = fileManager.createFile(SCREENSHOT, pool, serial, test, sequenceNumber);
+            File file = fileManager.createFile(SCREENSHOT, pool, device, test, sequenceNumber);
             ImageIO.write(bufferedImageFrom(screenshot), SCREENSHOT.getSuffix(), file);
             logger.trace("Finished writing screenshot in {}ms to: {}", millisSinceNanoTime(startNanos), file);
         } catch (TimeoutException | AdbCommandRejectedException | IOException e) {

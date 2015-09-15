@@ -26,6 +26,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
 import static com.shazam.fork.Utils.namedExecutor;
+import static com.shazam.fork.model.Device.Builder.aDevice;
 import static com.shazam.fork.runner.listeners.TestRunListenersFactory.getForkXmlTestRunListener;
 
 public class PoolTestRunner implements Runnable {
@@ -94,8 +95,9 @@ public class PoolTestRunner implements Runnable {
         while ((nextTest = testClassQueue.poll()) != null) {
             String className = nextTest.getName();
             String poolName = pool.getName();
+            Device failedTestsDevice = aDevice().withSerial(DROPPED_BY + poolName).build();
             ForkXmlTestRunListener xmlGenerator = getForkXmlTestRunListener(fileManager, configuration.getOutput(),
-                    poolName, DROPPED_BY + poolName, nextTest);
+                    pool, failedTestsDevice, nextTest);
 
             Collection<TestMethod> methods = nextTest.getUnignoredMethods();
             xmlGenerator.testRunStarted(poolName, methods.size());
