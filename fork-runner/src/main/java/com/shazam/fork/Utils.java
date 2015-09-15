@@ -37,6 +37,6 @@ public class Utils {
         if (path == null) {
             return null;
         }
-        return new File(path);
+        return new File(path).getAbsoluteFile();
     }
 }

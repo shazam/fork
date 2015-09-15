@@ -79,13 +79,13 @@ public class FileManager {
                 new PrefixFileFilter(testIdentifier.toString()),
                 new SuffixFileFilter(fileType.getSuffix()));
 
-        File deviceDirectory = get(output.getAbsolutePath(), fileType.getDirectory(), pool.getName(), device.getSerial()).toFile();
+        File deviceDirectory = get(output.getAbsolutePath(), fileType.getDirectory(), pool.getName(), device.getSafeSerial()).toFile();
         return deviceDirectory.listFiles(fileFilter);
     }
 
-    public File getFile(FileType fileType, String pool, String serial, TestIdentifier testIdentifier) {
+    public File getFile(FileType fileType, String pool, String safeSerial, TestIdentifier testIdentifier) {
         String filenameForTest = createFilenameForTest(testIdentifier, fileType);
-        Path path = get(output.getAbsolutePath(), fileType.getDirectory(), pool, serial, filenameForTest);
+        Path path = get(output.getAbsolutePath(), fileType.getDirectory(), pool, safeSerial, filenameForTest);
         return path.toFile();
     }
 
@@ -94,7 +94,7 @@ public class FileManager {
     }
 
     private Path getDirectory(FileType fileType, Pool pool, Device device) {
-        return get(output.getAbsolutePath(), fileType.getDirectory(), pool.getName(), device.getSerial());
+        return get(output.getAbsolutePath(), fileType.getDirectory(), pool.getName(), device.getSafeSerial());
     }
 
     private File createFile(Path directory, String filename) {

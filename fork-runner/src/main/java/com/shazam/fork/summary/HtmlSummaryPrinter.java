@@ -124,7 +124,7 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 
     private void addLogcats(HtmlTestResult testResult, HtmlPoolSummary pool) {
         TestIdentifier testIdentifier = new TestIdentifier(testResult.plainClassName, testResult.plainMethodName);
-        List<LogCatMessage> logCatMessages = retriever.retrieveLogCat(pool.plainPoolName, testResult.deviceSerial, testIdentifier);
+        List<LogCatMessage> logCatMessages = retriever.retrieveLogCat(pool.plainPoolName, testResult.deviceSafeSerial, testIdentifier);
         testResult.logcatMessages = transform(logCatMessages, toHtmlLogCatMessages());
     }
 }

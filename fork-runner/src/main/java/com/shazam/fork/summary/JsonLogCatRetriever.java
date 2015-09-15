@@ -32,8 +32,8 @@ public class JsonLogCatRetriever implements LogCatRetriever {
     }
 
     @Override
-    public List<LogCatMessage> retrieveLogCat(String poolName, String serial, TestIdentifier testIdentifier) {
-        File logcatJsonFile = fileManager.getFile(FileType.JSON_LOG, poolName, serial, testIdentifier);
+    public List<LogCatMessage> retrieveLogCat(String poolName, String safeSerial, TestIdentifier testIdentifier) {
+        File logcatJsonFile = fileManager.getFile(FileType.JSON_LOG, poolName, safeSerial, testIdentifier);
         try {
             FileReader fileReader = new FileReader(logcatJsonFile);
             return gson.fromJson(fileReader, new TypeToken<List<LogCatMessage>>() {}.getType());
