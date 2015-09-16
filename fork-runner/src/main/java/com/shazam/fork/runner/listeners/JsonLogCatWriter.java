@@ -15,6 +15,8 @@ package com.shazam.fork.runner.listeners;
 import com.android.ddmlib.logcat.LogCatMessage;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.gson.Gson;
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
 import com.shazam.fork.system.io.FileManager;
 
 import java.io.*;
@@ -26,19 +28,19 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 class JsonLogCatWriter implements LogCatWriter {
     private final Gson gson;
     private final FileManager fileManager;
-    private final String pool;
-    private final String serial;
+    private final Pool pool;
+    private final Device device;
 
-	JsonLogCatWriter(Gson gson, FileManager fileManager, String pool, String serial) {
+	JsonLogCatWriter(Gson gson, FileManager fileManager, Pool pool, Device device) {
         this.gson = gson;
         this.fileManager = fileManager;
 		this.pool = pool;
-		this.serial = serial;
+		this.device = device;
 	}
 
 	@Override
 	public void writeLogs(TestIdentifier test, List<LogCatMessage> logCatMessages) {
-        File file = fileManager.createFile(JSON_LOG, pool, serial, test);
+        File file = fileManager.createFile(JSON_LOG, pool, device, test);
 		FileWriter fileWriter = null;
 		try {
 			fileWriter = new FileWriter(file);

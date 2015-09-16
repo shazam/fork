@@ -13,6 +13,7 @@ import com.android.ddmlib.IDevice;
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
 import com.shazam.fork.system.io.FileManager;
 
 import java.util.Map;
@@ -20,17 +21,17 @@ import java.util.Map;
 class ScreenCaptureTestRunListener implements ITestRunListener {
     private final FileManager fileManager;
     private final IDevice deviceInterface;
-    private final String pool;
-    private final String serial;
+    private final Pool pool;
+    private final Device device;
 
     private ScreenCapturer screenCapturer;
     private boolean hasFailed;
 
-    public ScreenCaptureTestRunListener(FileManager fileManager, String pool, Device device) {
+    public ScreenCaptureTestRunListener(FileManager fileManager, Pool pool, Device device) {
         this.fileManager = fileManager;
         this.deviceInterface = device.getDeviceInterface();
         this.pool = pool;
-        serial = device.getSerial();
+        this.device = device;
     }
 
     @Override
@@ -40,7 +41,7 @@ class ScreenCaptureTestRunListener implements ITestRunListener {
     @Override
     public void testStarted(TestIdentifier test) {
         hasFailed = false;
-        screenCapturer = new ScreenCapturer(deviceInterface, fileManager, pool, serial, test);
+        screenCapturer = new ScreenCapturer(deviceInterface, fileManager, pool, device, test);
         new Thread(screenCapturer, "ScreenCapturer").start();
     }
 

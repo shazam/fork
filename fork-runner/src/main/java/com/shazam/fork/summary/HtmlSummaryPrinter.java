@@ -100,7 +100,7 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
         poolsDir.mkdirs();
         for (HtmlPoolSummary pool : htmlSummary.pools) {
             String name = pool.plainPoolName + ".html";
-            htmlGenerator.generateHtml("forkpages/pool.html", poolsDir, name, htmlSummary);
+            htmlGenerator.generateHtml("forkpages/pool.html", poolsDir, name, pool);
         }
     }
 
@@ -124,7 +124,7 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 
     private void addLogcats(HtmlTestResult testResult, HtmlPoolSummary pool) {
         TestIdentifier testIdentifier = new TestIdentifier(testResult.plainClassName, testResult.plainMethodName);
-        List<LogCatMessage> logCatMessages = retriever.retrieveLogCat(pool.plainPoolName, testResult.deviceSerial, testIdentifier);
+        List<LogCatMessage> logCatMessages = retriever.retrieveLogCat(pool.plainPoolName, testResult.deviceSafeSerial, testIdentifier);
         testResult.logcatMessages = transform(logCatMessages, toHtmlLogCatMessages());
     }
 }

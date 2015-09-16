@@ -22,6 +22,7 @@ public class HtmlTestResult {
 	public String prettyClassName;
 	public String prettyMethodName;
 	public String deviceSerial;
+	public String deviceSafeSerial;
 	public String plainMethodName;
 	public String deviceModelDespaced;
 	public String plainClassName;

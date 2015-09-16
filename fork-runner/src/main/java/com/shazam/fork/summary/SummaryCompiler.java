@@ -70,7 +70,7 @@ public class SummaryCompiler {
     }
 
     private void compileResultsForDevice(Pool pool, PoolSummary.Builder poolSummaryBuilder, Device device) {
-        File[] deviceResultFiles = fileManager.getTestFilesForDevice(pool.getName(), device.getSerial());
+        File[] deviceResultFiles = fileManager.getTestFilesForDevice(pool, device);
         if (deviceResultFiles == null) {
             return;
         }
@@ -80,11 +80,11 @@ public class SummaryCompiler {
         }
     }
 
-    private Device getPoolWatchdog(String devicePoolName) {
+    private Device getPoolWatchdog(String poolName) {
         return aDevice()
-                .withSerial(PoolTestRunner.DROPPED_BY + devicePoolName)
-                .withManufacturer("Clumsy-" + devicePoolName)
-                .withModel("Clumsy=" + devicePoolName)
+                .withSerial(PoolTestRunner.DROPPED_BY + poolName)
+                .withManufacturer("Clumsy-" + poolName)
+                .withModel("Clumsy=" + poolName)
                 .build();
     }
 

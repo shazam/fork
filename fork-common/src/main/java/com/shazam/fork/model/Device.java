@@ -33,6 +33,10 @@ public class Device {
 		return serial;
 	}
 
+	public String getSafeSerial() {
+		return serial.replaceAll(":", "-");
+	}
+
 	public String getManufacturer() {
 		return manufacturer;
 	}

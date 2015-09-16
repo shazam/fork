@@ -77,6 +77,7 @@ class HtmlConverters {
 				// htmlTestResult.logcatMessages = transform(input.getLogCatMessages(), toHtmlLogCatMessages());
 				Device device = input.getDevice();
 				htmlTestResult.deviceSerial = device.getSerial();
+				htmlTestResult.deviceSafeSerial = device.getSafeSerial();
 				htmlTestResult.deviceModelDespaced = device.getModelName().replace(" ", "_");
                 Diagnostics supportedDiagnostics = device.getSupportedDiagnostics();
                 htmlTestResult.diagnosticVideo = VIDEO.equals(supportedDiagnostics);

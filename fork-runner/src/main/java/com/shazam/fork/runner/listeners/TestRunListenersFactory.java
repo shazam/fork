@@ -38,25 +38,30 @@ public class TestRunListenersFactory {
         this.gson = gson;
     }
 
-    public List<ITestRunListener> createTestListeners(TestClass testClass, Device device, Pool pool, ProgressReporter progressReporter) {
-        String poolName = pool.getName();
+    public List<ITestRunListener> createTestListeners(TestClass testClass,
+                                                      Device device,
+                                                      Pool pool,
+                                                      ProgressReporter progressReporter) {
         return asList(
                 new ProgressTestRunListener(pool, progressReporter),
-                getForkXmlTestRunListener(fileManager, configuration.getOutput(), poolName, device.getSerial(), testClass),
+                getForkXmlTestRunListener(fileManager, configuration.getOutput(), pool, device, testClass),
                 new ConsoleLoggingTestRunListener(configuration.getTestPackage(), device.getSerial(), progressReporter),
-                new LogCatTestRunListener(gson, fileManager, poolName, device),
+                new LogCatTestRunListener(gson, fileManager, pool, device),
                 new SlowWarningTestRunListener(),
-                getScreenTraceTestRunListener(fileManager, poolName, device));
+                getScreenTraceTestRunListener(fileManager, pool, device));
     }
 
-    public static ForkXmlTestRunListener getForkXmlTestRunListener(FileManager fileManager, File output, String poolName,
-                                                                   String serial, TestClass testClass) {
-        ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(fileManager, poolName, serial, testClass);
+    public static ForkXmlTestRunListener getForkXmlTestRunListener(FileManager fileManager,
+                                                                   File output,
+                                                                   Pool pool,
+                                                                   Device device,
+                                                                   TestClass testClass) {
+        ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(fileManager, pool, device, testClass);
         xmlTestRunListener.setReportDir(output);
         return xmlTestRunListener;
     }
 
-    private ITestRunListener getScreenTraceTestRunListener(FileManager fileManager, String pool, Device device) {
+    private ITestRunListener getScreenTraceTestRunListener(FileManager fileManager, Pool pool, Device device) {
         if (VIDEO.equals(device.getSupportedDiagnostics())) {
             return new ScreenRecorderTestRunListener(fileManager, pool, device);
         }
