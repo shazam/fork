@@ -100,7 +100,7 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
         poolsDir.mkdirs();
         for (HtmlPoolSummary pool : htmlSummary.pools) {
             String name = pool.plainPoolName + ".html";
-            htmlGenerator.generateHtml("forkpages/pool.html", poolsDir, name, htmlSummary);
+            htmlGenerator.generateHtml("forkpages/pool.html", poolsDir, name, pool);
         }
     }
 
