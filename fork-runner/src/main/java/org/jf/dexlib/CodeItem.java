@@ -413,16 +413,6 @@ public class CodeItem extends Item<CodeItem> {
         return currentCodeAddress;
     }
 
-    /**
-     * Go through the instructions and perform any of the following fixes that are applicable
-     * - Replace const-string instruction with const-string/jumbo, when the string index is too big
-     * - Replace goto and goto/16 with a larger version of goto, when the target is too far away
-     * TODO: we should be able to replace if-* instructions with targets that are too far away with a negated if followed by a goto/32 to the original target
-     * TODO: remove multiple nops that occur before a switch/array data pseudo instruction. In some cases, multiple smali-baksmali cycles with changes in between could cause nops to start piling up
-     * TODO: in case of non-range invoke with a jumbo-sized method reference, we could check if the registers are sequential, and replace it with the jumbo variant (which only takes a register range)
-     *
-     * The above fixes are applied iteratively, until no more fixes have been performed
-     */
     public void fixInstructions(boolean fixJumbo, boolean fixGoto) {
         try {
             boolean didSomething = false;

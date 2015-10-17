@@ -447,9 +447,6 @@ public class AnnotationDirectoryItem extends Item<AnnotationDirectoryItem> {
         return parameterAnnotations[index].annotationSet;
     }
 
-    /**
-     *
-     */
     public int getClassAnnotationCount() {
         if (classAnnotations == null) {
             return 0;

@@ -48,6 +48,7 @@ public class SparseArray<E> {
      * Creates a new SparseArray containing no mappings that will not
      * require any additional memory allocation to store the specified
      * number of mappings.
+     * @param initialCapacity the initial capacity of the array
      */
     public SparseArray(int initialCapacity) {
         mKeys = new int[initialCapacity];
@@ -58,6 +59,8 @@ public class SparseArray<E> {
     /**
      * Gets the Object mapped from the specified key, or <code>null</code>
      * if no such mapping has been made.
+     * @param key the key
+     * @return the value mapped to the key or null
      */
     public E get(int key) {
         return get(key, null);
@@ -66,6 +69,9 @@ public class SparseArray<E> {
     /**
      * Gets the Object mapped from the specified key, or the specified Object
      * if no such mapping has been made.
+     * @param key the key
+     * @param valueIfKeyNotFound default value to be returned
+     * @return the value of the key or the default value
      */
     public E get(int key, E valueIfKeyNotFound) {
         int i = binarySearch(mKeys, 0, mSize, key);
@@ -79,6 +85,7 @@ public class SparseArray<E> {
 
     /**
      * Removes the mapping from the specified key, if there was any.
+     * @param key the key
      */
     public void delete(int key) {
         int i = binarySearch(mKeys, 0, mSize, key);
@@ -93,6 +100,7 @@ public class SparseArray<E> {
 
     /**
      * Alias for {@link #delete(int)}.
+     * @param key the key
      */
     public void remove(int key) {
         delete(key);
@@ -129,6 +137,8 @@ public class SparseArray<E> {
      * Adds a mapping from the specified key to the specified value,
      * replacing the previous mapping from the specified key if there
      * was one.
+     * @param key the key
+     * @param value  the value
      */
     public void put(int key, E value) {
         int i = binarySearch(mKeys, 0, mSize, key);
@@ -180,6 +190,7 @@ public class SparseArray<E> {
     /**
      * Returns the number of key-value mappings that this SparseArray
      * currently stores.
+     * @return the size of the array
      */
     public int size() {
         if (mGarbage) {
@@ -193,6 +204,8 @@ public class SparseArray<E> {
      * Given an index in the range <code>0...size()-1</code>, returns
      * the key from the <code>index</code>th key-value mapping that this
      * SparseArray stores.
+     * @param index the index
+     * @return the key at index
      */
     public int keyAt(int index) {
         if (mGarbage) {
@@ -206,6 +219,8 @@ public class SparseArray<E> {
      * Given an index in the range <code>0...size()-1</code>, returns
      * the value from the <code>index</code>th key-value mapping that this
      * SparseArray stores.
+     * @param index the index for which we are retrieving the value
+     * @return the value of the array at the index
      */
     public E valueAt(int index) {
         if (mGarbage) {
@@ -219,6 +234,8 @@ public class SparseArray<E> {
      * Given an index in the range <code>0...size()-1</code>, sets a new
      * value for the <code>index</code>th key-value mapping that this
      * SparseArray stores.
+     * @param index the index
+     * @param value the value
      */
     public void setValueAt(int index, E value) {
         if (mGarbage) {
@@ -232,6 +249,8 @@ public class SparseArray<E> {
      * Returns the index for which {@link #keyAt} would return the
      * specified key, or a negative number if the specified
      * key is not mapped.
+     * @param key the key
+     * @return the index of the key
      */
     public int indexOfKey(int key) {
         if (mGarbage) {
@@ -248,6 +267,8 @@ public class SparseArray<E> {
      * Beware that this is a linear search, unlike lookups by key,
      * and that multiple keys can map to the same value and this will
      * find only one of them.
+     * @param value  the value
+     * @return the index of the value
      */
     public int indexOfValue(E value) {
         if (mGarbage) {
@@ -279,6 +300,8 @@ public class SparseArray<E> {
     /**
      * Puts a key/value pair into the array, optimizing for the case where
      * the key is greater than all existing keys in the array.
+     * @param key the key
+     * @param value  the value
      */
     public void append(int key, E value) {
         if (mSize != 0 && key <= mKeys[mSize - 1]) {

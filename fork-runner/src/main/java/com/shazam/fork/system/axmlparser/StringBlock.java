@@ -27,6 +27,8 @@ public class StringBlock {
     /**
      * Reads whole (including chunk type) string block from stream.
      * Stream must be at the chunk type.
+     * @param reader the int reader
+     * @return the string block from stream
      */
     public static StringBlock read(IntReader reader) throws IOException {
         ReadUtil.readCheckType(reader,CHUNK_TYPE);
@@ -69,6 +71,7 @@ public class StringBlock {
 
     /**
      * Returns number of strings in block.
+     * @return the number of strings
      */
     public int getCount() {
         return m_stringOffsets!=null?
@@ -77,8 +80,10 @@ public class StringBlock {
     }
 
     /**
-     * Returns raw string (without any styling information) at specified index.
-     * Returns null if index is invalid or object was not initialized.
+     * Gets raw string at index
+     *
+     * @param index the index
+     * @return raw string (without any styling information) at specified index or null if index is invalid or object was not initialized.
      */
     public String getRaw(int index) {
         if (index<0 ||
@@ -98,10 +103,10 @@ public class StringBlock {
     }
 
     /**
-     * Not yet implemented.
+     * Gets string with style information
      *
-     * Returns string with style information (if any).
-     * Returns null if index is invalid or object was not initialized.
+     * @param index the index
+     * @return string with style information or null if index is invalid or object was not initialized.
      */
     public CharSequence get(int index) {
 
@@ -110,6 +115,8 @@ public class StringBlock {
 
     /**
      * Returns string with style tags (html-like).
+     * @param index the index of style tags
+     * @return the style tag
      */
     public String getHTML(int index) {
         String raw=getRaw(index);
@@ -165,7 +172,8 @@ public class StringBlock {
 
     /**
      * Finds index of the string.
-     * Returns -1 if the string was not found.
+     * @param string the string to find
+     * @return -1 if the string was not found or the index
      */
     public int find(String string) {
         if (string==null) {

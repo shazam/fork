@@ -37,6 +37,8 @@ public class ForkBuilder {
 
     /**
      * Path to the local Android SDK directory.
+     * @param androidSdk the path of the Android SDK
+     * @return the builder
      */
     public ForkBuilder withAndroidSdk(File androidSdk) {
         this.androidSdk = androidSdk;
@@ -45,6 +47,8 @@ public class ForkBuilder {
 
     /**
      * Path to application APK.
+     * @param apk the application APK file
+     * @return the builder
      */
     public ForkBuilder withApplicationApk(File apk) {
         applicationApk = apk;
@@ -53,6 +57,8 @@ public class ForkBuilder {
 
     /**
      * Path to the instrumentation APK.
+     * @param apk the instrumentation APK file
+     * @return the builder
      */
     public ForkBuilder withInstrumentationApk(File apk) {
         instrumentationApk = apk;
@@ -61,6 +67,8 @@ public class ForkBuilder {
 
     /**
      * Path to output directory where reports will be saved.
+     * @param output the directory where the fork reports and files are saved
+     * @return the builder
      */
     public ForkBuilder withOutputDirectory(@Nullable File output) {
         if (output != null) {
@@ -71,6 +79,8 @@ public class ForkBuilder {
 
     /**
      * Regex {@link Pattern} determining the class names to consider when finding tests to run.
+     * @param testClassRegex the regex to match FQN of tests
+     * @return the builder
      */
     public ForkBuilder withTestClassRegex(@Nullable String testClassRegex) {
         if (testClassRegex != null) {
@@ -81,6 +91,8 @@ public class ForkBuilder {
 
     /**
      * Regex {@link Pattern} determining the packages to consider when finding tests to run.
+     * @param testPackage the test package that will be scanned
+     * @return the builder
      */
     public ForkBuilder withTestPackage(@Nullable String testPackage) {
         if (testPackage != null) {

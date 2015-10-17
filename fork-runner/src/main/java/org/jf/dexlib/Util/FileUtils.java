@@ -46,6 +46,7 @@ public final class FileUtils {
      *
      * @param fileName non-null; name of the file to read
      * @return non-null; contents of the file
+     * @throws IOException on I/O errors
      */
     public static byte[] readFile(String fileName)
             throws IOException {
@@ -59,6 +60,7 @@ public final class FileUtils {
      *
      * @param file non-null; the file to read
      * @return non-null; contents of the file
+     * @throws IOException on I/O errors
      */
     public static byte[] readFile(File file)
             throws IOException {
@@ -74,6 +76,7 @@ public final class FileUtils {
      * @param length the number of bytes to read, or -1 to read to the
      * end of the file
      * @return non-null; contents of the file
+     * @throws IOException on I/O errors
      */
     public static byte[] readFile(File file, int offset, int length)
             throws IOException {
