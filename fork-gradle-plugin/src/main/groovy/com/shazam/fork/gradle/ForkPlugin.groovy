@@ -45,9 +45,7 @@ class ForkPlugin implements Plugin<Project> {
 
         BaseExtension android = project.android
         android.testVariants.all { TestVariant variant ->
-
-            String taskName = "${TASK_PREFIX}${variant.name.capitalize()}"
-            List<ForkRunTask> tasks = createTask(variant, project, "")
+            List<ForkRunTask> tasks = createTask(variant, project)
             tasks.each {
                 it.configure {
                     description = "Runs instrumentation tests on all the connected devices for '${variant.name}' variation and generates a report with screenshots"
@@ -56,42 +54,15 @@ class ForkPlugin implements Plugin<Project> {
 
             forkTask.dependsOn tasks
         }
-
-        project.tasks.addRule(patternString("fork")) { String ruleTaskName ->
-            if (ruleTaskName.startsWith("fork")) {
-                String suffix = lowercase(ruleTaskName - "fork")
-                if (android.testVariants.find { suffix.startsWith(it.name) } != null) {
-                    // variant specific, not our case
-                    return
-                }
-                String size = suffix.toLowerCase(Locale.US)
-                if (isValidSize(size)) {
-                    def variantTaskNames = forkTask.taskDependencies.getDependencies(forkTask).collect() { it.name }
-                    project.task(ruleTaskName, dependsOn: variantTaskNames.collect() { "${it}${size}" })
-                }
-            }
-        }
     }
 
-    private static boolean isValidSize(String size) {
-        return size in ['small', 'medium', 'large']
-    }
-
-    private static String lowercase(final String s) {
-        return s[0].toLowerCase(Locale.US) + s.substring(1)
-    }
-
-    private static String patternString(final String taskName) {
-        return "Pattern: $taskName<TestSize>: run instrumentation tests of particular size"
-    }
-
-    private static List<ForkRunTask> createTask(final TestVariant variant, final Project project, final String suffix) {
+    private static List<ForkRunTask> createTask(final TestVariant variant, final Project project) {
         if (variant.outputs.size() > 1) {
             throw new UnsupportedOperationException("Fork plugin for gradle does not support abi/density splits for test apks")
         }
         ForkExtension config = project.fork
         return variant.testedVariant.outputs.collect { def projectOutput ->
-            ForkRunTask task = project.tasks.create("${TASK_PREFIX}${projectOutput.name.capitalize()}${suffix}", ForkRunTask)
+            ForkRunTask task = project.tasks.create("${TASK_PREFIX}${variant.name.capitalize()}", ForkRunTask)
             task.configure {
                 group = JavaBasePlugin.VERIFICATION_GROUP
                 if (projectOutput instanceof ApkVariantOutput) {
@@ -114,6 +85,8 @@ class ForkPlugin implements Plugin<Project> {
 
                 dependsOn projectOutput.assemble, variant.assemble
             }
+            task.outputs.upToDateWhen { false }
+            return task
         } as List<ForkRunTask>
     }
 
