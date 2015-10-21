@@ -19,9 +19,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
 import static com.shazam.fork.injector.ConfigurationInjector.setConfiguration;
 import static com.shazam.fork.injector.ForkRunnerInjector.forkRunner;
+import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
 import static java.lang.System.nanoTime;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatPeriod;

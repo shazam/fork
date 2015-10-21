@@ -84,7 +84,6 @@ public class ForkRunner {
         } catch (Exception e) {
             logger.error("Error while Fork was executing", e);
             return false;
-
         } finally {
             if (poolExecutor != null) {
                 poolExecutor.shutdown();

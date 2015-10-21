@@ -41,6 +41,7 @@ public class SparseIntArray {
      * Creates a new SparseIntArray containing no mappings that will not
      * require any additional memory allocation to store the specified
      * number of mappings.
+     * @param initialCapacity the initial capacity of the array
      */
     public SparseIntArray(int initialCapacity) {
         mKeys = new int[initialCapacity];
@@ -51,6 +52,8 @@ public class SparseIntArray {
     /**
      * Gets the int mapped from the specified key, or <code>0</code>
      * if no such mapping has been made.
+     * @param key the key
+     * @return the int mapped to the key
      */
     public int get(int key) {
         return get(key, 0);
@@ -59,6 +62,9 @@ public class SparseIntArray {
     /**
      * Gets the int mapped from the specified key, or the specified value
      * if no such mapping has been made.
+     * @param key the key
+     * @param valueIfKeyNotFound default value to be returned
+     * @return the value of the key or the default value
      */
     public int get(int key, int valueIfKeyNotFound) {
         int i = binarySearch(mKeys, 0, mSize, key);
@@ -73,6 +79,8 @@ public class SparseIntArray {
     /**
      * Gets the int mapped from the specified key, or if not present, the
      * closest key that is less than the specified key.
+     * @param key the key
+     * @return the int of the key or closest smaller
      */
     public int getClosestSmaller(int key) {
         int i = binarySearch(mKeys, 0, mSize, key);
@@ -90,6 +98,7 @@ public class SparseIntArray {
 
     /**
      * Removes the mapping from the specified key, if there was any.
+     * @param key the key
      */
     public void delete(int key) {
         int i = binarySearch(mKeys, 0, mSize, key);
@@ -101,6 +110,7 @@ public class SparseIntArray {
 
     /**
      * Removes the mapping at the given index.
+     * @param index the index
      */
     public void removeAt(int index) {
         System.arraycopy(mKeys, index + 1, mKeys, index, mSize - (index + 1));
@@ -112,6 +122,8 @@ public class SparseIntArray {
      * Adds a mapping from the specified key to the specified value,
      * replacing the previous mapping from the specified key if there
      * was one.
+     * @param key the key
+     * @param value  the value
      */
     public void put(int key, int value) {
         int i = binarySearch(mKeys, 0, mSize, key);
@@ -150,6 +162,7 @@ public class SparseIntArray {
     /**
      * Returns the number of key-value mappings that this SparseIntArray
      * currently stores.
+     * @return the size of the array
      */
     public int size() {
         return mSize;
@@ -159,6 +172,8 @@ public class SparseIntArray {
      * Given an index in the range <code>0...size()-1</code>, returns
      * the key from the <code>index</code>th key-value mapping that this
      * SparseIntArray stores.
+     * @param index the index
+     * @return the key at index
      */
     public int keyAt(int index) {
         return mKeys[index];
@@ -168,6 +183,8 @@ public class SparseIntArray {
      * Given an index in the range <code>0...size()-1</code>, returns
      * the value from the <code>index</code>th key-value mapping that this
      * SparseIntArray stores.
+     * @param index the index for which we are retrieving the value
+     * @return the value of the array at the index
      */
     public int valueAt(int index) {
         return mValues[index];
@@ -177,6 +194,8 @@ public class SparseIntArray {
      * Returns the index for which {@link #keyAt} would return the
      * specified key, or a negative number if the specified
      * key is not mapped.
+     * @param key the key
+     * @return the index of the key
      */
     public int indexOfKey(int key) {
         return binarySearch(mKeys, 0, mSize, key);
@@ -189,6 +208,8 @@ public class SparseIntArray {
      * Beware that this is a linear search, unlike lookups by key,
      * and that multiple keys can map to the same value and this will
      * find only one of them.
+     * @param value  the value
+     * @return the index of the value
      */
     public int indexOfValue(int value) {
         for (int i = 0; i < mSize; i++)
@@ -208,6 +229,8 @@ public class SparseIntArray {
     /**
      * Puts a key/value pair into the array, optimizing for the case where
      * the key is greater than all existing keys in the array.
+     * @param key the key
+     * @param value  the value
      */
     public void append(int key, int value) {
         if (mSize != 0 && key <= mKeys[mSize - 1]) {

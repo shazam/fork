@@ -39,6 +39,8 @@ public final class AXMLParser {
     /**
      * Creates object and reads file info.
      * Call next() to read first tag.
+     * @param stream the input stream
+     * @throws IOException when any I/O errors occur
      */
     public AXMLParser(InputStream stream) throws IOException {
         m_stream=stream;
@@ -68,12 +70,6 @@ public final class AXMLParser {
         resetState();
     }
 
-    /**
-     * Advances to the next tag.
-     * Once method returns END_DOCUMENT, it always returns END_DOCUMENT.
-     * Once method throws an exception, it always throws the same exception.
-     *
-     */
     public final int next() throws IOException {
         if (m_nextException!=null) {
             throw m_nextException;
@@ -90,14 +86,12 @@ public final class AXMLParser {
 
     /**
      * Returns current tag type.
+     * @return the tag type
      */
     public final int getType() {
         return m_tagType;
     }
 
-    /**
-     * Returns name for the current tag.
-     */
     public final String getName() {
         if (m_tagName==-1) {
             return null;
@@ -105,16 +99,10 @@ public final class AXMLParser {
         return getString(m_tagName);
     }
 
-    /**
-     * Returns line number in the original XML where the current tag was.
-     */
     public final int getLineNumber() {
         return m_tagSourceLine;
     }
 
-    /**
-     * Returns count of attributes for the current tag.
-     */
     public final int getAttributeCount() {
         if (m_tagAttributes==null) {
             return -1;
@@ -124,6 +112,8 @@ public final class AXMLParser {
 
     /**
      * Returns attribute namespace.
+     * @param index the index
+     * @return the attribute namespace at index
      */
     public final String getAttributeNamespace(int index) {
         return getString(getAttribute(index).namespace);
@@ -131,6 +121,8 @@ public final class AXMLParser {
 
     /**
      * Returns attribute name.
+     * @param index the index
+     * @return the attribute name at index
      */
     public final String getAttributeName(int index) {
         return getString(getAttribute(index).name);
@@ -138,6 +130,8 @@ public final class AXMLParser {
 
     /**
      * Returns attribute resource ID.
+     * @param index the index
+     * @return the attribute resource ID at index
      */
     public final int getAttributeResourceID(int index) {
         int resourceIndex=getAttribute(index).name;
@@ -152,6 +146,8 @@ public final class AXMLParser {
     /**
      * Returns type of attribute value.
      * See TypedValue.TYPE_ values.
+     * @param index the index
+     * @return the attribute type at index
      */
     public final int getAttributeValueType(int index) {
         return getAttribute(index).valueType;
@@ -160,6 +156,8 @@ public final class AXMLParser {
     /**
      * For attributes of type TypedValue.TYPE_STRING returns
      *  string value. For other types returns empty string.
+     * @param index the index
+     * @return the attribute string at index
      */
     public final String getAttributeValueString(int index) {
         return getString(getAttribute(index).valueString);
@@ -168,6 +166,8 @@ public final class AXMLParser {
     /**
      * Returns integer attribute value.
      * This integer interpreted according to attribute type.
+     * @param index the index
+     * @return the attribute at index
      */
     public final int getAttributeValue(int index) {
         return getAttribute(index).value;
