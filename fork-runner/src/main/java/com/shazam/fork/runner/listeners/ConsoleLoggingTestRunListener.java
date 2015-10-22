@@ -32,12 +32,14 @@ class ConsoleLoggingTestRunListener implements ITestRunListener {
     private static final String PERCENT = "%02d%%";
 
     private final String serial;
-	private final ProgressReporter progressReporter;
+    private final String modelName;
+    private final ProgressReporter progressReporter;
     private final String testPackage;
 
-    public ConsoleLoggingTestRunListener(String testPackage, String serial, ProgressReporter progressReporter) {
+    public ConsoleLoggingTestRunListener(String testPackage, String serial, String modelName, ProgressReporter progressReporter) {
         this.serial = serial;
-		this.progressReporter = progressReporter;
+        this.modelName = modelName;
+        this.progressReporter = progressReporter;
         this.testPackage = testPackage;
     }
 
@@ -47,12 +49,12 @@ class ConsoleLoggingTestRunListener implements ITestRunListener {
 
 	@Override
 	public void testStarted(TestIdentifier test) {
-        System.out.println(format("%s %s %s [%s] Starting %s", runningTime(), progress(), failures(), serial, testCase(test)));
+        System.out.println(format("%s %s %s %s [%s] %s", runningTime(), progress(), failures(), modelName, serial, testCase(test)));
 	}
 
     @Override
     public void testFailed(TestIdentifier test, String trace) {
-        System.out.println(format("%s %s %s [%s] Failed %s\n %s", runningTime(), progress(), failures(), serial, testCase(test), trace));
+        System.out.println(format("%s %s %s %s [%s] Failed %s\n %s", runningTime(), progress(), failures(), modelName, serial, testCase(test), trace));
     }
 
     @Override
@@ -68,17 +70,16 @@ class ConsoleLoggingTestRunListener implements ITestRunListener {
 
     @Override
 	public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
-        System.out.println(format("%s %s %s [%s] Finished %s", runningTime(), progress(), failures(), serial, testCase(test)));
 	}
 
     @Override
     public void testRunFailed(String errorMessage) {
-        System.out.println(format("%s %s %s [%s] Test run failed: %s", runningTime(), progress(), failures(), serial, errorMessage));
+        System.out.println(format("%s %s %s %s [%s] Test run failed: %s", runningTime(), progress(), failures(), modelName, serial, errorMessage));
     }
 
 	@Override
 	public void testRunStopped(long elapsedTime) {
-        System.out.println(format("%s %s %s [%s] Test run stopped after %s ms", runningTime(), progress(), failures(), serial, elapsedTime));
+        System.out.println(format("%s %s %s %s [%s] Test run stopped after %s ms", runningTime(), progress(), failures(), modelName, serial, elapsedTime));
 	}
 
     @Override
