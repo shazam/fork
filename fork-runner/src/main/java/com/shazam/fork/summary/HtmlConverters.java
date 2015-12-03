@@ -99,7 +99,7 @@ class HtmlConverters {
 				htmlLogCatMessage.pid = logCatMessage.getPid();
 				htmlLogCatMessage.tag = logCatMessage.getTag();
 				htmlLogCatMessage.tid = logCatMessage.getTid();
-				htmlLogCatMessage.time = logCatMessage.getTime();
+				htmlLogCatMessage.time = logCatMessage.getTimestamp().toString();
 				return htmlLogCatMessage;
 			}
 		};
