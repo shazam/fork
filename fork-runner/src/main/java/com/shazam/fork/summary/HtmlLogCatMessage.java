@@ -20,8 +20,8 @@ public class HtmlLogCatMessage {
 	public String appName;
 	public String logLevel;
 	public String message;
-	public int pid;
+	public String pid;
 	public String tag;
-	public int tid;
+	public String tid;
 	public String time;
 }
