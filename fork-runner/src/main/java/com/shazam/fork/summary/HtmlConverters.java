@@ -23,7 +23,9 @@ import static com.google.common.collect.Collections2.transform;
 import static com.shazam.fork.model.Diagnostics.SCREENSHOTS;
 import static com.shazam.fork.model.Diagnostics.VIDEO;
 import static com.shazam.fork.summary.OutcomeAggregator.toPoolOutcome;
-import static com.shazam.fork.utils.ReadableNames.*;
+import static com.shazam.fork.utils.ReadableNames.readableClassName;
+import static com.shazam.fork.utils.ReadableNames.readablePoolName;
+import static com.shazam.fork.utils.ReadableNames.readableTestMethodName;
 
 class HtmlConverters {
 
@@ -99,7 +101,7 @@ class HtmlConverters {
 				htmlLogCatMessage.pid = logCatMessage.getPid();
 				htmlLogCatMessage.tag = logCatMessage.getTag();
 				htmlLogCatMessage.tid = logCatMessage.getTid();
-				htmlLogCatMessage.time = logCatMessage.getTime();
+				htmlLogCatMessage.time = logCatMessage.getTimestamp().toString();
 				return htmlLogCatMessage;
 			}
 		};
