@@ -9,7 +9,7 @@
  */
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.4'
+    gradleVersion = '2.8'
 }
 
 ext.sourceCompatibility = JavaVersion.VERSION_1_7
@@ -20,6 +20,7 @@ subprojects {
         repositories {
             mavenLocal()
             mavenCentral()
+            jcenter()
         }
     }
 
@@ -29,6 +30,7 @@ subprojects {
     repositories {
         mavenLocal()
         mavenCentral()
+        jcenter()
     }
 
     afterEvaluate { project ->
