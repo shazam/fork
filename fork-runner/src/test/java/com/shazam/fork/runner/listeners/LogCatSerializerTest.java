@@ -14,9 +14,12 @@ package com.shazam.fork.runner.listeners;
 
 import com.android.ddmlib.Log;
 import com.android.ddmlib.logcat.LogCatMessage;
+import com.android.ddmlib.logcat.LogCatTimestamp;
 import com.android.ddmlib.testrunner.TestIdentifier;
 
-import org.hamcrest.*;
+import org.hamcrest.Description;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Test;
 
@@ -102,7 +105,9 @@ public class LogCatSerializerTest {
     }
 
     private LogCatMessage nextMessage(String msg) {
-        return new LogCatMessage(Log.LogLevel.INFO, "1234", "4321", "TestRunner", "TestRunner", "08-13 22:37:24." + ++milli, msg);
+        String timestampString = String.valueOf("08-13 22:37:24." + ++milli);
+        return new LogCatMessage(Log.LogLevel.INFO, 1234, 4321, "TestRunner", "TestRunner",
+                LogCatTimestamp.fromString(timestampString), msg);
     }
 
     private static class SpyLogCatWriter implements LogCatWriter {
