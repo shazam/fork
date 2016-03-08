@@ -52,6 +52,7 @@ public class PoolTestRunnerFactory {
                 failureAccumulator);
     }
 
+    //TODO cleanup.
   /*  private int countTests(List<TestClass> testClasses) {
         int sum = 0;
         for (TestClass testClass : testClasses) {

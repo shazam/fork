@@ -10,12 +10,14 @@
 
 package com.shazam.fork.injector.runner;
 
-import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.runner.OverallProgressReporter;
+import com.shazam.fork.runner.ProgressReporter;
+
+import static com.shazam.fork.injector.RetryWatchdogInjector.retryWatchdog;
 
 public class ProgressReporterInjector {
 
     public static ProgressReporter progressReporter() {
-        return new OverallProgressReporter();
+        return new OverallProgressReporter(retryWatchdog());
     }
 }

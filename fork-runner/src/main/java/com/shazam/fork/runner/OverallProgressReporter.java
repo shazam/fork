@@ -29,8 +29,12 @@ public class OverallProgressReporter implements ProgressReporter {
     private long startOfTests;
     private long endOfTests;
     private final Map<Pool, PoolProgressTracker> poolProgressTrackers = new HashMap<>();
-    private final RetryWatchdog retryWatchdog = new RetryWatchdog();
+    private final RetryWatchdog retryWatchdog;
     private final DeviceTestCaseAccumulator failedTestCasesAccumulator = new DeviceTestCaseAccumulator();
+
+    public OverallProgressReporter(RetryWatchdog retryWatchdog) {
+        this.retryWatchdog = retryWatchdog;
+    }
 
     @Override
     public void start() {

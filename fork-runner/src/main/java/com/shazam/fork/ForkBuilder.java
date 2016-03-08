@@ -30,6 +30,8 @@ public class ForkBuilder {
     private String testPackage; // Will default to test APK's package name as soon as it's known
     private int testOutputTimeout = Defaults.TEST_OUTPUT_TIMEOUT_MILLIS;
     private boolean fallbackToScreenshots = true;
+    private int totalAllowedRetryQuota = 0;
+    private int retryPerTestCaseQuota = 1;
 
     public static ForkBuilder aFork() {
         return new ForkBuilder();
@@ -116,6 +118,29 @@ public class ForkBuilder {
         return this;
     }
 
+    /**
+     * Allow to re-run tests.
+     *
+     * @param totalAllowedRetryQuota Threshold of total failures below whom the failed tests can be executed again.
+     * @return this builder
+     */
+    public ForkBuilder withTotalAllowedRetryQuota(int totalAllowedRetryQuota) {
+        this.totalAllowedRetryQuota = totalAllowedRetryQuota;
+        return this;
+    }
+
+    /**
+     * Max number of time each testCase is attempted again.
+     * @param retryPerTestCaseQuota max number of attempts when rerunning tests.
+     * @return this builder.
+     */
+    //TODO - implement.
+    public ForkBuilder withRetryPerTestCaseQuota(int retryPerTestCaseQuota) {
+        this.retryPerTestCaseQuota = retryPerTestCaseQuota;
+        return this;
+    }
+
+
     public Fork build() {
         checkNotNull(androidSdk, "SDK is required.");
         checkArgument(androidSdk.exists(), "SDK directory does not exist.");
@@ -125,6 +150,7 @@ public class ForkBuilder {
         checkArgument(instrumentationApk.exists(), "Instrumentation APK file does not exist.");
         checkNotNull(output, "Output path is required.");
         checkArgument(testOutputTimeout >= 0, "Timeout must be non-negative.");
+        checkArgument(totalAllowedRetryQuota >= 0, "Total allowed retry quota should not be negative.");
 
         InstrumentationInfo instrumentationInfo = parseFromFile(instrumentationApk);
         String testPackage = configuredOrInstrumentationPackage(instrumentationInfo.getInstrumentationPackage());
@@ -138,8 +164,9 @@ public class ForkBuilder {
                 compilePatternFor(testPackage),
                 testPackage,
                 testOutputTimeout,
-                fallbackToScreenshots
-        );
+                fallbackToScreenshots,
+                totalAllowedRetryQuota,
+                retryPerTestCaseQuota);
         return new Fork(configuration);
     }
 

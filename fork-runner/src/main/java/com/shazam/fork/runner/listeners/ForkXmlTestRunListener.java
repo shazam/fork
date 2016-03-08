@@ -71,7 +71,7 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
         if (testFailuresCountPerDevice > 0)
 
             mapBuilder
-                    .put("previousFailureCounts", Integer.toString(testFailuresCountPerDevice))
+                    .put("totalFailureCount", Integer.toString(testFailuresCountPerDevice))
                     .build();
 
 
