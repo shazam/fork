@@ -28,14 +28,16 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 public class ForkXmlTestRunListener extends XmlTestRunListener {
+    public static final String SUMMARY_KEY_TOTAL_FAILURE_COUNT = "totalFailureCount";
+
     private final FileManager fileManager;
     private final Pool pool;
     private final Device device;
     private final TestCaseEvent testCase;
+
     @Nonnull
     private
     ProgressReporter progressReporter;
-
     TestIdentifier test;
 
     public ForkXmlTestRunListener(FileManager fileManager,
@@ -66,16 +68,14 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
 
         ImmutableMap.Builder<String, String> mapBuilder = ImmutableMap.<String, String>builder()
                 .putAll(super.getPropertiesAttributes());
-        if(test != null) {
-
+        if (test != null) {
             int testFailuresCountPerDevice = progressReporter.getTestFailuresCountPerDevice(device,
                     new TestCaseEvent(test.getTestName(), test.getClassName(), false));
-            if (testFailuresCountPerDevice > 0)
-
+            if (testFailuresCountPerDevice > 0) {
                 mapBuilder
-                        .put("totalFailureCount", Integer.toString(testFailuresCountPerDevice))
+                        .put(SUMMARY_KEY_TOTAL_FAILURE_COUNT, Integer.toString(testFailuresCountPerDevice))
                         .build();
-
+            }
         }
         return mapBuilder.build();
     }

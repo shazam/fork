@@ -12,9 +12,11 @@
  */
 package com.shazam.fork.summary;
 
-import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.shazam.fork.RuntimeConfiguration;
-import com.shazam.fork.model.*;
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.runner.PoolTestRunner;
 import com.shazam.fork.system.io.FileManager;
 
@@ -22,12 +24,12 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
-import javax.annotation.Nonnull;
-
-import static com.google.common.collect.Collections2.transform;
 import static com.shazam.fork.model.Device.Builder.aDevice;
+import static com.shazam.fork.runner.listeners.ForkXmlTestRunListener.SUMMARY_KEY_TOTAL_FAILURE_COUNT;
 import static com.shazam.fork.summary.PoolSummary.Builder.aPoolSummary;
 import static com.shazam.fork.summary.Summary.Builder.aSummary;
 import static com.shazam.fork.summary.TestResult.Builder.aTestResult;
@@ -43,40 +45,41 @@ public class SummaryCompiler {
     public SummaryCompiler(RuntimeConfiguration runtimeConfiguration, FileManager fileManager) {
         this.runtimeConfiguration = runtimeConfiguration;
         this.fileManager = fileManager;
-		serializer = new Persister();
-	}
+        serializer = new Persister();
+    }
 
-	Summary compileSummary(Collection<Pool> pools, List<TestCaseEvent> testCases) {
-		Summary.Builder summaryBuilder = aSummary();
-		for (Pool pool : pools) {
-            PoolSummary poolSummary = compilePoolSummary(pool);
+    Summary compileSummary(Collection<Pool> pools, List<TestCaseEvent> testCases) {
+        Summary.Builder summaryBuilder = aSummary();
+        for (Pool pool : pools) {
+            PoolSummary poolSummary = compilePoolSummary(pool, summaryBuilder);
             summaryBuilder.addPoolSummary(poolSummary);
-		}
+        }
         addIgnoredTests(testCases, summaryBuilder);
         summaryBuilder.withTitle(runtimeConfiguration.getTitle());
         summaryBuilder.withSubtitle(runtimeConfiguration.getSubtitle());
 
-		return summaryBuilder.build();
-	}
+        return summaryBuilder.build();
+    }
 
-    private PoolSummary compilePoolSummary(Pool pool) {
+    private PoolSummary compilePoolSummary(Pool pool, Summary.Builder summaryBuilder) {
         PoolSummary.Builder poolSummaryBuilder = aPoolSummary().withPoolName(pool.getName());
-        for (Device device: pool.getDevices()) {
-            compileResultsForDevice(pool, poolSummaryBuilder, device);
+        for (Device device : pool.getDevices()) {
+            compileResultsForDevice(pool, poolSummaryBuilder, summaryBuilder, device);
         }
         Device watchdog = getPoolWatchdog(pool.getName());
-        compileResultsForDevice(pool, poolSummaryBuilder, watchdog);
+        compileResultsForDevice(pool, poolSummaryBuilder, summaryBuilder, watchdog);
         return poolSummaryBuilder.build();
     }
 
-    private void compileResultsForDevice(Pool pool, PoolSummary.Builder poolSummaryBuilder, Device device) {
+    private void compileResultsForDevice(Pool pool, PoolSummary.Builder poolSummaryBuilder, Summary.Builder summaryBuilder, Device device) {
         File[] deviceResultFiles = fileManager.getTestFilesForDevice(pool, device);
         if (deviceResultFiles == null) {
             return;
         }
         for (File file : deviceResultFiles) {
-            Collection<TestResult> testResults = parseTestResultsFromFile(file, device);
-            poolSummaryBuilder.addTestResults(testResults);
+            Collection<TestResult> testResult = parseTestResultsFromFile(file, device);
+            poolSummaryBuilder.addTestResults(testResult);
+            addFailedTests(testResult, summaryBuilder);
         }
     }
 
@@ -96,33 +99,48 @@ public class SummaryCompiler {
         }
     }
 
-	private Collection<TestResult> parseTestResultsFromFile(File file, Device device) {
-		try {
-			TestSuite testSuite = serializer.read(TestSuite.class, file, STRICT);
-			List<TestCase> testCases = testSuite.getTestCases();
-			if ((testCases == null) || testCases.isEmpty()) {
-				return new ArrayList<>(0);
-			}
-			return transform(testCases, toTestResult(device));
-		} catch (Exception e) {
-			throw new RuntimeException("Error when parsing file: " + file.getAbsolutePath(), e);
-		}
-	}
+    private void addFailedTests(Collection<TestResult> testResults, Summary.Builder summaryBuilder) {
+        for (TestResult testResult : testResults) {
+            Map<String, String> testMetrics = testResult.getTestMetrics();
+            if (testMetrics != null
+                    && testMetrics.containsKey(SUMMARY_KEY_TOTAL_FAILURE_COUNT)) {
+                String failedTest = testMetrics.get(SUMMARY_KEY_TOTAL_FAILURE_COUNT)
+                        + " times " + testResult.getTestClass() + "#" + testResult.getTestMethod() + " on " + testResult.getDevice().getSerial() ;
+                summaryBuilder.addFailedTests(failedTest);
+            }
+        }
+    }
 
-	private Function<TestCase, TestResult> toTestResult(final Device device) {
-		return new Function<TestCase, TestResult>() {
-			@SuppressWarnings("NullableProblems")
-            @Override
-			public TestResult apply(@Nonnull TestCase testCase) {
-				return aTestResult()
-						.withDevice(device)
-						.withTestClass(testCase.getClassname())
-						.withTestMethod(testCase.getName())
-						.withTimeTaken(testCase.getTime())
-						.withErrorTrace(testCase.getError())
-						.withFailureTrace(testCase.getFailure())
-						.build();
-			}
-		};
-	}
+    private Collection<TestResult> parseTestResultsFromFile(File file, Device device) {
+        try {
+            TestSuite testSuite = serializer.read(TestSuite.class, file, STRICT);
+            Collection<TestCase> testCases = testSuite.getTestCase();
+            List<TestResult> result  = Lists.newArrayList();
+            if ((testCases == null)) {
+                return result;
+            }
+
+            for(TestCase testCase : testCases){
+                TestResult testResult = getTestResult(device, testSuite, testCase);
+                result.add(testResult);
+            }
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException("Error when parsing file: " + file.getAbsolutePath(), e);
+        }
+    }
+
+    private TestResult getTestResult(Device device, TestSuite testSuite, TestCase testCase) {
+        TestResult.Builder testResultBuilder = aTestResult()
+                .withDevice(device)
+                .withTestClass(testCase.getClassname())
+                .withTestMethod(testCase.getName())
+                .withTimeTaken(testCase.getTime())
+                .withErrorTrace(testCase.getError())
+                .withFailureTrace(testCase.getFailure());
+        if (testSuite.getProperties() != null) {
+            testResultBuilder.withTestMetrics(testSuite.getProperties());
+        }
+        return testResultBuilder.build();
+    }
 }

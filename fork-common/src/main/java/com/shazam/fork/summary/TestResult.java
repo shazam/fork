@@ -14,6 +14,9 @@ package com.shazam.fork.summary;
 
 import com.shazam.fork.model.Device;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.Nonnull;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -25,6 +28,7 @@ public class TestResult {
     private final String testMethod;
     private final String errorTrace;
     private final String failureTrace;
+    private final Map<String,String> testMetrics;
 
     public Device getDevice() {
         return device;
@@ -40,6 +44,10 @@ public class TestResult {
 
     public String getTestMethod() {
         return testMethod;
+    }
+
+    public Map<String,String> getTestMetrics() {
+        return testMetrics;
     }
 
     @Nonnull
@@ -71,6 +79,7 @@ public class TestResult {
         private String testMethod;
         private String errorTrace;
         private String failureTrace;
+        private Map<String, String> testMetrics = new HashMap<String, String>();
 
         public static Builder aTestResult() {
             return new Builder();
@@ -110,6 +119,12 @@ public class TestResult {
             return this;
         }
 
+        public Builder withTestMetrics(Map<String, String> testMetrics) {
+            this.testMetrics.clear();
+            this.testMetrics.putAll(testMetrics);
+            return this;
+        }
+
         public TestResult build() {
             return new TestResult(this);
         }
@@ -123,5 +138,6 @@ public class TestResult {
         testMethod = builder.testMethod;
         errorTrace = builder.errorTrace;
         failureTrace = builder.failureTrace;
+        this.testMetrics = builder.testMetrics;
     }
 }
