@@ -55,6 +55,7 @@ public class RetryListener extends NoOpITestRunListener {
     @Override
     public void testFailed(TestIdentifier test, String trace) {
         failedTests.add(test);
+        progressReporter.recordFailedTestCase(device, new TestCaseEvent(test.getTestName(), test.getClassName(), false));
         if (progressReporter.retryWatchdog().allowRetry()) {
             queueOfTestsInPool.add(currentTestCaseEvent);
             logger.info("Test " + test.toString() + " enqueued again into device." + device.getSerial());

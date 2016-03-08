@@ -1,5 +1,7 @@
 package com.shazam.fork.model;
 
+import com.google.common.base.Objects;
+
 public class TestCaseEvent {
 
     private final String testMethod;
@@ -23,4 +25,20 @@ public class TestCaseEvent {
     public boolean isIgnored() {
         return isIgnored;
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode( this.testMethod, this.testClass);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        final TestCaseEvent other = (TestCaseEvent) obj;
+        return Objects.equal(this.testMethod, other.testMethod)
+                && Objects.equal(this.testClass, other.testClass);
+    }
+
 }

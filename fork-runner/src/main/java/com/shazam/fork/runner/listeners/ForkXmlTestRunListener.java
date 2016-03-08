@@ -18,6 +18,7 @@ import com.google.common.collect.ImmutableMap;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
+import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.system.io.FileManager;
 import com.shazam.fork.system.io.FileType;
 
@@ -26,21 +27,27 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-
 public class ForkXmlTestRunListener extends XmlTestRunListener {
     private final FileManager fileManager;
     private final Pool pool;
     private final Device device;
     private final TestCaseEvent testCase;
-    private @Nonnull Boolean failedTest = FALSE;
+    @Nonnull
+    private
+    ProgressReporter progressReporter;
 
-    public ForkXmlTestRunListener(FileManager fileManager, Pool pool, Device device, TestCaseEvent testCase) {
+    TestIdentifier test;
+
+    public ForkXmlTestRunListener(FileManager fileManager,
+                                  Pool pool,
+                                  Device device,
+                                  TestCaseEvent testCase,
+                                  @Nonnull ProgressReporter progressReporter) {
         this.fileManager = fileManager;
         this.pool = pool;
         this.device = device;
         this.testCase = testCase;
+        this.progressReporter = progressReporter;
     }
 
     @Override
@@ -49,18 +56,26 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
     }
 
     @Override
-    public void testFailed(TestIdentifier test, String trace) {
-        this.failedTest = TRUE;
-        super.testFailed(test, trace);
+    public void testStarted(TestIdentifier test) {
+        this.test = test;
+        super.testStarted(test);
     }
 
     @Override
     protected Map<String, String> getPropertiesAttributes() {
-        Map<String, String> superAttribs = super.getPropertiesAttributes();
-        return ImmutableMap.<String, String>builder()
-                .putAll(superAttribs)
-                .put("hasFailed", failedTest.toString())
-                .build();
+
+        ImmutableMap.Builder<String, String> mapBuilder = ImmutableMap.<String, String>builder()
+                .putAll(super.getPropertiesAttributes());
+
+        int testFailuresCountPerDevice = progressReporter.getTestFailuresCountPerDevice(device, new TestCaseEvent(test.getTestName(), test.getClassName(), false));
+        if (testFailuresCountPerDevice > 0)
+
+            mapBuilder
+                    .put("previousFailureCounts", Integer.toString(testFailuresCountPerDevice))
+                    .build();
+
+
+        return mapBuilder.build();
 
     }
 }

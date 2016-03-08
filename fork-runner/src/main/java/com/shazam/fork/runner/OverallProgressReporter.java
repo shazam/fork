@@ -10,7 +10,10 @@
 
 package com.shazam.fork.runner;
 
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.DeviceTestCaseAccumulator;
 import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestCaseEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +30,7 @@ public class OverallProgressReporter implements ProgressReporter {
     private long endOfTests;
     private final Map<Pool, PoolProgressTracker> poolProgressTrackers = new HashMap<>();
     private final RetryWatchdog retryWatchdog = new RetryWatchdog();
+    private final DeviceTestCaseAccumulator failedTestCasesAccumulator = new DeviceTestCaseAccumulator();
 
     @Override
     public void start() {
@@ -82,4 +86,13 @@ public class OverallProgressReporter implements ProgressReporter {
         return retryWatchdog;
     }
 
+    @Override
+    public void recordFailedTestCase(Device device, TestCaseEvent testCase) {
+        failedTestCasesAccumulator.record(device, testCase);
+    }
+
+    @Override
+    public int getTestFailuresCountPerDevice(Device device, TestCaseEvent testCase) {
+        return failedTestCasesAccumulator.getCount(device, testCase);
+    }
 }

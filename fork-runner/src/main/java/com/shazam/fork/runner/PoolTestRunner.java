@@ -100,7 +100,7 @@ public class PoolTestRunner implements Runnable {
             String poolName = pool.getName();
             Device failedTestsDevice = aDevice().withSerial(DROPPED_BY + poolName).build();
             ForkXmlTestRunListener xmlGenerator = getForkXmlTestRunListener(fileManager, configuration.getOutput(),
-                    pool, failedTestsDevice, null/*nextTest*/); //TODO
+                    pool, failedTestsDevice, null/*nextTest*/, progressReporter); //TODO
 
             Collection<TestMethod> methods = nextTest.getUnignoredMethods();
             xmlGenerator.testRunStarted(poolName, methods.size());
