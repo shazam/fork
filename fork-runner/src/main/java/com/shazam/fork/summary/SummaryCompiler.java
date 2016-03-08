@@ -26,10 +26,8 @@ import org.simpleframework.xml.core.Persister;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import static com.shazam.fork.model.Device.Builder.aDevice;
-import static com.shazam.fork.runner.listeners.ForkXmlTestRunListener.SUMMARY_KEY_TOTAL_FAILURE_COUNT;
 import static com.shazam.fork.summary.PoolSummary.Builder.aPoolSummary;
 import static com.shazam.fork.summary.Summary.Builder.aSummary;
 import static com.shazam.fork.summary.TestResult.Builder.aTestResult;
@@ -101,11 +99,10 @@ public class SummaryCompiler {
 
     private void addFailedTests(Collection<TestResult> testResults, Summary.Builder summaryBuilder) {
         for (TestResult testResult : testResults) {
-            Map<String, String> testMetrics = testResult.getTestMetrics();
-            if (testMetrics != null
-                    && testMetrics.containsKey(SUMMARY_KEY_TOTAL_FAILURE_COUNT)) {
-                String failedTest = testMetrics.get(SUMMARY_KEY_TOTAL_FAILURE_COUNT)
-                        + " times " + testResult.getTestClass() + "#" + testResult.getTestMethod() + " on " + testResult.getDevice().getSerial() ;
+            int totalFailureCount = testResult.getTotalFailureCount();
+            if (totalFailureCount > 0) {
+                String failedTest = totalFailureCount + " times " + testResult.getTestClass()
+                        + "#" + testResult.getTestMethod() + " on " + testResult.getDevice().getSerial() ;
                 summaryBuilder.addFailedTests(failedTest);
             }
         }

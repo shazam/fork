@@ -19,7 +19,9 @@ th.message {
 pre.test.pass {
     display: none;
 }
-
+pre.test.warn {
+    background: #FFFFCC;
+}
 pre.test.fail {
     background: #FFDDDC;
 }

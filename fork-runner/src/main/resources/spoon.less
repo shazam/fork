@@ -77,6 +77,9 @@ body {
   &.pass {
     border-bottom: 2px solid #89c989;
   }
+   &.warn {
+      border-bottom: 2px solid ##ffffcc;
+    }
   &.fail,
   &.error {
     border-bottom: 2px solid #c98989;
@@ -158,6 +161,12 @@ body {
     }
     &.pass:hover {
       background-color: #99c999;
+    }
+    &.warn {
+      background-color: #ffffcc;
+    }
+    &.warn:hover {
+      background-color: #f2f28b;
     }
     &.fail,
     &.error {

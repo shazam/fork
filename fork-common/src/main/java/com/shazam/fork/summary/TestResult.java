@@ -22,13 +22,15 @@ import javax.annotation.Nonnull;
 import static com.google.common.base.Strings.isNullOrEmpty;
 
 public class TestResult {
+    public static final String SUMMARY_KEY_TOTAL_FAILURE_COUNT = "totalFailureCount";
+
     private final Device device;
     private final float timeTaken;
     private final String testClass;
     private final String testMethod;
     private final String errorTrace;
     private final String failureTrace;
-    private final Map<String,String> testMetrics;
+    private final Map<String, String> testMetrics;
 
     public Device getDevice() {
         return device;
@@ -46,8 +48,14 @@ public class TestResult {
         return testMethod;
     }
 
-    public Map<String,String> getTestMetrics() {
-        return testMetrics;
+    public int getTotalFailureCount() {
+        int result = 0;
+
+        if (testMetrics != null
+                && testMetrics.containsKey(SUMMARY_KEY_TOTAL_FAILURE_COUNT)) {
+            result = Integer.parseInt(testMetrics.get(SUMMARY_KEY_TOTAL_FAILURE_COUNT));
+        }
+        return result;
     }
 
     @Nonnull

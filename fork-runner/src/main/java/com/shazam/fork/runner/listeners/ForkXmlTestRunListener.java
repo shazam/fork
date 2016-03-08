@@ -27,8 +27,9 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import static com.shazam.fork.summary.TestResult.SUMMARY_KEY_TOTAL_FAILURE_COUNT;
+
 public class ForkXmlTestRunListener extends XmlTestRunListener {
-    public static final String SUMMARY_KEY_TOTAL_FAILURE_COUNT = "totalFailureCount";
 
     private final FileManager fileManager;
     private final Pool pool;
