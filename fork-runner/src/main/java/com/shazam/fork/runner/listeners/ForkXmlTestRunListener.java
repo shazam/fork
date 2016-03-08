@@ -12,18 +12,29 @@
  */
 package com.shazam.fork.runner.listeners;
 
+import com.android.ddmlib.testrunner.TestIdentifier;
 import com.android.ddmlib.testrunner.XmlTestRunListener;
-import com.shazam.fork.model.*;
+import com.google.common.collect.ImmutableMap;
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.system.io.FileManager;
 import com.shazam.fork.system.io.FileType;
 
 import java.io.File;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 public class ForkXmlTestRunListener extends XmlTestRunListener {
     private final FileManager fileManager;
     private final Pool pool;
     private final Device device;
     private final TestCaseEvent testCase;
+    private @Nonnull Boolean failedTest = FALSE;
 
     public ForkXmlTestRunListener(FileManager fileManager, Pool pool, Device device, TestCaseEvent testCase) {
         this.fileManager = fileManager;
@@ -35,5 +46,21 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
     @Override
     protected File getResultFile(File reportDir) {
         return fileManager.createFile(FileType.TEST, pool, device, testCase);
+    }
+
+    @Override
+    public void testFailed(TestIdentifier test, String trace) {
+        this.failedTest = TRUE;
+        super.testFailed(test, trace);
+    }
+
+    @Override
+    protected Map<String, String> getPropertiesAttributes() {
+        Map<String, String> superAttribs = super.getPropertiesAttributes();
+        return ImmutableMap.<String, String>builder()
+                .putAll(superAttribs)
+                .put("hasFailed", failedTest.toString())
+                .build();
+
     }
 }

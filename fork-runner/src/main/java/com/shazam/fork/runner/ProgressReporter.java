@@ -32,4 +32,6 @@ public interface ProgressReporter {
     int getFailures();
 
     float getProgress();
+
+    RetryWatchdog retryWatchdog();
 }

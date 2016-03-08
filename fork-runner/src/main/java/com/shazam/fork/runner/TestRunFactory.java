@@ -13,10 +13,14 @@ package com.shazam.fork.runner;
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.shazam.fork.Configuration;
 import com.shazam.fork.RuntimeConfiguration;
-import com.shazam.fork.model.*;
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.InstrumentationInfo;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.runner.listeners.TestRunListenersFactory;
 
 import java.util.List;
+import java.util.Queue;
 
 import static com.shazam.fork.runner.TestRunParameters.Builder.testRunParameters;
 
@@ -34,7 +38,12 @@ public class TestRunFactory {
         this.testRunListenersFactory = testRunListenersFactory;
     }
 
-    public TestRun createTestRun(TestCaseEvent testCase, Device device, Pool pool, ProgressReporter progressReporter) {
+    public TestRun createTestRun(TestCaseEvent testCase,
+                                 Device device,
+                                 Pool pool,
+                                 ProgressReporter progressReporter,
+                                 Queue<TestCaseEvent> queueOfTestsInPool,
+                                 TestCaseEvent currentTestCaseEvent) {
         InstrumentationInfo instrumentationInfo = configuration.getInstrumentationInfo();
 
         TestRunParameters testRunParameters = testRunParameters()
@@ -50,7 +59,9 @@ public class TestRunFactory {
                 testCase,
                 device,
                 pool,
-                progressReporter);
+                progressReporter,
+                queueOfTestsInPool,
+                currentTestCaseEvent);
 
         return new TestRun(
                 pool.getName(),

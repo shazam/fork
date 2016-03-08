@@ -26,6 +26,7 @@ public class OverallProgressReporter implements ProgressReporter {
     private long startOfTests;
     private long endOfTests;
     private final Map<Pool, PoolProgressTracker> poolProgressTrackers = new HashMap<>();
+    private final RetryWatchdog retryWatchdog = new RetryWatchdog();
 
     @Override
     public void start() {
@@ -74,6 +75,11 @@ public class OverallProgressReporter implements ProgressReporter {
         }
 
         return progress / size;
+    }
+
+    @Override
+    public RetryWatchdog retryWatchdog() {
+        return retryWatchdog;
     }
 
 }

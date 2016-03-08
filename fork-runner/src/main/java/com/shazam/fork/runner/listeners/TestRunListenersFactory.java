@@ -22,6 +22,7 @@ import com.shazam.fork.system.io.FileManager;
 
 import java.io.File;
 import java.util.List;
+import java.util.Queue;
 
 import static com.shazam.fork.model.Diagnostics.SCREENSHOTS;
 import static com.shazam.fork.model.Diagnostics.VIDEO;
@@ -45,8 +46,8 @@ public class TestRunListenersFactory {
                                                       Device device,
                                                       Pool pool,
                                                       ProgressReporter progressReporter,
-                                                      FailureAccumulator failureAccumulator
-                                                      ) {
+                                                      Queue<TestCaseEvent> testCaseEventQueue,
+                                                      TestCaseEvent currentTestCaseEvent) {
         return asList(
                 new ProgressTestRunListener(pool, progressReporter),
                 getForkXmlTestRunListener(fileManager, configuration.getOutput(), pool, device, testCase),
@@ -55,8 +56,7 @@ public class TestRunListenersFactory {
                 new LogCatTestRunListener(gson, fileManager, pool, device),
                 new SlowWarningTestRunListener(),
                 getScreenTraceTestRunListener(fileManager, pool, device),
-                new RetryListener(failureAccumulator, device)
-                );
+                new RetryListener(device, testCaseEventQueue, currentTestCaseEvent, progressReporter));
     }
 
     public static ForkXmlTestRunListener getForkXmlTestRunListener(FileManager fileManager,
