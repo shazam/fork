@@ -8,4 +8,8 @@ public class TestCaseEventCounter extends Counter<TestCaseEvent> {
         super(type, initialCount);
     }
 
+    public TestCaseEventCounter withIncreasedCount() {
+        super.increaseCount();
+        return this;
+    }
 }

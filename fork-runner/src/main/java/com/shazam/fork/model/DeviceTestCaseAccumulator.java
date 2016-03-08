@@ -1,9 +1,8 @@
 package com.shazam.fork.model;
 
 import com.google.common.base.Predicate;
-import com.google.common.base.Supplier;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.SetMultimap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,20 +15,22 @@ import static com.google.common.collect.FluentIterable.from;
 public class DeviceTestCaseAccumulator {
     private static final Logger logger = LoggerFactory.getLogger(DeviceTestCaseAccumulator.class);
 
-    private Multimap<Device, TestCaseEventCounter> map = ArrayListMultimap.create();
+    private SetMultimap<Device, TestCaseEventCounter> map = HashMultimap.<Device, TestCaseEventCounter>create();
 
     public void record(Device device, TestCaseEvent testCaseEvent) {
 
         if (!map.containsKey(device)) {
-            map.put(device, createNew(testCaseEvent).get());
+            map.put(device, createNew(testCaseEvent));
         }
 
         if (!from(map.get(device)).anyMatch(isSameTestCase(testCaseEvent))) {
-            TestCaseEventCounter aNew = createNew(testCaseEvent).get();
-            aNew.increaseCount();
-            map.get(device).add(aNew);
+            map.get(device).add(
+                    createNew(testCaseEvent)
+                            .withIncreasedCount());
         } else {
-            from(map.get(device)).firstMatch(isSameTestCase(testCaseEvent)).get().increaseCount();
+            from(map.get(device))
+                    .firstMatch(isSameTestCase(testCaseEvent)).get()
+                    .increaseCount();
         }
     }
 
@@ -43,13 +44,8 @@ public class DeviceTestCaseAccumulator {
         }
     }
 
-    private static Supplier<TestCaseEventCounter> createNew(final TestCaseEvent testCaseEvent) {
-        return new Supplier<TestCaseEventCounter>() {
-            @Override
-            public TestCaseEventCounter get() {
-                return new TestCaseEventCounter(testCaseEvent, 0);
-            }
-        };
+    private static TestCaseEventCounter createNew(final TestCaseEvent testCaseEvent) {
+        return new TestCaseEventCounter(testCaseEvent, 0);
     }
 
     private static Predicate<TestCaseEventCounter> isSameTestCase(final TestCaseEvent testCaseEvent) {

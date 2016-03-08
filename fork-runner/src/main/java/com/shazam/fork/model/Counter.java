@@ -19,7 +19,7 @@ public class Counter<T> {
         this.count = new AtomicInteger(initialCount);
     }
 
-    public int increaseCount(){
+    public int increaseCount() {
         return count.incrementAndGet();
     }
 
