@@ -10,21 +10,56 @@
 
 package com.shazam.fork.suite;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.model.TestClass;
+import com.shazam.fork.model.TestMethod;
 
+import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nullable;
+
+import static com.google.common.collect.FluentIterable.from;
 
 public class TestClassLoader {
     private final TestClassScanner scanner;
     private final TestClassFilter filter;
+    private Predicate<TestMethod> VALID_METHOD = new Predicate<TestMethod>() {
+        @Override
+        public boolean apply(@Nullable TestMethod input) {
+            return input != null;
+        }
+    };
 
     public TestClassLoader(TestClassScanner scanner, TestClassFilter filter) {
         this.scanner = scanner;
         this.filter = filter;
     }
 
-    public List<TestClass> loadTestClasses() throws TestClassScanningException {
+    public List<TestCaseEvent> loadTestClasses() throws TestClassScanningException {
         List<TestClass> allTestClasses = scanner.scanForTestClasses();
-        return filter.anyUserFilter(allTestClasses);
+        List<TestClass> testClasses = filter.anyUserFilter(allTestClasses);
+        return from(testClasses).transformAndConcat(new Function<TestClass, Iterable<TestCaseEvent>>() {
+            @Nullable
+            @Override
+            public Iterable<TestCaseEvent> apply(final @Nullable TestClass testClass) {
+                return (testClass != null && testClass.getMethods() != null) ?
+                        from(testClass.getMethods())
+                        .filter(VALID_METHOD)
+                        .transform(new Function<TestMethod, TestCaseEvent>() {
+                            @Nullable
+                            @Override
+                            public TestCaseEvent apply(@Nullable TestMethod testMethod) {
+                                assert testMethod != null;
+                                return new TestCaseEvent(testMethod.getName(),
+                                        testClass.getName(),
+                                        testMethod.isIgnored());
+                            }
+                        }) : Collections.<TestCaseEvent>emptyList();
+
+            }
+        }).toList();
     }
 }

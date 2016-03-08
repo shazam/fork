@@ -31,18 +31,19 @@ public class DeviceTestRunner implements Runnable {
     private final Installer installer;
     private final Pool pool;
     private final Device device;
-    private final Queue<TestClass> queueOfTestsInPool;
+    private final Queue<TestCaseEvent> queueOfTestsInPool;
     private final CountDownLatch deviceCountDownLatch;
     private final ProgressReporter progressReporter;
     private final TestRunFactory testRunFactory;
+    private final FailureAccumulator failureAccumulator;
 
     public DeviceTestRunner(Installer installer,
                             Pool pool,
                             Device device,
-                            Queue<TestClass> queueOfTestsInPool,
+                            Queue<TestCaseEvent> queueOfTestsInPool,
                             CountDownLatch deviceCountDownLatch,
                             ProgressReporter progressReporter,
-                            TestRunFactory testRunFactory) {
+                            TestRunFactory testRunFactory, FailureAccumulator  failureAccumulator) {
         this.installer = installer;
 		this.pool = pool;
 		this.device = device;
@@ -50,6 +51,7 @@ public class DeviceTestRunner implements Runnable {
         this.deviceCountDownLatch = deviceCountDownLatch;
         this.progressReporter = progressReporter;
         this.testRunFactory = testRunFactory;
+        this.failureAccumulator = failureAccumulator;
     }
 
 	@Override
@@ -61,9 +63,9 @@ public class DeviceTestRunner implements Runnable {
             removeRemoteDirectory(deviceInterface);
             createRemoteDirectory(deviceInterface);
 
-            TestClass testClass;
-            while ((testClass = queueOfTestsInPool.poll()) != null) {
-                TestRun testRun = testRunFactory.createTestRun(testClass, device, pool, progressReporter);
+            TestCaseEvent testCaseEvent;
+            while ((testCaseEvent = queueOfTestsInPool.poll()) != null) {
+                TestRun testRun = testRunFactory.createTestRun(testCaseEvent, device, pool, progressReporter);
                 testRun.execute();
             }
 		} finally {

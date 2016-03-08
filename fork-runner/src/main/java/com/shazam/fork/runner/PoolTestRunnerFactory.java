@@ -12,7 +12,7 @@ package com.shazam.fork.runner;
 
 import com.shazam.fork.Configuration;
 import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.TestClass;
+import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.system.io.FileManager;
 
 import java.util.LinkedList;
@@ -33,11 +33,12 @@ public class PoolTestRunnerFactory {
     }
 
     public PoolTestRunner createPoolTestRunner(Pool pool,
-                                               List<TestClass> testClasses,
+                                               List<TestCaseEvent> testCases,
                                                CountDownLatch poolCountDownLatch,
-                                               ProgressReporter progressReporter) {
+                                               ProgressReporter progressReporter,
+                                               FailureAccumulator failureAccumulator) {
 
-        int totalTests = countTests(testClasses);
+        int totalTests = testCases.size();
         progressReporter.addPoolProgress(pool, new PoolProgressTracker(totalTests));
 
         return new PoolTestRunner(
@@ -45,16 +46,17 @@ public class PoolTestRunnerFactory {
                 fileManager,
                 deviceTestRunnerFactory,
                 pool,
-                new LinkedList<>(testClasses),
+                new LinkedList<>(testCases),
                 poolCountDownLatch,
-                progressReporter);
+                progressReporter,
+                failureAccumulator);
     }
 
-    private int countTests(List<TestClass> testClasses) {
+  /*  private int countTests(List<TestClass> testClasses) {
         int sum = 0;
         for (TestClass testClass : testClasses) {
             sum += testClass.getMethods().size();
         }
         return sum;
-    }
+    }*/
 }

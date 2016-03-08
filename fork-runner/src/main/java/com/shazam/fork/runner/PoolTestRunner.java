@@ -36,24 +36,26 @@ public class PoolTestRunner implements Runnable {
     private final Configuration configuration;
     private final FileManager fileManager;
     private final Pool pool;
-    private final Queue<TestClass> testClasses;
+    private final Queue<TestCaseEvent> testCases;
     private final CountDownLatch poolCountDownLatch;
     private final DeviceTestRunnerFactory deviceTestRunnerFactory;
     private final ProgressReporter progressReporter;
+    private final FailureAccumulator  failureAccumulator;
 
     public PoolTestRunner(Configuration configuration,
                           FileManager fileManager,
                           DeviceTestRunnerFactory deviceTestRunnerFactory, Pool pool,
-                          Queue<TestClass> testClasses,
+                          Queue<TestCaseEvent> testCases,
                           CountDownLatch poolCountDownLatch,
-                          ProgressReporter progressReporter) {
+                          ProgressReporter progressReporter, FailureAccumulator  failureAccumulator) {
         this.configuration = configuration;
         this.fileManager = fileManager;
         this.pool = pool;
-        this.testClasses = testClasses;
+        this.testCases = testCases;
         this.poolCountDownLatch = poolCountDownLatch;
         this.deviceTestRunnerFactory = deviceTestRunnerFactory;
         this.progressReporter = progressReporter;
+        this.failureAccumulator = failureAccumulator;
     }
 
     public void run() {
@@ -65,7 +67,7 @@ public class PoolTestRunner implements Runnable {
             CountDownLatch deviceCountDownLatch = new CountDownLatch(devicesInPool);
             logger.info("Pool {} started", poolName);
             for (Device device : pool.getDevices()) {
-                Runnable deviceTestRunner = deviceTestRunnerFactory.createDeviceTestRunner(pool, testClasses,
+                Runnable deviceTestRunner = deviceTestRunnerFactory.createDeviceTestRunner(pool, testCases,
                         deviceCountDownLatch, device, progressReporter);
                 concurrentDeviceExecutor.execute(deviceTestRunner);
             }
@@ -73,7 +75,7 @@ public class PoolTestRunner implements Runnable {
         } catch (InterruptedException e) {
             logger.warn("Pool {} was interrupted while running", poolName);
         } finally {
-            failAnyDroppedClasses(pool, testClasses);
+            //failAnyDroppedClasses(pool, testCases);
             if (concurrentDeviceExecutor != null) {
                 concurrentDeviceExecutor.shutdown();
             }
@@ -89,15 +91,16 @@ public class PoolTestRunner implements Runnable {
      * <p/>
      * In particular, not triggering the console listener will probably make the flaky report better.
      */
+    //TODO  - verify if this is still useful.
     private void failAnyDroppedClasses(Pool pool, Queue<TestClass> testClassQueue) {
-        HashMap<String, String> emptyHash = new HashMap<>();
+        HashMap<String, String> emptyHash = new HashMap<String, String>();
         TestClass nextTest;
         while ((nextTest = testClassQueue.poll()) != null) {
             String className = nextTest.getName();
             String poolName = pool.getName();
             Device failedTestsDevice = aDevice().withSerial(DROPPED_BY + poolName).build();
             ForkXmlTestRunListener xmlGenerator = getForkXmlTestRunListener(fileManager, configuration.getOutput(),
-                    pool, failedTestsDevice, nextTest);
+                    pool, failedTestsDevice, null/*nextTest*/); //TODO
 
             Collection<TestMethod> methods = nextTest.getUnignoredMethods();
             xmlGenerator.testRunStarted(poolName, methods.size());

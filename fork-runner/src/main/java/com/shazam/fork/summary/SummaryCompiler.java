@@ -46,13 +46,13 @@ public class SummaryCompiler {
 		serializer = new Persister();
 	}
 
-	Summary compileSummary(Collection<Pool> pools, List<TestClass> testClasses) {
+	Summary compileSummary(Collection<Pool> pools, List<TestCaseEvent> testCases) {
 		Summary.Builder summaryBuilder = aSummary();
 		for (Pool pool : pools) {
             PoolSummary poolSummary = compilePoolSummary(pool);
             summaryBuilder.addPoolSummary(poolSummary);
 		}
-        addIgnoredTests(testClasses, summaryBuilder);
+        addIgnoredTests(testCases, summaryBuilder);
         summaryBuilder.withTitle(runtimeConfiguration.getTitle());
         summaryBuilder.withSubtitle(runtimeConfiguration.getSubtitle());
 
@@ -88,10 +88,10 @@ public class SummaryCompiler {
                 .build();
     }
 
-    private void addIgnoredTests(List<TestClass> testClasses, Summary.Builder summaryBuilder) {
-        for (TestClass testClass : testClasses) {
-            for (TestMethod ignoredMethod : testClass.getIgnoredMethods()) {
-                summaryBuilder.addIgnoredTest(testClass.getName() + ":" + ignoredMethod);
+    private void addIgnoredTests(List<TestCaseEvent> testCases, Summary.Builder summaryBuilder) {
+        for (TestCaseEvent testCase : testCases) {
+            if (testCase.isIgnored()) {
+                summaryBuilder.addIgnoredTest(testCase.getTestClass() + ":" + testCase.getTestMethod());
             }
         }
     }

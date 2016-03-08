@@ -15,6 +15,7 @@ package com.shazam.fork.runner.listeners;
 import com.android.ddmlib.testrunner.XmlTestRunListener;
 import com.shazam.fork.model.*;
 import com.shazam.fork.system.io.FileManager;
+import com.shazam.fork.system.io.FileType;
 
 import java.io.File;
 
@@ -22,17 +23,17 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
     private final FileManager fileManager;
     private final Pool pool;
     private final Device device;
-    private final TestClass testClass;
+    private final TestCaseEvent testCase;
 
-    public ForkXmlTestRunListener(FileManager fileManager, Pool pool, Device device, TestClass testClass) {
+    public ForkXmlTestRunListener(FileManager fileManager, Pool pool, Device device, TestCaseEvent testCase) {
         this.fileManager = fileManager;
         this.pool = pool;
         this.device = device;
-        this.testClass = testClass;
+        this.testCase = testCase;
     }
 
     @Override
     protected File getResultFile(File reportDir) {
-        return fileManager.createFileForTest(pool, device, testClass);
+        return fileManager.createFile(FileType.TEST, pool, device, testCase);
     }
 }

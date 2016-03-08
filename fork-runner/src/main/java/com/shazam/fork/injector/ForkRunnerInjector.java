@@ -17,12 +17,13 @@ import com.shazam.fork.ForkRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
-import static com.shazam.fork.injector.runner.ProgressReporterInjector.progressReporter;
 import static com.shazam.fork.injector.pooling.PoolLoaderInjector.poolLoader;
+import static com.shazam.fork.injector.runner.FailureAccumulatorInjector.failureAccumulator;
 import static com.shazam.fork.injector.runner.PoolTestRunnerFactoryInjector.poolTestRunnerFactory;
+import static com.shazam.fork.injector.runner.ProgressReporterInjector.progressReporter;
 import static com.shazam.fork.injector.suite.TestClassLoaderInjector.testClassLoader;
 import static com.shazam.fork.injector.summary.SummaryGeneratorHookInjector.summaryGeneratorHook;
+import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
 import static java.lang.System.nanoTime;
 
 public class ForkRunnerInjector {
@@ -37,7 +38,8 @@ public class ForkRunnerInjector {
                 testClassLoader(),
                 poolTestRunnerFactory(),
                 progressReporter(),
-                summaryGeneratorHook());
+                summaryGeneratorHook(),
+                failureAccumulator());
 
         logger.debug("Bootstrap of ForkRunner took: {} milliseconds", millisSinceNanoTime(startNanos));
 

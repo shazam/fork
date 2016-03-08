@@ -27,10 +27,12 @@ public class DeviceTestRunnerFactory {
     }
 
     public Runnable createDeviceTestRunner(Pool pool,
-                                           Queue<TestClass> testClassQueue,
+                                           Queue<TestCaseEvent> testClassQueue,
                                            CountDownLatch deviceInPoolCountDownLatch,
                                            Device device,
-                                           ProgressReporter progressReporter) {
+                                           ProgressReporter progressReporter,
+                                           FailureAccumulator failureAccumulator
+                                           ) {
         return new DeviceTestRunner(
                 installer,
                 pool,
@@ -38,6 +40,7 @@ public class DeviceTestRunnerFactory {
                 testClassQueue,
                 deviceInPoolCountDownLatch,
                 progressReporter,
-                testRunFactory);
+                testRunFactory,
+                failureAccumulator);
     }
 }
