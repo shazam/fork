@@ -67,10 +67,6 @@ public class ForkCli {
         @Parameter(names = { "--total-allowed-retry-quota" }, description = "Amount of re-executions of failing tests allowed.", converter = IntegerConverter.class)
         public int totalAllowedRetryQuota = 0;
 
-        //TODO - enable when finished.
-       /* @Parameter(names = { "--retry-per-test-case-quota" }, description = "Max number of time each testCase is attempted again " +
-                "before declaring it as a failure.", converter = IntegerConverter.class)
-        public int retryPerTestCaseQuota = 1;*/
     }
 
     /* JCommander deems it necessary that this class be public. Lame. */

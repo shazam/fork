@@ -4,16 +4,12 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static com.google.common.collect.FluentIterable.from;
 
 /**
  * Class that keeps track of the number of times each testCase is executed for device.
  */
 public class DeviceTestCaseAccumulator {
-    private static final Logger logger = LoggerFactory.getLogger(DeviceTestCaseAccumulator.class);
 
     private SetMultimap<Device, TestCaseEventCounter> map = HashMultimap.<Device, TestCaseEventCounter>create();
 

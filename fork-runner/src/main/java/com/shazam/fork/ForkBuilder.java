@@ -31,7 +31,6 @@ public class ForkBuilder {
     private int testOutputTimeout = Defaults.TEST_OUTPUT_TIMEOUT_MILLIS;
     private boolean fallbackToScreenshots = true;
     private int totalAllowedRetryQuota = 0;
-    private int retryPerTestCaseQuota = 1;
 
     public static ForkBuilder aFork() {
         return new ForkBuilder();
@@ -129,18 +128,6 @@ public class ForkBuilder {
         return this;
     }
 
-    /**
-     * Max number of time each testCase is attempted again.
-     * @param retryPerTestCaseQuota max number of attempts when rerunning tests.
-     * @return this builder.
-     */
-    //TODO - implement.
-    public ForkBuilder withRetryPerTestCaseQuota(int retryPerTestCaseQuota) {
-        this.retryPerTestCaseQuota = retryPerTestCaseQuota;
-        return this;
-    }
-
-
     public Fork build() {
         checkNotNull(androidSdk, "SDK is required.");
         checkArgument(androidSdk.exists(), "SDK directory does not exist.");
@@ -165,8 +152,7 @@ public class ForkBuilder {
                 testPackage,
                 testOutputTimeout,
                 fallbackToScreenshots,
-                totalAllowedRetryQuota,
-                retryPerTestCaseQuota);
+                totalAllowedRetryQuota);
         return new Fork(configuration);
     }
 
