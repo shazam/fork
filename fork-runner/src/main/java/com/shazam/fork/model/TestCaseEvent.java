@@ -14,6 +14,10 @@ public class TestCaseEvent {
         this.isIgnored = isIgnored;
     }
 
+    public static TestCaseEvent newTestCase(String testMethod, String testClass, boolean isIgnored){
+        return new TestCaseEvent(testMethod, testClass, isIgnored);
+    };
+
     public String getTestMethod() {
         return testMethod;
     }

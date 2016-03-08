@@ -37,9 +37,9 @@ public interface ProgressReporter {
 
     RetryWatchdog retryWatchdog();
 
-    void recordFailedTestCase(Device device, TestCaseEvent testCase);
+    void recordFailedTestCase(Pool pool, Device device, TestCaseEvent testCase);
 
     int getTestFailuresCountPerDevice(Device device, TestCaseEvent testCase);
 
-    int getTestFailuresCount(TestCaseEvent testCase);
+    int getTestFailuresCount(Pool pool, TestCaseEvent testCase);
 }

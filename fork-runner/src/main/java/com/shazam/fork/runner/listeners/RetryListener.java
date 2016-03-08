@@ -29,6 +29,7 @@ import java.util.Queue;
 import javax.annotation.Nonnull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 
 public class RetryListener extends NoOpITestRunListener {
 
@@ -36,7 +37,6 @@ public class RetryListener extends NoOpITestRunListener {
 
     @Nonnull
     private final Device device;
-    @Nonnull
     private TestIdentifier failedTest;
     @Nonnull
     private final Queue<TestCaseEvent> queueOfTestsInPool;
@@ -68,13 +68,13 @@ public class RetryListener extends NoOpITestRunListener {
     @Override
     public void testFailed(TestIdentifier test, String trace) {
         failedTest = test;
+        progressReporter.recordFailedTestCase(pool, device, newTestCase(failedTest.getTestName(), failedTest.getClassName(), false));
     }
 
     @Override
     public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
         super.testRunEnded(elapsedTime, runMetrics);
         if (failedTest != null) {
-            progressReporter.recordFailedTestCase(device, new TestCaseEvent(failedTest.getTestName(), failedTest.getClassName(), false));
             if (progressReporter.retryWatchdog().allowRetry()) {
                 queueOfTestsInPool.add(currentTestCaseEvent);
                 logger.info("Test " + failedTest.toString() + " enqueued again into device." + device.getSerial());

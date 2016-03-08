@@ -91,8 +91,8 @@ public class OverallProgressReporter implements ProgressReporter {
     }
 
     @Override
-    public void recordFailedTestCase(Device device, TestCaseEvent testCase) {
-        failedTestCasesAccumulator.record(device, testCase);
+    public void recordFailedTestCase(Pool pool, Device device, TestCaseEvent testCase) {
+        failedTestCasesAccumulator.record(pool, device, testCase);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class OverallProgressReporter implements ProgressReporter {
     }
 
     @Override
-    public int getTestFailuresCount(TestCaseEvent testCase) {
-        return failedTestCasesAccumulator.getCount(testCase);
+    public int getTestFailuresCount(Pool pool,TestCaseEvent testCase) {
+        return failedTestCasesAccumulator.getCount(pool, testCase);
     }
 }
