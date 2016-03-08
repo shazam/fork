@@ -37,7 +37,6 @@ public class DeviceTestRunner implements Runnable {
     private final CountDownLatch deviceCountDownLatch;
     private final ProgressReporter progressReporter;
     private final TestRunFactory testRunFactory;
-    private final FailureAccumulator failureAccumulator;
 
     public DeviceTestRunner(Installer installer,
                             Pool pool,
@@ -45,7 +44,7 @@ public class DeviceTestRunner implements Runnable {
                             Queue<TestCaseEvent> queueOfTestsInPool,
                             CountDownLatch deviceCountDownLatch,
                             ProgressReporter progressReporter,
-                            TestRunFactory testRunFactory, FailureAccumulator  failureAccumulator) {
+                            TestRunFactory testRunFactory) {
         this.installer = installer;
         this.pool = pool;
         this.device = device;
@@ -53,7 +52,6 @@ public class DeviceTestRunner implements Runnable {
         this.deviceCountDownLatch = deviceCountDownLatch;
         this.progressReporter = progressReporter;
         this.testRunFactory = testRunFactory;
-        this.failureAccumulator = failureAccumulator;
     }
 
     @Override

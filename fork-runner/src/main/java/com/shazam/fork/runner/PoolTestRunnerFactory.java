@@ -35,8 +35,7 @@ public class PoolTestRunnerFactory {
     public PoolTestRunner createPoolTestRunner(Pool pool,
                                                List<TestCaseEvent> testCases,
                                                CountDownLatch poolCountDownLatch,
-                                               ProgressReporter progressReporter,
-                                               FailureAccumulator failureAccumulator) {
+                                               ProgressReporter progressReporter) {
 
         int totalTests = testCases.size();
         progressReporter.addPoolProgress(pool, new PoolProgressTracker(totalTests));
@@ -48,16 +47,6 @@ public class PoolTestRunnerFactory {
                 pool,
                 new LinkedList<>(testCases),
                 poolCountDownLatch,
-                progressReporter,
-                failureAccumulator);
+                progressReporter);
     }
-
-    //TODO cleanup.
-  /*  private int countTests(List<TestClass> testClasses) {
-        int sum = 0;
-        for (TestClass testClass : testClasses) {
-            sum += testClass.getMethods().size();
-        }
-        return sum;
-    }*/
 }

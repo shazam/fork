@@ -30,8 +30,7 @@ public class DeviceTestRunnerFactory {
                                            Queue<TestCaseEvent> testClassQueue,
                                            CountDownLatch deviceInPoolCountDownLatch,
                                            Device device,
-                                           ProgressReporter progressReporter,
-                                           FailureAccumulator failureAccumulator
+                                           ProgressReporter progressReporter
                                            ) {
         return new DeviceTestRunner(
                 installer,
@@ -40,7 +39,6 @@ public class DeviceTestRunnerFactory {
                 testClassQueue,
                 deviceInPoolCountDownLatch,
                 progressReporter,
-                testRunFactory,
-                failureAccumulator);
+                testRunFactory);
     }
 }

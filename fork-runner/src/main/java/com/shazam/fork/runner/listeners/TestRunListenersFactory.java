@@ -15,8 +15,7 @@ import com.google.gson.Gson;
 import com.shazam.fork.Configuration;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.TestClass;
-import com.shazam.fork.runner.FailureAccumulator;
+import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.system.io.FileManager;
 
