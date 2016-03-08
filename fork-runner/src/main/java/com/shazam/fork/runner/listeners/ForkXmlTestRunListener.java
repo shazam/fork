@@ -66,16 +66,17 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
 
         ImmutableMap.Builder<String, String> mapBuilder = ImmutableMap.<String, String>builder()
                 .putAll(super.getPropertiesAttributes());
+        if(test != null) {
 
-        int testFailuresCountPerDevice = progressReporter.getTestFailuresCountPerDevice(device, new TestCaseEvent(test.getTestName(), test.getClassName(), false));
-        if (testFailuresCountPerDevice > 0)
+            int testFailuresCountPerDevice = progressReporter.getTestFailuresCountPerDevice(device,
+                    new TestCaseEvent(test.getTestName(), test.getClassName(), false));
+            if (testFailuresCountPerDevice > 0)
 
-            mapBuilder
-                    .put("totalFailureCount", Integer.toString(testFailuresCountPerDevice))
-                    .build();
+                mapBuilder
+                        .put("totalFailureCount", Integer.toString(testFailuresCountPerDevice))
+                        .build();
 
-
+        }
         return mapBuilder.build();
-
     }
 }
