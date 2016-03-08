@@ -99,4 +99,9 @@ public class OverallProgressReporter implements ProgressReporter {
     public int getTestFailuresCountPerDevice(Device device, TestCaseEvent testCase) {
         return failedTestCasesAccumulator.getCount(device, testCase);
     }
+
+    @Override
+    public int getTestFailuresCount(TestCaseEvent testCase) {
+        return failedTestCasesAccumulator.getCount(testCase);
+    }
 }

@@ -55,7 +55,7 @@ public class TestRunListenersFactory {
                 new LogCatTestRunListener(gson, fileManager, pool, device),
                 new SlowWarningTestRunListener(),
                 getScreenTraceTestRunListener(fileManager, pool, device),
-                new RetryListener(device, testCaseEventQueue, currentTestCaseEvent, progressReporter));
+                new RetryListener(pool, device, testCaseEventQueue, currentTestCaseEvent, progressReporter, fileManager));
     }
 
     public static ForkXmlTestRunListener getForkXmlTestRunListener(FileManager fileManager,

@@ -40,4 +40,6 @@ public interface ProgressReporter {
     void recordFailedTestCase(Device device, TestCaseEvent testCase);
 
     int getTestFailuresCountPerDevice(Device device, TestCaseEvent testCase);
+
+    int getTestFailuresCount(TestCaseEvent testCase);
 }

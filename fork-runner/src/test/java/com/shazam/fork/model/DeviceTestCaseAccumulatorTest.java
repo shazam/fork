@@ -73,4 +73,14 @@ public class DeviceTestCaseAccumulatorTest {
         assertThat(actualCountForAnotherDevice, equalTo(0));
     }
 
+    @Test
+    public void shouldAggregateCountForSameTestCaseAcrossMultipleDevices() throws Exception {
+
+        subject.record(A_DEVICE, A_TEST_CASE);
+        subject.record(ANOTHER_DEVICE, A_TEST_CASE);
+
+        int actualCount = subject.getCount(A_TEST_CASE);
+
+        assertThat(actualCount, equalTo(2));
+    }
 }
