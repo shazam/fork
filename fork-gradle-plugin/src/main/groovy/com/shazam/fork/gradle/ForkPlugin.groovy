@@ -82,6 +82,7 @@ class ForkPlugin implements Plugin<Project> {
                 ignoreFailures = config.ignoreFailures
                 testOutputTimeout = config.testOutputTimeout
                 fallbackToScreenshots = config.fallbackToScreenshots;
+                totalAllowedRetryQuota = config.totalAllowedRetryQuota;
 
                 dependsOn projectOutput.assemble, variant.assemble
             }

@@ -55,6 +55,8 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
 
     boolean fallbackToScreenshots;
 
+    int totalAllowedRetryQuota;
+
     @TaskAction
     void runFork() {
         LOG.info("Run instrumentation tests $instrumentationApk for app $applicationApk")
@@ -70,6 +72,7 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
                 .withTestPackage(testPackage)
                 .withTestOutputTimeout(testOutputTimeout)
                 .withFallbackToScreenshots(fallbackToScreenshots)
+                .withTotalAllowedRetryQuota(totalAllowedRetryQuota)
 
         boolean success = fork.build().run()
 

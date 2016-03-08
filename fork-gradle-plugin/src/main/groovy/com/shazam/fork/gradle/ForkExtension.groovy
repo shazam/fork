@@ -46,4 +46,9 @@ class ForkExtension {
      * Indicate that screenshots are allowed when videos are not supported.
      */
     boolean fallbackToScreenshots
+
+    /**
+     * Amount of re-executions of failing tests allowed.
+     */
+    int totalAllowedRetryQuota
 }
