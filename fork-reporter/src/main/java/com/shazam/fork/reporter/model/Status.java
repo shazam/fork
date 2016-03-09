@@ -13,5 +13,6 @@ package com.shazam.fork.reporter.model;
 public enum Status {
     PASS,
     FAIL,
-    MISSING
+    MISSING,
+    WARN
 }

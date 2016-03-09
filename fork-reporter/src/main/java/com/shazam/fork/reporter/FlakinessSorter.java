@@ -89,9 +89,8 @@ public class FlakinessSorter {
                             .build();
                     testLabels.add(testLabel);
 
-                    ResultStatus resultStatus = testResult.getResultStatus();
                     TestInstance testInstance = testInstance()
-                            .withResultStatus(resultStatus)
+                            .withResultStatusFrom(testResult)
                             .withLink(testLinkCreator.createLinkToTest(buildLink, poolSummary.getPoolName(), testLabel))
                             .build();
                     table.put(testLabel, build, testInstance);
