@@ -28,6 +28,11 @@ public class PoolProgressTracker {
         failedTests++;
     }
 
+    public void reEnqueuedTest() {
+        completedTests--;
+        failedTests--;
+    }
+
     public float getProgress() {
         return (float) completedTests / (float) totalTests;
     }

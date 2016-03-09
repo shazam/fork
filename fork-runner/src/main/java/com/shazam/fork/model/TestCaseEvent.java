@@ -1,6 +1,9 @@
 package com.shazam.fork.model;
 
+import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.common.base.Objects;
+
+import javax.annotation.Nonnull;
 
 public class TestCaseEvent {
 
@@ -16,7 +19,11 @@ public class TestCaseEvent {
 
     public static TestCaseEvent newTestCase(String testMethod, String testClass, boolean isIgnored){
         return new TestCaseEvent(testMethod, testClass, isIgnored);
-    };
+    }
+
+    public static TestCaseEvent newTestCase(@Nonnull TestIdentifier testIdentifier, boolean isIgnored){
+        return new TestCaseEvent(testIdentifier.getTestName(), testIdentifier.getClassName(), isIgnored);
+    }
 
     public String getTestMethod() {
         return testMethod;

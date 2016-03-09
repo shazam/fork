@@ -11,7 +11,6 @@
 package com.shazam.fork.runner.listeners;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
-import com.shazam.fork.injector.system.FileManagerInjector;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
@@ -68,26 +67,25 @@ public class RetryListener extends NoOpITestRunListener {
     @Override
     public void testFailed(TestIdentifier test, String trace) {
         failedTest = test;
-        progressReporter.recordFailedTestCase(pool, device, newTestCase(failedTest.getTestName(), failedTest.getClassName(), false));
+        progressReporter.recordFailedTestCase(pool, device, newTestCase(failedTest, false));
     }
 
     @Override
     public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
         super.testRunEnded(elapsedTime, runMetrics);
         if (failedTest != null) {
-            if (progressReporter.retryWatchdog().allowRetry()) {
+            if (progressReporter.requestRetry(pool, newTestCase(failedTest, false))) {
                 queueOfTestsInPool.add(currentTestCaseEvent);
-                logger.info("Test " + failedTest.toString() + " enqueued again into device." + device.getSerial());
+                logger.info("Test " + failedTest.toString() + " enqueued again into pool:" + pool.getName());
                 removeFailureTraceFiles();
-
             } else {
-                logger.debug("Test " + failedTest.toString() + " failed on device " + device.getSerial() + " but retry is not allowed.");
+                logger.info("Test " + failedTest.toString() + " failed on device " + device.getSerial() + " but retry is not allowed.");
             }
         }
     }
 
     public void removeFailureTraceFiles( ) {
-        final File file = FileManagerInjector.fileManager().getFile(FileType.TEST, pool.getName(), device.getSafeSerial(), failedTest);
+        final File file = fileManager.getFile(FileType.TEST, pool.getName(), device.getSafeSerial(), failedTest);
         boolean deleted = file.delete();
         if(!deleted){
             logger.warn("Failed to remove file  " + file.getAbsoluteFile() + " for a failed but enqueued again test");

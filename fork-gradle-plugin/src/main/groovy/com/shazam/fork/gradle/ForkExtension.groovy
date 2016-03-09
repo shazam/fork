@@ -51,4 +51,9 @@ class ForkExtension {
      * Amount of re-executions of failing tests allowed.
      */
     int totalAllowedRetryQuota
+
+    /**
+     * Max number of time each testCase is attempted again before declaring it as a failure.
+     */
+    int retryPerTestCaseQuota
 }

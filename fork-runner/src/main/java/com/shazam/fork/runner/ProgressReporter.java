@@ -35,7 +35,7 @@ public interface ProgressReporter {
 
     float getProgress();
 
-    RetryWatchdog retryWatchdog();
+    boolean requestRetry(Pool pool, TestCaseEvent testCaseEvent);
 
     void recordFailedTestCase(Pool pool, Device device, TestCaseEvent testCase);
 

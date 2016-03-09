@@ -31,6 +31,7 @@ public class Configuration {
     private final int testOutputTimeout;
     private final boolean fallbackToScreenshots;
     private final int totalAllowedRetryQuota;
+    private final int retryPerTestCaseQuota;
 
     public Configuration(@Nonnull File androidSdk,
                          @Nonnull File applicationApk,
@@ -42,7 +43,8 @@ public class Configuration {
                          @Nonnull String testPackage,
                          int testOutputTimeout,
                          boolean fallbackToScreenshots,
-                         int totalAllowedRetryQuota ) {
+                         int totalAllowedRetryQuota,
+                         int retryPerTestCaseQuota) {
         this.androidSdk = androidSdk;
         this.applicationApk = applicationApk;
         this.instrumentationApk = instrumentationApk;
@@ -54,6 +56,7 @@ public class Configuration {
         this.testOutputTimeout = testOutputTimeout;
         this.fallbackToScreenshots = fallbackToScreenshots;
         this.totalAllowedRetryQuota = totalAllowedRetryQuota;
+        this.retryPerTestCaseQuota = retryPerTestCaseQuota;
     }
 
     @Nonnull
@@ -105,5 +108,9 @@ public class Configuration {
 
     public int getTotalAllowedRetryQuota() {
         return totalAllowedRetryQuota;
+    }
+
+    public int getRetryPerTestCaseQuota() {
+        return retryPerTestCaseQuota;
     }
 }

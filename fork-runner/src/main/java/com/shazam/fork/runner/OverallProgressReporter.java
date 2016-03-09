@@ -26,6 +26,7 @@ import static java.lang.System.nanoTime;
  * Reports for stats on all the pools.
  */
 public class OverallProgressReporter implements ProgressReporter {
+
     private long startOfTests;
     private long endOfTests;
     private final Map<Pool, PoolProgressTracker> poolProgressTrackers = new HashMap<>();
@@ -85,9 +86,14 @@ public class OverallProgressReporter implements ProgressReporter {
         return progress / size;
     }
 
-    @Override
-    public RetryWatchdog retryWatchdog() {
-        return retryWatchdog;
+    public boolean requestRetry(Pool pool, TestCaseEvent testCase) {
+        boolean result = retryWatchdog.isRetryAllowed(failedTestCasesAccumulator.getCount(testCase));
+        if(result){
+            if(poolProgressTrackers.containsKey(pool)) {
+                poolProgressTrackers.get(pool).reEnqueuedTest();
+            }
+        }
+        return result;
     }
 
     @Override
