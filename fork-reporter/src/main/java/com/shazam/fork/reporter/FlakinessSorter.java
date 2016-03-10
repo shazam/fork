@@ -130,7 +130,7 @@ public class FlakinessSorter {
 
         TreeBasedTable<ScoredTestLabel, Build, TestInstance> sortedTable = create(
                 (scoredTest1, scoredTest2) -> scoredTest1.getTestScore().compareTo(scoredTest2.getTestScore()),
-                (build1, build2) -> build1.getBuildId().compareTo(build2.getBuildId()));
+                Build::compareTo);
 
         for (TestLabel testLabel : testLabelsFullIndex) {
             List<TestInstance> testInstances = collectInstancesOfTest(rawResultsTable, buildsFullIndex, testLabel);
