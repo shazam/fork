@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RetryWatchdog {
-
     private static final Logger logger = LoggerFactory.getLogger(RetryWatchdog.class);
 
     private final int maxRetryPerTestCaseQuota;
@@ -16,7 +15,6 @@ public class RetryWatchdog {
     private StringBuilder logBuilder = new StringBuilder();
 
     public boolean isRetryAllowed(int currentSingleTestCaseFailures) {
-
         boolean totalAllowedRetryAvailable = totalAllowedRetryAvailable();
         boolean singleTestAllowed = currentSingleTestCaseFailures <= maxRetryPerTestCaseQuota;
         boolean result = totalAllowedRetryAvailable && singleTestAllowed;

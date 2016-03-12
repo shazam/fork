@@ -10,7 +10,6 @@
 
 package com.shazam.fork.runner;
 
-import com.shazam.fork.model.Device;
 import com.shazam.fork.model.DeviceTestCaseAccumulator;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
@@ -97,13 +96,8 @@ public class OverallProgressReporter implements ProgressReporter {
     }
 
     @Override
-    public void recordFailedTestCase(Pool pool, Device device, TestCaseEvent testCase) {
-        failedTestCasesAccumulator.record(pool, device, testCase);
-    }
-
-    @Override
-    public int getTestFailuresCountPerDevice(Device device, TestCaseEvent testCase) {
-        return failedTestCasesAccumulator.getCount(device, testCase);
+    public void recordFailedTestCase(Pool pool, TestCaseEvent testCase) {
+        failedTestCasesAccumulator.record(pool, testCase);
     }
 
     @Override

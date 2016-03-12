@@ -10,7 +10,6 @@
 
 package com.shazam.fork.runner;
 
-import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 
@@ -37,9 +36,7 @@ public interface ProgressReporter {
 
     boolean requestRetry(Pool pool, TestCaseEvent testCaseEvent);
 
-    void recordFailedTestCase(Pool pool, Device device, TestCaseEvent testCase);
-
-    int getTestFailuresCountPerDevice(Device device, TestCaseEvent testCase);
+    void recordFailedTestCase(Pool pool, TestCaseEvent testCase);
 
     int getTestFailuresCount(Pool pool, TestCaseEvent testCase);
 }

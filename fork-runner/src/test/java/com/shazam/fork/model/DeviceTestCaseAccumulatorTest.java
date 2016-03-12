@@ -37,57 +37,10 @@ public class DeviceTestCaseAccumulatorTest {
     }
 
     @Test
-    public void shouldAccumulateDeviceAndFirstRequest() throws Exception {
-        subject.record(A_POOL,A_DEVICE, A_TEST_CASE);
-        int actualCount = subject.getCount(A_DEVICE, A_TEST_CASE);
-        assertThat(actualCount, equalTo(1));
-    }
-
-    @Test
-    public void shouldAccumulateRequestsForSameDevice() throws Exception {
-        subject.record(A_POOL, A_DEVICE, A_TEST_CASE);
-        subject.record(A_POOL, A_DEVICE, A_TEST_CASE);
-
-        int actualCount = subject.getCount(A_DEVICE, A_TEST_CASE);
-        assertThat(actualCount, equalTo(2));
-    }
-
-    @Test
-    public void shouldAccumulateTestCasesForDifferentDevices() throws Exception {
-        subject.record(A_POOL, A_DEVICE, A_TEST_CASE);
-        subject.record(A_POOL, ANOTHER_DEVICE, A_TEST_CASE);
-
-        int actualCount = subject.getCount(A_DEVICE, A_TEST_CASE);
-        assertThat(actualCount, equalTo(1));
-    }
-
-    @Test
-    public void shouldAccumulateDifferentTestCasesForSameDevice() throws Exception {
-        subject.record(A_POOL, A_DEVICE, A_TEST_CASE);
-        subject.record(A_POOL, A_DEVICE, ANOTHER_TEST_CASE);
-
-        int actualCount = subject.getCount(A_DEVICE, A_TEST_CASE);
-        int anotherActualCount = subject.getCount(A_DEVICE, ANOTHER_TEST_CASE);
-
-        assertThat(actualCount, equalTo(1));
-        assertThat(anotherActualCount, equalTo(1));
-    }
-
-
-    @Test
-    public void shouldNotReturnTestCasesForDifferentDevice() throws Exception {
-        subject.record(A_POOL, A_DEVICE, A_TEST_CASE);
-
-        int actualCountForAnotherDevice = subject.getCount(ANOTHER_DEVICE, A_TEST_CASE);
-
-        assertThat(actualCountForAnotherDevice, equalTo(0));
-    }
-
-    @Test
     public void shouldAggregateCountForSameTestCaseAcrossMultipleDevices() throws Exception {
 
-        subject.record(A_POOL, A_DEVICE, A_TEST_CASE);
-        subject.record(A_POOL, ANOTHER_DEVICE, A_TEST_CASE);
+        subject.record(A_POOL, A_TEST_CASE);
+        subject.record(A_POOL, A_TEST_CASE);
 
         int actualCount = subject.getCount(A_TEST_CASE);
 
@@ -96,8 +49,8 @@ public class DeviceTestCaseAccumulatorTest {
 
     @Test
     public void shouldCountTestsPerPool() throws Exception {
-        subject.record(A_POOL, A_DEVICE, A_TEST_CASE);
-        subject.record(A_POOL, ANOTHER_DEVICE, A_TEST_CASE);
+        subject.record(A_POOL, A_TEST_CASE);
+        subject.record(A_POOL, A_TEST_CASE);
 
         int actualCount = subject.getCount(A_POOL, A_TEST_CASE);
 
@@ -107,11 +60,32 @@ public class DeviceTestCaseAccumulatorTest {
     @Test
     public void shouldAggregateCountForSameTestCaseAcrossMultiplePools() throws Exception {
 
-        subject.record(A_POOL, A_DEVICE, A_TEST_CASE);
-        subject.record(ANOTHER_POOL, ANOTHER_DEVICE, A_TEST_CASE);
+        subject.record(A_POOL, A_TEST_CASE);
+        subject.record(ANOTHER_POOL, A_TEST_CASE);
 
         int actualCount = subject.getCount(A_TEST_CASE);
 
         assertThat(actualCount, equalTo(2));
+    }
+
+    @Test
+    public void shouldNotReturnTestCasesForDifferentPool() throws Exception {
+        subject.record(A_POOL, A_TEST_CASE);
+
+        int actualCountForAnotherDevice = subject.getCount(ANOTHER_POOL, A_TEST_CASE);
+
+        assertThat(actualCountForAnotherDevice, equalTo(0));
+    }
+
+    @Test
+    public void shouldAccumulateDifferentTestCasesForSamePool() throws Exception {
+        subject.record(A_POOL, A_TEST_CASE);
+        subject.record(A_POOL, ANOTHER_TEST_CASE);
+
+        int actualCount = subject.getCount(A_POOL, A_TEST_CASE);
+        int anotherActualCount = subject.getCount(A_POOL, ANOTHER_TEST_CASE);
+
+        assertThat(actualCount, equalTo(1));
+        assertThat(anotherActualCount, equalTo(1));
     }
 }

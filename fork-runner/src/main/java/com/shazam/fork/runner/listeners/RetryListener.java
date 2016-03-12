@@ -67,7 +67,7 @@ public class RetryListener extends NoOpITestRunListener {
     @Override
     public void testFailed(TestIdentifier test, String trace) {
         failedTest = test;
-        progressReporter.recordFailedTestCase(pool, device, newTestCase(failedTest, false));
+        progressReporter.recordFailedTestCase(pool, newTestCase(failedTest, false));
     }
 
     @Override
@@ -79,7 +79,7 @@ public class RetryListener extends NoOpITestRunListener {
                 logger.info("Test " + failedTest.toString() + " enqueued again into pool:" + pool.getName());
                 removeFailureTraceFiles();
             } else {
-                logger.info("Test " + failedTest.toString() + " failed on device " + device.getSerial() + " but retry is not allowed.");
+                logger.info("Test " + failedTest.toString() + " failed on device " + device.getSafeSerial() + " but retry is not allowed.");
             }
         }
     }

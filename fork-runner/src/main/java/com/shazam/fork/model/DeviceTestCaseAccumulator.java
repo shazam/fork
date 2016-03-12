@@ -12,27 +12,15 @@ import static com.google.common.collect.FluentIterable.from;
  */
 public class DeviceTestCaseAccumulator {
 
-    private SetMultimap<Device, TestCaseEventCounter> map = HashMultimap.<Device, TestCaseEventCounter>create();
-    private SetMultimap<Pool, TestCaseEventCounter> mapPerPool = HashMultimap.<Pool, TestCaseEventCounter>create();
+    private SetMultimap<Pool, TestCaseEventCounter> map = HashMultimap.<Pool, TestCaseEventCounter>create();
 
-    public void record(Pool pool, Device device, TestCaseEvent testCaseEvent) {
-        recordPerDevice(device, testCaseEvent);
+    public void record(Pool pool, TestCaseEvent testCaseEvent) {
         recordPerPool(pool, testCaseEvent);
     }
 
-    public int getCount(Device device, TestCaseEvent testCaseEvent) {
-        if (map.containsKey(device)) {
-            return from(map.get(device))
-                    .firstMatch(isSameTestCase(testCaseEvent)).or(TestCaseEventCounter.EMPTY)
-                    .getCount();
-        } else {
-            return 0;
-        }
-    }
-
     public int getCount(Pool pool, TestCaseEvent testCaseEvent) {
-        if (mapPerPool.containsKey(pool)) {
-            return from(mapPerPool.get(pool))
+        if (map.containsKey(pool)) {
+            return from(map.get(pool))
                     .firstMatch(isSameTestCase(testCaseEvent)).or(TestCaseEventCounter.EMPTY)
                     .getCount();
         } else {
@@ -50,6 +38,22 @@ public class DeviceTestCaseAccumulator {
         return result;
     }
 
+    private void recordPerPool(Pool pool, TestCaseEvent testCaseEvent) {
+        if (!map.containsKey(pool)) {
+            map.put(pool, createNew(testCaseEvent));
+        }
+
+        if (!from(map.get(pool)).anyMatch(isSameTestCase(testCaseEvent))) {
+            map.get(pool).add(
+                    createNew(testCaseEvent)
+                            .withIncreasedCount());
+        } else {
+            from(map.get(pool))
+                    .firstMatch(isSameTestCase(testCaseEvent)).get()
+                    .increaseCount();
+        }
+    }
+
     private static TestCaseEventCounter createNew(final TestCaseEvent testCaseEvent) {
         return new TestCaseEventCounter(testCaseEvent, 0);
     }
@@ -62,37 +66,5 @@ public class DeviceTestCaseAccumulator {
                         && testCaseEvent.equals(input.getType());
             }
         };
-    }
-
-    private void recordPerPool(Pool pool, TestCaseEvent testCaseEvent) {
-        if (!mapPerPool.containsKey(pool)) {
-            mapPerPool.put(pool, createNew(testCaseEvent));
-        }
-
-        if (!from(mapPerPool.get(pool)).anyMatch(isSameTestCase(testCaseEvent))) {
-            mapPerPool.get(pool).add(
-                    createNew(testCaseEvent)
-                            .withIncreasedCount());
-        } else {
-            from(mapPerPool.get(pool))
-                    .firstMatch(isSameTestCase(testCaseEvent)).get()
-                    .increaseCount();
-        }
-    }
-
-    private void recordPerDevice(Device device, TestCaseEvent testCaseEvent) {
-        if (!map.containsKey(device)) {
-            map.put(device, createNew(testCaseEvent));
-        }
-
-        if (!from(map.get(device)).anyMatch(isSameTestCase(testCaseEvent))) {
-            map.get(device).add(
-                    createNew(testCaseEvent)
-                            .withIncreasedCount());
-        } else {
-            from(map.get(device))
-                    .firstMatch(isSameTestCase(testCaseEvent)).get()
-                    .increaseCount();
-        }
     }
 }
