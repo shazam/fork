@@ -5,7 +5,7 @@ import com.google.common.base.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Generci class to associate an object to a count.
+ * Generic class to associate an object to a count.
  *
  * @param <T>
  */
@@ -38,7 +38,6 @@ public class Counter<T> {
 
     @Override
     public boolean equals(Object obj) {
-
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
         final Counter other = (Counter) obj;

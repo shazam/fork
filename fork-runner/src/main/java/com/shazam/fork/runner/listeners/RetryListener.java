@@ -62,8 +62,7 @@ public class RetryListener extends NoOpITestRunListener {
         this.pool = pool;
         this.fileManager = fileManager;
     }
-
-
+    
     @Override
     public void testFailed(TestIdentifier test, String trace) {
         failedTest = test;

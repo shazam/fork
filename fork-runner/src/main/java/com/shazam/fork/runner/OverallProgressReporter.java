@@ -87,10 +87,8 @@ public class OverallProgressReporter implements ProgressReporter {
 
     public boolean requestRetry(Pool pool, TestCaseEvent testCase) {
         boolean result = retryWatchdog.isRetryAllowed(failedTestCasesAccumulator.getCount(testCase));
-        if(result){
-            if(poolProgressTrackers.containsKey(pool)) {
-                poolProgressTrackers.get(pool).reEnqueuedTest();
-            }
+        if (result && poolProgressTrackers.containsKey(pool)) {
+            poolProgressTrackers.get(pool).trackTestEnqueuedAgain();
         }
         return result;
     }
@@ -101,7 +99,7 @@ public class OverallProgressReporter implements ProgressReporter {
     }
 
     @Override
-    public int getTestFailuresCount(Pool pool,TestCaseEvent testCase) {
+    public int getTestFailuresCount(Pool pool, TestCaseEvent testCase) {
         return failedTestCasesAccumulator.getCount(pool, testCase);
     }
 }

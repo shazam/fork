@@ -87,7 +87,7 @@ public class TestResult {
         private String testMethod;
         private String errorTrace;
         private String failureTrace;
-        private Map<String, String> testMetrics = new HashMap<String, String>();
+        private Map<String, String> testMetrics = new HashMap<>();
 
         public static Builder aTestResult() {
             return new Builder();

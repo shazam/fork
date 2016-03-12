@@ -28,7 +28,7 @@ public class PoolProgressTracker {
         failedTests++;
     }
 
-    public void reEnqueuedTest() {
+    public void trackTestEnqueuedAgain() {
         completedTests--;
         failedTests--;
     }
