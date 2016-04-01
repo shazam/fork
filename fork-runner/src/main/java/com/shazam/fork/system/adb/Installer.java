@@ -23,6 +23,8 @@ import static java.lang.String.format;
 
 public class Installer {
     private static final Logger logger = LoggerFactory.getLogger(Installer.class);
+	private static final String GRANT_ALL_RUNTIME_PERMISSIONS = "-g";
+
 	private final String applicationPackage;
 	private final String instrumentationPackage;
 	private final File apk;
@@ -50,7 +52,7 @@ public class Installer {
                     logger.debug("Uninstalling {} from {}", appPackage, device.getSerialNumber());
                     device.uninstallPackage(appPackage);
                     logger.debug("Installing {} to {}", appPackage, device.getSerialNumber());
-					device.installPackage(appApk.getAbsolutePath(), true);
+					device.installPackage(appApk.getAbsolutePath(), true, GRANT_ALL_RUNTIME_PERMISSIONS);
 				} catch (InstallException e) {
 					throw new RuntimeException(message, e);
 				}
