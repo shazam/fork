@@ -40,6 +40,7 @@ public class Installer {
 		DdmPreferences.setTimeOut(30000);
 		reinstall(device, applicationPackage, apk);
 		reinstall(device, instrumentationPackage, testApk);
+        grantMockLocationInMarshmallow(device, applicationPackage);
 	}
 
 	private void reinstall(final IDevice device, final String appPackage, final File appApk) {
@@ -50,7 +51,7 @@ public class Installer {
                     logger.debug("Uninstalling {} from {}", appPackage, device.getSerialNumber());
                     device.uninstallPackage(appPackage);
                     logger.debug("Installing {} to {}", appPackage, device.getSerialNumber());
-					device.installPackage(appApk.getAbsolutePath(), true);
+					device.installPackage(appApk.getAbsolutePath(), true, "-g");
 				} catch (InstallException e) {
 					throw new RuntimeException(message, e);
 				}
@@ -87,7 +88,20 @@ public class Installer {
                     }
                     return;
                 }
-			}
-		}
-	}
+            }
+        }
+    }
+
+    private void grantMockLocationInMarshmallow(final IDevice device, final String appPackage) {
+        if (device.getVersion().getApiLevel() >= 23) {
+            CollectingShellOutputReceiver receiver = new CollectingShellOutputReceiver();
+            String command = " appops set " + appPackage + " android:mock_location allow";
+            try {
+                device.executeShellCommand(command, receiver);
+                logger.debug("When mock location granted for " + appPackage + " :" + receiver.getOutput());
+            } catch (Exception e) {
+                logger.warn("Error when executing " + command + " on " + device.getSerialNumber(), e);
+            }
+        }
+    }
 }
