@@ -10,10 +10,11 @@ import static com.google.common.collect.FluentIterable.from;
 /**
  * Class that keeps track of the number of times each testCase is executed for device.
  */
-public class PoolTestCaseFailureAccumulator {
+public class PoolTestCaseFailureAccumulator implements PoolTestCaseAccumulator {
 
     private SetMultimap<Pool, TestCaseEventCounter> map = HashMultimap.<Pool, TestCaseEventCounter>create();
 
+    @Override
     public void record(Pool pool, TestCaseEvent testCaseEvent) {
         if (!map.containsKey(pool)) {
             map.put(pool, createNew(testCaseEvent));
@@ -30,6 +31,7 @@ public class PoolTestCaseFailureAccumulator {
         }
     }
 
+    @Override
     public int getCount(Pool pool, TestCaseEvent testCaseEvent) {
         if (map.containsKey(pool)) {
             return from(map.get(pool))
@@ -40,6 +42,7 @@ public class PoolTestCaseFailureAccumulator {
         }
     }
 
+    @Override
     public int getCount(TestCaseEvent testCaseEvent) {
         int result = 0;
         ImmutableList<TestCaseEventCounter> counters = from(map.values())
@@ -58,8 +61,8 @@ public class PoolTestCaseFailureAccumulator {
         return new Predicate<TestCaseEventCounter>() {
             @Override
             public boolean apply(TestCaseEventCounter input) {
-                return input.getType() != null
-                        && testCaseEvent.equals(input.getType());
+                return input.getTestCaseEvent() != null
+                        && testCaseEvent.equals(input.getTestCaseEvent());
             }
         };
     }
