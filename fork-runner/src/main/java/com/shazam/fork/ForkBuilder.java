@@ -176,7 +176,7 @@ public class ForkBuilder {
     }
 
     private void logArgumentsBadInteractions() {
-        if(totalAllowedRetryQuota < retryPerTestCaseQuota){
+        if(totalAllowedRetryQuota > 0 && totalAllowedRetryQuota < retryPerTestCaseQuota){
             logger.warn("Total allowed retry quota ["+totalAllowedRetryQuota+"] " +
                     "is smaller than Retry per test case quota ["+retryPerTestCaseQuota+"]. " +
                     "This is suspicious as the fist mentioned parameter is an overall cap.");
