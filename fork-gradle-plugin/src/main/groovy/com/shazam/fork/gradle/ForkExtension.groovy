@@ -56,4 +56,10 @@ class ForkExtension {
      * Max number of time each testCase is attempted again before declaring it as a failure.
      */
     int retryPerTestCaseQuota
+
+    /**
+     * Indicate that in Marshmallow+ all the required runtime permissions are granted automatically.
+     * Default is true.
+     */
+    boolean autoGrantRuntimePermissions = true
 }

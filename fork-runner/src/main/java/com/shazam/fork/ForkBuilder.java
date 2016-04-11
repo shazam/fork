@@ -37,6 +37,7 @@ public class ForkBuilder {
     private boolean fallbackToScreenshots = true;
     private int totalAllowedRetryQuota = 0;
     private int retryPerTestCaseQuota = 1;
+    private boolean autoGrantRuntimePermissions = true;
 
     public static ForkBuilder aFork() {
         return new ForkBuilder();
@@ -144,6 +145,11 @@ public class ForkBuilder {
         return this;
     }
 
+    public ForkBuilder withAutoGrantRuntimePermissions(boolean autoGrantRuntimePermissions) {
+        this.autoGrantRuntimePermissions = autoGrantRuntimePermissions;
+        return this;
+    }
+
     public Fork build() {
         checkNotNull(androidSdk, "SDK is required.");
         checkArgument(androidSdk.exists(), "SDK directory does not exist.");
@@ -171,7 +177,8 @@ public class ForkBuilder {
                 testOutputTimeout,
                 fallbackToScreenshots,
                 totalAllowedRetryQuota,
-                retryPerTestCaseQuota);
+                retryPerTestCaseQuota,
+                autoGrantRuntimePermissions);
         return new Fork(configuration);
     }
 

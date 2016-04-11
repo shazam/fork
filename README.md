@@ -69,16 +69,17 @@ Will potentially be unsupported, as it's the least developer friendly. Check out
 ```
 > gradlew fork-runner:run -Pargs='ARGUMENTS LIST'
 
-With the below options.       The APK and test APK parameters are mandatory:
-    --sdk                     Path to Android SDK. Defaults to the ANDROID_HOME environment variable.
-    --apk                     Path to application. This parameter is required.
-    --test-apk                Path to test application. This parameter is required.
-    --output                  Output path. Defaults to "fork-output"
-    --test-package            The package to consider when finding tests to run. Defaults to instrumentation package.
-    --test-class-regex        Regex determining class names to consider when finding tests to run. Defaults to ^((?!Abstract).)*Test$
-    --test-timeout            The maximum amount of time during which the tests are allowed to not output any response, in milliseconds
-    --fail-on-failure         Non-zero exit code on failure. Defaults to false.
-    --fallback-to-screenshots If a device does not support videos, define if you'd like animated GIFs (experimental). Defaults to true.
+With the below options.              The APK and test APK parameters are mandatory:
+    --sdk                            Path to Android SDK. Defaults to the ANDROID_HOME environment variable.
+    --apk                            Path to application. This parameter is required.
+    --test-apk                       Path to test application. This parameter is required.
+    --output                         Output path. Defaults to "fork-output"
+    --test-package                   The package to consider when finding tests to run. Defaults to instrumentation package.
+    --test-class-regex               Regex determining class names to consider when finding tests to run. Defaults to ^((?!Abstract).)*Test$
+    --test-timeout                   The maximum amount of time during which the tests are allowed to not output any response, in milliseconds
+    --fail-on-failure                Non-zero exit code on failure. Defaults to false.
+    --fallback-to-screenshots        If a device does not support videos, define if you'd like animated GIFs (experimental). Defaults to true.
+    --auto-grant-runtime-permissions Grants all runtime permissions in Android Marshmallow+. Default is true.
 ```
 
 For example:

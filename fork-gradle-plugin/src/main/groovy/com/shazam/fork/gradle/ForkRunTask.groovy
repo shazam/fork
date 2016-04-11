@@ -59,6 +59,8 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
 
     int retryPerTestCaseQuota;
 
+    boolean autoGrantRuntimePermissions;
+
     @TaskAction
     void runFork() {
         LOG.info("Run instrumentation tests $instrumentationApk for app $applicationApk")
@@ -76,6 +78,7 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
                 .withFallbackToScreenshots(fallbackToScreenshots)
                 .withTotalAllowedRetryQuota(totalAllowedRetryQuota)
                 .withRetryPerTestCaseQuota(retryPerTestCaseQuota)
+                .withAutoGrantRuntimePermissions(autoGrantRuntimePermissions)
 
         boolean success = fork.build().run()
 

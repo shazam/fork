@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
+import javax.annotation.Nonnull;
+
 import static java.lang.String.format;
 
 public class Installer {
@@ -27,12 +29,18 @@ public class Installer {
 	private final String instrumentationPackage;
 	private final File apk;
 	private final File testApk;
+    private final boolean autoGrantRuntimePermissions;
 
-	public Installer(String applicationPackage, String instrumentationPackage, File apk, File testApk) {
+	public Installer(String applicationPackage,
+					 String instrumentationPackage,
+					 File apk,
+					 File testApk,
+					 boolean autoGrantRuntimePermissions) {
 		this.applicationPackage = applicationPackage;
 		this.instrumentationPackage = instrumentationPackage;
 		this.apk = apk;
 		this.testApk = testApk;
+        this.autoGrantRuntimePermissions = autoGrantRuntimePermissions;
 	}
 
 	public void prepareInstallation(IDevice device) {
@@ -51,7 +59,9 @@ public class Installer {
                     logger.debug("Uninstalling {} from {}", appPackage, device.getSerialNumber());
                     device.uninstallPackage(appPackage);
                     logger.debug("Installing {} to {}", appPackage, device.getSerialNumber());
-					device.installPackage(appApk.getAbsolutePath(), true, "-g");
+                    boolean autoGrant = isMarshmallowOrMore(device) && autoGrantRuntimePermissions;
+                    device.installPackage(appApk.getAbsolutePath(), true,
+                            autoGrant ? "-g" : "");
 				} catch (InstallException e) {
 					throw new RuntimeException(message, e);
 				}
@@ -93,7 +103,7 @@ public class Installer {
     }
 
     private void grantMockLocationInMarshmallow(final IDevice device, final String appPackage) {
-        if (device.getVersion().getApiLevel() >= 23) {
+        if (isMarshmallowOrMore(device)) {
             CollectingShellOutputReceiver receiver = new CollectingShellOutputReceiver();
             String command = " appops set " + appPackage + " android:mock_location allow";
             try {
@@ -103,5 +113,9 @@ public class Installer {
                 logger.warn("Error when executing " + command + " on " + device.getSerialNumber(), e);
             }
         }
+    }
+
+    private boolean isMarshmallowOrMore(@Nonnull IDevice device){
+        return device.getVersion().getApiLevel() >= 23;
     }
 }

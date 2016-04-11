@@ -84,6 +84,7 @@ class ForkPlugin implements Plugin<Project> {
                 fallbackToScreenshots = config.fallbackToScreenshots;
                 totalAllowedRetryQuota = config.totalAllowedRetryQuota;
                 retryPerTestCaseQuota = config.retryPerTestCaseQuota;
+                autoGrantRuntimePermissions = config.autoGrantRuntimePermissions;
 
                 dependsOn projectOutput.assemble, variant.assemble
             }

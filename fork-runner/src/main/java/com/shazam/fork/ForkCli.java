@@ -67,9 +67,12 @@ public class ForkCli {
         @Parameter(names = { "--total-allowed-retry-quota" }, description = "Amount of re-executions of failing tests allowed.", converter = IntegerConverter.class)
         public int totalAllowedRetryQuota = 0;
 
-       @Parameter(names = { "--retry-per-test-case-quota" }, description = "Max number of time each testCase is attempted again " +
+        @Parameter(names = { "--retry-per-test-case-quota" }, description = "Max number of time each testCase is attempted again " +
                 "before declaring it as a failure.", converter = IntegerConverter.class)
         public int retryPerTestCaseQuota = 1;
+
+        @Parameter(names = { "--auto-grant-runtime-permissions" }, description = "Grant all runtime permissions", arity = 1)
+        public Boolean autoGrantRuntimePermissions = true;
 
     }
 
@@ -140,6 +143,10 @@ public class ForkCli {
 
         if(parsedArgs.retryPerTestCaseQuota > -1){
             forkBuilder.withRetryPerTestCaseQuota(parsedArgs.retryPerTestCaseQuota);
+        }
+
+        if(parsedArgs.autoGrantRuntimePermissions != null){
+            forkBuilder.withAutoGrantRuntimePermissions(parsedArgs.autoGrantRuntimePermissions);
         }
     }
 }
