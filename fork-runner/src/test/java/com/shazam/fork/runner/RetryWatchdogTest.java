@@ -14,7 +14,7 @@ public class RetryWatchdogTest {
     @Test
     public void shouldAllowWhenTotalAndPerTestAreEquals() throws Exception {
         subject = new RetryWatchdog(aConfigWith(1, 1));
-        boolean actual = subject.isRetryAllowed(1);
+        boolean actual = subject.requestRetry(1);
 
         assertTrue(actual);
     }
@@ -22,7 +22,7 @@ public class RetryWatchdogTest {
     @Test
     public void shouldNotAllowWhenTotalAndPerTestAreLessThenActualFailures() throws Exception {
         subject = new RetryWatchdog(aConfigWith(1, 1));
-        boolean actual = subject.isRetryAllowed(2);
+        boolean actual = subject.requestRetry(2);
 
         assertFalse(actual);
     }
@@ -30,14 +30,14 @@ public class RetryWatchdogTest {
     @Test
     public void shouldNotAllowWhenTooManyTotalFailuresAlreadyRequested() throws Exception {
         subject = new RetryWatchdog(aConfigWith(1, Integer.MAX_VALUE));
-        assertTrue(subject.isRetryAllowed(0));
-        assertFalse(subject.isRetryAllowed(0));
+        assertTrue(subject.requestRetry(0));
+        assertFalse(subject.requestRetry(0));
     }
 
     @Test
     public void shouldNotAllowWhenNoRetryAllowed() throws Exception {
         subject = new RetryWatchdog(aConfigWith(0, Integer.MAX_VALUE));
-        assertFalse(subject.isRetryAllowed(0));
+        assertFalse(subject.requestRetry(0));
     }
 
     private Configuration aConfigWith(int totalRetryAllow, int perTestTotalAllow) {

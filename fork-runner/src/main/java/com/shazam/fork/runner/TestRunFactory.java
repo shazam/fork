@@ -42,8 +42,7 @@ public class TestRunFactory {
                                  Device device,
                                  Pool pool,
                                  ProgressReporter progressReporter,
-                                 Queue<TestCaseEvent> queueOfTestsInPool,
-                                 TestCaseEvent currentTestCaseEvent) {
+                                 Queue<TestCaseEvent> queueOfTestsInPool ) {
         InstrumentationInfo instrumentationInfo = configuration.getInstrumentationInfo();
 
         TestRunParameters testRunParameters = testRunParameters()
@@ -60,8 +59,7 @@ public class TestRunFactory {
                 device,
                 pool,
                 progressReporter,
-                queueOfTestsInPool,
-                currentTestCaseEvent);
+                queueOfTestsInPool);
 
         return new TestRun(
                 pool.getName(),

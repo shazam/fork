@@ -14,18 +14,18 @@ public class RetryWatchdog {
     private AtomicInteger totalAllowedRetryLeft;
     private StringBuilder logBuilder = new StringBuilder();
 
-    public boolean isRetryAllowed(int currentSingleTestCaseFailures) {
+    public RetryWatchdog(Configuration configuration) {
+        totalAllowedRetryLeft = new AtomicInteger(configuration.getTotalAllowedRetryQuota());
+        maxRetryPerTestCaseQuota = configuration.getRetryPerTestCaseQuota();
+    }
+
+    public boolean requestRetry(int currentSingleTestCaseFailures) {
         boolean totalAllowedRetryAvailable = totalAllowedRetryAvailable();
         boolean singleTestAllowed = currentSingleTestCaseFailures <= maxRetryPerTestCaseQuota;
         boolean result = totalAllowedRetryAvailable && singleTestAllowed;
 
         log(currentSingleTestCaseFailures, singleTestAllowed, result);
         return result;
-    }
-
-    public RetryWatchdog(Configuration configuration) {
-        totalAllowedRetryLeft = new AtomicInteger(configuration.getTotalAllowedRetryQuota());
-        maxRetryPerTestCaseQuota = configuration.getRetryPerTestCaseQuota();
     }
 
     private boolean totalAllowedRetryAvailable() {

@@ -10,7 +10,7 @@
 
 package com.shazam.fork.runner;
 
-import com.shazam.fork.model.DeviceTestCaseAccumulator;
+import com.shazam.fork.model.PoolTestCaseFailureAccumulator;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 
@@ -30,7 +30,7 @@ public class OverallProgressReporter implements ProgressReporter {
     private long endOfTests;
     private final Map<Pool, PoolProgressTracker> poolProgressTrackers = new HashMap<>();
     private final RetryWatchdog retryWatchdog;
-    private final DeviceTestCaseAccumulator failedTestCasesAccumulator = new DeviceTestCaseAccumulator();
+    private final PoolTestCaseFailureAccumulator failedTestCasesAccumulator = new PoolTestCaseFailureAccumulator(); //TODO FP add as ctr param.
 
     public OverallProgressReporter(RetryWatchdog retryWatchdog) {
         this.retryWatchdog = retryWatchdog;
@@ -86,7 +86,7 @@ public class OverallProgressReporter implements ProgressReporter {
     }
 
     public boolean requestRetry(Pool pool, TestCaseEvent testCase) {
-        boolean result = retryWatchdog.isRetryAllowed(failedTestCasesAccumulator.getCount(testCase));
+        boolean result = retryWatchdog.requestRetry(failedTestCasesAccumulator.getCount(testCase));
         if (result && poolProgressTrackers.containsKey(pool)) {
             poolProgressTrackers.get(pool).trackTestEnqueuedAgain();
         }

@@ -10,12 +10,24 @@ import static com.google.common.collect.FluentIterable.from;
 /**
  * Class that keeps track of the number of times each testCase is executed for device.
  */
-public class DeviceTestCaseAccumulator {
+public class PoolTestCaseFailureAccumulator {
 
     private SetMultimap<Pool, TestCaseEventCounter> map = HashMultimap.<Pool, TestCaseEventCounter>create();
 
     public void record(Pool pool, TestCaseEvent testCaseEvent) {
-        recordPerPool(pool, testCaseEvent);
+        if (!map.containsKey(pool)) {
+            map.put(pool, createNew(testCaseEvent));
+        }
+
+        if (!from(map.get(pool)).anyMatch(isSameTestCase(testCaseEvent))) {
+            map.get(pool).add(
+                    createNew(testCaseEvent)
+                            .withIncreasedCount());
+        } else {
+            from(map.get(pool))
+                    .firstMatch(isSameTestCase(testCaseEvent)).get()
+                    .increaseCount();
+        }
     }
 
     public int getCount(Pool pool, TestCaseEvent testCaseEvent) {
@@ -36,22 +48,6 @@ public class DeviceTestCaseAccumulator {
             result += counter.getCount();
         }
         return result;
-    }
-
-    private void recordPerPool(Pool pool, TestCaseEvent testCaseEvent) {
-        if (!map.containsKey(pool)) {
-            map.put(pool, createNew(testCaseEvent));
-        }
-
-        if (!from(map.get(pool)).anyMatch(isSameTestCase(testCaseEvent))) {
-            map.get(pool).add(
-                    createNew(testCaseEvent)
-                            .withIncreasedCount());
-        } else {
-            from(map.get(pool))
-                    .firstMatch(isSameTestCase(testCaseEvent)).get()
-                    .increaseCount();
-        }
     }
 
     private static TestCaseEventCounter createNew(final TestCaseEvent testCaseEvent) {

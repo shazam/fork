@@ -41,8 +41,6 @@ public class PoolTestRunnerFactory {
         progressReporter.addPoolProgress(pool, new PoolProgressTracker(totalTests));
 
         return new PoolTestRunner(
-                configuration,
-                fileManager,
                 deviceTestRunnerFactory,
                 pool,
                 new LinkedList<>(testCases),
