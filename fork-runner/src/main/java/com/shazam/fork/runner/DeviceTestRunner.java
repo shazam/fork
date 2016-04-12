@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 
+import static com.shazam.fork.system.io.RemoteFileManager.createCoverageDirectory;
 import static com.shazam.fork.system.io.RemoteFileManager.createRemoteDirectory;
 import static com.shazam.fork.system.io.RemoteFileManager.removeRemoteDirectory;
 
@@ -60,6 +61,7 @@ public class DeviceTestRunner implements Runnable {
             // For when previous run crashed/disconnected and left files behind
             removeRemoteDirectory(deviceInterface);
             createRemoteDirectory(deviceInterface);
+            createCoverageDirectory(deviceInterface);
 
             TestClass testClass;
             while ((testClass = queueOfTestsInPool.poll()) != null) {

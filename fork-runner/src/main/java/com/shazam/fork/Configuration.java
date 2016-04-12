@@ -30,6 +30,7 @@ public class Configuration {
     private final String testPackage;
     private final int testOutputTimeout;
     private final boolean fallbackToScreenshots;
+    private final boolean isCoverageEnabled;
 
     public Configuration(@Nonnull File androidSdk,
                          @Nonnull File applicationApk,
@@ -40,7 +41,8 @@ public class Configuration {
                          @Nonnull Pattern testPackagePattern,
                          @Nonnull String testPackage,
                          int testOutputTimeout,
-                         boolean fallbackToScreenshots) {
+                         boolean fallbackToScreenshots,
+                         boolean isCoverageEnabled) {
         this.androidSdk = androidSdk;
         this.applicationApk = applicationApk;
         this.instrumentationApk = instrumentationApk;
@@ -51,6 +53,7 @@ public class Configuration {
         this.testPackage = testPackage;
         this.testOutputTimeout = testOutputTimeout;
         this.fallbackToScreenshots = fallbackToScreenshots;
+        this.isCoverageEnabled = isCoverageEnabled;
     }
 
     @Nonnull
@@ -98,5 +101,9 @@ public class Configuration {
 
     public boolean canFallbackToScreenshots() {
         return fallbackToScreenshots;
+    }
+
+    public boolean isCoverageEnabled() {
+        return isCoverageEnabled;
     }
 }

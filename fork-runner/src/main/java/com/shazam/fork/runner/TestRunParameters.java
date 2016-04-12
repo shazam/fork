@@ -22,6 +22,7 @@ public class TestRunParameters {
 	private final TestClass test;
 	private final String testPackage;
 	private final String testRunner;
+	private final boolean isCoverageEnabled;
 	private final IRemoteAndroidTestRunner.TestSize testSize;
 	private final int testOutputTimeout;
 	private final IDevice deviceInterface;
@@ -51,10 +52,15 @@ public class TestRunParameters {
 		return deviceInterface;
 	}
 
+	public boolean isCoverageEnabled(){
+		return isCoverageEnabled;
+	}
+
 	public static class Builder {
 		private TestClass test;
 		private String testPackage;
 		private String testRunner;
+		private boolean isCoverageEnabled;
 		private IRemoteAndroidTestRunner.TestSize testSize;
 		private IDevice deviceInterface;
 		private int testOutputTimeout;
@@ -93,6 +99,11 @@ public class TestRunParameters {
 			return this;
 		}
 
+		public Builder withCoverageEnabled(boolean isCoverageEnabled){
+			this.isCoverageEnabled = isCoverageEnabled;
+			return this;
+		}
+
 		public TestRunParameters build() {
 			return new TestRunParameters(this);
 		}
@@ -105,5 +116,6 @@ public class TestRunParameters {
 		testSize = builder.testSize;
 		testOutputTimeout = builder.testOutputTimeout;
 		deviceInterface = builder.deviceInterface;
+		isCoverageEnabled = builder.isCoverageEnabled;
 	}
 }
