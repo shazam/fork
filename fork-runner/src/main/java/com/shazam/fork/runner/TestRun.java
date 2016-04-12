@@ -16,6 +16,7 @@ import com.android.ddmlib.*;
 import com.android.ddmlib.testrunner.*;
 import com.shazam.fork.model.TestClass;
 
+import com.shazam.fork.system.io.RemoteFileManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +54,12 @@ class TestRun {
 		runner.setRunName(poolName);
 		runner.setClassName(testClassName);
 		runner.setMaxtimeToOutputResponse(testRunParameters.getTestOutputTimeout());
+
+        if (testRunParameters.isCoverageEnabled()) {
+            runner.setCoverage(true);
+            runner.addInstrumentationArg("coverageFile", RemoteFileManager.getCoverageFileName(testClassName));
+        }
+
 		try {
 			runner.run(testRunListeners);
 		} catch (ShellCommandUnresponsiveException | TimeoutException e) {

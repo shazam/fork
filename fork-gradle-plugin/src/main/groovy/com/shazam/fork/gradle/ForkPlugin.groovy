@@ -82,7 +82,7 @@ class ForkPlugin implements Plugin<Project> {
                 ignoreFailures = config.ignoreFailures
                 testOutputTimeout = config.testOutputTimeout
                 fallbackToScreenshots = config.fallbackToScreenshots;
-
+                isCoverageEnabled = config.isCoverageEnabled
                 dependsOn projectOutput.assemble, variant.assemble
             }
             task.outputs.upToDateWhen { false }

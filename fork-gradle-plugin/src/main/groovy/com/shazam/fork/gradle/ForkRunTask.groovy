@@ -51,6 +51,8 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
 
     String testPackage
 
+    boolean isCoverageEnabled
+
     int testOutputTimeout
 
     boolean fallbackToScreenshots;
@@ -67,6 +69,7 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
                 .withOutputDirectory(output)
                 .withAndroidSdk(project.android.sdkDirectory)
                 .withTestClassRegex(testClassRegex)
+                .withCoverageEnabled(isCoverageEnabled)
                 .withTestPackage(testPackage)
                 .withTestOutputTimeout(testOutputTimeout)
                 .withFallbackToScreenshots(fallbackToScreenshots)

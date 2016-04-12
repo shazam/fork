@@ -61,7 +61,7 @@ public class SummaryCompiler {
 
     private PoolSummary compilePoolSummary(Pool pool) {
         PoolSummary.Builder poolSummaryBuilder = aPoolSummary().withPoolName(pool.getName());
-        for (Device device: pool.getDevices()) {
+        for (Device device : pool.getDevices()) {
             compileResultsForDevice(pool, poolSummaryBuilder, device);
         }
         Device watchdog = getPoolWatchdog(pool.getName());

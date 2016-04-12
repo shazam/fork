@@ -30,6 +30,7 @@ public class ForkBuilder {
     private String testPackage; // Will default to test APK's package name as soon as it's known
     private int testOutputTimeout = Defaults.TEST_OUTPUT_TIMEOUT_MILLIS;
     private boolean fallbackToScreenshots = true;
+    private boolean isCoverageEnabled;
 
     public static ForkBuilder aFork() {
         return new ForkBuilder();
@@ -101,6 +102,11 @@ public class ForkBuilder {
         return this;
     }
 
+    public ForkBuilder withCoverageEnabled(boolean isCoverageEnabled){
+        this.isCoverageEnabled = isCoverageEnabled;
+        return this;
+    }
+
     /**
      * Maximum time between test output from ADB.
      * @param testOutputTimeout the period in millis
@@ -138,7 +144,8 @@ public class ForkBuilder {
                 compilePatternFor(testPackage),
                 testPackage,
                 testOutputTimeout,
-                fallbackToScreenshots
+                fallbackToScreenshots,
+                isCoverageEnabled
         );
         return new Fork(configuration);
     }

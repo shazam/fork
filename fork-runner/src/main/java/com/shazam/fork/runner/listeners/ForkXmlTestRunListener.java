@@ -15,8 +15,11 @@ package com.shazam.fork.runner.listeners;
 import com.android.ddmlib.testrunner.XmlTestRunListener;
 import com.shazam.fork.model.*;
 import com.shazam.fork.system.io.FileManager;
+import com.shazam.fork.system.io.FileType;
 
 import java.io.File;
+
+import static com.shazam.fork.system.io.FileType.TEST;
 
 public class ForkXmlTestRunListener extends XmlTestRunListener {
     private final FileManager fileManager;
@@ -33,6 +36,6 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
 
     @Override
     protected File getResultFile(File reportDir) {
-        return fileManager.createFileForTest(pool, device, testClass);
+        return fileManager.createFile(pool, device, testClass, TEST);
     }
 }
