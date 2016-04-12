@@ -13,19 +13,14 @@
 package com.shazam.fork.system.io;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
-import com.shazam.fork.model.Device;
-import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.TestClass;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
+import com.shazam.fork.model.*;
+
+import org.apache.commons.io.filefilter.*;
+
+import java.io.*;
 import java.nio.file.Path;
-import org.apache.commons.io.filefilter.AndFileFilter;
-import org.apache.commons.io.filefilter.PrefixFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 
 import static com.shazam.fork.CommonDefaults.FORK_SUMMARY_FILENAME_FORMAT;
-import static com.shazam.fork.system.io.FileType.COVERAGE;
 import static com.shazam.fork.system.io.FileType.TEST;
 import static java.nio.file.Files.createDirectories;
 import static java.nio.file.Paths.get;

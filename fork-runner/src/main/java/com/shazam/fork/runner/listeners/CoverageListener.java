@@ -6,13 +6,13 @@ import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestClass;
 import com.shazam.fork.system.io.FileManager;
-import com.shazam.fork.system.io.FileType;
 import com.shazam.fork.system.io.RemoteFileManager;
-import java.io.File;
-import java.nio.file.Path;
-import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.Map;
 
 import static com.shazam.fork.system.io.FileType.COVERAGE;
 
@@ -28,7 +28,7 @@ public class CoverageListener implements ITestRunListener {
         this.device = device;
         this.fileManager = fileManager;
         this.pool = pool;
-        this.testClass= testClass;
+        this.testClass = testClass;
     }
 
     @Override
@@ -65,9 +65,9 @@ public class CoverageListener implements ITestRunListener {
 
     @Override
     public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
+        final String remoteFile = RemoteFileManager.getCoverageFileName(testClass.getName());
+        final File file = fileManager.createFile(pool, device, testClass, COVERAGE);
         try {
-            final String remoteFile = RemoteFileManager.getCoverageFileName(testClass.getName());
-            final File file = fileManager.createFile(pool, device, testClass, COVERAGE);
             device.getDeviceInterface().pullFile(remoteFile, file.getAbsolutePath());
         } catch (Exception e) {
             logger.error("Something went wrong while pulling coverage file", e);
