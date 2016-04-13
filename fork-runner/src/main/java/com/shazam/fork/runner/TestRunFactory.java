@@ -52,6 +52,7 @@ public class TestRunFactory {
                 .withTestRunner(instrumentationInfo.getTestRunnerClass())
                 .withTestSize(runtimeConfiguration.getTestSize())
                 .withTestOutputTimeout(configuration.getTestOutputTimeout())
+                .withCoverageEnabled(configuration.isCoverageEnabled())
                 .build();
 
         List<ITestRunListener> testRunListeners = testRunListenersFactory.createTestListeners(
