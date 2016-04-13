@@ -13,9 +13,12 @@
 package com.shazam.fork.summary;
 
 import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.ElementMap;
+import org.simpleframework.xml.Path;
 import org.simpleframework.xml.Root;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Root
@@ -24,7 +27,15 @@ class TestSuite {
 	@ElementList(inline=true, type=TestCase.class, required=false)
 	private List<TestCase> testCases;
 
-	public List<TestCase> getTestCases() {
-		return testCases;
-	}
+    @Path("./properties")
+    @ElementMap(required = false, entry = "property", key = "name", value = "value", attribute = true, inline = true)
+    private Map<String, String> properties;
+
+    public List<TestCase>  getTestCase() {
+        return testCases;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
 }

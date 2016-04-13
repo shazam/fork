@@ -30,6 +30,8 @@ public class Configuration {
     private final String testPackage;
     private final int testOutputTimeout;
     private final boolean fallbackToScreenshots;
+    private final int totalAllowedRetryQuota;
+    private final int retryPerTestCaseQuota;
     private final boolean isCoverageEnabled;
 
     public Configuration(@Nonnull File androidSdk,
@@ -42,6 +44,8 @@ public class Configuration {
                          @Nonnull String testPackage,
                          int testOutputTimeout,
                          boolean fallbackToScreenshots,
+                         int totalAllowedRetryQuota,
+                         int retryPerTestCaseQuota,
                          boolean isCoverageEnabled) {
         this.androidSdk = androidSdk;
         this.applicationApk = applicationApk;
@@ -53,6 +57,8 @@ public class Configuration {
         this.testPackage = testPackage;
         this.testOutputTimeout = testOutputTimeout;
         this.fallbackToScreenshots = fallbackToScreenshots;
+        this.totalAllowedRetryQuota = totalAllowedRetryQuota;
+        this.retryPerTestCaseQuota = retryPerTestCaseQuota;
         this.isCoverageEnabled = isCoverageEnabled;
     }
 
@@ -103,7 +109,16 @@ public class Configuration {
         return fallbackToScreenshots;
     }
 
+    public int getTotalAllowedRetryQuota() {
+        return totalAllowedRetryQuota;
+    }
+
+    public int getRetryPerTestCaseQuota() {
+        return retryPerTestCaseQuota;
+    }
+
     public boolean isCoverageEnabled() {
         return isCoverageEnabled;
     }
+
 }

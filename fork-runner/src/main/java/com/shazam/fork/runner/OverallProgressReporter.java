@@ -10,10 +10,16 @@
 
 package com.shazam.fork.runner;
 
+import com.shazam.fork.Configuration;
 import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.PoolTestCaseAccumulator;
+import com.shazam.fork.model.TestCaseEvent;
 
-import java.util.HashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.shazam.fork.utils.Utils.millisBetweenNanoTimes;
 import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
@@ -23,9 +29,20 @@ import static java.lang.System.nanoTime;
  * Reports for stats on all the pools.
  */
 public class OverallProgressReporter implements ProgressReporter {
+
     private long startOfTests;
     private long endOfTests;
-    private final Map<Pool, PoolProgressTracker> poolProgressTrackers = new HashMap<>();
+    private final Map<Pool, PoolProgressTracker> poolProgressTrackers;
+    private final RetryWatchdog retryWatchdog;
+    private final PoolTestCaseAccumulator failedTestCasesAccumulator;
+
+    public OverallProgressReporter(Configuration configuration,
+                                   Map<Pool, PoolProgressTracker> poolProgressTrackers,
+                                   PoolTestCaseAccumulator failedTestCasesAccumulator) {
+        this.retryWatchdog = new RetryWatchdog(configuration);
+        this.poolProgressTrackers = poolProgressTrackers;
+        this.failedTestCasesAccumulator = failedTestCasesAccumulator;
+    }
 
     @Override
     public void start() {
@@ -76,4 +93,59 @@ public class OverallProgressReporter implements ProgressReporter {
         return progress / size;
     }
 
+    public boolean requestRetry(Pool pool, TestCaseEvent testCase) {
+        boolean result = retryWatchdog.requestRetry(failedTestCasesAccumulator.getCount(testCase));
+        if (result && poolProgressTrackers.containsKey(pool)) {
+            poolProgressTrackers.get(pool).trackTestEnqueuedAgain();
+        }
+        return result;
+    }
+
+    @Override
+    public void recordFailedTestCase(Pool pool, TestCaseEvent testCase) {
+        failedTestCasesAccumulator.record(pool, testCase);
+    }
+
+    @Override
+    public int getTestFailuresCount(Pool pool, TestCaseEvent testCase) {
+        return failedTestCasesAccumulator.getCount(pool, testCase);
+    }
+
+    private class RetryWatchdog {
+        private final Logger logger = LoggerFactory.getLogger(RetryWatchdog.class);
+
+        private final int maxRetryPerTestCaseQuota;
+        private AtomicInteger totalAllowedRetryLeft;
+        private StringBuilder logBuilder = new StringBuilder();
+
+        public RetryWatchdog(Configuration configuration) {
+            totalAllowedRetryLeft = new AtomicInteger(configuration.getTotalAllowedRetryQuota());
+            maxRetryPerTestCaseQuota = configuration.getRetryPerTestCaseQuota();
+        }
+
+        public boolean requestRetry(int currentSingleTestCaseFailures) {
+            boolean totalAllowedRetryAvailable = totalAllowedRetryAvailable();
+            boolean singleTestAllowed = currentSingleTestCaseFailures <= maxRetryPerTestCaseQuota;
+            boolean result = totalAllowedRetryAvailable && singleTestAllowed;
+
+            log(currentSingleTestCaseFailures, singleTestAllowed, result);
+            return result;
+        }
+
+        private boolean totalAllowedRetryAvailable() {
+            return totalAllowedRetryLeft.get() > 0 && totalAllowedRetryLeft.getAndDecrement() >= 0;
+        }
+
+        private void log(int testCaseFailures, boolean singleTestAllowed, boolean result) {
+            if(logger.isDebugEnabled()) {
+                logBuilder.setLength(0); //clean up.
+                logBuilder.append("Retry requested ")
+                        .append(result ? " and allowed. " : " but not allowed. ")
+                        .append("Total retry left :").append(totalAllowedRetryLeft.get())
+                        .append(" and Single Test case retry left: ")
+                        .append(singleTestAllowed ? maxRetryPerTestCaseQuota - testCaseFailures : 0);
+                logger.debug(logBuilder.toString());
+            }
+        }
+    }
 }

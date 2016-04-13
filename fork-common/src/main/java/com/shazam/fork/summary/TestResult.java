@@ -14,17 +14,23 @@ package com.shazam.fork.summary;
 
 import com.shazam.fork.model.Device;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.Nonnull;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
 public class TestResult {
+    public static final String SUMMARY_KEY_TOTAL_FAILURE_COUNT = "totalFailureCount";
+
     private final Device device;
     private final float timeTaken;
     private final String testClass;
     private final String testMethod;
     private final String errorTrace;
     private final String failureTrace;
+    private final Map<String, String> testMetrics;
 
     public Device getDevice() {
         return device;
@@ -40,6 +46,16 @@ public class TestResult {
 
     public String getTestMethod() {
         return testMethod;
+    }
+
+    public int getTotalFailureCount() {
+        int result = 0;
+
+        if (testMetrics != null
+                && testMetrics.containsKey(SUMMARY_KEY_TOTAL_FAILURE_COUNT)) {
+            result = Integer.parseInt(testMetrics.get(SUMMARY_KEY_TOTAL_FAILURE_COUNT));
+        }
+        return result;
     }
 
     @Nonnull
@@ -71,6 +87,7 @@ public class TestResult {
         private String testMethod;
         private String errorTrace;
         private String failureTrace;
+        private Map<String, String> testMetrics = new HashMap<>();
 
         public static Builder aTestResult() {
             return new Builder();
@@ -110,6 +127,12 @@ public class TestResult {
             return this;
         }
 
+        public Builder withTestMetrics(Map<String, String> testMetrics) {
+            this.testMetrics.clear();
+            this.testMetrics.putAll(testMetrics);
+            return this;
+        }
+
         public TestResult build() {
             return new TestResult(this);
         }
@@ -123,5 +146,6 @@ public class TestResult {
         testMethod = builder.testMethod;
         errorTrace = builder.errorTrace;
         failureTrace = builder.failureTrace;
+        this.testMetrics = builder.testMetrics;
     }
 }

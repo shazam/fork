@@ -78,6 +78,14 @@ body {
   background-color: #99c999;
 }
 
+.birds-eye .test.warn {
+  background-color: #ffffcc;
+}
+
+.birds-eye .test.warn:hover {
+  background-color: #f2f28b;
+}
+
 .birds-eye .test.fail {
   background-color: #e9b9b9;
 }

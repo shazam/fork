@@ -11,6 +11,7 @@
 package com.shazam.fork.reporter.model;
 
 import com.shazam.fork.summary.ResultStatus;
+import com.shazam.fork.summary.TestResult;
 
 import javax.annotation.Nonnull;
 
@@ -42,8 +43,12 @@ public class TestInstance {
             return new Builder();
         }
 
-        public Builder withResultStatus(ResultStatus resultStatus) {
-            this.resultStatus = fromResultStatus(resultStatus);
+        public Builder withResultStatusFrom(TestResult resultStatus) {
+            Status status = fromResultStatus(resultStatus.getResultStatus());
+            if( status == PASS && resultStatus.getTotalFailureCount() > 0){
+                status = WARN;
+            }
+            this.resultStatus = status;
             return this;
         }
 

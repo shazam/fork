@@ -41,6 +41,7 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 		"ceiling_android.png",
         "ceiling_android-green.png",
         "ceiling_android-red.png",
+		"ceiling_android-yellow.png",
 		"device.png",
 		"icon-devices.png",
 		"icon-log.png",

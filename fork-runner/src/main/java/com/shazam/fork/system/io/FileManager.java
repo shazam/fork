@@ -37,14 +37,8 @@ public class FileManager {
         return path.toFile().listFiles();
     }
 
-    public File createFile(Pool pool, Device device, TestClass testClass, FileType fileType){
-        try {
-            Path directory = createDirectory(fileType, pool, device);
-            String filename = createFilenameForTestClass(testClass, fileType);
-            return createFile(directory, filename);
-        } catch (IOException e) {
-            throw new CouldNotCreateDirectoryException(e);
-        }
+    public File createFile(FileType fileType, Pool pool, Device device, TestCaseEvent testCaseEvent){
+        return createFile(fileType, pool, device, new TestIdentifier(testCaseEvent.getTestClass(), testCaseEvent.getTestMethod()));
     }
 
     public File createFile(FileType fileType, Pool pool, Device device, TestIdentifier testIdentifier, int sequenceNumber) {
@@ -102,10 +96,6 @@ public class FileManager {
 
     private File createFile(Path directory, String filename) {
         return new File(directory.toFile(), filename);
-    }
-
-    private String createFilenameForTestClass(TestClass testClass, FileType fileType) {
-        return testClass.getName() + "." + fileType.getSuffix();
     }
 
     private String createFilenameForTest(TestIdentifier testIdentifier, FileType fileType) {

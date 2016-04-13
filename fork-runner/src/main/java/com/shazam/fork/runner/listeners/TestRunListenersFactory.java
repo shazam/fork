@@ -13,12 +13,15 @@ package com.shazam.fork.runner.listeners;
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.google.gson.Gson;
 import com.shazam.fork.Configuration;
-import com.shazam.fork.model.*;
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.system.io.FileManager;
 
 import java.io.File;
 import java.util.List;
+import java.util.Queue;
 
 import static com.shazam.fork.model.Diagnostics.SCREENSHOTS;
 import static com.shazam.fork.model.Diagnostics.VIDEO;
@@ -38,27 +41,31 @@ public class TestRunListenersFactory {
         this.gson = gson;
     }
 
-    public List<ITestRunListener> createTestListeners(TestClass testClass,
+    public List<ITestRunListener> createTestListeners(TestCaseEvent testCase,
                                                       Device device,
                                                       Pool pool,
-                                                      ProgressReporter progressReporter) {
+                                                      ProgressReporter progressReporter,
+                                                      Queue<TestCaseEvent> testCaseEventQueue) {
         return asList(
                 new ProgressTestRunListener(pool, progressReporter),
-                getForkXmlTestRunListener(fileManager, configuration.getOutput(), pool, device, testClass),
+                getForkXmlTestRunListener(fileManager, configuration.getOutput(), pool, device, testCase, progressReporter),
                 new ConsoleLoggingTestRunListener(configuration.getTestPackage(), device.getSerial(),
                         device.getModelName(), progressReporter),
                 new LogCatTestRunListener(gson, fileManager, pool, device),
                 new SlowWarningTestRunListener(),
                 getScreenTraceTestRunListener(fileManager, pool, device),
-                getCoverageTestRunListener(configuration, device, fileManager, pool, testClass));
+                new RetryListener(pool, device, testCaseEventQueue, testCase, progressReporter, fileManager),
+                getCoverageTestRunListener(configuration, device, fileManager, pool, testCase));
     }
 
-    public static ForkXmlTestRunListener getForkXmlTestRunListener(FileManager fileManager,
+
+    private ForkXmlTestRunListener getForkXmlTestRunListener(FileManager fileManager,
                                                                    File output,
                                                                    Pool pool,
                                                                    Device device,
-                                                                   TestClass testClass) {
-        ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(fileManager, pool, device, testClass);
+                                                                   TestCaseEvent testCase,
+                                                                   ProgressReporter progressReporter) {
+        ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(fileManager, pool, device, testCase, progressReporter);
         xmlTestRunListener.setReportDir(output);
         return xmlTestRunListener;
     }
@@ -67,9 +74,9 @@ public class TestRunListenersFactory {
                                                         Device device,
                                                         FileManager fileManager,
                                                         Pool pool,
-                                                        TestClass testClass) {
+                                                        TestCaseEvent testCase) {
         if (configuration.isCoverageEnabled()) {
-            return new CoverageListener(device, fileManager, pool, testClass);
+            return new CoverageListener(device, fileManager, pool, testCase);
         }
         return new NoOpITestRunListener();
     }

@@ -35,6 +35,7 @@ class HtmlConverters {
 		htmlSummary.subtitle = summary.getSubtitle();
 		htmlSummary.pools = transform(summary.getPoolSummaries(), toHtmlPoolSummary());
 		htmlSummary.ignoredTests = summary.getIgnoredTests();
+		htmlSummary.failedTests = summary.getFailedTests();
         htmlSummary.overallStatus = new OutcomeAggregator().aggregate(summary) ? "pass" : "fail";
 		return htmlSummary;
 	}
@@ -67,7 +68,7 @@ class HtmlConverters {
 			@Nullable
 			public HtmlTestResult apply(@Nullable TestResult input) {
 				HtmlTestResult htmlTestResult = new HtmlTestResult();
-				htmlTestResult.status = input.getResultStatus().name().toLowerCase();
+				htmlTestResult.status = computeStatus(input);
 				htmlTestResult.prettyClassName = readableClassName(input.getTestClass());
 				htmlTestResult.prettyMethodName = readableTestMethodName(input.getTestMethod());
 				htmlTestResult.timeTaken = String.format("%.2f", input.getTimeTaken());
@@ -87,6 +88,15 @@ class HtmlConverters {
 				return htmlTestResult;
 			}
 		};
+	}
+
+	private static String computeStatus(@Nullable TestResult input) {
+		String result  = input.getResultStatus().name().toLowerCase();
+		if(input.getResultStatus() == ResultStatus.PASS
+				&& input.getTotalFailureCount() > 0){
+			result = "warn";
+		}
+		return result;
 	}
 
 	public static Function<LogCatMessage, HtmlLogCatMessage> toHtmlLogCatMessages() {

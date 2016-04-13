@@ -14,12 +14,12 @@ package com.shazam.fork.runner;
 
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
-import com.shazam.fork.model.TestClass;
+import com.shazam.fork.model.TestCaseEvent;
 
 import javax.annotation.Nullable;
 
 public class TestRunParameters {
-	private final TestClass test;
+	private final TestCaseEvent test;
 	private final String testPackage;
 	private final String testRunner;
 	private final boolean isCoverageEnabled;
@@ -27,7 +27,7 @@ public class TestRunParameters {
 	private final int testOutputTimeout;
 	private final IDevice deviceInterface;
 
-	public TestClass getTest() {
+	public TestCaseEvent getTest() {
 		return test;
 	}
 
@@ -57,7 +57,7 @@ public class TestRunParameters {
 	}
 
 	public static class Builder {
-		private TestClass test;
+		private TestCaseEvent test;
 		private String testPackage;
 		private String testRunner;
 		private boolean isCoverageEnabled;
@@ -69,7 +69,7 @@ public class TestRunParameters {
 			return new Builder();
 		}
 
-		public Builder withTest(TestClass test) {
+		public Builder withTest(TestCaseEvent test) {
 			this.test = test;
 			return this;
 		}

@@ -13,7 +13,9 @@
 package com.shazam.fork.runner;
 
 import com.android.ddmlib.IDevice;
-import com.shazam.fork.model.*;
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.system.adb.Installer;
 
 import org.slf4j.Logger;
@@ -32,7 +34,7 @@ public class DeviceTestRunner implements Runnable {
     private final Installer installer;
     private final Pool pool;
     private final Device device;
-    private final Queue<TestClass> queueOfTestsInPool;
+    private final Queue<TestCaseEvent> queueOfTestsInPool;
     private final CountDownLatch deviceCountDownLatch;
     private final ProgressReporter progressReporter;
     private final TestRunFactory testRunFactory;
@@ -40,21 +42,21 @@ public class DeviceTestRunner implements Runnable {
     public DeviceTestRunner(Installer installer,
                             Pool pool,
                             Device device,
-                            Queue<TestClass> queueOfTestsInPool,
+                            Queue<TestCaseEvent> queueOfTestsInPool,
                             CountDownLatch deviceCountDownLatch,
                             ProgressReporter progressReporter,
                             TestRunFactory testRunFactory) {
         this.installer = installer;
-		this.pool = pool;
-		this.device = device;
+        this.pool = pool;
+        this.device = device;
         this.queueOfTestsInPool = queueOfTestsInPool;
         this.deviceCountDownLatch = deviceCountDownLatch;
         this.progressReporter = progressReporter;
         this.testRunFactory = testRunFactory;
     }
 
-	@Override
-	public void run() {
+    @Override
+    public void run() {
         IDevice deviceInterface = device.getDeviceInterface();
         try {
             installer.prepareInstallation(deviceInterface);
@@ -63,14 +65,18 @@ public class DeviceTestRunner implements Runnable {
             createRemoteDirectory(deviceInterface);
             createCoverageDirectory(deviceInterface);
 
-            TestClass testClass;
-            while ((testClass = queueOfTestsInPool.poll()) != null) {
-                TestRun testRun = testRunFactory.createTestRun(testClass, device, pool, progressReporter);
+            TestCaseEvent testCaseEvent;
+            while ((testCaseEvent = queueOfTestsInPool.poll()) != null) {
+                TestRun testRun = testRunFactory.createTestRun(testCaseEvent,
+                        device,
+                        pool,
+                        progressReporter,
+                        queueOfTestsInPool);
                 testRun.execute();
             }
-		} finally {
+        } finally {
             logger.info("Device {} from pool {} finished", device.getSerial(), pool.getName());
-			deviceCountDownLatch.countDown();
-		}
-	}
+            deviceCountDownLatch.countDown();
+        }
+    }
 }

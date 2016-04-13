@@ -63,6 +63,14 @@ public class ForkCli {
 
         @Parameter(names = { "-h", "--help" }, description = "Command help", help = true, hidden = true)
         public boolean help;
+
+        @Parameter(names = { "--total-allowed-retry-quota" }, description = "Amount of re-executions of failing tests allowed.", converter = IntegerConverter.class)
+        public int totalAllowedRetryQuota = 0;
+
+       @Parameter(names = { "--retry-per-test-case-quota" }, description = "Max number of time each testCase is attempted again " +
+                "before declaring it as a failure.", converter = IntegerConverter.class)
+        public int retryPerTestCaseQuota = 1;
+
     }
 
     /* JCommander deems it necessary that this class be public. Lame. */
@@ -124,6 +132,14 @@ public class ForkCli {
 
         if (parsedArgs.testOutputTimeout > -1) {
             forkBuilder.withTestOutputTimeout(parsedArgs.testOutputTimeout);
+        }
+
+        if (parsedArgs.totalAllowedRetryQuota > 0) {
+            forkBuilder.withTotalAllowedRetryQuota(parsedArgs.totalAllowedRetryQuota);
+        }
+
+        if(parsedArgs.retryPerTestCaseQuota > -1){
+            forkBuilder.withRetryPerTestCaseQuota(parsedArgs.retryPerTestCaseQuota);
         }
     }
 }

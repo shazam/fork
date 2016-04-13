@@ -4,6 +4,7 @@ import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.model.TestClass;
 import com.shazam.fork.system.io.FileManager;
 import com.shazam.fork.system.io.RemoteFileManager;
@@ -22,13 +23,13 @@ public class CoverageListener implements ITestRunListener {
     private final FileManager fileManager;
     private final Pool pool;
     private final Logger logger = LoggerFactory.getLogger(CoverageListener.class);
-    private final TestClass testClass;
+    private final TestCaseEvent testCase;
 
-    public CoverageListener(Device device, FileManager fileManager, Pool pool, TestClass testClass) {
+    public CoverageListener(Device device, FileManager fileManager, Pool pool, TestCaseEvent testCase) {
         this.device = device;
         this.fileManager = fileManager;
         this.pool = pool;
-        this.testClass = testClass;
+        this.testCase = testCase;
     }
 
     @Override
@@ -65,8 +66,8 @@ public class CoverageListener implements ITestRunListener {
 
     @Override
     public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
-        final String remoteFile = RemoteFileManager.getCoverageFileName(testClass.getName());
-        final File file = fileManager.createFile(pool, device, testClass, COVERAGE);
+        final String remoteFile = RemoteFileManager.getCoverageFileName(testCase.getTestClass());
+        final File file = fileManager.createFile(COVERAGE, pool, device, testCase);
         try {
             device.getDeviceInterface().pullFile(remoteFile, file.getAbsolutePath());
         } catch (Exception e) {

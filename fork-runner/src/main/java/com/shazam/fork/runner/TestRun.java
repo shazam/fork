@@ -12,9 +12,13 @@
  */
 package com.shazam.fork.runner;
 
-import com.android.ddmlib.*;
-import com.android.ddmlib.testrunner.*;
-import com.shazam.fork.model.TestClass;
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.TimeoutException;
+import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
+import com.android.ddmlib.testrunner.ITestRunListener;
+import com.android.ddmlib.testrunner.RemoteAndroidTestRunner;
+import com.shazam.fork.model.TestCaseEvent;
 
 import com.shazam.fork.system.io.RemoteFileManager;
 import org.slf4j.Logger;
@@ -45,14 +49,15 @@ class TestRun {
 				testRunParameters.getTestRunner(),
 				testRunParameters.getDeviceInterface());
 
-		TestClass test = testRunParameters.getTest();
-        String testClassName = test.getName();
+		TestCaseEvent test = testRunParameters.getTest();
+		String testClassName = test.getTestClass();
+		String testMethodName = test.getTestMethod();
 		IRemoteAndroidTestRunner.TestSize testSize = testRunParameters.getTestSize();
 		if (testSize != null) {
 			runner.setTestSize(testSize);
 		}
 		runner.setRunName(poolName);
-		runner.setClassName(testClassName);
+		runner.setMethodName(testClassName, testMethodName);
 		runner.setMaxtimeToOutputResponse(testRunParameters.getTestOutputTimeout());
 
         if (testRunParameters.isCoverageEnabled()) {

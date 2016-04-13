@@ -10,51 +10,33 @@
 
 package com.shazam.fork.runner;
 
-import com.shazam.fork.Configuration;
 import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.TestClass;
-import com.shazam.fork.system.io.FileManager;
+import com.shazam.fork.model.TestCaseEvent;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 public class PoolTestRunnerFactory {
-    private final Configuration configuration;
-    private final FileManager fileManager;
     private final DeviceTestRunnerFactory deviceTestRunnerFactory;
 
-    public PoolTestRunnerFactory(Configuration configuration,
-                                 FileManager fileManager,
-                                 DeviceTestRunnerFactory deviceTestRunnerFactory) {
-        this.configuration = configuration;
-        this.fileManager = fileManager;
+    public PoolTestRunnerFactory(DeviceTestRunnerFactory deviceTestRunnerFactory) {
         this.deviceTestRunnerFactory = deviceTestRunnerFactory;
     }
 
     public PoolTestRunner createPoolTestRunner(Pool pool,
-                                               List<TestClass> testClasses,
+                                               List<TestCaseEvent> testCases,
                                                CountDownLatch poolCountDownLatch,
                                                ProgressReporter progressReporter) {
 
-        int totalTests = countTests(testClasses);
-        progressReporter.addPoolProgress(pool, new PoolProgressTracker(totalTests));
+        int totalTests = testCases.size();
+        progressReporter.addPoolProgress(pool, new PoolProgressTrackerImpl(totalTests));
 
         return new PoolTestRunner(
-                configuration,
-                fileManager,
                 deviceTestRunnerFactory,
                 pool,
-                new LinkedList<>(testClasses),
+                new LinkedList<>(testCases),
                 poolCountDownLatch,
                 progressReporter);
-    }
-
-    private int countTests(List<TestClass> testClasses) {
-        int sum = 0;
-        for (TestClass testClass : testClasses) {
-            sum += testClass.getMethods().size();
-        }
-        return sum;
     }
 }
