@@ -53,7 +53,7 @@ public class PoolTestRunnerFactory {
     private int countTests(List<TestClass> testClasses) {
         int sum = 0;
         for (TestClass testClass : testClasses) {
-            sum += testClass.getUnignoredMethods().size();
+            sum += testClass.getMethods().size();
         }
         return sum;
     }
