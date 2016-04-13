@@ -10,7 +10,12 @@
 
 package com.shazam.fork.reporter.model;
 
-public class Build {
+import javax.annotation.Nonnull;
+
+import static java.lang.Integer.compare;
+import static java.lang.Integer.parseInt;
+
+public class Build implements Comparable<Build> {
     private final String buildId;
     private final String link;
 
@@ -25,6 +30,20 @@ public class Build {
     private Build(Builder builder) {
         this.buildId = builder.buildId;
         this.link = builder.link;
+    }
+
+    @Override
+    public int compareTo(@Nonnull Build other) {
+        if (this == other) {
+            return 0;
+        }
+
+        if (tryParseInt(getBuildId())
+                && tryParseInt(other.getBuildId())) {
+            return compare(parseInt(getBuildId()), parseInt(other.getBuildId()));
+        } else {
+            return getBuildId().compareTo(other.getBuildId());
+        }
     }
 
     public static class Builder {
@@ -47,6 +66,16 @@ public class Build {
 
         public Build build() {
             return new Build(this);
+        }
+    }
+
+    private boolean tryParseInt(String value) {
+        try {
+            //noinspection ResultOfMethodCallIgnored
+            parseInt(value);
+            return true;
+        } catch (NumberFormatException | NullPointerException e) {
+            return false;
         }
     }
 }

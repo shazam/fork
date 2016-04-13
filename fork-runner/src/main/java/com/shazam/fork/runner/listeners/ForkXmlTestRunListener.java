@@ -12,27 +12,71 @@
  */
 package com.shazam.fork.runner.listeners;
 
+import com.android.ddmlib.testrunner.TestIdentifier;
 import com.android.ddmlib.testrunner.XmlTestRunListener;
-import com.shazam.fork.model.*;
+import com.google.common.collect.ImmutableMap;
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestCaseEvent;
+import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.system.io.FileManager;
+import com.shazam.fork.system.io.FileType;
 
 import java.io.File;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
+import static com.shazam.fork.summary.TestResult.SUMMARY_KEY_TOTAL_FAILURE_COUNT;
 
 public class ForkXmlTestRunListener extends XmlTestRunListener {
+
     private final FileManager fileManager;
     private final Pool pool;
     private final Device device;
-    private final TestClass testClass;
+    private final TestCaseEvent testCase;
 
-    public ForkXmlTestRunListener(FileManager fileManager, Pool pool, Device device, TestClass testClass) {
+    @Nonnull
+    private
+    ProgressReporter progressReporter;
+    TestIdentifier test;
+
+    public ForkXmlTestRunListener(FileManager fileManager,
+                                  Pool pool,
+                                  Device device,
+                                  TestCaseEvent testCase,
+                                  @Nonnull ProgressReporter progressReporter) {
         this.fileManager = fileManager;
         this.pool = pool;
         this.device = device;
-        this.testClass = testClass;
+        this.testCase = testCase;
+        this.progressReporter = progressReporter;
     }
 
     @Override
     protected File getResultFile(File reportDir) {
-        return fileManager.createFileForTest(pool, device, testClass);
+        return fileManager.createFile(FileType.TEST, pool, device, testCase);
+    }
+
+    @Override
+    public void testStarted(TestIdentifier test) {
+        this.test = test;
+        super.testStarted(test);
+    }
+
+    @Override
+    protected Map<String, String> getPropertiesAttributes() {
+
+        ImmutableMap.Builder<String, String> mapBuilder = ImmutableMap.<String, String>builder()
+                .putAll(super.getPropertiesAttributes());
+        if (test != null) {
+            int testFailuresCount = progressReporter.getTestFailuresCount(pool, new TestCaseEvent(test.getTestName(), test.getClassName(), false));
+            if (testFailuresCount > 0) {
+                mapBuilder
+                        .put(SUMMARY_KEY_TOTAL_FAILURE_COUNT, Integer.toString(testFailuresCount))
+                        .build();
+            }
+        }
+        return mapBuilder.build();
     }
 }

@@ -12,45 +12,35 @@
  */
 package com.shazam.fork.runner;
 
-import com.android.ddmlib.testrunner.TestIdentifier;
-import com.shazam.fork.Configuration;
-import com.shazam.fork.model.*;
-import com.shazam.fork.runner.listeners.ForkXmlTestRunListener;
-import com.shazam.fork.system.io.FileManager;
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestCaseEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
 import static com.shazam.fork.Utils.namedExecutor;
-import static com.shazam.fork.model.Device.Builder.aDevice;
-import static com.shazam.fork.runner.listeners.TestRunListenersFactory.getForkXmlTestRunListener;
 
 public class PoolTestRunner implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(PoolTestRunner.class);
     public static final String DROPPED_BY = "DroppedBy-";
 
-    private final Configuration configuration;
-    private final FileManager fileManager;
     private final Pool pool;
-    private final Queue<TestClass> testClasses;
+    private final Queue<TestCaseEvent> testCases;
     private final CountDownLatch poolCountDownLatch;
     private final DeviceTestRunnerFactory deviceTestRunnerFactory;
     private final ProgressReporter progressReporter;
 
-    public PoolTestRunner(Configuration configuration,
-                          FileManager fileManager,
-                          DeviceTestRunnerFactory deviceTestRunnerFactory, Pool pool,
-                          Queue<TestClass> testClasses,
+    public PoolTestRunner(DeviceTestRunnerFactory deviceTestRunnerFactory, Pool pool,
+                          Queue<TestCaseEvent> testCases,
                           CountDownLatch poolCountDownLatch,
                           ProgressReporter progressReporter) {
-        this.configuration = configuration;
-        this.fileManager = fileManager;
         this.pool = pool;
-        this.testClasses = testClasses;
+        this.testCases = testCases;
         this.poolCountDownLatch = poolCountDownLatch;
         this.deviceTestRunnerFactory = deviceTestRunnerFactory;
         this.progressReporter = progressReporter;
@@ -65,7 +55,7 @@ public class PoolTestRunner implements Runnable {
             CountDownLatch deviceCountDownLatch = new CountDownLatch(devicesInPool);
             logger.info("Pool {} started", poolName);
             for (Device device : pool.getDevices()) {
-                Runnable deviceTestRunner = deviceTestRunnerFactory.createDeviceTestRunner(pool, testClasses,
+                Runnable deviceTestRunner = deviceTestRunnerFactory.createDeviceTestRunner(pool, testCases,
                         deviceCountDownLatch, device, progressReporter);
                 concurrentDeviceExecutor.execute(deviceTestRunner);
             }
@@ -73,43 +63,12 @@ public class PoolTestRunner implements Runnable {
         } catch (InterruptedException e) {
             logger.warn("Pool {} was interrupted while running", poolName);
         } finally {
-            failAnyDroppedClasses(pool, testClasses);
             if (concurrentDeviceExecutor != null) {
                 concurrentDeviceExecutor.shutdown();
             }
             logger.info("Pool {} finished", poolName);
             poolCountDownLatch.countDown();
             logger.info("Pools remaining: {}", poolCountDownLatch.getCount());
-        }
-    }
-
-    /**
-     * Only generate XML files for dropped classes the console listener and logcat listeners aren't relevant to
-     * dropped tests.
-     * <p/>
-     * In particular, not triggering the console listener will probably make the flaky report better.
-     */
-    private void failAnyDroppedClasses(Pool pool, Queue<TestClass> testClassQueue) {
-        HashMap<String, String> emptyHash = new HashMap<>();
-        TestClass nextTest;
-        while ((nextTest = testClassQueue.poll()) != null) {
-            String className = nextTest.getName();
-            String poolName = pool.getName();
-            Device failedTestsDevice = aDevice().withSerial(DROPPED_BY + poolName).build();
-            ForkXmlTestRunListener xmlGenerator = getForkXmlTestRunListener(fileManager, configuration.getOutput(),
-                    pool, failedTestsDevice, nextTest);
-
-            Collection<TestMethod> methods = nextTest.getUnignoredMethods();
-            xmlGenerator.testRunStarted(poolName, methods.size());
-            for (TestMethod method : methods) {
-                String methodName = method.getName();
-                TestIdentifier identifier = new TestIdentifier(className, methodName);
-                xmlGenerator.testStarted(identifier);
-                xmlGenerator.testFailed(identifier, poolName + " DROPPED");
-                xmlGenerator.testEnded(identifier, emptyHash);
-            }
-            xmlGenerator.testRunFailed("DROPPED BY " + poolName);
-            xmlGenerator.testRunEnded(0, emptyHash);
         }
     }
 }

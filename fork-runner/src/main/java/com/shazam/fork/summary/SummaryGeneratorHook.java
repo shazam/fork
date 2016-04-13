@@ -13,7 +13,7 @@
 package com.shazam.fork.summary;
 
 import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.TestClass;
+import com.shazam.fork.model.TestCaseEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ public class SummaryGeneratorHook extends Thread {
     private final Summarizer summarizer;
 
     private Collection<Pool> pools;
-    private List<TestClass> testClasses;
+    private List<TestCaseEvent> testCases;
 
     public SummaryGeneratorHook(Summarizer summarizer) {
         this.summarizer = summarizer;
@@ -44,11 +44,11 @@ public class SummaryGeneratorHook extends Thread {
      * shutdown hook.
      *
      * @param pools the pools to consider for the summary
-     * @param testClasses the test classes for the summary
+     * @param testCases the test cases for the summary
      */
-    public void registerHook(Collection<Pool> pools, List<TestClass> testClasses) {
+    public void registerHook(Collection<Pool> pools, List<TestCaseEvent> testCases) {
         this.pools = pools;
-        this.testClasses = testClasses;
+        this.testCases = testCases;
         Runtime.getRuntime().addShutdownHook(this);
     }
 
@@ -60,7 +60,7 @@ public class SummaryGeneratorHook extends Thread {
      */
     public boolean defineOutcome() {
         if (hasNotRunYet.compareAndSet(true, false)) {
-            return summarizer.summarize(pools, testClasses);
+            return summarizer.summarize(pools, testCases);
         }
         return false;
     }

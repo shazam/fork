@@ -11,6 +11,9 @@ package com.shazam.fork;
 
 import com.shazam.fork.model.InstrumentationInfo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.util.regex.Pattern;
 
@@ -22,6 +25,8 @@ import static com.shazam.fork.Utils.cleanFile;
 import static com.shazam.fork.system.axmlparser.InstumentationInfoFactory.parseFromFile;
 
 public class ForkBuilder {
+    private static final Logger logger = LoggerFactory.getLogger(ForkBuilder.class);
+
     private File androidSdk = cleanFile(Defaults.ANDROID_SDK);
     private File applicationApk;
     private File instrumentationApk;
@@ -30,6 +35,8 @@ public class ForkBuilder {
     private String testPackage; // Will default to test APK's package name as soon as it's known
     private int testOutputTimeout = Defaults.TEST_OUTPUT_TIMEOUT_MILLIS;
     private boolean fallbackToScreenshots = true;
+    private int totalAllowedRetryQuota = 0;
+    private int retryPerTestCaseQuota = 1;
 
     public static ForkBuilder aFork() {
         return new ForkBuilder();
@@ -116,6 +123,27 @@ public class ForkBuilder {
         return this;
     }
 
+    /**
+     * Allow to re-run tests.
+     *
+     * @param totalAllowedRetryQuota Threshold of total failures below whom the failed tests can be executed again.
+     * @return this builder
+     */
+    public ForkBuilder withTotalAllowedRetryQuota(int totalAllowedRetryQuota) {
+        this.totalAllowedRetryQuota = totalAllowedRetryQuota;
+        return this;
+    }
+
+    /**
+     * Max number of time each testCase is attempted again.
+     * @param retryPerTestCaseQuota max number of attempts when rerunning tests.
+     * @return this builder.
+     */
+    public ForkBuilder withRetryPerTestCaseQuota(int retryPerTestCaseQuota) {
+        this.retryPerTestCaseQuota = retryPerTestCaseQuota;
+        return this;
+    }
+
     public Fork build() {
         checkNotNull(androidSdk, "SDK is required.");
         checkArgument(androidSdk.exists(), "SDK directory does not exist.");
@@ -125,6 +153,9 @@ public class ForkBuilder {
         checkArgument(instrumentationApk.exists(), "Instrumentation APK file does not exist.");
         checkNotNull(output, "Output path is required.");
         checkArgument(testOutputTimeout >= 0, "Timeout must be non-negative.");
+        checkArgument(totalAllowedRetryQuota >= 0, "Total allowed retry quota should not be negative.");
+        checkArgument(retryPerTestCaseQuota >= 0, "Retry per test case quota should not be negative.");
+        logArgumentsBadInteractions();
 
         InstrumentationInfo instrumentationInfo = parseFromFile(instrumentationApk);
         String testPackage = configuredOrInstrumentationPackage(instrumentationInfo.getInstrumentationPackage());
@@ -138,9 +169,18 @@ public class ForkBuilder {
                 compilePatternFor(testPackage),
                 testPackage,
                 testOutputTimeout,
-                fallbackToScreenshots
-        );
+                fallbackToScreenshots,
+                totalAllowedRetryQuota,
+                retryPerTestCaseQuota);
         return new Fork(configuration);
+    }
+
+    private void logArgumentsBadInteractions() {
+        if(totalAllowedRetryQuota > 0 && totalAllowedRetryQuota < retryPerTestCaseQuota){
+            logger.warn("Total allowed retry quota ["+totalAllowedRetryQuota+"] " +
+                    "is smaller than Retry per test case quota ["+retryPerTestCaseQuota+"]. " +
+                    "This is suspicious as the fist mentioned parameter is an overall cap.");
+        }
     }
 
     private String configuredOrInstrumentationPackage(String instrumentationPackage) {

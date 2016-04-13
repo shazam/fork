@@ -52,6 +52,16 @@
             {{/ignoredTests}}
         </ul>
 
+        Failed tests:
+        <ul>
+            {{#failedTests}}
+            <li>{{.}}</li>
+            {{/failedTests}}
+            {{^failedTests}}
+            <li>None.</li>
+            {{/failedTests}}
+        </ul>
+
         <script type="text/javascript">
             $('.test a').popover({
                 placement: 'top',

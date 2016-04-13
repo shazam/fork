@@ -10,29 +10,14 @@
 
 package com.shazam.fork.runner;
 
-public class PoolProgressTracker {
+public interface PoolProgressTracker {
+    void completedTest();
 
-    private final int totalTests;
-    private int failedTests;
-    private int completedTests;
+    void failedTest();
 
-    public PoolProgressTracker(int totalTests) {
-        this.totalTests = totalTests;
-    }
+    void trackTestEnqueuedAgain();
 
-    public void completedTest() {
-        completedTests++;
-    }
+    float getProgress();
 
-    public void failedTest() {
-        failedTests++;
-    }
-
-    public float getProgress() {
-        return (float) completedTests / (float) totalTests;
-    }
-
-    public int getNumberOfFailedTests() {
-        return failedTests;
-    }
+    int getNumberOfFailedTests();
 }

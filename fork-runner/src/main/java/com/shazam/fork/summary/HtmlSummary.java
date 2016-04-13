@@ -24,4 +24,5 @@ public class HtmlSummary {
 	public String subtitle;
 	public ArrayList<String> ignoredTests;
     public String overallStatus;
+	public ArrayList<String> failedTests;
 }

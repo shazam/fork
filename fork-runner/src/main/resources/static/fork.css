@@ -16,10 +16,16 @@ th.message {
     display: none;
 }
 
-pre.test.pass {
+.diagnostic.warn {
     display: none;
 }
 
+pre.test.pass {
+    display: none;
+}
+pre.test.warn {
+    background: #FFFFCC;
+}
 pre.test.fail {
     background: #FFDDDC;
 }
