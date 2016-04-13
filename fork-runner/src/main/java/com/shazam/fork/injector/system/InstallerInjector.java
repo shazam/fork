@@ -27,6 +27,6 @@ public class InstallerInjector {
         String instrumentationPackage = info.getInstrumentationPackage();
 
         return new Installer(applicationPackage, instrumentationPackage, configuration.getApplicationApk(),
-                configuration.getInstrumentationApk(), configuration.autoGrantRuntimePermissions() );
+                configuration.getInstrumentationApk(), configuration.autoGrantRuntimePermissions());
     }
 }
