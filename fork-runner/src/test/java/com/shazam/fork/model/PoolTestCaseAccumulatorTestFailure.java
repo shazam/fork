@@ -7,7 +7,7 @@ import static com.shazam.fork.model.Device.Builder.aDevice;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class DeviceTestCaseAccumulatorTest {
+public class PoolTestCaseAccumulatorTestFailure {
 
     private final Device A_DEVICE = aDevice()
             .withSerial("a_device")
@@ -29,11 +29,11 @@ public class DeviceTestCaseAccumulatorTest {
     private final TestCaseEvent A_TEST_CASE = new TestCaseEvent("a_method", "a_class", false);
     private final TestCaseEvent ANOTHER_TEST_CASE = new TestCaseEvent("another_method", "a_class", false);
 
-    DeviceTestCaseAccumulator subject;
+    PoolTestCaseFailureAccumulator subject;
 
     @Before
     public void setUp() throws Exception {
-        subject = new DeviceTestCaseAccumulator();
+        subject = new PoolTestCaseFailureAccumulator();
     }
 
     @Test

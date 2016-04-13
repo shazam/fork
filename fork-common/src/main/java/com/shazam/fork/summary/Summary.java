@@ -93,6 +93,6 @@ public class Summary {
         title = builder.title;
         subtitle = builder.subtitle;
         ignoredTests = builder.ignoredTests;
-        this.failedTests = builder.failedTests;
+        failedTests = builder.failedTests;
     }
 }

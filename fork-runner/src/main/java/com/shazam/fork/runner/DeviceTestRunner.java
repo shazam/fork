@@ -69,8 +69,7 @@ public class DeviceTestRunner implements Runnable {
                         device,
                         pool,
                         progressReporter,
-                        queueOfTestsInPool,
-                        testCaseEvent);
+                        queueOfTestsInPool);
                 testRun.execute();
             }
         } finally {

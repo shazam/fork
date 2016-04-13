@@ -45,8 +45,7 @@ public class TestRunListenersFactory {
                                                       Device device,
                                                       Pool pool,
                                                       ProgressReporter progressReporter,
-                                                      Queue<TestCaseEvent> testCaseEventQueue,
-                                                      TestCaseEvent currentTestCaseEvent) {
+                                                      Queue<TestCaseEvent> testCaseEventQueue) {
         return asList(
                 new ProgressTestRunListener(pool, progressReporter),
                 getForkXmlTestRunListener(fileManager, configuration.getOutput(), pool, device, testCase, progressReporter),
@@ -55,10 +54,11 @@ public class TestRunListenersFactory {
                 new LogCatTestRunListener(gson, fileManager, pool, device),
                 new SlowWarningTestRunListener(),
                 getScreenTraceTestRunListener(fileManager, pool, device),
-                new RetryListener(pool, device, testCaseEventQueue, currentTestCaseEvent, progressReporter, fileManager));
+                new RetryListener(pool, device, testCaseEventQueue, testCase, progressReporter, fileManager));
     }
 
-    public static ForkXmlTestRunListener getForkXmlTestRunListener(FileManager fileManager,
+
+    private ForkXmlTestRunListener getForkXmlTestRunListener(FileManager fileManager,
                                                                    File output,
                                                                    Pool pool,
                                                                    Device device,

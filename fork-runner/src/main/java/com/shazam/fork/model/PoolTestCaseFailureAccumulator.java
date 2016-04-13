@@ -10,35 +10,12 @@ import static com.google.common.collect.FluentIterable.from;
 /**
  * Class that keeps track of the number of times each testCase is executed for device.
  */
-public class DeviceTestCaseAccumulator {
+public class PoolTestCaseFailureAccumulator implements PoolTestCaseAccumulator {
 
     private SetMultimap<Pool, TestCaseEventCounter> map = HashMultimap.<Pool, TestCaseEventCounter>create();
 
+    @Override
     public void record(Pool pool, TestCaseEvent testCaseEvent) {
-        recordPerPool(pool, testCaseEvent);
-    }
-
-    public int getCount(Pool pool, TestCaseEvent testCaseEvent) {
-        if (map.containsKey(pool)) {
-            return from(map.get(pool))
-                    .firstMatch(isSameTestCase(testCaseEvent)).or(TestCaseEventCounter.EMPTY)
-                    .getCount();
-        } else {
-            return 0;
-        }
-    }
-
-    public int getCount(TestCaseEvent testCaseEvent) {
-        int result = 0;
-        ImmutableList<TestCaseEventCounter> counters = from(map.values())
-                .filter(isSameTestCase(testCaseEvent)).toList();
-        for (TestCaseEventCounter counter : counters) {
-            result += counter.getCount();
-        }
-        return result;
-    }
-
-    private void recordPerPool(Pool pool, TestCaseEvent testCaseEvent) {
         if (!map.containsKey(pool)) {
             map.put(pool, createNew(testCaseEvent));
         }
@@ -54,6 +31,28 @@ public class DeviceTestCaseAccumulator {
         }
     }
 
+    @Override
+    public int getCount(Pool pool, TestCaseEvent testCaseEvent) {
+        if (map.containsKey(pool)) {
+            return from(map.get(pool))
+                    .firstMatch(isSameTestCase(testCaseEvent)).or(TestCaseEventCounter.EMPTY)
+                    .getCount();
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public int getCount(TestCaseEvent testCaseEvent) {
+        int result = 0;
+        ImmutableList<TestCaseEventCounter> counters = from(map.values())
+                .filter(isSameTestCase(testCaseEvent)).toList();
+        for (TestCaseEventCounter counter : counters) {
+            result += counter.getCount();
+        }
+        return result;
+    }
+
     private static TestCaseEventCounter createNew(final TestCaseEvent testCaseEvent) {
         return new TestCaseEventCounter(testCaseEvent, 0);
     }
@@ -62,8 +61,8 @@ public class DeviceTestCaseAccumulator {
         return new Predicate<TestCaseEventCounter>() {
             @Override
             public boolean apply(TestCaseEventCounter input) {
-                return input.getType() != null
-                        && testCaseEvent.equals(input.getType());
+                return input.getTestCaseEvent() != null
+                        && testCaseEvent.equals(input.getTestCaseEvent());
             }
         };
     }

@@ -12,13 +12,11 @@ package com.shazam.fork.injector.runner;
 
 import com.shazam.fork.runner.PoolTestRunnerFactory;
 
-import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 import static com.shazam.fork.injector.runner.DeviceTestRunnerFactoryInjector.deviceTestRunnerFactory;
-import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 
 public class PoolTestRunnerFactoryInjector {
 
     public static PoolTestRunnerFactory poolTestRunnerFactory() {
-        return new PoolTestRunnerFactory(configuration(), fileManager(), deviceTestRunnerFactory());
+        return new PoolTestRunnerFactory(deviceTestRunnerFactory());
     }
 }

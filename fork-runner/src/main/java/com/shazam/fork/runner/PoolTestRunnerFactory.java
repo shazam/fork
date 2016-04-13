@@ -10,25 +10,17 @@
 
 package com.shazam.fork.runner;
 
-import com.shazam.fork.Configuration;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
-import com.shazam.fork.system.io.FileManager;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 public class PoolTestRunnerFactory {
-    private final Configuration configuration;
-    private final FileManager fileManager;
     private final DeviceTestRunnerFactory deviceTestRunnerFactory;
 
-    public PoolTestRunnerFactory(Configuration configuration,
-                                 FileManager fileManager,
-                                 DeviceTestRunnerFactory deviceTestRunnerFactory) {
-        this.configuration = configuration;
-        this.fileManager = fileManager;
+    public PoolTestRunnerFactory(DeviceTestRunnerFactory deviceTestRunnerFactory) {
         this.deviceTestRunnerFactory = deviceTestRunnerFactory;
     }
 
@@ -38,11 +30,9 @@ public class PoolTestRunnerFactory {
                                                ProgressReporter progressReporter) {
 
         int totalTests = testCases.size();
-        progressReporter.addPoolProgress(pool, new PoolProgressTracker(totalTests));
+        progressReporter.addPoolProgress(pool, new PoolProgressTrackerImpl(totalTests));
 
         return new PoolTestRunner(
-                configuration,
-                fileManager,
                 deviceTestRunnerFactory,
                 pool,
                 new LinkedList<>(testCases),

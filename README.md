@@ -30,7 +30,7 @@ First, you need to add a build-script dependency:
 ```
 buildscript {
     dependencies {
-        classpath 'com.shazam.fork:fork-gradle-plugin:1.2.0-SNAPSHOT'
+        classpath 'com.shazam.fork:fork-gradle-plugin:1.4.0-SNAPSHOT'
     }
 }
 ```
@@ -79,6 +79,9 @@ With the below options.              The APK and test APK parameters are mandato
     --test-timeout                   The maximum amount of time during which the tests are allowed to not output any response, in milliseconds
     --fail-on-failure                Non-zero exit code on failure. Defaults to false.
     --fallback-to-screenshots        If a device does not support videos, define if you'd like animated GIFs (experimental). Defaults to true.
+    --total-allowed-retry-quota      Total amount of allowed retries. If a test case fails and this quota hasn't been exhausted yet,
+                                     the test case is scheduled to be executed again in the same device pool. Default to 0;
+    --retry-per-test-case-quota      Amount of times a single test can be re-executed before declaring it a failure. Default to 1.
     --auto-grant-runtime-permissions Grants all runtime permissions in Android Marshmallow+. Default is true.
 ```
 
@@ -144,7 +147,7 @@ To be able to use the Flakiness Reporter add these dependencies:
 ```
 buildscript {
     dependencies {
-        classpath "com.shazam.fork:fork-reporter-jenkins-gradle-plugin:1.2.0-SNAPSHOT"
+        classpath "com.shazam.fork:fork-reporter-jenkins-gradle-plugin:1.3.0-SNAPSHOT"
     }
     repositories {
         maven { url "http://repo.jenkins-ci.org/public/" }

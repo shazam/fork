@@ -13,11 +13,15 @@ package com.shazam.fork.injector.runner;
 import com.shazam.fork.runner.OverallProgressReporter;
 import com.shazam.fork.runner.ProgressReporter;
 
-import static com.shazam.fork.injector.RetryWatchdogInjector.retryWatchdog;
+import static com.shazam.fork.injector.ConfigurationInjector.configuration;
+import static com.shazam.fork.injector.runner.PoolProgressTrackersInjector.poolProgressTrackers;
+import static com.shazam.fork.injector.accumulator.PoolTestCaseFailureAccumulatorInjector.poolTestCaseFailureAccumulator;
 
 public class ProgressReporterInjector {
 
     public static ProgressReporter progressReporter() {
-        return new OverallProgressReporter(retryWatchdog());
+        return new OverallProgressReporter(configuration(),
+                poolProgressTrackers(),
+                poolTestCaseFailureAccumulator());
     }
 }

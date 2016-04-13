@@ -35,6 +35,9 @@ dependencies {
     testCompile("junit:junit:$JUNIT_VERSION") {
         exclude module:'hamcrest-core'
     }
+    testCompile(
+            "org.jmock:jmock:2.8.2",
+            "org.jmock:jmock-junit4:2.8.2")
 }
 
 jar {
