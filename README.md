@@ -62,6 +62,8 @@ testClassRegex         | String            | "^((?!Abstract).)*Test$"
 testOutputTimeout      | int               | 60000
 ignoreFailures         | boolean           | false
 fallbackToScreenshots  | boolean           | true
+totalAllowedRetryQuota | int               | 0
+retryPerTestCaseQuota  | int               | 1
 
 ### Standalone
 Will potentially be unsupported, as it's the least developer friendly. Check out the Fork project and execute:
