@@ -30,7 +30,7 @@ First, you need to add a build-script dependency:
 ```
 buildscript {
     dependencies {
-        classpath 'com.shazam.fork:fork-gradle-plugin:1.3.0-SNAPSHOT'
+        classpath 'com.shazam.fork:fork-gradle-plugin:1.3.0'
     }
 }
 ```
@@ -146,7 +146,7 @@ To be able to use the Flakiness Reporter add these dependencies:
 ```
 buildscript {
     dependencies {
-        classpath "com.shazam.fork:fork-reporter-jenkins-gradle-plugin:1.3.0-SNAPSHOT"
+        classpath "com.shazam.fork:fork-reporter-jenkins-gradle-plugin:1.3.0"
     }
     repositories {
         maven { url "http://repo.jenkins-ci.org/public/" }
