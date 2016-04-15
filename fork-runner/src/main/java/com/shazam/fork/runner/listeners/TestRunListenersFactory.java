@@ -54,7 +54,8 @@ public class TestRunListenersFactory {
                 new LogCatTestRunListener(gson, fileManager, pool, device),
                 new SlowWarningTestRunListener(),
                 getScreenTraceTestRunListener(fileManager, pool, device),
-                new RetryListener(pool, device, testCaseEventQueue, testCase, progressReporter, fileManager));
+                new RetryListener(pool, device, testCaseEventQueue, testCase, progressReporter, fileManager),
+                getCoverageTestRunListener(configuration, device, fileManager, pool, testCase));
     }
 
 
@@ -67,6 +68,17 @@ public class TestRunListenersFactory {
         ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(fileManager, pool, device, testCase, progressReporter);
         xmlTestRunListener.setReportDir(output);
         return xmlTestRunListener;
+    }
+
+    private ITestRunListener getCoverageTestRunListener(Configuration configuration,
+                                                        Device device,
+                                                        FileManager fileManager,
+                                                        Pool pool,
+                                                        TestCaseEvent testCase) {
+        if (configuration.isCoverageEnabled()) {
+            return new CoverageListener(device, fileManager, pool, testCase);
+        }
+        return new NoOpITestRunListener();
     }
 
     private ITestRunListener getScreenTraceTestRunListener(FileManager fileManager, Pool pool, Device device) {
