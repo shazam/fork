@@ -15,9 +15,9 @@ package com.shazam.fork.injector;
 import com.shazam.fork.RuntimeConfiguration;
 
 import static com.shazam.fork.RuntimeConfiguration.Builder.aRuntimeConfiguration;
-import static com.shazam.fork.system.RuntimeConfigurationExtractor.*;
-import static com.shazam.fork.injector.pooling.PoolingStrategyInjector.poolingStrategies;
 import static com.shazam.fork.injector.pooling.ComputedPoolsConfigurationFactoryInjector.computedPoolsConfigurationFactory;
+import static com.shazam.fork.injector.pooling.PoolingStrategyInjector.poolingStrategies;
+import static com.shazam.fork.system.RuntimeConfigurationExtractor.*;
 
 public class RuntimeConfigurationInjector {
 
@@ -28,8 +28,6 @@ public class RuntimeConfigurationInjector {
             .withComputedPoolsConfiguration(extractComputedPoolsConfiguration(poolingStrategies(), computedPoolsConfigurationFactory()))
             .whichCreatesPoolForEachDevice(extractPoolPerDeviceFlag())
             .withExcludedSerials(extractExcludedSerials())
-            .withTitle(extractTitle())
-            .withSubtitle(extractSubtitle())
             .withTestSize(extractTestSize())
             .build();
 

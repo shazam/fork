@@ -72,19 +72,24 @@ class ForkPlugin implements Plugin<Project> {
                 }
                 instrumentationApk = variant.outputs[0].outputFile
 
-                File outputBase = config.baseOutputDir
-                if (!outputBase) {
+                String baseOutputDir = config.baseOutputDir
+                File outputBase
+                if (baseOutputDir) {
+                    outputBase = new File(baseOutputDir);
+                } else {
                     outputBase = new File(project.buildDir, "fork")
                 }
                 output = new File(outputBase, projectOutput.dirName)
+                title = config.title
+                subtitle = config.subtitle
                 testClassRegex = config.testClassRegex
                 testPackage = config.testPackage
-                ignoreFailures = config.ignoreFailures
                 testOutputTimeout = config.testOutputTimeout
                 fallbackToScreenshots = config.fallbackToScreenshots;
                 totalAllowedRetryQuota = config.totalAllowedRetryQuota;
                 retryPerTestCaseQuota = config.retryPerTestCaseQuota;
                 isCoverageEnabled = config.isCoverageEnabled
+                ignoreFailures = config.ignoreFailures
 
                 dependsOn projectOutput.assemble, variant.assemble
             }

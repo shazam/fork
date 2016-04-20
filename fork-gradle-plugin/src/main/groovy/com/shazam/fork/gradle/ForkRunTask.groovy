@@ -12,7 +12,8 @@
  */
 package com.shazam.fork.gradle
 
-import com.shazam.fork.ForkBuilder
+import com.shazam.fork.Configuration
+import com.shazam.fork.Fork
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.InputFile
@@ -22,7 +23,9 @@ import org.gradle.api.tasks.VerificationTask
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-import static com.shazam.fork.ForkBuilder.aFork
+import java.util.regex.Pattern
+
+import static com.shazam.fork.Configuration.Builder.configuration
 
 /**
  * Task for using Fork.
@@ -47,6 +50,10 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
     @OutputDirectory
     File output
 
+    String title
+
+    String subtitle
+
     String testClassRegex
 
     String testPackage
@@ -67,21 +74,23 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
         LOG.debug("Output: $output")
         LOG.debug("Ignore failures: $ignoreFailures")
 
-        ForkBuilder fork = aFork()
+        Configuration configuration = configuration()
+                .withAndroidSdk(project.android.sdkDirectory)
                 .withApplicationApk(applicationApk)
                 .withInstrumentationApk(instrumentationApk)
-                .withOutputDirectory(output)
-                .withAndroidSdk(project.android.sdkDirectory)
-                .withTestClassRegex(testClassRegex)
-                .withCoverageEnabled(isCoverageEnabled)
+                .withOutput(output)
+                .withTitle(title)
+                .withSubTitle(subtitle)
+                .withTestClassPattern(Pattern.compile(testClassRegex))
                 .withTestPackage(testPackage)
                 .withTestOutputTimeout(testOutputTimeout)
                 .withFallbackToScreenshots(fallbackToScreenshots)
                 .withTotalAllowedRetryQuota(totalAllowedRetryQuota)
                 .withRetryPerTestCaseQuota(retryPerTestCaseQuota)
+                .withCoverageEnabled(isCoverageEnabled)
+                .build();
 
-        boolean success = fork.build().run()
-
+        boolean success = new Fork(configuration).run()
         if (!success && !ignoreFailures) {
             throw new GradleException("Tests failed! See ${output}/html/index.html")
         }

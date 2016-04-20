@@ -102,20 +102,6 @@ public class RuntimeConfigurationExtractor {
         return parseBoolean(poolPerDevice);
     }
 
-    public static String extractTitle() {
-        String title = valueFrom(PARAMETER_REPORT_TITLE);
-        documentRuntimeParameter(PARAMETER_REPORT_TITLE, title,
-                "Use -D{}=Title to specify a title for the generated report");
-        return title;
-    }
-
-    public static String extractSubtitle() {
-        String subtitle = valueFrom(PARAMETER_REPORT_SUBTITLE);
-        documentRuntimeParameter(PARAMETER_REPORT_SUBTITLE, subtitle,
-                "Use -D{}=Subitle to specify a subtitle for the generated report");
-        return subtitle;
-    }
-
     @Nullable
     public static IRemoteAndroidTestRunner.TestSize extractTestSize() {
         String testSizeParam = valueFrom(PARAMETER_TEST_SIZE);

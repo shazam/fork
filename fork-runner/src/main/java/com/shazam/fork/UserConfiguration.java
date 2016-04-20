@@ -1,74 +1,71 @@
 /*
- * Copyright 2014 Shazam Entertainment Limited
+ * Copyright 2016 Shazam Entertainment Limited
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  *
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-package com.shazam.fork.gradle
+package com.shazam.fork;
 
 /**
  * Fork extension.
  */
-class ForkExtension {
+public class UserConfiguration {
 
     /**
      * Output directory for Fork report files. If empty, the default dir will be used.
      */
-    String baseOutputDir
+    String baseOutputDir;
 
     /**
      * Ignore test failures flag.
      */
-    boolean ignoreFailures
+    boolean ignoreFailures;
 
     /**
      * Enables code coverage.
      */
-    boolean isCoverageEnabled
+    boolean isCoverageEnabled;
 
     /**
      * Regex determining the class names to consider when finding tests to run.
      */
-    String testClassRegex
+    String testClassRegex;
 
     /**
      * The title of the final report
      */
-    String title
+    String title;
 
     /**
      * The subtitle of the final report
      */
-    String subtitle
+    String subtitle;
 
     /**
      * The package to consider when scanning for instrumentation tests to run.
      */
-    String testPackage
+    String testPackage;
 
     /**
      * Maximum time in milli-seconds between ADB output during a test. Prevents tests from getting stuck.
      */
-    int testOutputTimeout
+    int testOutputTimeout;
 
     /**
      * Indicate that screenshots are allowed when videos are not supported.
      */
-    boolean fallbackToScreenshots
+    boolean fallbackToScreenshots;
 
     /**
      * Amount of re-executions of failing tests allowed.
      */
-    int totalAllowedRetryQuota
+    int totalAllowedRetryQuota;
 
     /**
      * Max number of time each testCase is attempted again before declaring it as a failure.
      */
-    int retryPerTestCaseQuota
+    int retryPerTestCaseQuota;
 }

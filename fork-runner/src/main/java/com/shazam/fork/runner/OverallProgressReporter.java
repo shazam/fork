@@ -10,10 +10,7 @@
 
 package com.shazam.fork.runner;
 
-import com.shazam.fork.Configuration;
-import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.PoolTestCaseAccumulator;
-import com.shazam.fork.model.TestCaseEvent;
+import com.shazam.fork.model.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,16 +27,17 @@ import static java.lang.System.nanoTime;
  */
 public class OverallProgressReporter implements ProgressReporter {
 
-    private long startOfTests;
-    private long endOfTests;
     private final Map<Pool, PoolProgressTracker> poolProgressTrackers;
     private final RetryWatchdog retryWatchdog;
     private final PoolTestCaseAccumulator failedTestCasesAccumulator;
+    private long startOfTests;
+    private long endOfTests;
 
-    public OverallProgressReporter(Configuration configuration,
+    public OverallProgressReporter(int totalAllowedRetryQuota,
+                                   int retryPerTestCaseQuota,
                                    Map<Pool, PoolProgressTracker> poolProgressTrackers,
                                    PoolTestCaseAccumulator failedTestCasesAccumulator) {
-        this.retryWatchdog = new RetryWatchdog(configuration);
+        this.retryWatchdog = new RetryWatchdog(totalAllowedRetryQuota, retryPerTestCaseQuota);
         this.poolProgressTrackers = poolProgressTrackers;
         this.failedTestCasesAccumulator = failedTestCasesAccumulator;
     }
@@ -113,14 +111,13 @@ public class OverallProgressReporter implements ProgressReporter {
 
     private class RetryWatchdog {
         private final Logger logger = LoggerFactory.getLogger(RetryWatchdog.class);
-
         private final int maxRetryPerTestCaseQuota;
-        private AtomicInteger totalAllowedRetryLeft;
-        private StringBuilder logBuilder = new StringBuilder();
+        private final AtomicInteger totalAllowedRetryLeft;
+        private final StringBuilder logBuilder = new StringBuilder();
 
-        public RetryWatchdog(Configuration configuration) {
-            totalAllowedRetryLeft = new AtomicInteger(configuration.getTotalAllowedRetryQuota());
-            maxRetryPerTestCaseQuota = configuration.getRetryPerTestCaseQuota();
+        public RetryWatchdog(int totalAllowedRetryQuota, int retryPerTestCaseQuota) {
+            totalAllowedRetryLeft = new AtomicInteger(totalAllowedRetryQuota);
+            maxRetryPerTestCaseQuota = retryPerTestCaseQuota;
         }
 
         public boolean requestRetry(int currentSingleTestCaseFailures) {

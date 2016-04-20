@@ -22,6 +22,7 @@ dependencies {
             "commons-io:commons-io:$COMMONS_IO_VERSION",
             "org.apache.commons:commons-lang3:$COMMONS_LANG_VERSION",
             "com.github.spullara.mustache.java:compiler:$MUSTACHE_VERSION",
+            "com.google.code.gson:gson:$GSON_VERSION",
     )
 }
 

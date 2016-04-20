@@ -1,0 +1,8 @@
+{
+  "baseOutputDir": "fork-output",
+  "testPackage": "com.shazam.android.acceptancetests",
+  "testOutputTimeout": 60000,
+  "fallbackToScreenshots": false,
+  "totalAllowedRetryQuota": 1,
+  "retryPerTestCaseQuota": 1
+}

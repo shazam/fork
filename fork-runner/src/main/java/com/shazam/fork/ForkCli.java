@@ -13,15 +13,16 @@
 package com.shazam.fork;
 
 import com.beust.jcommander.*;
-import com.beust.jcommander.converters.IntegerConverter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.io.*;
+import java.util.regex.Pattern;
 
-import static com.shazam.fork.ForkBuilder.aFork;
+import static com.shazam.fork.Configuration.Builder.configuration;
 import static com.shazam.fork.Utils.cleanFile;
+import static com.shazam.fork.injector.GsonInjector.gson;
 
 public class ForkCli {
 
@@ -43,34 +44,11 @@ public class ForkCli {
         @Parameter(names = { "--output" }, description = "Output path", converter = FileConverter.class)
         public File output;
 
-        @Parameter(names = { "--test-class-regex" }, description = "Regex determining class names to consider when finding tests to run")
-        public String testClassRegex;
-
-        @Parameter(names = { "--test-package" }, description = "The package where your tests are located. " +
-                "Defaults to the instrumentation package.")
-        public String testPackage;
-
-        @Parameter(names = { "--test-timeout" }, description = "The maximum amount of time during which the tests are " +
-                "allowed to not output any response, in milliseconds", converter = IntegerConverter.class)
-        public int testOutputTimeout = -1;
-
-        @Parameter(names = { "--fallback-to-screenshots" }, description = "Allowed to fallback to screenshots when video" +
-                " recording is not supported" , arity = 1)
-        public boolean fallbackToScreenshots = true;
-
-        @Parameter(names = { "--fail-on-failure" }, description = "Non-zero exit code on failure")
-        public boolean failOnFailure = true;
+        @Parameter(names = { "--config" }, description = "Path of JSON config file", converter = FileConverter.class)
+        public File configurationFile;
 
         @Parameter(names = { "-h", "--help" }, description = "Command help", help = true, hidden = true)
         public boolean help;
-
-        @Parameter(names = { "--total-allowed-retry-quota" }, description = "Amount of re-executions of failing tests allowed.", converter = IntegerConverter.class)
-        public int totalAllowedRetryQuota = 0;
-
-       @Parameter(names = { "--retry-per-test-case-quota" }, description = "Max number of time each testCase is attempted again " +
-                "before declaring it as a failure.", converter = IntegerConverter.class)
-        public int retryPerTestCaseQuota = 1;
-
     }
 
     /* JCommander deems it necessary that this class be public. Lame. */
@@ -100,46 +78,56 @@ public class ForkCli {
             return;
         }
 
-        ForkBuilder forkBuilder = aFork()
-                .withApplicationApk(parsedArgs.apk)
-                .withInstrumentationApk(parsedArgs.testApk)
-                .withFallbackToScreenshots(parsedArgs.fallbackToScreenshots);
+        try {
+            Reader configFileReader = new FileReader(parsedArgs.configurationFile);
+            UserConfiguration userConfiguration = gson().fromJson(configFileReader, UserConfiguration.class);
 
-        overrideDefaultsIfSet(forkBuilder, parsedArgs);
+            Configuration.Builder configurationBuilder = configuration()
+                    .withAndroidSdk(parsedArgs.sdk != null ? parsedArgs.sdk : cleanFile(Defaults.ANDROID_SDK))
+                    .withApplicationApk(parsedArgs.apk)
+                    .withInstrumentationApk(parsedArgs.testApk)
+                    .withOutput(parsedArgs.output != null ? parsedArgs.output : cleanFile(Defaults.TEST_OUTPUT))
+                    .withTestPackage(userConfiguration.testPackage)
+                    .withFallbackToScreenshots(userConfiguration.fallbackToScreenshots)
+                    .withIsCoverageEnabled(userConfiguration.isCoverageEnabled);
+            overrideDefaultsIfSet(configurationBuilder, userConfiguration);
 
-        Fork fork = forkBuilder.build();
-        if (!fork.run() && parsedArgs.failOnFailure) {
+            Fork fork = new Fork(configurationBuilder.build());
+            if (!fork.run() && !userConfiguration.ignoreFailures) {
+                System.exit(1);
+            }
+        } catch (FileNotFoundException e) {
+            logger.error("Could not find configuration file", e);
             System.exit(1);
         }
     }
 
-    private static void overrideDefaultsIfSet(ForkBuilder forkBuilder, CommandLineArgs parsedArgs) {
-        if (parsedArgs.sdk != null) {
-            forkBuilder.withAndroidSdk(parsedArgs.sdk);
+    /**
+     * Only interested in values that have defaults in Configuration.Builder
+     */
+    private static void overrideDefaultsIfSet(Configuration.Builder configurationBuilder, UserConfiguration userConfiguration) {
+        if (userConfiguration.title != null) {
+            configurationBuilder.withTitle(userConfiguration.title);
         }
 
-        if (parsedArgs.output != null) {
-            forkBuilder.withOutputDirectory(parsedArgs.output);
+        if (userConfiguration.subtitle != null) {
+            configurationBuilder.withSubtitle(userConfiguration.subtitle);
         }
 
-        if (parsedArgs.testClassRegex != null) {
-            forkBuilder.withTestClassRegex(parsedArgs.testClassRegex);
+        if (userConfiguration.testClassRegex != null) {
+            configurationBuilder.withTestClassPattern(Pattern.compile(userConfiguration.testClassRegex));
         }
 
-        if (parsedArgs.testPackage != null) {
-            forkBuilder.withTestPackage(parsedArgs.testPackage);
+        if (userConfiguration.testOutputTimeout > 0) {
+            configurationBuilder.withTestOutputTimeout(userConfiguration.testOutputTimeout);
         }
 
-        if (parsedArgs.testOutputTimeout > -1) {
-            forkBuilder.withTestOutputTimeout(parsedArgs.testOutputTimeout);
+        if (userConfiguration.totalAllowedRetryQuota > 0) {
+            configurationBuilder.withTotalAllowedRetryQuota(userConfiguration.totalAllowedRetryQuota);
         }
 
-        if (parsedArgs.totalAllowedRetryQuota > 0) {
-            forkBuilder.withTotalAllowedRetryQuota(parsedArgs.totalAllowedRetryQuota);
-        }
-
-        if(parsedArgs.retryPerTestCaseQuota > -1){
-            forkBuilder.withRetryPerTestCaseQuota(parsedArgs.retryPerTestCaseQuota);
+        if(userConfiguration.retryPerTestCaseQuota > 0) {
+            configurationBuilder.withRetryPerTestCaseQuota(userConfiguration.retryPerTestCaseQuota);
         }
     }
 }

@@ -20,7 +20,9 @@ import static com.shazam.fork.injector.accumulator.PoolTestCaseFailureAccumulato
 public class ProgressReporterInjector {
 
     public static ProgressReporter progressReporter() {
-        return new OverallProgressReporter(configuration(),
+        return new OverallProgressReporter(
+                configuration().getTotalAllowedRetryQuota(),
+                configuration().getRetryPerTestCaseQuota(),
                 poolProgressTrackers(),
                 poolTestCaseFailureAccumulator());
     }

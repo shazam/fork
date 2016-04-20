@@ -35,7 +35,7 @@ public final class Fork {
     private final ForkRunner forkRunner;
     private final File output;
 
-    Fork(Configuration configuration) {
+    public Fork(Configuration configuration) {
         this.output = configuration.getOutput();
         setConfiguration(configuration);
         this.forkRunner = forkRunner();
