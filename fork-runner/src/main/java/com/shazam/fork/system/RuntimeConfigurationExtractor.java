@@ -17,7 +17,6 @@ import static com.google.common.collect.Collections2.transform;
 import static com.shazam.fork.pooling.SerialBasedPools.Builder.serialBasedPools;
 import static com.shazam.fork.system.EnvironmentConstants.*;
 import static java.lang.Boolean.parseBoolean;
-import static java.lang.System.getProperties;
 import static java.lang.System.getProperty;
 import static java.util.Arrays.asList;
 import static java.util.Collections.list;
@@ -25,21 +24,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class RuntimeConfigurationExtractor {
     private static final Logger logger = LoggerFactory.getLogger(RuntimeConfigurationExtractor.class);
-
-    @Nonnull
-    public static Collection<String> extractExcludedSerials() {
-        String excludedSerialsProperty = getProperties().getProperty(PARAMETER_EXCLUDED_SERIALS);
-        Collection<String> excludedSerials = isBlank(excludedSerialsProperty) ?
-                Collections.<String>emptyList(): asList(excludedSerialsProperty.split(","));
-        documentRuntimeParameter(PARAMETER_EXCLUDED_SERIALS, excludedSerials,
-                "Use -D{}=(Serial','?)* to exclude specific devices from running any tests");
-
-        if (!excludedSerials.isEmpty()) {
-            logger.info("Devices with serials {} are excluded from the tests", excludedSerials);
-        }
-
-        return excludedSerials;
-    }
 
     public static boolean extractTabletFlag() {
         String tabletFlagParameter = valueFrom(PARAMETER_POOL_TABLET);

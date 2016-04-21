@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
@@ -27,6 +28,7 @@ import javax.annotation.Nullable;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.shazam.fork.system.axmlparser.InstumentationInfoFactory.parseFromFile;
+import static java.util.Collections.emptyList;
 import static java.util.regex.Pattern.compile;
 
 public class Configuration {
@@ -43,6 +45,7 @@ public class Configuration {
     private final String testPackage;
     private final int testOutputTimeout;
     private final IRemoteAndroidTestRunner.TestSize testSize;
+    private final Collection<String> excludedSerials;
     private final boolean fallbackToScreenshots;
     private final int totalAllowedRetryQuota;
     private final int retryPerTestCaseQuota;
@@ -60,6 +63,7 @@ public class Configuration {
         testPackage = builder.testPackage;
         testOutputTimeout = builder.testOutputTimeout;
         testSize = builder.testSize;
+        excludedSerials = builder.excludedSerials;
         fallbackToScreenshots = builder.fallbackToScreenshots;
         totalAllowedRetryQuota = builder.totalAllowedRetryQuota;
         retryPerTestCaseQuota = builder.retryPerTestCaseQuota;
@@ -120,6 +124,11 @@ public class Configuration {
         return testSize;
     }
 
+    @Nonnull
+    public Collection<String> getExcludedSerials() {
+        return excludedSerials;
+    }
+
     public boolean canFallbackToScreenshots() {
         return fallbackToScreenshots;
     }
@@ -148,6 +157,7 @@ public class Configuration {
         private String testPackage;
         private int testOutputTimeout = Defaults.TEST_OUTPUT_TIMEOUT_MILLIS;
         private IRemoteAndroidTestRunner.TestSize testSize;
+        private Collection<String> excludedSerials = emptyList();
         private boolean fallbackToScreenshots;
         private int totalAllowedRetryQuota = 0;
         private int retryPerTestCaseQuota = 1;
@@ -202,8 +212,13 @@ public class Configuration {
             return this;
         }
 
-        public Builder withTestSize(@Nullable String testSize) {
+        public Builder withTestSize(@Nonnull String testSize) {
             this.testSize = IRemoteAndroidTestRunner.TestSize.getTestSize(testSize);
+            return this;
+        }
+
+        public Builder withExcludedSerials(@Nonnull Collection<String> excludedSerials) {
+            this.excludedSerials = excludedSerials;
             return this;
         }
 
@@ -236,6 +251,7 @@ public class Configuration {
             checkArgument(instrumentationApk.exists(), "Instrumentation APK file does not exist.");
             checkNotNull(output, "Output path is required.");
             checkArgument(testOutputTimeout >= 0, "Timeout must be non-negative.");
+            checkNotNull(excludedSerials, "List of excluded serial numbers cannot be null, but it's empty by default");
             checkArgument(totalAllowedRetryQuota >= 0, "Total allowed retry quota should not be negative.");
             checkArgument(retryPerTestCaseQuota >= 0, "Retry per test case quota should not be negative.");
             logArgumentsBadInteractions();

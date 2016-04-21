@@ -14,14 +14,12 @@ package com.shazam.fork.pooling;
 
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
-import com.shazam.fork.RuntimeConfiguration;
+import com.shazam.fork.Configuration;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Devices;
 import com.shazam.fork.pooling.geometry.DeviceGeometryRetriever;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static com.shazam.fork.model.Device.Builder.aDevice;
 import static com.shazam.fork.model.Devices.Builder.devices;
@@ -34,11 +32,10 @@ public class DeviceLoader {
     private final DeviceGeometryRetriever deviceGeometryRetriever;
     private final Collection<String> excludedSerials;
 
-    public DeviceLoader(AndroidDebugBridge adb, DeviceGeometryRetriever deviceGeometryRetriever,
-                        RuntimeConfiguration runtimeConfiguration) {
+    public DeviceLoader(AndroidDebugBridge adb, DeviceGeometryRetriever deviceGeometryRetriever, Configuration configuration) {
         this.adb = adb;
         this.deviceGeometryRetriever = deviceGeometryRetriever;
-        this.excludedSerials = runtimeConfiguration.getExcludedSerials();
+        this.excludedSerials = configuration.getExcludedSerials();
     }
 
     /**

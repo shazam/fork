@@ -41,9 +41,6 @@ public class ForkCli {
                 required = true)
         public File testApk;
 
-        @Parameter(names = { "--output" }, description = "Output path", converter = FileConverter.class)
-        public File output;
-
         @Parameter(names = { "--config" }, description = "Path of JSON config file", converter = FileConverter.class)
         public File configurationFile;
 
@@ -86,7 +83,7 @@ public class ForkCli {
                     .withAndroidSdk(parsedArgs.sdk != null ? parsedArgs.sdk : cleanFile(Defaults.ANDROID_SDK))
                     .withApplicationApk(parsedArgs.apk)
                     .withInstrumentationApk(parsedArgs.testApk)
-                    .withOutput(parsedArgs.output != null ? parsedArgs.output : cleanFile(Defaults.TEST_OUTPUT))
+                    .withOutput(userConfiguration.baseOutputDir != null ? cleanFile(userConfiguration.baseOutputDir) : cleanFile(Defaults.TEST_OUTPUT))
                     .withTestPackage(userConfiguration.testPackage)
                     .withFallbackToScreenshots(userConfiguration.fallbackToScreenshots)
                     .withIsCoverageEnabled(userConfiguration.isCoverageEnabled);
@@ -120,6 +117,14 @@ public class ForkCli {
 
         if (userConfiguration.testOutputTimeout > 0) {
             configurationBuilder.withTestOutputTimeout(userConfiguration.testOutputTimeout);
+        }
+
+        if (userConfiguration.testSize != null) {
+            configurationBuilder.withTestSize(userConfiguration.testSize);
+        }
+
+        if (userConfiguration.excludedSerials != null) {
+            configurationBuilder.withExcludedSerials(userConfiguration.excludedSerials);
         }
 
         if (userConfiguration.totalAllowedRetryQuota > 0) {

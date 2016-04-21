@@ -9,6 +9,8 @@
  */
 package com.shazam.fork;
 
+import java.util.Collection;
+
 /**
  * Fork extension.
  */
@@ -58,6 +60,11 @@ public class UserConfiguration {
      * The size of the tests that will be executed with this run.
      */
     String testSize;
+
+    /**
+     * The collection of serials that should be excluded from this test run
+     */
+    Collection<String> excludedSerials;
 
     /**
      * Indicate that screenshots are allowed when videos are not supported.

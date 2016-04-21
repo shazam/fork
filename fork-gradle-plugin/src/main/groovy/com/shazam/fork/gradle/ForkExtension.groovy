@@ -63,6 +63,11 @@ class ForkExtension {
     String testSize
 
     /**
+     * The collection of serials that should be excluded from this test run
+     */
+    Collection<String> excludedSerials
+
+    /**
      * Indicate that screenshots are allowed when videos are not supported.
      */
     boolean fallbackToScreenshots

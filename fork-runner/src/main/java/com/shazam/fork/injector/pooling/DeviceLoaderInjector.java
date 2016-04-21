@@ -14,13 +14,13 @@ package com.shazam.fork.injector.pooling;
 
 import com.shazam.fork.pooling.DeviceLoader;
 
-import static com.shazam.fork.injector.system.AndroidDebugBridgeInjector.androidDebugBridge;
+import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 import static com.shazam.fork.injector.pooling.DeviceGeometryRetrieverInjector.deviceGeometryReader;
-import static com.shazam.fork.injector.RuntimeConfigurationInjector.runtimeConfiguration;
+import static com.shazam.fork.injector.system.AndroidDebugBridgeInjector.androidDebugBridge;
 
 public class DeviceLoaderInjector {
 
     public static DeviceLoader deviceLoader() {
-        return new DeviceLoader(androidDebugBridge(), deviceGeometryReader(), runtimeConfiguration());
+        return new DeviceLoader(androidDebugBridge(), deviceGeometryReader(), configuration());
     }
 }
