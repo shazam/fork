@@ -1,8 +1,7 @@
 package com.shazam.fork;
 
-import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
-import com.shazam.fork.pooling.SerialBasedPools;
 import com.shazam.fork.pooling.ComputedPoolsConfiguration;
+import com.shazam.fork.pooling.SerialBasedPools;
 
 import java.util.Collection;
 
@@ -16,7 +15,6 @@ public class RuntimeConfiguration {
     private final ComputedPoolsConfiguration computedPoolsConfiguration;
     private final boolean createPoolForEachDevice;
     private final Collection<String> excludedSerials;
-    private final IRemoteAndroidTestRunner.TestSize testSize;
 
     private RuntimeConfiguration(Builder builder) {
         this.useTabletFlag = builder.useTabletFlag;
@@ -24,7 +22,6 @@ public class RuntimeConfiguration {
         this.computedPoolsConfiguration = builder.computedPoolsConfiguration;
         this.excludedSerials = builder.excludedSerials;
         this.createPoolForEachDevice = builder.createPoolForEachDevice;
-        this.testSize = builder.testSize;
     }
 
     public boolean isUsingTabletFlag() {
@@ -47,17 +44,12 @@ public class RuntimeConfiguration {
         return excludedSerials;
     }
 
-    public IRemoteAndroidTestRunner.TestSize getTestSize() {
-        return testSize;
-    }
-
     public static class Builder {
         private boolean useTabletFlag;
         private SerialBasedPools serialBasedPools;
         private ComputedPoolsConfiguration computedPoolsConfiguration;
         private Collection<String> excludedSerials;
         private boolean createPoolForEachDevice;
-        private IRemoteAndroidTestRunner.TestSize testSize;
 
         public static Builder aRuntimeConfiguration() {
             return new Builder();
@@ -85,11 +77,6 @@ public class RuntimeConfiguration {
 
         public Builder whichCreatesPoolForEachDevice(boolean createPoolForEachDevice) {
             this.createPoolForEachDevice = createPoolForEachDevice;
-            return this;
-        }
-
-        public Builder withTestSize(IRemoteAndroidTestRunner.TestSize testSize) {
-            this.testSize = testSize;
             return this;
         }
 

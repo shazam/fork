@@ -12,6 +12,7 @@
  */
 package com.shazam.fork;
 
+import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
 import com.shazam.fork.model.InstrumentationInfo;
 
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -40,6 +42,7 @@ public class Configuration {
     private final Pattern testClassPattern;
     private final String testPackage;
     private final int testOutputTimeout;
+    private final IRemoteAndroidTestRunner.TestSize testSize;
     private final boolean fallbackToScreenshots;
     private final int totalAllowedRetryQuota;
     private final int retryPerTestCaseQuota;
@@ -56,6 +59,7 @@ public class Configuration {
         testClassPattern = builder.testClassPattern;
         testPackage = builder.testPackage;
         testOutputTimeout = builder.testOutputTimeout;
+        testSize = builder.testSize;
         fallbackToScreenshots = builder.fallbackToScreenshots;
         totalAllowedRetryQuota = builder.totalAllowedRetryQuota;
         retryPerTestCaseQuota = builder.retryPerTestCaseQuota;
@@ -111,6 +115,11 @@ public class Configuration {
         return testOutputTimeout;
     }
 
+    @Nullable
+    public IRemoteAndroidTestRunner.TestSize getTestSize() {
+        return testSize;
+    }
+
     public boolean canFallbackToScreenshots() {
         return fallbackToScreenshots;
     }
@@ -138,6 +147,7 @@ public class Configuration {
         private Pattern testClassPattern = compile(Defaults.TEST_CLASS_REGEX);
         private String testPackage;
         private int testOutputTimeout = Defaults.TEST_OUTPUT_TIMEOUT_MILLIS;
+        private IRemoteAndroidTestRunner.TestSize testSize;
         private boolean fallbackToScreenshots;
         private int totalAllowedRetryQuota = 0;
         private int retryPerTestCaseQuota = 1;
@@ -182,13 +192,18 @@ public class Configuration {
             return this;
         }
 
-        public Builder withTestPackage(@Nonnull String testPackage) {
+        public Builder withTestPackage(@Nullable String testPackage) {
             this.testPackage = testPackage;
             return this;
         }
 
         public Builder withTestOutputTimeout(int testOutputTimeout) {
             this.testOutputTimeout = testOutputTimeout;
+            return this;
+        }
+
+        public Builder withTestSize(@Nullable String testSize) {
+            this.testSize = IRemoteAndroidTestRunner.TestSize.getTestSize(testSize);
             return this;
         }
 

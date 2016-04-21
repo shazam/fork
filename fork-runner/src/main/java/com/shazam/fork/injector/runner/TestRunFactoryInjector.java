@@ -13,16 +13,11 @@ package com.shazam.fork.injector.runner;
 import com.shazam.fork.runner.TestRunFactory;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
-import static com.shazam.fork.injector.RuntimeConfigurationInjector.runtimeConfiguration;
 import static com.shazam.fork.injector.listeners.TestRunListenersFactoryInjector.testRunListenersFactory;
 
 public class TestRunFactoryInjector {
 
     public static TestRunFactory testRunFactory() {
-        return new TestRunFactory(
-                configuration(),
-                runtimeConfiguration(),
-                testRunListenersFactory());
+        return new TestRunFactory(configuration(), testRunListenersFactory());
     }
-
 }

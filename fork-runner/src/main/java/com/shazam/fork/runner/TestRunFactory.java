@@ -12,11 +12,7 @@ package com.shazam.fork.runner;
 
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.shazam.fork.Configuration;
-import com.shazam.fork.RuntimeConfiguration;
-import com.shazam.fork.model.Device;
-import com.shazam.fork.model.InstrumentationInfo;
-import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.TestCaseEvent;
+import com.shazam.fork.model.*;
 import com.shazam.fork.runner.listeners.TestRunListenersFactory;
 
 import java.util.List;
@@ -27,14 +23,10 @@ import static com.shazam.fork.runner.TestRunParameters.Builder.testRunParameters
 public class TestRunFactory {
 
     private final Configuration configuration;
-    private final RuntimeConfiguration runtimeConfiguration;
     private final TestRunListenersFactory testRunListenersFactory;
 
-    public TestRunFactory(Configuration configuration,
-                          RuntimeConfiguration runtimeConfiguration,
-                          TestRunListenersFactory testRunListenersFactory) {
+    public TestRunFactory(Configuration configuration, TestRunListenersFactory testRunListenersFactory) {
         this.configuration = configuration;
-        this.runtimeConfiguration = runtimeConfiguration;
         this.testRunListenersFactory = testRunListenersFactory;
     }
 
@@ -42,7 +34,7 @@ public class TestRunFactory {
                                  Device device,
                                  Pool pool,
                                  ProgressReporter progressReporter,
-                                 Queue<TestCaseEvent> queueOfTestsInPool ) {
+                                 Queue<TestCaseEvent> queueOfTestsInPool) {
         InstrumentationInfo instrumentationInfo = configuration.getInstrumentationInfo();
 
         TestRunParameters testRunParameters = testRunParameters()
@@ -50,7 +42,7 @@ public class TestRunFactory {
                 .withTest(testCase)
                 .withTestPackage(instrumentationInfo.getInstrumentationPackage())
                 .withTestRunner(instrumentationInfo.getTestRunnerClass())
-                .withTestSize(runtimeConfiguration.getTestSize())
+                .withTestSize(configuration.getTestSize())
                 .withTestOutputTimeout(configuration.getTestOutputTimeout())
                 .withCoverageEnabled(configuration.isCoverageEnabled())
                 .build();

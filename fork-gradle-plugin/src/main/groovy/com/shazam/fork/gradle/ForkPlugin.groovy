@@ -85,6 +85,7 @@ class ForkPlugin implements Plugin<Project> {
                 testClassRegex = config.testClassRegex
                 testPackage = config.testPackage
                 testOutputTimeout = config.testOutputTimeout
+                testSize = config.testSize
                 fallbackToScreenshots = config.fallbackToScreenshots;
                 totalAllowedRetryQuota = config.totalAllowedRetryQuota;
                 retryPerTestCaseQuota = config.retryPerTestCaseQuota;

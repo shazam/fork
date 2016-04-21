@@ -1,6 +1,5 @@
 package com.shazam.fork.system;
 
-import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.shazam.fork.pooling.*;
@@ -92,14 +91,6 @@ public class RuntimeConfigurationExtractor {
             return true;
         }
         return parseBoolean(poolPerDevice);
-    }
-
-    @Nullable
-    public static IRemoteAndroidTestRunner.TestSize extractTestSize() {
-        String testSizeParam = valueFrom(PARAMETER_TEST_SIZE);
-        documentRuntimeParameter(PARAMETER_TEST_SIZE, testSizeParam,
-                "Use -D{}=(small|medium|large) to run test methods with the corresponding size annotation");
-        return testSizeParam != null ? IRemoteAndroidTestRunner.TestSize.getTestSize(testSizeParam) : null;
     }
 
     private static void documentComputedPoolParameters(Collection<ComputedPoolingStrategy> poolingStrategies,

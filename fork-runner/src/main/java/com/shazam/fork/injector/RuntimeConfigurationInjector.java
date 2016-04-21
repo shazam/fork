@@ -27,7 +27,6 @@ public class RuntimeConfigurationInjector {
             .withComputedPoolsConfiguration(extractComputedPoolsConfiguration(poolingStrategies(), computedPoolsConfigurationFactory()))
             .whichCreatesPoolForEachDevice(extractPoolPerDeviceFlag())
             .withExcludedSerials(extractExcludedSerials())
-            .withTestSize(extractTestSize())
             .build();
 
     public static RuntimeConfiguration runtimeConfiguration() {

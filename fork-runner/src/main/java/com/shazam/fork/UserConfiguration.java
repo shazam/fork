@@ -55,6 +55,11 @@ public class UserConfiguration {
     int testOutputTimeout;
 
     /**
+     * The size of the tests that will be executed with this run.
+     */
+    String testSize;
+
+    /**
      * Indicate that screenshots are allowed when videos are not supported.
      */
     boolean fallbackToScreenshots;

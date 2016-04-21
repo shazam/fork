@@ -62,6 +62,8 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
 
     int testOutputTimeout
 
+    String testSize
+
     boolean fallbackToScreenshots;
 
     int totalAllowedRetryQuota;
@@ -84,6 +86,7 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
                 .withTestClassPattern(Pattern.compile(testClassRegex))
                 .withTestPackage(testPackage)
                 .withTestOutputTimeout(testOutputTimeout)
+                .withTestSize(testSize)
                 .withFallbackToScreenshots(fallbackToScreenshots)
                 .withTotalAllowedRetryQuota(totalAllowedRetryQuota)
                 .withRetryPerTestCaseQuota(retryPerTestCaseQuota)
