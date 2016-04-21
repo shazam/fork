@@ -15,8 +15,8 @@ import javax.annotation.Nullable;
 
 import static com.google.common.collect.Collections2.filter;
 import static com.google.common.collect.Collections2.transform;
-import static com.shazam.fork.system.EnvironmentConstants.*;
 import static com.shazam.fork.pooling.SerialBasedPools.Builder.serialBasedPools;
+import static com.shazam.fork.system.EnvironmentConstants.*;
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.System.getProperties;
 import static java.lang.System.getProperty;
@@ -26,14 +26,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class RuntimeConfigurationExtractor {
     private static final Logger logger = LoggerFactory.getLogger(RuntimeConfigurationExtractor.class);
-
-    @Nullable
-    public static String extractFilterPattern() {
-        String filterPattern = valueFrom(PARAMETER_TEST_CLASSES);
-        documentRuntimeParameter(PARAMETER_TEST_CLASSES, filterPattern,
-                "Use -D{}=REGEX to specify a pattern for the classes/packages to run");
-        return filterPattern;
-    }
 
     @Nonnull
     public static Collection<String> extractExcludedSerials() {

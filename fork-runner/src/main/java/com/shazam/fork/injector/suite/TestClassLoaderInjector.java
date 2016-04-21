@@ -12,12 +12,11 @@ package com.shazam.fork.injector.suite;
 
 import com.shazam.fork.suite.TestClassLoader;
 
-import static com.shazam.fork.injector.suite.TestClassFilterInjector.testClassFilter;
 import static com.shazam.fork.injector.suite.TestClassScannerInjector.testClassScanner;
 
 public class TestClassLoaderInjector {
 
     public static TestClassLoader testClassLoader() {
-        return new TestClassLoader(testClassScanner(), testClassFilter());
+        return new TestClassLoader(testClassScanner());
     }
 }

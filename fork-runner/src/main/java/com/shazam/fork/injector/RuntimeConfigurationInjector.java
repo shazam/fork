@@ -22,7 +22,6 @@ import static com.shazam.fork.system.RuntimeConfigurationExtractor.*;
 public class RuntimeConfigurationInjector {
 
     private static final RuntimeConfiguration RUNTIME_CONFIGURATION = aRuntimeConfiguration()
-            .withFilterPattern(extractFilterPattern())
             .whichUsesTabletFlag(extractTabletFlag())
             .withSerialBasedPools(extractSerialBasedPools())
             .withComputedPoolsConfiguration(extractComputedPoolsConfiguration(poolingStrategies(), computedPoolsConfigurationFactory()))

@@ -11,7 +11,6 @@ import java.util.Collection;
  */
 public class RuntimeConfiguration {
 
-    private final String filterPattern;
     private final boolean useTabletFlag;
     private final SerialBasedPools serialBasedPools;
     private final ComputedPoolsConfiguration computedPoolsConfiguration;
@@ -20,7 +19,6 @@ public class RuntimeConfiguration {
     private final IRemoteAndroidTestRunner.TestSize testSize;
 
     private RuntimeConfiguration(Builder builder) {
-        this.filterPattern = builder.filterPattern;
         this.useTabletFlag = builder.useTabletFlag;
         this.serialBasedPools = builder.serialBasedPools;
         this.computedPoolsConfiguration = builder.computedPoolsConfiguration;
@@ -29,8 +27,31 @@ public class RuntimeConfiguration {
         this.testSize = builder.testSize;
     }
 
+    public boolean isUsingTabletFlag() {
+        return useTabletFlag;
+    }
+
+    public SerialBasedPools getSerialBasedPools() {
+        return serialBasedPools;
+    }
+
+    public ComputedPoolsConfiguration getComputedPoolsConfiguration() {
+        return computedPoolsConfiguration;
+    }
+
+    public boolean isCreatingPoolForEachDevice() {
+        return createPoolForEachDevice;
+    }
+
+    public Collection<String> getExcludedSerials() {
+        return excludedSerials;
+    }
+
+    public IRemoteAndroidTestRunner.TestSize getTestSize() {
+        return testSize;
+    }
+
     public static class Builder {
-        private String filterPattern;
         private boolean useTabletFlag;
         private SerialBasedPools serialBasedPools;
         private ComputedPoolsConfiguration computedPoolsConfiguration;
@@ -40,11 +61,6 @@ public class RuntimeConfiguration {
 
         public static Builder aRuntimeConfiguration() {
             return new Builder();
-        }
-
-        public Builder withFilterPattern(String filterPattern) {
-            this.filterPattern = filterPattern;
-            return this;
         }
 
         public Builder whichUsesTabletFlag(boolean useTabletFlag) {
@@ -80,33 +96,5 @@ public class RuntimeConfiguration {
         public RuntimeConfiguration build() {
             return new RuntimeConfiguration(this);
         }
-    }
-
-    public String getFilterPattern() {
-        return filterPattern;
-    }
-
-    public boolean isUsingTabletFlag() {
-        return useTabletFlag;
-    }
-
-    public SerialBasedPools getSerialBasedPools() {
-        return serialBasedPools;
-    }
-
-    public ComputedPoolsConfiguration getComputedPoolsConfiguration() {
-        return computedPoolsConfiguration;
-    }
-
-    public boolean isCreatingPoolForEachDevice() {
-        return createPoolForEachDevice;
-    }
-
-    public Collection<String> getExcludedSerials() {
-        return excludedSerials;
-    }
-
-    public IRemoteAndroidTestRunner.TestSize getTestSize() {
-        return testSize;
     }
 }

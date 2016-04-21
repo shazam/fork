@@ -25,22 +25,19 @@ import static com.google.common.collect.FluentIterable.from;
 
 public class TestClassLoader {
     private final TestClassScanner scanner;
-    private final TestClassFilter filter;
-    private Predicate<TestMethod> VALID_METHOD = new Predicate<TestMethod>() {
+    private final Predicate<TestMethod> VALID_METHOD = new Predicate<TestMethod>() {
         @Override
         public boolean apply(@Nullable TestMethod input) {
             return input != null;
         }
     };
 
-    public TestClassLoader(TestClassScanner scanner, TestClassFilter filter) {
+    public TestClassLoader(TestClassScanner scanner) {
         this.scanner = scanner;
-        this.filter = filter;
     }
 
     public List<TestCaseEvent> loadTestClasses() throws TestClassScanningException {
-        List<TestClass> allTestClasses = scanner.scanForTestClasses();
-        List<TestClass> testClasses = filter.anyUserFilter(allTestClasses);
+        List<TestClass> testClasses = scanner.scanForTestClasses();
         return from(testClasses).transformAndConcat(new Function<TestClass, Iterable<TestCaseEvent>>() {
             @Nullable
             @Override
