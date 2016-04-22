@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.regex.Pattern;
 
 import static com.shazam.fork.Configuration.Builder.configuration;
 import static com.shazam.fork.Utils.cleanFile;
@@ -79,61 +78,32 @@ public class ForkCli {
             Reader configFileReader = new FileReader(parsedArgs.configurationFile);
             UserConfiguration userConfiguration = gson().fromJson(configFileReader, UserConfiguration.class);
 
-            Configuration.Builder configurationBuilder = configuration()
+            Configuration configuration = configuration()
                     .withAndroidSdk(parsedArgs.sdk != null ? parsedArgs.sdk : cleanFile(Defaults.ANDROID_SDK))
                     .withApplicationApk(parsedArgs.apk)
                     .withInstrumentationApk(parsedArgs.testApk)
                     .withOutput(userConfiguration.baseOutputDir != null ? cleanFile(userConfiguration.baseOutputDir) : cleanFile(Defaults.TEST_OUTPUT))
+                    .withTitle(userConfiguration.title)
+                    .withSubtitle(userConfiguration.subtitle)
+                    .withTestClassRegex(userConfiguration.testClassRegex)
                     .withTestPackage(userConfiguration.testPackage)
+                    .withTestOutputTimeout(userConfiguration.testOutputTimeout)
+                    .withTestSize(userConfiguration.testSize)
+                    .withExcludedSerials(userConfiguration.excludedSerials)
                     .withFallbackToScreenshots(userConfiguration.fallbackToScreenshots)
+                    .withTotalAllowedRetryQuota(userConfiguration.totalAllowedRetryQuota)
+                    .withRetryPerTestCaseQuota(userConfiguration.retryPerTestCaseQuota)
                     .withCoverageEnabled(userConfiguration.isCoverageEnabled)
-                    .withPoolingStrategy(userConfiguration.poolingStrategy);
-            overrideDefaultsIfSet(configurationBuilder, userConfiguration);
+                    .withPoolingStrategy(userConfiguration.poolingStrategy)
+                    .build();
 
-            Fork fork = new Fork(configurationBuilder.build());
+            Fork fork = new Fork(configuration);
             if (!fork.run() && !userConfiguration.ignoreFailures) {
                 System.exit(1);
             }
         } catch (FileNotFoundException e) {
             logger.error("Could not find configuration file", e);
             System.exit(1);
-        }
-    }
-
-    /**
-     * Only interested in values that have defaults in Configuration.Builder
-     */
-    private static void overrideDefaultsIfSet(Configuration.Builder configurationBuilder, UserConfiguration userConfiguration) {
-        if (userConfiguration.title != null) {
-            configurationBuilder.withTitle(userConfiguration.title);
-        }
-
-        if (userConfiguration.subtitle != null) {
-            configurationBuilder.withSubtitle(userConfiguration.subtitle);
-        }
-
-        if (userConfiguration.testClassRegex != null) {
-            configurationBuilder.withTestClassPattern(Pattern.compile(userConfiguration.testClassRegex));
-        }
-
-        if (userConfiguration.testOutputTimeout > 0) {
-            configurationBuilder.withTestOutputTimeout(userConfiguration.testOutputTimeout);
-        }
-
-        if (userConfiguration.testSize != null) {
-            configurationBuilder.withTestSize(userConfiguration.testSize);
-        }
-
-        if (userConfiguration.excludedSerials != null) {
-            configurationBuilder.withExcludedSerials(userConfiguration.excludedSerials);
-        }
-
-        if (userConfiguration.totalAllowedRetryQuota > 0) {
-            configurationBuilder.withTotalAllowedRetryQuota(userConfiguration.totalAllowedRetryQuota);
-        }
-
-        if(userConfiguration.retryPerTestCaseQuota > 0) {
-            configurationBuilder.withRetryPerTestCaseQuota(userConfiguration.retryPerTestCaseQuota);
         }
     }
 }

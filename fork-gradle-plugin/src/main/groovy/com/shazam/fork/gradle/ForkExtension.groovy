@@ -12,6 +12,8 @@
  */
 package com.shazam.fork.gradle
 
+import com.shazam.fork.PoolingStrategy
+
 /**
  * Fork extension.
  */
@@ -81,4 +83,9 @@ class ForkExtension {
      * Max number of time each testCase is attempted again before declaring it as a failure.
      */
     int retryPerTestCaseQuota
+
+    /**
+     * The strategy that will be used to calculate the grouping of devices to pools.
+     */
+    PoolingStrategy poolingStrategy;
 }

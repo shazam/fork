@@ -43,7 +43,7 @@ public class TestRunFactory {
                 .withTestPackage(instrumentationInfo.getInstrumentationPackage())
                 .withTestRunner(instrumentationInfo.getTestRunnerClass())
                 .withTestSize(configuration.getTestSize())
-                .withTestOutputTimeout(configuration.getTestOutputTimeout())
+                .withTestOutputTimeout((int) configuration.getTestOutputTimeout())
                 .withCoverageEnabled(configuration.isCoverageEnabled())
                 .build();
 

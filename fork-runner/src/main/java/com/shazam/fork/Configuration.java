@@ -30,7 +30,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.shazam.fork.system.axmlparser.InstumentationInfoFactory.parseFromFile;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static java.util.regex.Pattern.compile;
 
 public class Configuration {
     private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
@@ -44,7 +43,7 @@ public class Configuration {
     private final String subtitle;
     private final Pattern testClassPattern;
     private final String testPackage;
-    private final int testOutputTimeout;
+    private final long testOutputTimeout;
     private final IRemoteAndroidTestRunner.TestSize testSize;
     private final Collection<String> excludedSerials;
     private final boolean fallbackToScreenshots;
@@ -61,7 +60,7 @@ public class Configuration {
         output = builder.output;
         title = builder.title;
         subtitle = builder.subtitle;
-        testClassPattern = builder.testClassPattern;
+        testClassPattern = Pattern.compile(builder.testClassRegex);
         testPackage = builder.testPackage;
         testOutputTimeout = builder.testOutputTimeout;
         testSize = builder.testSize;
@@ -118,7 +117,7 @@ public class Configuration {
         return testPackage;
     }
 
-    public int getTestOutputTimeout() {
+    public long getTestOutputTimeout() {
         return testOutputTimeout;
     }
 
@@ -153,22 +152,21 @@ public class Configuration {
     }
 
     public static class Builder {
-        private static final int STRATEGY_LIMIT = 1;
         private File androidSdk;
         private File applicationApk;
         private File instrumentationApk;
         private InstrumentationInfo instrumentationInfo;
         private File output;
-        private String title = "Fork Report";
-        private String subtitle = "";
-        private Pattern testClassPattern = compile(Defaults.TEST_CLASS_REGEX);
+        private String title;
+        private String subtitle;
+        private String testClassRegex;
         private String testPackage;
-        private int testOutputTimeout = Defaults.TEST_OUTPUT_TIMEOUT_MILLIS;
+        private long testOutputTimeout;
         private IRemoteAndroidTestRunner.TestSize testSize;
-        private Collection<String> excludedSerials = emptyList();
+        private Collection<String> excludedSerials;
         private boolean fallbackToScreenshots;
-        private int totalAllowedRetryQuota = 0;
-        private int retryPerTestCaseQuota = 1;
+        private int totalAllowedRetryQuota;
+        private int retryPerTestCaseQuota;
         private boolean isCoverageEnabled;
         private PoolingStrategy poolingStrategy;
 
@@ -196,22 +194,22 @@ public class Configuration {
             return this;
         }
 
-        public Builder withTitle(@Nonnull String title) {
+        public Builder withTitle(String title) {
             this.title = title;
             return this;
         }
 
-        public Builder withSubtitle(@Nonnull String subtitle) {
+        public Builder withSubtitle(String subtitle) {
             this.subtitle = subtitle;
             return this;
         }
 
-        public Builder withTestClassPattern(@Nonnull Pattern testClassPattern) {
-            this.testClassPattern = testClassPattern;
+        public Builder withTestClassRegex(String testClassRegex) {
+            this.testClassRegex = testClassRegex;
             return this;
         }
 
-        public Builder withTestPackage(@Nullable String testPackage) {
+        public Builder withTestPackage(String testPackage) {
             this.testPackage = testPackage;
             return this;
         }
@@ -221,12 +219,12 @@ public class Configuration {
             return this;
         }
 
-        public Builder withTestSize(@Nonnull String testSize) {
+        public Builder withTestSize(String testSize) {
             this.testSize = IRemoteAndroidTestRunner.TestSize.getTestSize(testSize);
             return this;
         }
 
-        public Builder withExcludedSerials(@Nonnull Collection<String> excludedSerials) {
+        public Builder withExcludedSerials(Collection<String> excludedSerials) {
             this.excludedSerials = excludedSerials;
             return this;
         }
@@ -264,45 +262,49 @@ public class Configuration {
             checkNotNull(instrumentationApk, "Instrumentation APK is required.");
             checkArgument(instrumentationApk.exists(), "Instrumentation APK file does not exist.");
             checkNotNull(output, "Output path is required.");
-            checkArgument(testOutputTimeout >= 0, "Timeout must be non-negative.");
-            checkNotNull(excludedSerials, "List of excluded serial numbers cannot be null, but it's empty by default");
-            checkArgument(totalAllowedRetryQuota >= 0, "Total allowed retry quota should not be negative.");
-            checkArgument(retryPerTestCaseQuota >= 0, "Retry per test case quota should not be negative.");
-            checkPoolingStrategy(poolingStrategy);
-
-            logArgumentsBadInteractions();
 
             instrumentationInfo = parseFromFile(instrumentationApk);
-            testPackage = configuredOrInstrumentationPackage(instrumentationInfo.getInstrumentationPackage());
+            title = assignValueOrDefaultIfNull(title, Defaults.TITLE);
+            subtitle = assignValueOrDefaultIfNull(subtitle, Defaults.SUBTITLE);
+            testClassRegex = assignValueOrDefaultIfNull(testClassRegex, Defaults.TEST_CLASS_REGEX);
+            testPackage = assignValueOrDefaultIfNull(testPackage, instrumentationInfo.getInstrumentationPackage());
+            testOutputTimeout = assignValueOrDefaultIfZero(testOutputTimeout, Defaults.TEST_OUTPUT_TIMEOUT_MILLIS);
+            excludedSerials = assignValueOrDefaultIfNull(excludedSerials, emptyList());
+            checkArgument(totalAllowedRetryQuota >= 0, "Total allowed retry quota should not be negative.");
+            checkArgument(retryPerTestCaseQuota >= 0, "Retry per test case quota should not be negative.");
+            retryPerTestCaseQuota = assignValueOrDefaultIfZero(retryPerTestCaseQuota, Defaults.RETRY_QUOTA_PER_TEST_CASE);
+            logArgumentsBadInteractions();
+            poolingStrategy = validatePoolingStrategy(poolingStrategy);
             return new Configuration(this);
+        }
+
+        private static <T> T assignValueOrDefaultIfNull(T value, T defaultValue) {
+            return value != null ? value : defaultValue;
+        }
+
+        private static <T extends Number> T assignValueOrDefaultIfZero(T value, T defaultValue) {
+            return value.longValue() != 0 ? value : defaultValue;
         }
 
         private void logArgumentsBadInteractions() {
             if (totalAllowedRetryQuota > 0 && totalAllowedRetryQuota < retryPerTestCaseQuota) {
                 logger.warn("Total allowed retry quota [" + totalAllowedRetryQuota + "] " +
                         "is smaller than Retry per test case quota [" + retryPerTestCaseQuota + "]. " +
-                        "This is suspicious as the fist mentioned parameter is an overall cap.");
+                        "This is suspicious as the first mentioned parameter is an overall cap.");
             }
-        }
-
-        private String configuredOrInstrumentationPackage(String instrumentationPackage) {
-            if (testPackage != null) {
-                return testPackage;
-            }
-            return instrumentationPackage;
         }
 
         /**
          * We need to make sure zero or one strategy has been passed. If zero default to pool per device. If more than one
          * we throw an exception.
          */
-        private void checkPoolingStrategy(PoolingStrategy poolingStrategy) {
+        private PoolingStrategy validatePoolingStrategy(PoolingStrategy poolingStrategy) {
             if (poolingStrategy == null) {
                 logger.warn("No strategy was chosen in configuration, so defaulting to one pool per device");
                 poolingStrategy = new PoolingStrategy();
                 poolingStrategy.eachDevice = true;
             } else {
-                long nonNullStrategies = asList(
+                long selectedStrategies = asList(
                         poolingStrategy.eachDevice,
                         poolingStrategy.splitTablets,
                         poolingStrategy.computed,
@@ -310,11 +312,13 @@ public class Configuration {
                         .stream()
                         .filter(p -> p == null)
                         .count();
-                if (nonNullStrategies > STRATEGY_LIMIT) {
+                if (selectedStrategies > Defaults.STRATEGY_LIMIT) {
                     throw new IllegalArgumentException("You have selected more than one strategies in configuration. " +
                             "You can only select up to one.");
                 }
             }
+
+            return poolingStrategy;
         }
     }
 }

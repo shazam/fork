@@ -91,6 +91,7 @@ class ForkPlugin implements Plugin<Project> {
                 totalAllowedRetryQuota = config.totalAllowedRetryQuota
                 retryPerTestCaseQuota = config.retryPerTestCaseQuota
                 isCoverageEnabled = config.isCoverageEnabled
+                poolingStrategy = config.poolingStrategy
                 ignoreFailures = config.ignoreFailures
 
                 dependsOn projectOutput.assemble, variant.assemble

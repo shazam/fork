@@ -12,10 +12,28 @@
  */
 package com.shazam.fork.injector;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
+import com.shazam.fork.ComputedPooling;
+
+import static com.shazam.fork.ComputedPooling.Characteristic.valueOf;
 
 public class GsonInjector {
-    private static final Gson GSON = new Gson();
+    private static final Gson GSON;
+    private static final GsonBuilder GSON_BUILDER = new GsonBuilder();
+
+    static {
+        GSON_BUILDER.registerTypeAdapter(ComputedPooling.Characteristic.class, characteristicDeserializer());
+        GSON_BUILDER.registerTypeAdapter(ComputedPooling.Characteristic.class, characteristicSerializer());
+        GSON = GSON_BUILDER.create();
+    }
+
+    private static JsonSerializer<ComputedPooling.Characteristic> characteristicSerializer() {
+        return (src, typeOfSrc, context) -> new JsonPrimitive(src.name());
+    }
+
+    private static JsonDeserializer<ComputedPooling.Characteristic> characteristicDeserializer() {
+        return (json, typeOfT, context) -> valueOf(json.getAsJsonPrimitive().getAsString());
+    }
 
     public static Gson gson() {
         return GSON;
