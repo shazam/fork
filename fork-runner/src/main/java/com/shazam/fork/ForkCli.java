@@ -86,7 +86,8 @@ public class ForkCli {
                     .withOutput(userConfiguration.baseOutputDir != null ? cleanFile(userConfiguration.baseOutputDir) : cleanFile(Defaults.TEST_OUTPUT))
                     .withTestPackage(userConfiguration.testPackage)
                     .withFallbackToScreenshots(userConfiguration.fallbackToScreenshots)
-                    .withIsCoverageEnabled(userConfiguration.isCoverageEnabled);
+                    .withCoverageEnabled(userConfiguration.isCoverageEnabled)
+                    .withPoolingStrategy(userConfiguration.poolingStrategy);
             overrideDefaultsIfSet(configurationBuilder, userConfiguration);
 
             Fork fork = new Fork(configurationBuilder.build());

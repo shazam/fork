@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.shazam.fork.system.axmlparser.InstumentationInfoFactory.parseFromFile;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.regex.Pattern.compile;
 
@@ -50,6 +51,7 @@ public class Configuration {
     private final int totalAllowedRetryQuota;
     private final int retryPerTestCaseQuota;
     private final boolean isCoverageEnabled;
+    private final PoolingStrategy poolingStrategy;
 
     private Configuration(Builder builder) {
         androidSdk = builder.androidSdk;
@@ -68,6 +70,7 @@ public class Configuration {
         totalAllowedRetryQuota = builder.totalAllowedRetryQuota;
         retryPerTestCaseQuota = builder.retryPerTestCaseQuota;
         isCoverageEnabled = builder.isCoverageEnabled;
+        poolingStrategy = builder.poolingStrategy;
     }
 
     @Nonnull
@@ -145,7 +148,12 @@ public class Configuration {
         return isCoverageEnabled;
     }
 
+    public PoolingStrategy getPoolingStrategy() {
+        return poolingStrategy;
+    }
+
     public static class Builder {
+        private static final int STRATEGY_LIMIT = 1;
         private File androidSdk;
         private File applicationApk;
         private File instrumentationApk;
@@ -162,6 +170,7 @@ public class Configuration {
         private int totalAllowedRetryQuota = 0;
         private int retryPerTestCaseQuota = 1;
         private boolean isCoverageEnabled;
+        private PoolingStrategy poolingStrategy;
 
         public static Builder configuration() {
             return new Builder();
@@ -237,8 +246,13 @@ public class Configuration {
             return this;
         }
 
-        public Builder withIsCoverageEnabled(boolean isCoverageEnabled) {
+        public Builder withCoverageEnabled(boolean isCoverageEnabled) {
             this.isCoverageEnabled = isCoverageEnabled;
+            return this;
+        }
+
+        public Builder withPoolingStrategy(@Nullable PoolingStrategy poolingStrategy) {
+            this.poolingStrategy = poolingStrategy;
             return this;
         }
 
@@ -254,6 +268,8 @@ public class Configuration {
             checkNotNull(excludedSerials, "List of excluded serial numbers cannot be null, but it's empty by default");
             checkArgument(totalAllowedRetryQuota >= 0, "Total allowed retry quota should not be negative.");
             checkArgument(retryPerTestCaseQuota >= 0, "Retry per test case quota should not be negative.");
+            checkPoolingStrategy(poolingStrategy);
+
             logArgumentsBadInteractions();
 
             instrumentationInfo = parseFromFile(instrumentationApk);
@@ -262,9 +278,9 @@ public class Configuration {
         }
 
         private void logArgumentsBadInteractions() {
-            if(totalAllowedRetryQuota > 0 && totalAllowedRetryQuota < retryPerTestCaseQuota){
-                logger.warn("Total allowed retry quota ["+ totalAllowedRetryQuota +"] " +
-                        "is smaller than Retry per test case quota ["+retryPerTestCaseQuota+"]. " +
+            if (totalAllowedRetryQuota > 0 && totalAllowedRetryQuota < retryPerTestCaseQuota) {
+                logger.warn("Total allowed retry quota [" + totalAllowedRetryQuota + "] " +
+                        "is smaller than Retry per test case quota [" + retryPerTestCaseQuota + "]. " +
                         "This is suspicious as the fist mentioned parameter is an overall cap.");
             }
         }
@@ -274,6 +290,31 @@ public class Configuration {
                 return testPackage;
             }
             return instrumentationPackage;
+        }
+
+        /**
+         * We need to make sure zero or one strategy has been passed. If zero default to pool per device. If more than one
+         * we throw an exception.
+         */
+        private void checkPoolingStrategy(PoolingStrategy poolingStrategy) {
+            if (poolingStrategy == null) {
+                logger.warn("No strategy was chosen in configuration, so defaulting to one pool per device");
+                poolingStrategy = new PoolingStrategy();
+                poolingStrategy.eachDevice = true;
+            } else {
+                long nonNullStrategies = asList(
+                        poolingStrategy.eachDevice,
+                        poolingStrategy.splitTablets,
+                        poolingStrategy.computed,
+                        poolingStrategy.manual)
+                        .stream()
+                        .filter(p -> p == null)
+                        .count();
+                if (nonNullStrategies > STRATEGY_LIMIT) {
+                    throw new IllegalArgumentException("You have selected more than one strategies in configuration. " +
+                            "You can only select up to one.");
+                }
+            }
         }
     }
 }

@@ -14,6 +14,7 @@ package com.shazam.fork.gradle
 
 import com.shazam.fork.Configuration
 import com.shazam.fork.Fork
+import com.shazam.fork.PoolingStrategy
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.InputFile
@@ -66,11 +67,13 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
 
     Collection<String> excludedSerials
 
-    boolean fallbackToScreenshots;
+    boolean fallbackToScreenshots
 
-    int totalAllowedRetryQuota;
+    int totalAllowedRetryQuota
 
-    int retryPerTestCaseQuota;
+    int retryPerTestCaseQuota
+
+    PoolingStrategy poolingStrategy
 
     @TaskAction
     void runFork() {
@@ -94,6 +97,7 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
                 .withTotalAllowedRetryQuota(totalAllowedRetryQuota)
                 .withRetryPerTestCaseQuota(retryPerTestCaseQuota)
                 .withCoverageEnabled(isCoverageEnabled)
+                .withPoolingStrategy(poolingStrategy)
                 .build();
 
         boolean success = new Fork(configuration).run()

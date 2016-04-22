@@ -14,11 +14,8 @@ package com.shazam.fork;
 
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
-import com.shazam.fork.pooling.NoDevicesForPoolException;
-import com.shazam.fork.pooling.PoolLoader;
-import com.shazam.fork.runner.PoolTestRunner;
-import com.shazam.fork.runner.PoolTestRunnerFactory;
-import com.shazam.fork.runner.ProgressReporter;
+import com.shazam.fork.pooling.*;
+import com.shazam.fork.runner.*;
 import com.shazam.fork.suite.TestClassLoader;
 import com.shazam.fork.suite.TestClassScanningException;
 import com.shazam.fork.summary.SummaryGeneratorHook;
@@ -77,7 +74,7 @@ public class ForkRunner {
             boolean overallSuccess = summaryGeneratorHook.defineOutcome();
             logger.info("Overall success: " + overallSuccess);
             return overallSuccess;
-        } catch (NoDevicesForPoolException e) {
+        } catch (NoPoolLoaderConfiguredException | NoDevicesForPoolException e) {
             logger.error("Configuring devices and pools failed", e);
             return false;
         } catch (TestClassScanningException e) {

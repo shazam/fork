@@ -12,34 +12,29 @@
  */
 package com.shazam.fork.pooling;
 
-import com.shazam.fork.model.Device;
-import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.Devices;
+import com.shazam.fork.ComputedPooling;
+import com.shazam.fork.model.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 import static com.shazam.fork.model.Pool.Builder.aDevicePool;
+import static java.util.stream.Collectors.toCollection;
 
 /**
- * Allocate devices into pools specified by nominated strategy:
- * <dl><dt>-Dfork.computed.sw=520,720</dt><dd>smallest width pools: 0-519, 520-719, 720-up</dd></dl>
- * <dl><dt>-Dfork.computed.sw=phone=0,tablet=720</dt><dd>named pools: phone 0-719 tablet 720-up</dd></dl>
- * <dl><dt>-Dfork.computed.api=15</dt><dd>api pools: 0-14, 15-up</dd></dl>
+ * Allocate devices into pools specified by nominated strategy.
  */
 public class ComputedDevicePoolLoader implements DevicePoolLoader {
     private static final Logger logger = LoggerFactory.getLogger(ComputedDevicePoolLoader.class);
-    private final ComputedPoolsConfiguration computedPoolsSelector;
+    private final ComputedPoolsCategorizer computedPoolsCategorizer;
 
-	public ComputedDevicePoolLoader(ComputedPoolsConfiguration computedPoolsSelector) {
-        this.computedPoolsSelector = computedPoolsSelector;
-	}
+    public ComputedDevicePoolLoader(ComputedPooling computedPooling) {
+        this.computedPoolsCategorizer = new ComputedPoolsCategorizer(computedPooling);
+    }
 
-	public Collection<Pool> loadPools(Devices devices) {
+    public Collection<Pool> loadPools(Devices devices) {
         Collection<Pool> pools = createComputedPools(devices);
         ensureAllPoolsAreRepresented(pools);
         return pools;
@@ -48,16 +43,15 @@ public class ComputedDevicePoolLoader implements DevicePoolLoader {
     private Collection<Pool> createComputedPools(Devices devices) {
         Map<String, Pool.Builder> pools = new HashMap<>();
         for (Device device : devices.getDevices()) {
-            String poolName = computedPoolsSelector.poolForDevice(device);
+            String poolName = computedPoolsCategorizer.poolForDevice(device);
             if (poolName != null) {
                 if (!pools.containsKey(poolName)) {
                     pools.put(poolName, aDevicePool().withName(poolName));
                 }
                 pools.get(poolName).addDevice(device);
                 logger.debug("Adding {} to pool {}", device.getLongName(), poolName);
-            }
-            else {
-                logger.warn("Could not infer pool for " + device.getLongName());
+            } else {
+                logger.warn("Could not infer pool for " + device.getLongName() + ". Not adding to any pools");
             }
         }
 
@@ -65,15 +59,14 @@ public class ComputedDevicePoolLoader implements DevicePoolLoader {
     }
 
     private Collection<Pool> createDevicePools(Map<String, Pool.Builder> pools) {
-        Collection<Pool> builtPools = new HashSet<>();
-        for (Pool.Builder builder : pools.values()) {
-            builtPools.add(builder.build());
-        }
-        return builtPools;
+        return pools.values()
+                .stream()
+                .map(Pool.Builder::build)
+                .collect(toCollection(HashSet::new));
     }
 
     private void ensureAllPoolsAreRepresented(Collection<Pool> pools) {
-        for (String poolName : computedPoolsSelector.allPools()) {
+        for (String poolName : computedPoolsCategorizer.allPools()) {
             boolean found = false;
             for (Pool pool : pools) {
                 if (pool.getName().equals(poolName)) {

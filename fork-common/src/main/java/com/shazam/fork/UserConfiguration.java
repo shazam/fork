@@ -80,4 +80,9 @@ public class UserConfiguration {
      * Max number of time each testCase is attempted again before declaring it as a failure.
      */
     int retryPerTestCaseQuota;
+
+    /**
+     * The strategy that will be used to calculate the grouping of devices to pools.
+     */
+    PoolingStrategy poolingStrategy;
 }

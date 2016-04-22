@@ -12,9 +12,8 @@
  */
 package com.shazam.fork.pooling;
 
-import com.shazam.fork.model.Device;
-import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.Devices;
+import com.shazam.fork.ManualPooling;
+import com.shazam.fork.model.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,16 +25,16 @@ import static java.util.Map.Entry;
  * Load pools specified by -Dfork.pool.NAME=Serial_1,Serial_2
  */
 public class SerialBasedDevicePoolLoader implements DevicePoolLoader {
-    private final SerialBasedPools serialBasedPools;
+    private final ManualPooling manualPooling;
 
-    public SerialBasedDevicePoolLoader(SerialBasedPools serialBasedPools) {
-        this.serialBasedPools = serialBasedPools;
+    public SerialBasedDevicePoolLoader(ManualPooling manualPooling) {
+        this.manualPooling = manualPooling;
     }
 
 	public Collection<Pool> loadPools(Devices devices) {
 		Collection<Pool> pools = new ArrayList<>();
 
-        for (Entry<String, Collection<String>> pool : serialBasedPools.getSerialBasedPools()) {
+        for (Entry<String, Collection<String>> pool : manualPooling.groupings.entrySet()) {
             Pool.Builder poolBuilder = aDevicePool().withName(pool.getKey());
             for (String serial : pool.getValue()) {
                 Device device = devices.getDevice(serial);

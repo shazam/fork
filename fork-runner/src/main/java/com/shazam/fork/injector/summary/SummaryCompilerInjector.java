@@ -10,11 +10,9 @@
 
 package com.shazam.fork.injector.summary;
 
-import com.shazam.fork.injector.ConfigurationInjector;
 import com.shazam.fork.summary.SummaryCompiler;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
-import static com.shazam.fork.injector.RuntimeConfigurationInjector.runtimeConfiguration;
 import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 
 class SummaryCompilerInjector {

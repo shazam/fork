@@ -16,19 +16,19 @@ package com.shazam.fork.pooling;
  * Class holding lower bound and optional name
  */
 public class Bound {
-    private final int lower;
     private final String name;
+    private final int lower;
 
-    public Bound(int lower, String name) {
+    public Bound(String name, int lower) {
         this.lower = lower;
         this.name = name;
     }
 
-    public int getLower() {
-        return lower;
-    }
-
     public String getName() {
         return name == null ? "" : (name + "=");
+    }
+
+    public int getLower() {
+        return lower;
     }
 }
