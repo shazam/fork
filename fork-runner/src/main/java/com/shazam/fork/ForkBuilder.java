@@ -37,6 +37,7 @@ public class ForkBuilder {
     private boolean fallbackToScreenshots = true;
     private int totalAllowedRetryQuota = 0;
     private int retryPerTestCaseQuota = 1;
+    private boolean isCoverageEnabled;
     private boolean autoGrantRuntimePermissions = true;
 
     public static ForkBuilder aFork() {
@@ -109,6 +110,11 @@ public class ForkBuilder {
         return this;
     }
 
+    public ForkBuilder withCoverageEnabled(boolean isCoverageEnabled){
+        this.isCoverageEnabled = isCoverageEnabled;
+        return this;
+    }
+
     /**
      * Maximum time between test output from ADB.
      * @param testOutputTimeout the period in millis
@@ -178,6 +184,7 @@ public class ForkBuilder {
                 fallbackToScreenshots,
                 totalAllowedRetryQuota,
                 retryPerTestCaseQuota,
+                isCoverageEnabled,
                 autoGrantRuntimePermissions);
         return new Fork(configuration);
     }

@@ -32,6 +32,7 @@ public class Configuration {
     private final boolean fallbackToScreenshots;
     private final int totalAllowedRetryQuota;
     private final int retryPerTestCaseQuota;
+    private final boolean isCoverageEnabled;
     private final boolean autoGrantRuntimePermissions;
 
     public Configuration(@Nonnull File androidSdk,
@@ -46,6 +47,7 @@ public class Configuration {
                          boolean fallbackToScreenshots,
                          int totalAllowedRetryQuota,
                          int retryPerTestCaseQuota,
+                         boolean isCoverageEnabled, 
                          boolean autoGrantRuntimePermissions) {
         this.androidSdk = androidSdk;
         this.applicationApk = applicationApk;
@@ -59,6 +61,7 @@ public class Configuration {
         this.fallbackToScreenshots = fallbackToScreenshots;
         this.totalAllowedRetryQuota = totalAllowedRetryQuota;
         this.retryPerTestCaseQuota = retryPerTestCaseQuota;
+        this.isCoverageEnabled = isCoverageEnabled;
         this.autoGrantRuntimePermissions = autoGrantRuntimePermissions;
     }
 
@@ -115,6 +118,10 @@ public class Configuration {
 
     public int getRetryPerTestCaseQuota() {
         return retryPerTestCaseQuota;
+    }
+
+    public boolean isCoverageEnabled() {
+        return isCoverageEnabled;
     }
 
     public boolean autoGrantRuntimePermissions() {

@@ -30,7 +30,7 @@ First, you need to add a build-script dependency:
 ```
 buildscript {
     dependencies {
-        classpath 'com.shazam.fork:fork-gradle-plugin:1.3.0-SNAPSHOT'
+        classpath 'com.shazam.fork:fork-gradle-plugin:1.4.0-SNAPSHOT'
     }
 }
 ```
@@ -62,6 +62,8 @@ testClassRegex         | String            | "^((?!Abstract).)*Test$"
 testOutputTimeout      | int               | 60000
 ignoreFailures         | boolean           | false
 fallbackToScreenshots  | boolean           | true
+totalAllowedRetryQuota | int               | 0
+retryPerTestCaseQuota  | int               | 1
 
 ### Standalone
 Will potentially be unsupported, as it's the least developer friendly. Check out the Fork project and execute:
@@ -147,7 +149,7 @@ To be able to use the Flakiness Reporter add these dependencies:
 ```
 buildscript {
     dependencies {
-        classpath "com.shazam.fork:fork-reporter-jenkins-gradle-plugin:1.3.0-SNAPSHOT"
+        classpath "com.shazam.fork:fork-reporter-jenkins-gradle-plugin:1.4.0-SNAPSHOT"
     }
     repositories {
         maven { url "http://repo.jenkins-ci.org/public/" }

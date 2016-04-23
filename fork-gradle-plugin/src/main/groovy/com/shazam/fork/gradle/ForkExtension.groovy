@@ -28,6 +28,11 @@ class ForkExtension {
     boolean ignoreFailures
 
     /**
+     * Enables code coverage.
+     */
+    boolean isCoverageEnabled
+
+    /**
      * Regex determining the class names to consider when finding tests to run.
      */
     String testClassRegex

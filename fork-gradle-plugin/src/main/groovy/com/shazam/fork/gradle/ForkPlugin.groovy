@@ -82,9 +82,10 @@ class ForkPlugin implements Plugin<Project> {
                 ignoreFailures = config.ignoreFailures
                 testOutputTimeout = config.testOutputTimeout
                 fallbackToScreenshots = config.fallbackToScreenshots;
-                totalAllowedRetryQuota = config.totalAllowedRetryQuota;
-                retryPerTestCaseQuota = config.retryPerTestCaseQuota;
-                autoGrantRuntimePermissions = config.autoGrantRuntimePermissions;
+                totalAllowedRetryQuota = config.totalAllowedRetryQuota
+                retryPerTestCaseQuota = config.retryPerTestCaseQuota
+                isCoverageEnabled = config.isCoverageEnabled
+                autoGrantRuntimePermissions = config.autoGrantRuntimePermissions
 
                 dependsOn projectOutput.assemble, variant.assemble
             }

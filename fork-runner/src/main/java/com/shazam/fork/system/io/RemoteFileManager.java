@@ -12,21 +12,35 @@
  */
 package com.shazam.fork.system.io;
 
-import com.android.ddmlib.*;
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.IDevice;
+import com.android.ddmlib.NullOutputReceiver;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.SyncException;
+import com.android.ddmlib.TimeoutException;
 import com.android.ddmlib.testrunner.TestIdentifier;
-
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
 public class RemoteFileManager {
+
     private static final Logger logger = LoggerFactory.getLogger(RemoteFileManager.class);
     private static final String FORK_DIRECTORY = "/sdcard/fork";
     private static final NullOutputReceiver NO_OP_RECEIVER = new NullOutputReceiver();
+    private static final String COVERAGE_DIRECTORY = FORK_DIRECTORY + "/coverage";
 
     public static void removeRemotePath(IDevice device, String remotePath) {
         executeCommand(device, "rm " + remotePath, "Could not delete remote file(s): " + remotePath);
+    }
+
+    public static void createCoverageDirectory(IDevice device) {
+        executeCommand(device, "mkdir " + COVERAGE_DIRECTORY,
+                       "Could not create remote directory: " + COVERAGE_DIRECTORY);
+    }
+
+    public static String getCoverageFileName(String testClassName) {
+        return COVERAGE_DIRECTORY + "/" + testClassName + ".ec";
     }
 
     public static void createRemoteDirectory(IDevice device) {
