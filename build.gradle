@@ -12,8 +12,8 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.10'
 }
 
-ext.sourceCompatibility = JavaVersion.VERSION_1_7
-ext.targetCompatibility = JavaVersion.VERSION_1_7
+ext.sourceCompatibility = JavaVersion.VERSION_1_8
+ext.targetCompatibility = JavaVersion.VERSION_1_8
 
 subprojects {
     buildscript {
