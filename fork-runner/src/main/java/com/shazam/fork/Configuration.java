@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
@@ -29,7 +30,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.shazam.fork.system.axmlparser.InstumentationInfoFactory.parseFromFile;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 
 public class Configuration {
     private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
@@ -269,7 +269,7 @@ public class Configuration {
             testClassRegex = assignValueOrDefaultIfNull(testClassRegex, Defaults.TEST_CLASS_REGEX);
             testPackage = assignValueOrDefaultIfNull(testPackage, instrumentationInfo.getInstrumentationPackage());
             testOutputTimeout = assignValueOrDefaultIfZero(testOutputTimeout, Defaults.TEST_OUTPUT_TIMEOUT_MILLIS);
-            excludedSerials = assignValueOrDefaultIfNull(excludedSerials, emptyList());
+            excludedSerials = assignValueOrDefaultIfNull(excludedSerials, Collections.<String>emptyList());
             checkArgument(totalAllowedRetryQuota >= 0, "Total allowed retry quota should not be negative.");
             checkArgument(retryPerTestCaseQuota >= 0, "Retry per test case quota should not be negative.");
             retryPerTestCaseQuota = assignValueOrDefaultIfZero(retryPerTestCaseQuota, Defaults.RETRY_QUOTA_PER_TEST_CASE);
