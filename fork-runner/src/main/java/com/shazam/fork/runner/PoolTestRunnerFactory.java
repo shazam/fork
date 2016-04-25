@@ -24,7 +24,7 @@ public class PoolTestRunnerFactory {
         this.deviceTestRunnerFactory = deviceTestRunnerFactory;
     }
 
-    public PoolTestRunner createPoolTestRunner(Pool pool,
+    public Runnable createPoolTestRunner(Pool pool,
                                                List<TestCaseEvent> testCases,
                                                CountDownLatch poolCountDownLatch,
                                                ProgressReporter progressReporter) {

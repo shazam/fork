@@ -64,7 +64,7 @@ public class ForkRunner {
 
             progressReporter.start();
             for (Pool pool : pools) {
-                PoolTestRunner poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(pool, testCases,
+                Runnable poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(pool, testCases,
                         poolCountDownLatch, progressReporter);
                 poolExecutor.execute(poolTestRunner);
             }

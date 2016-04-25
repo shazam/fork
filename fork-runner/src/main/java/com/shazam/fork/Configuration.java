@@ -220,7 +220,7 @@ public class Configuration {
         }
 
         public Builder withTestSize(String testSize) {
-            this.testSize = IRemoteAndroidTestRunner.TestSize.getTestSize(testSize);
+            this.testSize = (testSize == null ? null : IRemoteAndroidTestRunner.TestSize.getTestSize(testSize));
             return this;
         }
 
@@ -310,7 +310,7 @@ public class Configuration {
                         poolingStrategy.computed,
                         poolingStrategy.manual)
                         .stream()
-                        .filter(p -> p == null)
+                        .filter(p -> p != null)
                         .count();
                 if (selectedStrategies > Defaults.STRATEGY_LIMIT) {
                     throw new IllegalArgumentException("You have selected more than one strategies in configuration. " +
