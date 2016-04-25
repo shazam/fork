@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
+import javax.annotation.Nonnull;
+
 import static java.lang.String.format;
 
 public class Installer {
@@ -27,12 +29,18 @@ public class Installer {
 	private final String instrumentationPackage;
 	private final File apk;
 	private final File testApk;
+    private final boolean autoGrantRuntimePermissions;
 
-	public Installer(String applicationPackage, String instrumentationPackage, File apk, File testApk) {
+	public Installer(String applicationPackage,
+					 String instrumentationPackage,
+					 File apk,
+					 File testApk,
+					 boolean autoGrantRuntimePermissions) {
 		this.applicationPackage = applicationPackage;
 		this.instrumentationPackage = instrumentationPackage;
 		this.apk = apk;
 		this.testApk = testApk;
+		this.autoGrantRuntimePermissions = autoGrantRuntimePermissions;
 	}
 
 	public void prepareInstallation(IDevice device) {
@@ -40,6 +48,7 @@ public class Installer {
 		DdmPreferences.setTimeOut(30000);
 		reinstall(device, applicationPackage, apk);
 		reinstall(device, instrumentationPackage, testApk);
+		grantMockLocationInMarshmallow(device, applicationPackage);
 	}
 
 	private void reinstall(final IDevice device, final String appPackage, final File appApk) {
@@ -50,7 +59,9 @@ public class Installer {
                     logger.debug("Uninstalling {} from {}", appPackage, device.getSerialNumber());
                     device.uninstallPackage(appPackage);
                     logger.debug("Installing {} to {}", appPackage, device.getSerialNumber());
-					device.installPackage(appApk.getAbsolutePath(), true);
+                    boolean autoGrant = isMarshmallowOrMore(device) && autoGrantRuntimePermissions;
+                    device.installPackage(appApk.getAbsolutePath(), true,
+                            autoGrant ? "-g" : "");
 				} catch (InstallException e) {
 					throw new RuntimeException(message, e);
 				}
@@ -87,7 +98,24 @@ public class Installer {
                     }
                     return;
                 }
-			}
-		}
-	}
+            }
+        }
+    }
+
+    private void grantMockLocationInMarshmallow(final IDevice device, final String appPackage) {
+        if (isMarshmallowOrMore(device)) {
+            CollectingShellOutputReceiver receiver = new CollectingShellOutputReceiver();
+            String command = " appops set " + appPackage + " android:mock_location allow";
+            try {
+                device.executeShellCommand(command, receiver);
+                logger.debug("When mock location granted for " + appPackage + " :" + receiver.getOutput());
+            } catch (Exception e) {
+                logger.warn("Error when executing " + command + " on " + device.getSerialNumber(), e);
+            }
+        }
+    }
+
+    private boolean isMarshmallowOrMore(@Nonnull IDevice device){
+        return device.getVersion().getApiLevel() >= 23;
+    }
 }

@@ -71,19 +71,20 @@ Will potentially be unsupported, as it's the least developer friendly. Check out
 ```
 > gradlew fork-runner:run -Pargs='ARGUMENTS LIST'
 
-With the below options.         The APK and test APK parameters are mandatory:
-    --sdk                       Path to Android SDK. Defaults to the ANDROID_HOME environment variable.
-    --apk                       Path to application. This parameter is required.
-    --test-apk                  Path to test application. This parameter is required.
-    --output                    Output path. Defaults to "fork-output"
-    --test-package              The package to consider when finding tests to run. Defaults to instrumentation package.
-    --test-class-regex          Regex determining class names to consider when finding tests to run. Defaults to ^((?!Abstract).)*Test$
-    --test-timeout              The maximum amount of time during which the tests are allowed to not output any response, in milliseconds
-    --fail-on-failure           Non-zero exit code on failure. Defaults to false.
-    --fallback-to-screenshots   If a device does not support videos, define if you'd like animated GIFs (experimental). Defaults to true.
-    --total-allowed-retry-quota Total amount of allowed retries. If a test case fails and this quota hasn't been exhausted yet,
-                                the test case is scheduled to be executed again in the same device pool. Default to 0;
-    --retry-per-test-case-quota Amount of times a single test can be re-executed before declaring it a failure. Default to 1.
+With the below options.              The APK and test APK parameters are mandatory:
+    --sdk                            Path to Android SDK. Defaults to the ANDROID_HOME environment variable.
+    --apk                            Path to application. This parameter is required.
+    --test-apk                       Path to test application. This parameter is required.
+    --output                         Output path. Defaults to "fork-output"
+    --test-package                   The package to consider when finding tests to run. Defaults to instrumentation package.
+    --test-class-regex               Regex determining class names to consider when finding tests to run. Defaults to ^((?!Abstract).)*Test$
+    --test-timeout                   The maximum amount of time during which the tests are allowed to not output any response, in milliseconds
+    --fail-on-failure                Non-zero exit code on failure. Defaults to false.
+    --fallback-to-screenshots        If a device does not support videos, define if you'd like animated GIFs (experimental). Defaults to true.
+    --total-allowed-retry-quota      Total amount of allowed retries. If a test case fails and this quota hasn't been exhausted yet,
+                                     the test case is scheduled to be executed again in the same device pool. Default to 0;
+    --retry-per-test-case-quota      Amount of times a single test can be re-executed before declaring it a failure. Default to 1.
+    --auto-grant-runtime-permissions Grants all runtime permissions in Android Marshmallow+. Default is true.
 ```
 
 For example:
