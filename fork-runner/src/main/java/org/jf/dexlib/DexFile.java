@@ -370,7 +370,7 @@ public class DexFile
             } else if (isDex) {
                 in = new ByteArrayInput(FileUtils.readStream(inputStream, (int)fileLength));
             } else {
-                StringBuffer sb = new StringBuffer("bad magic value:");
+                StringBuilder sb = new StringBuilder("bad magic value:");
                 for (int i=0; i<8; i++) {
                     sb.append(" ");
                     sb.append(Hex.u1(magic[i]));

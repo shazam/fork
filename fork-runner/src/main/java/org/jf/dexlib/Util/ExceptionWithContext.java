@@ -33,7 +33,7 @@ import java.io.PrintWriter;
 public class ExceptionWithContext
         extends RuntimeException {
     /** non-null; human-oriented context of the exception */
-    private StringBuffer context;
+    private StringBuilder context;
 
     /**
      * Augments the given exception with the given context, and return the
@@ -89,10 +89,10 @@ public class ExceptionWithContext
 
         if (cause instanceof ExceptionWithContext) {
             String ctx = ((ExceptionWithContext) cause).context.toString();
-            context = new StringBuffer(ctx.length() + 200);
+            context = new StringBuilder(ctx.length() + 200);
             context.append(ctx);
         } else {
-            context = new StringBuffer(200);
+            context = new StringBuilder(200);
         }
     }
 
