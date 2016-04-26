@@ -3194,8 +3194,8 @@ public class MethodAnalyzer {
                     methodParameterRegisterCount + 1, registers.getCount()));
         }
 
-        RegisterType objectRegisterType = null;
-        int objectRegister = 0;
+        RegisterType objectRegisterType;
+        int objectRegister;
         if ((invokeType & INVOKE_STATIC) == 0) {
             objectRegister = registers.getRegister();
             registers.moveNext();
