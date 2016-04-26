@@ -90,11 +90,9 @@ public class SparseArray<E> {
     public void delete(int key) {
         int i = binarySearch(mKeys, 0, mSize, key);
 
-        if (i >= 0) {
-            if (mValues[i] != DELETED) {
-                mValues[i] = DELETED;
-                mGarbage = true;
-            }
+        if (i >= 0 && mValues[i] != DELETED) {
+            mValues[i] = DELETED;
+            mGarbage = true;
         }
     }
 
