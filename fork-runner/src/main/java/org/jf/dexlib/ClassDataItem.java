@@ -89,7 +89,7 @@ public class ClassDataItem extends Item<ClassDataItem> {
         EncodedMethod[] directMethodsArray = null;
         EncodedMethod[] virtualMethodsArray = null;
 
-        if (staticFields != null && staticFields.size() > 0) {
+        if (staticFields != null && !staticFields.isEmpty()) {
             SortedSet<EncodedField> staticFieldsSet = new TreeSet<EncodedField>();
             for (EncodedField staticField: staticFields) {
                 if (staticFieldsSet.contains(staticField)) {
@@ -104,7 +104,7 @@ public class ClassDataItem extends Item<ClassDataItem> {
             staticFieldsArray = staticFieldsSet.toArray(staticFieldsArray);
         }
 
-        if (instanceFields != null && instanceFields.size() > 0) {
+        if (instanceFields != null && !instanceFields.isEmpty()) {
             SortedSet<EncodedField> instanceFieldsSet = new TreeSet<EncodedField>();
             for (EncodedField instanceField: instanceFields) {
                 if (instanceFieldsSet.contains(instanceField)) {
@@ -121,7 +121,7 @@ public class ClassDataItem extends Item<ClassDataItem> {
 
         TreeSet<EncodedMethod> directMethodSet = new TreeSet<EncodedMethod>();
 
-        if (directMethods != null && directMethods.size() > 0) {
+        if (directMethods != null && !directMethods.isEmpty()) {
             for (EncodedMethod directMethod: directMethods) {
                 if (directMethodSet.contains(directMethod)) {
                     System.err.println(String.format("Ignoring duplicate direct method definition: %s",
@@ -135,7 +135,7 @@ public class ClassDataItem extends Item<ClassDataItem> {
             directMethodsArray = directMethodSet.toArray(directMethodsArray);
         }
 
-        if (virtualMethods != null && virtualMethods.size() > 0) {
+        if (virtualMethods != null && !virtualMethods.isEmpty()) {
             TreeSet<EncodedMethod> virtualMethodSet = new TreeSet<EncodedMethod>();
             for (EncodedMethod virtualMethod: virtualMethods) {
                 if (directMethodSet.contains(virtualMethod)) {

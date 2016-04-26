@@ -74,7 +74,7 @@ public class AnnotationDirectoryItem extends Item<AnnotationDirectoryItem> {
         super(dexFile);
         this.classAnnotations = classAnnotations;
 
-        if (fieldAnnotations == null || fieldAnnotations.size() == 0) {
+        if (fieldAnnotations == null || fieldAnnotations.isEmpty()) {
             this.fieldAnnotations = null;
         } else {
             this.fieldAnnotations = new FieldAnnotation[fieldAnnotations.size()];
@@ -82,7 +82,7 @@ public class AnnotationDirectoryItem extends Item<AnnotationDirectoryItem> {
             Arrays.sort(this.fieldAnnotations);
         }
 
-        if (methodAnnotations == null || methodAnnotations.size() == 0) {
+        if (methodAnnotations == null || methodAnnotations.isEmpty()) {
             this.methodAnnotations = null;
         } else {
             this.methodAnnotations = new MethodAnnotation[methodAnnotations.size()];
@@ -90,7 +90,7 @@ public class AnnotationDirectoryItem extends Item<AnnotationDirectoryItem> {
             Arrays.sort(this.methodAnnotations);
         }
 
-        if (parameterAnnotations == null || parameterAnnotations.size() == 0) {
+        if (parameterAnnotations == null || parameterAnnotations.isEmpty()) {
             this.parameterAnnotations = null;
         } else {
             this.parameterAnnotations = new ParameterAnnotation[parameterAnnotations.size()];

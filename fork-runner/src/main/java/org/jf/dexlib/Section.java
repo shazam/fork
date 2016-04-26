@@ -84,7 +84,7 @@ public abstract class Section<T extends Item> {
      * @return the offset of the byte immediate after the last item in this section
      */
     protected int placeAt(int offset) {
-        if (items.size() > 0) {
+        if (!items.isEmpty()) {
             offset = AlignmentUtils.alignOffset(offset, ItemType.ItemAlignment);
             assert !DexFile.getInplace() || offset == this.offset;
             this.offset = offset;

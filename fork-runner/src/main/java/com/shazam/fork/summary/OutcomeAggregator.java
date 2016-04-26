@@ -43,7 +43,7 @@ public class OutcomeAggregator {
             public Boolean apply(@Nullable PoolSummary input) {
                 final Collection<TestResult> testResults = input.getTestResults();
                 final Collection<Boolean> testOutcomes = transform(testResults, toTestOutcome());
-                return testOutcomes.size() > 0 && and(testOutcomes);
+                return !testOutcomes.isEmpty() && and(testOutcomes);
             }
         };
     }
