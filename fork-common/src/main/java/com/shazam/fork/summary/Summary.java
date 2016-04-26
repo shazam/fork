@@ -39,11 +39,11 @@ public class Summary {
     }
 
     @Nonnull
-    public ArrayList<String> getIgnoredTests() {
+    public List<String> getIgnoredTests() {
         return ignoredTests;
     }
 
-    public ArrayList<String> getFailedTests() {
+    public List<String> getFailedTests() {
         return failedTests;
     }
 
