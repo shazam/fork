@@ -1282,7 +1282,7 @@ public class ClassPath {
             TypeListItem typeList = classDefItem.getInterfaces();
             if (typeList != null) {
                 List<TypeIdItem> types = typeList.getTypes();
-                if (types != null && types.size() > 0) {
+                if (types != null && !types.isEmpty()) {
                     String[] interfaces = new String[types.size()];
                     for (int i=0; i<interfaces.length; i++) {
                         interfaces[i] = types.get(i).getTypeDescriptor();
@@ -1295,7 +1295,7 @@ public class ClassPath {
 
         private String[] loadDirectMethods(ClassDataItem classDataItem, boolean[][] _staticMethods) {
             List<EncodedMethod> encodedMethods = classDataItem.getDirectMethods();
-            if (encodedMethods.size() > 0) {
+            if (!encodedMethods.isEmpty()) {
                 boolean[] staticMethods = new boolean[encodedMethods.size()];
                 String[] directMethods = new String[encodedMethods.size()];
 
@@ -1315,7 +1315,7 @@ public class ClassPath {
 
         private VirtualMethod[] loadVirtualMethods(ClassDataItem classDataItem) {
             List<EncodedMethod> encodedMethods = classDataItem.getVirtualMethods();
-            if (encodedMethods.size() > 0) {
+            if (!encodedMethods.isEmpty()) {
                 VirtualMethod[] virtualMethods = new VirtualMethod[encodedMethods.size()];
                 for (int i=0; i<encodedMethods.size(); i++) {
                     virtualMethods[i] = new VirtualMethod();
@@ -1338,7 +1338,7 @@ public class ClassPath {
 
         private String[][] loadInstanceFields(ClassDataItem classDataItem) {
             List<EncodedField> encodedFields = classDataItem.getInstanceFields();
-            if (encodedFields.size() > 0) {
+            if (!encodedFields.isEmpty()) {
                 String[][] instanceFields = new String[encodedFields.size()][2];
                 for (int i=0; i<encodedFields.size(); i++) {
                     EncodedField encodedField = encodedFields.get(i);

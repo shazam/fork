@@ -114,17 +114,17 @@ public class CodeItem extends Item<CodeItem> {
         EncodedCatchHandler[] encodedCatchHandlersArray = null;
         Instruction[] instructionsArray = null;
 
-        if (tries != null && tries.size() > 0) {
+        if (tries != null && !tries.isEmpty()) {
             triesArray = new TryItem[tries.size()];
             tries.toArray(triesArray);
         }
 
-        if (encodedCatchHandlers != null && encodedCatchHandlers.size() > 0) {
+        if (encodedCatchHandlers != null && !encodedCatchHandlers.isEmpty()) {
             encodedCatchHandlersArray = new EncodedCatchHandler[encodedCatchHandlers.size()];
             encodedCatchHandlers.toArray(encodedCatchHandlersArray);
         }
 
-        if (instructions != null && instructions.size() > 0) {
+        if (instructions != null && !instructions.isEmpty()) {
             instructionsArray = new Instruction[instructions.size()];
             instructions.toArray(instructionsArray);
         }

@@ -113,7 +113,7 @@ public class ClassDefItem extends Item<ClassDefItem> {
                          @Nullable ClassDataItem classData,
                          @Nullable List<StaticFieldInitializer> staticFieldInitializers) {
         EncodedArrayItem encodedArrayItem = null;
-        if(!dexFile.getInplace() && staticFieldInitializers != null && staticFieldInitializers.size() > 0) {
+        if(!dexFile.getInplace() && staticFieldInitializers != null && !staticFieldInitializers.isEmpty()) {
             assert classData != null;
             assert staticFieldInitializers.size() == classData.getStaticFieldCount();
             encodedArrayItem = makeStaticFieldInitializersItem(dexFile, staticFieldInitializers);
@@ -329,7 +329,7 @@ public class ClassDefItem extends Item<ClassDefItem> {
      */
     private static EncodedArrayItem makeStaticFieldInitializersItem(DexFile dexFile,
             @Nonnull List<StaticFieldInitializer> staticFieldInitializers) {
-        if (staticFieldInitializers.size() == 0) {
+        if (staticFieldInitializers.isEmpty()) {
             return null;
         }
 
