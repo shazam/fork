@@ -415,7 +415,7 @@ public class CodeItem extends Item<CodeItem> {
 
     public void fixInstructions(boolean fixJumbo, boolean fixGoto) {
         try {
-            boolean didSomething = false;
+            boolean didSomething;
 
             do
             {

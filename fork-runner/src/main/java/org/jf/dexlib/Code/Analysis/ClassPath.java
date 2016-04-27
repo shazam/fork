@@ -240,7 +240,7 @@ public class ClassPath {
      */
     @Nullable
     private static ClassDef loadClassDef(String classType) {
-        ClassDef classDef = null;
+        ClassDef classDef;
 
         UnresolvedClassInfo classInfo = theClassPath.unloadedClasses.get(classType);
         if (classInfo == null) {
@@ -940,7 +940,7 @@ public class ClassPath {
             List<VirtualMethod> virtualMethodList = new LinkedList<VirtualMethod>();
 
             //copy the virtual methods from the superclass
-            int methodIndex = 0;
+            int methodIndex;
             if (superclass != null) {
                 for (int i=0; i<superclass.vtable.length; i++) {
                     virtualMethodList.add(superclass.vtable[i]);
