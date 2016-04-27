@@ -191,7 +191,7 @@ public class FieldIdItem extends Item<FieldIdItem> implements Convertible<FieldI
             String fieldName = this.fieldName.getStringValue();
             String fieldType = this.fieldType.getTypeDescriptor();
 
-            StringBuffer sb = new StringBuffer(typeDescriptor.length() + fieldName.length() + fieldType.length() + 3);
+            StringBuilder sb = new StringBuilder(typeDescriptor.length() + fieldName.length() + fieldType.length() + 3);
             sb.append(typeDescriptor);
             sb.append("->");
             sb.append(fieldName);
@@ -211,7 +211,7 @@ public class FieldIdItem extends Item<FieldIdItem> implements Convertible<FieldI
             String fieldName = this.fieldName.getStringValue();
             String fieldType = this.fieldType.getTypeDescriptor();
 
-            StringBuffer sb = new StringBuffer(fieldName.length() + fieldType.length() + 1);
+            StringBuilder sb = new StringBuilder(fieldName.length() + fieldType.length() + 1);
             sb.append(fieldName);
             sb.append(":");
             sb.append(fieldType);
