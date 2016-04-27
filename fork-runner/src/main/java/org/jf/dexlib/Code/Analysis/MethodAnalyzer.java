@@ -507,11 +507,9 @@ public class MethodAnalyzer {
                 currentCodeAddress = getInstructionAddress(instruction);
 
                 //check if we have gone past the end of the current try
-                if (currentTry != null) {
-                    if (currentTry.getStartCodeAddress() + currentTry.getTryLength() <= currentCodeAddress) {
-                        currentTry = null;
-                        triesIndex++;
-                    }
+                if (currentTry != null && currentTry.getStartCodeAddress() + currentTry.getTryLength() <= currentCodeAddress) {
+                    currentTry = null;
+                    triesIndex++;
                 }
 
                 //check if the next try is applicable yet
@@ -3226,13 +3224,11 @@ public class MethodAnalyzer {
                         methodIdItem.getMethodString(), objectRegisterType.toString()));
             }
 
-            if (isInit) {
-                if (objectRegisterType.type.getSuperclass() == methodClassDef) {
-                    if (!encodedMethod.method.getMethodName().getStringValue().equals("<init>")) {
-                        throw new ValidationException(String.format("Cannot call %s on type %s. The object type must " +
-                                "match the method type exactly", methodIdItem.getMethodString(),
-                                objectRegisterType.type.getClassType()));
-                    }
+            if (isInit && objectRegisterType.type.getSuperclass() == methodClassDef) {
+                if (!encodedMethod.method.getMethodName().getStringValue().equals("<init>")) {
+                    throw new ValidationException(String.format("Cannot call %s on type %s. The object type must " +
+                                    "match the method type exactly", methodIdItem.getMethodString(),
+                            objectRegisterType.type.getClassType()));
                 }
             }
 

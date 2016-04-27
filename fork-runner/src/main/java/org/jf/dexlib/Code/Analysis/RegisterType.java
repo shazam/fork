@@ -296,12 +296,10 @@ public class RegisterType {
 
     public boolean canBeAssignedTo(RegisterType slotType) {
         if (Category.assigmentTable[this.category.ordinal()][slotType.category.ordinal()]) {
-            if (this.category == Category.Reference && slotType.category == Category.Reference) {
-                if (!slotType.type.isInterface()) {
-                    return this.type.extendsClass(slotType.type);
-                }
+            if (this.category == Category.Reference && slotType.category == Category.Reference && !slotType.type.isInterface()) {
                 //for verification, we assume all objects implement all interfaces, so we don't verify the type if
                 //slotType is an interface
+                return this.type.extendsClass(slotType.type);
             }
             return true;
         }

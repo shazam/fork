@@ -1172,13 +1172,11 @@ public class ClassPath {
 
                 //add padding to align the wide fields, if needed
                 if (fieldTypes[i] == WIDE && !gotDouble) {
-                    if (!gotDouble) {
-                        if (fieldOffset % 8 != 0) {
-                            assert fieldOffset % 8 == 4;
-                            fieldOffset += 4;
-                        }
-                        gotDouble = true;
+                    if (fieldOffset % 8 != 0) {
+                        assert fieldOffset % 8 == 4;
+                        fieldOffset += 4;
                     }
+                    gotDouble = true;
                 }
 
                 instanceFields.append(fieldOffset, field);
