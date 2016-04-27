@@ -58,7 +58,7 @@ public class TryListBuilder
 
         public int startAddress;
         public int endAddress;
-        public LinkedList<Handler> handlers;
+        public List<Handler> handlers;
 
         public int catchAllHandlerAddress;
 

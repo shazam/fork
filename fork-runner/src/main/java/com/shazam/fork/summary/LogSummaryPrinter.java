@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -45,7 +46,7 @@ public class LogSummaryPrinter implements SummaryPrinter {
         for (PoolSummary poolSummary : summary.getPoolSummaries()) {
             printMiniSummary(poolSummary);
         }
-		ArrayList<String> suppressedTests = summary.getIgnoredTests();
+		List<String> suppressedTests = summary.getIgnoredTests();
 		if (suppressedTests.isEmpty()) {
             logger.info("No suppressed tests.");
 		} else {
