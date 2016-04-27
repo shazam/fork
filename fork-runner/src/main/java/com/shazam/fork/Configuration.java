@@ -13,7 +13,7 @@
 package com.shazam.fork;
 
 import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
-import com.shazam.fork.model.InstrumentationInfo;
+import com.shazam.fork.system.axmlparser.InstrumentationInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +37,9 @@ public class Configuration {
     private final File androidSdk;
     private final File applicationApk;
     private final File instrumentationApk;
-    private final InstrumentationInfo instrumentationInfo;
+    private final String applicationPackage;
+    private final String instrumentationPackage;
+    private final String testRunnerClass;
     private final File output;
     private final String title;
     private final String subtitle;
@@ -56,7 +58,9 @@ public class Configuration {
         androidSdk = builder.androidSdk;
         applicationApk = builder.applicationApk;
         instrumentationApk = builder.instrumentationApk;
-        instrumentationInfo = builder.instrumentationInfo;
+        applicationPackage = builder.applicationPackage;
+        instrumentationPackage = builder.instrumentationPackage;
+        testRunnerClass = builder.testRunnerClass;
         output = builder.output;
         title = builder.title;
         subtitle = builder.subtitle;
@@ -88,8 +92,18 @@ public class Configuration {
     }
 
     @Nonnull
-    public InstrumentationInfo getInstrumentationInfo() {
-        return instrumentationInfo;
+    public String getApplicationPackage() {
+        return applicationPackage;
+    }
+
+    @Nonnull
+    public String getInstrumentationPackage() {
+        return instrumentationPackage;
+    }
+
+    @Nonnull
+    public String getTestRunnerClass() {
+        return testRunnerClass;
     }
 
     @Nonnull
@@ -155,7 +169,9 @@ public class Configuration {
         private File androidSdk;
         private File applicationApk;
         private File instrumentationApk;
-        private InstrumentationInfo instrumentationInfo;
+        private String applicationPackage;
+        private String instrumentationPackage;
+        private String testRunnerClass;
         private File output;
         private String title;
         private String subtitle;
@@ -261,9 +277,15 @@ public class Configuration {
             checkArgument(applicationApk.exists(), "Application APK file does not exist.");
             checkNotNull(instrumentationApk, "Instrumentation APK is required.");
             checkArgument(instrumentationApk.exists(), "Instrumentation APK file does not exist.");
+            InstrumentationInfo instrumentationInfo = parseFromFile(instrumentationApk);
+            checkNotNull(instrumentationInfo.getApplicationPackage(), "Application package was not found in test APK");
+            applicationPackage = instrumentationInfo.getApplicationPackage();
+            checkNotNull(instrumentationInfo.getInstrumentationPackage(), "Instrumentation package was not found in test APK");
+            instrumentationPackage = instrumentationInfo.getInstrumentationPackage();
+            checkNotNull(instrumentationInfo.getTestRunnerClass(), "Test runner class was not found in test APK");
+            testRunnerClass = instrumentationInfo.getTestRunnerClass();
             checkNotNull(output, "Output path is required.");
 
-            instrumentationInfo = parseFromFile(instrumentationApk);
             title = assignValueOrDefaultIfNull(title, Defaults.TITLE);
             subtitle = assignValueOrDefaultIfNull(subtitle, Defaults.SUBTITLE);
             testClassRegex = assignValueOrDefaultIfNull(testClassRegex, Defaults.TEST_CLASS_REGEX);

@@ -10,8 +10,6 @@
 
 package com.shazam.fork.system.axmlparser;
 
-import com.shazam.fork.model.InstrumentationInfo;
-
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;

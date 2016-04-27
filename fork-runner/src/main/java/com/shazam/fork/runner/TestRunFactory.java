@@ -35,13 +35,11 @@ public class TestRunFactory {
                                  Pool pool,
                                  ProgressReporter progressReporter,
                                  Queue<TestCaseEvent> queueOfTestsInPool) {
-        InstrumentationInfo instrumentationInfo = configuration.getInstrumentationInfo();
-
         TestRunParameters testRunParameters = testRunParameters()
                 .withDeviceInterface(device.getDeviceInterface())
                 .withTest(testCase)
-                .withTestPackage(instrumentationInfo.getInstrumentationPackage())
-                .withTestRunner(instrumentationInfo.getTestRunnerClass())
+                .withTestPackage(configuration.getInstrumentationPackage())
+                .withTestRunner(configuration.getTestRunnerClass())
                 .withTestSize(configuration.getTestSize())
                 .withTestOutputTimeout((int) configuration.getTestOutputTimeout())
                 .withCoverageEnabled(configuration.isCoverageEnabled())
