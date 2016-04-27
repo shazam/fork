@@ -14,9 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 class Defaults {
     static final long TEST_OUTPUT_TIMEOUT_MILLIS = TimeUnit.MINUTES.toMillis(1);
-    static final String TEST_CLASS_REGEX = "^((?!Abstract).)*Test$";
-    static final String TEST_OUTPUT = "fork-output";
-    static final String ANDROID_SDK = System.getenv("ANDROID_HOME");
+    static final String FORK_OUTPUT = "fork-output";
     static final int STRATEGY_LIMIT = 1;
     static final String TITLE = "Fork Report";
     static final String SUBTITLE = "";

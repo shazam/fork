@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import static com.shazam.fork.injector.pooling.PoolLoaderInjector.poolLoader;
 import static com.shazam.fork.injector.runner.PoolTestRunnerFactoryInjector.poolTestRunnerFactory;
 import static com.shazam.fork.injector.runner.ProgressReporterInjector.progressReporter;
-import static com.shazam.fork.injector.suite.TestClassLoaderInjector.testClassLoader;
+import static com.shazam.fork.injector.suite.TestSuiteLoaderInjector.testSuiteLoader;
 import static com.shazam.fork.injector.summary.SummaryGeneratorHookInjector.summaryGeneratorHook;
 import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
 import static java.lang.System.nanoTime;
@@ -34,7 +34,7 @@ public class ForkRunnerInjector {
 
         ForkRunner forkRunner = new ForkRunner(
                 poolLoader(),
-                testClassLoader(),
+                testSuiteLoader(),
                 poolTestRunnerFactory(),
                 progressReporter(),
                 summaryGeneratorHook());

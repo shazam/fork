@@ -12,8 +12,6 @@
  */
 package com.shazam.fork;
 
-import com.android.ddmlib.AndroidDebugBridge;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,9 +24,6 @@ import static java.lang.System.nanoTime;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatPeriod;
 
-/**
- * Represents a collection of devices and the test output to be executed.
- */
 public final class Fork {
     private static final Logger logger = LoggerFactory.getLogger(Fork.class);
 
@@ -41,18 +36,17 @@ public final class Fork {
         this.forkRunner = forkRunner();
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public boolean run() {
 		long startOfTestsMs = nanoTime();
 		try {
             deleteDirectory(output);
+            //noinspection ResultOfMethodCallIgnored
             output.mkdirs();
             return forkRunner.run();
 		} catch (Exception e) {
             logger.error("Error while running Fork", e);
 			return false;
 		} finally {
-			AndroidDebugBridge.terminate();
             long duration = millisSinceNanoTime(startOfTestsMs);
             logger.info(formatPeriod(0, duration, "'Total time taken:' H 'hours' m 'minutes' s 'seconds'"));
 		}

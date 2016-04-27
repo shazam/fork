@@ -13,6 +13,7 @@
 package com.shazam.fork.pooling.geometry;
 
 import com.android.ddmlib.IDevice;
+import com.shazam.fork.device.DisplayGeometryRetrievalStrategy;
 import com.shazam.fork.model.DisplayGeometry;
 import com.shazam.fork.system.adb.CollectingShellOutputReceiver;
 import org.slf4j.Logger;

@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 
 import static com.shazam.fork.Configuration.Builder.configuration;
-import static com.shazam.fork.Utils.cleanFile;
 import static com.shazam.fork.injector.GsonInjector.gson;
+import static com.shazam.fork.utils.Utils.cleanFile;
 
 public class ForkCli {
 
@@ -76,29 +76,29 @@ public class ForkCli {
 
         try {
             Reader configFileReader = new FileReader(parsedArgs.configurationFile);
-            UserConfiguration userConfiguration = gson().fromJson(configFileReader, UserConfiguration.class);
+            ForkConfiguration forkConfiguration = gson().fromJson(configFileReader, ForkConfiguration.class);
 
             Configuration configuration = configuration()
-                    .withAndroidSdk(parsedArgs.sdk != null ? parsedArgs.sdk : cleanFile(Defaults.ANDROID_SDK))
+                    .withAndroidSdk(parsedArgs.sdk != null ? parsedArgs.sdk : cleanFile(CommonDefaults.ANDROID_SDK))
                     .withApplicationApk(parsedArgs.apk)
                     .withInstrumentationApk(parsedArgs.testApk)
-                    .withOutput(userConfiguration.baseOutputDir != null ? cleanFile(userConfiguration.baseOutputDir) : cleanFile(Defaults.TEST_OUTPUT))
-                    .withTitle(userConfiguration.title)
-                    .withSubtitle(userConfiguration.subtitle)
-                    .withTestClassRegex(userConfiguration.testClassRegex)
-                    .withTestPackage(userConfiguration.testPackage)
-                    .withTestOutputTimeout(userConfiguration.testOutputTimeout)
-                    .withTestSize(userConfiguration.testSize)
-                    .withExcludedSerials(userConfiguration.excludedSerials)
-                    .withFallbackToScreenshots(userConfiguration.fallbackToScreenshots)
-                    .withTotalAllowedRetryQuota(userConfiguration.totalAllowedRetryQuota)
-                    .withRetryPerTestCaseQuota(userConfiguration.retryPerTestCaseQuota)
-                    .withCoverageEnabled(userConfiguration.isCoverageEnabled)
-                    .withPoolingStrategy(userConfiguration.poolingStrategy)
+                    .withOutput(forkConfiguration.baseOutputDir != null ? cleanFile(forkConfiguration.baseOutputDir) : cleanFile(Defaults.FORK_OUTPUT))
+                    .withTitle(forkConfiguration.title)
+                    .withSubtitle(forkConfiguration.subtitle)
+                    .withTestClassRegex(forkConfiguration.testClassRegex)
+                    .withTestPackage(forkConfiguration.testPackage)
+                    .withTestOutputTimeout(forkConfiguration.testOutputTimeout)
+                    .withTestSize(forkConfiguration.testSize)
+                    .withExcludedSerials(forkConfiguration.excludedSerials)
+                    .withFallbackToScreenshots(forkConfiguration.fallbackToScreenshots)
+                    .withTotalAllowedRetryQuota(forkConfiguration.totalAllowedRetryQuota)
+                    .withRetryPerTestCaseQuota(forkConfiguration.retryPerTestCaseQuota)
+                    .withCoverageEnabled(forkConfiguration.isCoverageEnabled)
+                    .withPoolingStrategy(forkConfiguration.poolingStrategy)
                     .build();
 
             Fork fork = new Fork(configuration);
-            if (!fork.run() && !userConfiguration.ignoreFailures) {
+            if (!fork.run() && !forkConfiguration.ignoreFailures) {
                 System.exit(1);
             }
         } catch (FileNotFoundException e) {

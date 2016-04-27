@@ -10,6 +10,10 @@
 
 package com.shazam.fork.utils;
 
+import java.io.File;
+
+import javax.annotation.Nullable;
+
 import static java.lang.System.nanoTime;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
@@ -25,4 +29,11 @@ public class Utils {
         return MILLISECONDS.convert(elapsedNanos, NANOSECONDS);
     }
 
+    @Nullable
+    public static File cleanFile(String path) {
+        if (path == null) {
+            return null;
+        }
+        return new File(path).getAbsoluteFile();
+    }
 }

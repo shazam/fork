@@ -13,7 +13,7 @@ package com.shazam.fork.injector.pooling;
 import com.shazam.fork.pooling.PoolLoader;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
-import static com.shazam.fork.injector.pooling.DeviceLoaderInjector.deviceLoader;
+import static com.shazam.fork.injector.device.DeviceLoaderInjector.deviceLoader;
 
 public class PoolLoaderInjector {
 

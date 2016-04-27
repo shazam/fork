@@ -37,9 +37,8 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
     private final TestCaseEvent testCase;
 
     @Nonnull
-    private
-    ProgressReporter progressReporter;
-    TestIdentifier test;
+    private final ProgressReporter progressReporter;
+    private TestIdentifier test;
 
     public ForkXmlTestRunListener(FileManager fileManager,
                                   Pool pool,
@@ -66,7 +65,6 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
 
     @Override
     protected Map<String, String> getPropertiesAttributes() {
-
         ImmutableMap.Builder<String, String> mapBuilder = ImmutableMap.<String, String>builder()
                 .putAll(super.getPropertiesAttributes());
         if (test != null) {

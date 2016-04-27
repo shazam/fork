@@ -31,12 +31,4 @@ public class Utils {
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat(nameFormat).build();
         return newFixedThreadPool(numberOfThreads, namedThreadFactory);
     }
-
-    @Nullable
-    static File cleanFile(String path) {
-        if (path == null) {
-            return null;
-        }
-        return new File(path).getAbsoluteFile();
-    }
 }

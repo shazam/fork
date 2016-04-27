@@ -12,6 +12,7 @@ package com.shazam.fork.pooling;
 
 import com.shazam.fork.Configuration;
 import com.shazam.fork.PoolingStrategy;
+import com.shazam.fork.device.DeviceLoader;
 import com.shazam.fork.model.Devices;
 import com.shazam.fork.model.Pool;
 

@@ -2,10 +2,7 @@ package com.shazam.fork.runner.listeners;
 
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
-import com.shazam.fork.model.Device;
-import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.TestCaseEvent;
-import com.shazam.fork.model.TestClass;
+import com.shazam.fork.model.*;
 import com.shazam.fork.system.io.FileManager;
 import com.shazam.fork.system.io.RemoteFileManager;
 

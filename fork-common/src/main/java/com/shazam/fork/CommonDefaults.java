@@ -11,8 +11,10 @@
 package com.shazam.fork;
 
 public class CommonDefaults {
+    public static final String ANDROID_SDK = System.getenv("ANDROID_HOME");
     public static final String FORK = "fork-";
     public static final String JSON = "json";
+    public static final String TEST_CLASS_REGEX = "^((?!Abstract).)*Test$";
     public static final String FORK_SUMMARY_FILENAME_FORMAT = FORK + "%s." + JSON;
     public static final String FORK_SUMMARY_FILENAME_REGEX = FORK + ".*\\." + JSON;
     public static final String BUILD_ID_TOKEN = "{BUILD_ID}";
