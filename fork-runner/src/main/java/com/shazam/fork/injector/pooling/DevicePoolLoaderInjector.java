@@ -22,6 +22,8 @@ import static com.shazam.fork.injector.RuntimeConfigurationInjector.runtimeConfi
 
 public class DevicePoolLoaderInjector {
 
+    private DevicePoolLoaderInjector() {}
+
     public static DevicePoolLoader devicePoolLoader() {
         return new CompositeDevicePoolLoader(devicePoolLoaders(runtimeConfiguration()));
     }

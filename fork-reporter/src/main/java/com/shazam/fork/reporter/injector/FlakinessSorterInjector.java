@@ -17,6 +17,9 @@ import static com.shazam.fork.reporter.injector.ConfigurationInjector.configurat
 import static com.shazam.fork.reporter.injector.TestLinkCreatorInjector.testLinkCreator;
 
 public class FlakinessSorterInjector {
+
+    private FlakinessSorterInjector() {}
+
     public static FlakinessSorter flakinessSorter() {
         return new FlakinessSorter(configuration().getTitle(), buildLinkCreator(), testLinkCreator());
     }

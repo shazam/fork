@@ -14,6 +14,8 @@ import static org.apache.commons.lang3.text.WordUtils.capitalizeFully;
 
 public class ReadableNames {
 
+    private ReadableNames() {}
+
     public static String readablePoolName(String poolName) {
         return capitalize(poolName);
     }

@@ -17,6 +17,8 @@ import static com.shazam.fork.injector.pooling.DevicePoolLoaderInjector.devicePo
 
 public class PoolLoaderInjector {
 
+    private PoolLoaderInjector() {}
+
     public static PoolLoader poolLoader() {
         return new PoolLoader(deviceLoader(), devicePoolLoader());
     }

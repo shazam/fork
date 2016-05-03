@@ -21,6 +21,8 @@ import static com.shazam.fork.injector.pooling.ComputedPoolsConfigurationFactory
 
 public class RuntimeConfigurationInjector {
 
+    private RuntimeConfigurationInjector() {}
+
     private static final RuntimeConfiguration RUNTIME_CONFIGURATION = aRuntimeConfiguration()
             .withFilterPattern(extractFilterPattern())
             .whichUsesTabletFlag(extractTabletFlag())

@@ -30,6 +30,8 @@ public class RemoteFileManager {
     private static final NullOutputReceiver NO_OP_RECEIVER = new NullOutputReceiver();
     private static final String COVERAGE_DIRECTORY = FORK_DIRECTORY + "/coverage";
 
+    private RemoteFileManager() {}
+
     public static void removeRemotePath(IDevice device, String remotePath) {
         executeCommand(device, "rm " + remotePath, "Could not delete remote file(s): " + remotePath);
     }

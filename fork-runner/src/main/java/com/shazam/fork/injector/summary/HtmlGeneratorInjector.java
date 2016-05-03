@@ -16,6 +16,8 @@ import com.shazam.fork.io.HtmlGenerator;
 public class HtmlGeneratorInjector {
     private static final DefaultMustacheFactory MUSTACHE_FACTORY = new DefaultMustacheFactory();
 
+    private HtmlGeneratorInjector() {}
+
     public static HtmlGenerator htmlGenerator() {
         return new HtmlGenerator(MUSTACHE_FACTORY);
     }

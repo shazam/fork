@@ -20,6 +20,8 @@ import static com.shazam.fork.injector.RuntimeConfigurationInjector.runtimeConfi
 
 public class DeviceLoaderInjector {
 
+    private DeviceLoaderInjector() {}
+
     public static DeviceLoader deviceLoader() {
         return new DeviceLoader(androidDebugBridge(), deviceGeometryReader(), runtimeConfiguration());
     }

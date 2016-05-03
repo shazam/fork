@@ -17,6 +17,8 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 
 public class Files {
 
+    private Files() {}
+
     public static void copyResource(String fromDir, String assetName, File toDir) {
         InputStream resourceAsStream = Files.class.getResourceAsStream(fromDir + assetName);
         File assetFile = new File(toDir, assetName);

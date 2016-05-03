@@ -16,7 +16,7 @@ import static com.shazam.fork.injector.suite.TestClassFilterInjector.testClassFi
 import static com.shazam.fork.injector.suite.TestClassScannerInjector.testClassScanner;
 
 public class TestClassLoaderInjector {
-
+    private TestClassLoaderInjector() {}
     public static TestClassLoader testClassLoader() {
         return new TestClassLoader(testClassScanner(), testClassFilter());
     }

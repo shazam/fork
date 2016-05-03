@@ -19,6 +19,8 @@ import static com.shazam.fork.injector.ConfigurationInjector.configuredOutput;
 
 public class CommandOutputLoggerInjector {
 
+    private CommandOutputLoggerInjector() {}
+
     public static CommandOutputLogger commandOutputLogger(String command) {
         return new GeometryCommandOutputLogger(configuredOutput(), command);
     }

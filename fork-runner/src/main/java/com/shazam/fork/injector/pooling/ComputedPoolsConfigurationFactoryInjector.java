@@ -13,6 +13,7 @@ package com.shazam.fork.injector.pooling;
 import com.shazam.fork.pooling.ComputedPoolsConfigurationFactory;
 
 public class ComputedPoolsConfigurationFactoryInjector {
+    private ComputedPoolsConfigurationFactoryInjector() {}
     public static ComputedPoolsConfigurationFactory computedPoolsConfigurationFactory() {
         return new ComputedPoolsConfigurationFactory();
     }

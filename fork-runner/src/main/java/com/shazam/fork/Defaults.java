@@ -11,6 +11,9 @@
 package com.shazam.fork;
 
 class Defaults {
+
+    private Defaults() {}
+
     public static final int TEST_OUTPUT_TIMEOUT_MILLIS = 60 * 1000;
     public static final String TEST_CLASS_REGEX = "^((?!Abstract).)*Test$";
     public static final String TEST_OUTPUT = "fork-output";

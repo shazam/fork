@@ -27,6 +27,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class InstumentationInfoFactory {
 
+    private InstumentationInfoFactory() {}
+
 	/**
      * @param apkTestFile the instrumentation APK
      * @return the instrumentation info instance

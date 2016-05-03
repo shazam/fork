@@ -21,6 +21,8 @@ import static com.shazam.fork.injector.suite.TestClassMatcherInjector.testClassM
 
 class TestClassScannerInjector {
 
+    private TestClassScannerInjector() {}
+
     public static TestClassScanner testClassScanner() {
         return new TestClassScanner(
                 configuration().getInstrumentationApk(),

@@ -20,6 +20,8 @@ import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 public class AndroidDebugBridgeInjector {
     private static final AndroidDebugBridge ADB = initAdb(configuration().getAndroidSdk());
 
+    private AndroidDebugBridgeInjector() {}
+
     public static AndroidDebugBridge androidDebugBridge() {
         return ADB;
     }
