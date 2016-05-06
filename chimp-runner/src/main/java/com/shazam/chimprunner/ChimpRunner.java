@@ -11,7 +11,6 @@
 package com.shazam.chimprunner;
 
 import com.android.ddmlib.DdmPreferences;
-import com.shazam.chimprunner.injector.system.AdbInjector;
 import com.shazam.fork.device.DeviceCouldNotBeFoundException;
 import com.shazam.fork.device.DeviceLoader;
 import com.shazam.fork.model.Device;
@@ -26,9 +25,11 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 import static com.shazam.chimprunner.injector.ConfigurationInjector.configuration;
 import static com.shazam.chimprunner.injector.ConfigurationInjector.setConfiguration;
+import static com.shazam.chimprunner.injector.ResultsStorageInjector.resultsStorage;
 import static com.shazam.chimprunner.injector.device.DeviceLoaderInjector.deviceLoader;
 import static com.shazam.chimprunner.injector.suite.TestSuiteLoaderInjector.testSuiteLoader;
 import static com.shazam.chimprunner.injector.system.AdbInjector.adb;
@@ -46,6 +47,7 @@ public class ChimpRunner {
     private final String serial;
     private final TestSuiteLoader testSuiteLoader;
     private final Adb adb;
+    private final ResultsStorage resultsStorage;
 
     public ChimpRunner(Configuration configuration) {
         this.output = configuration.getOutput();
@@ -54,14 +56,13 @@ public class ChimpRunner {
         deviceLoader = deviceLoader();
         serial = configuration.getSerial();
         testSuiteLoader = testSuiteLoader();
+        resultsStorage = resultsStorage();
     }
 
     public boolean run() {
         long startOfTestsMs = nanoTime();
         try {
-            deleteDirectory(output);
-            //noinspection ResultOfMethodCallIgnored
-            output.mkdirs();
+            prepareOutputDirectory();
             DdmPreferences.setTimeOut(Defaults.DDMS_TIMEOUT);
             Device device = deviceLoader.loadDevice(serial);
             Collection<TestCaseEvent> testCaseEvents = testSuiteLoader.loadTestSuite();
@@ -69,7 +70,8 @@ public class ChimpRunner {
                     installer(),
                     configuration().getInstrumentationPackage(),
                     configuration().getTestRunnerClass());
-            performanceTestRunner.run(device, testCaseEvents);
+            Map<TestCaseEvent, Double> results = performanceTestRunner.run(device, testCaseEvents);
+            resultsStorage.storeResults(results);
             return true;
         } catch (IOException e) {
             logger.error("Error while running ChimpRunner", e);
@@ -83,11 +85,20 @@ public class ChimpRunner {
         } catch (TestFailureException e) {
             logger.error("Stopped execution because of test failures.", e);
             return false;
+        } catch (ResultStorageException e) {
+            logger.error("Error while storing results.", e);
+            return false;
         } finally {
             long duration = millisSinceNanoTime(startOfTestsMs);
             logger.info(formatPeriod(0, duration, "'Total time taken:' H 'hours' m 'minutes' s 'seconds'"));
             adb.terminate();
         }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void prepareOutputDirectory() throws IOException {
+        deleteDirectory(output);
+        output.mkdirs();
     }
 
 }

@@ -30,6 +30,7 @@ public class PerformanceTestRunner {
     private final Installer installer;
     private final String instrumentationPackage;
     private final String testRunner;
+    private final Map<TestCaseEvent, Double> results = new LinkedHashMap<>();
 
     public PerformanceTestRunner(Installer installer,
                                  String instrumentationPackage,
@@ -39,13 +40,15 @@ public class PerformanceTestRunner {
         this.testRunner = testRunner;
     }
 
-    public void run(Device device, Collection<TestCaseEvent> testCaseEvents) throws TestFailureException {
+    public Map<TestCaseEvent, Double> run(Device device, Collection<TestCaseEvent> testCaseEvents) throws TestFailureException {
         installer.prepareInstallation(device.getDeviceInterface());
         LinkedList<TestCaseEvent> testQueue = new LinkedList<>(testCaseEvents);
         TestCaseEvent testCaseEvent;
         while ((testCaseEvent = testQueue.poll()) != null) {
             runTest(device, testCaseEvent);
         }
+
+        return results;
     }
 
     private void runTest(Device device, TestCaseEvent testCaseEvent) throws TestFailureException {
@@ -56,7 +59,7 @@ public class PerformanceTestRunner {
         androidTestRunner.setMethodName(testClassName, testMethodName);
         androidTestRunner.setMaxtimeToOutputResponse(Defaults.ADB_MAX_TIME_TO_OUTPUT_RESPONSE);
         try {
-            PerformanceTestListener performanceTestListener = new LoggingPerformanceTestListener(testClassName, testMethodName);
+            PerformanceTestListener performanceTestListener = new LoggingPerformanceTestListener(testCaseEvent, results);
             performanceTestListener.startOverall();
             int iterations = Defaults.ITERATIONS;
             for (int i = 0; i < iterations; i++) {

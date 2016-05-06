@@ -17,11 +17,11 @@ public class TestCaseEvent {
         this.isIgnored = isIgnored;
     }
 
-    public static TestCaseEvent newTestCase(String testMethod, String testClass, boolean isIgnored){
+    public static TestCaseEvent newTestCase(String testMethod, String testClass, boolean isIgnored) {
         return new TestCaseEvent(testMethod, testClass, isIgnored);
     }
 
-    public static TestCaseEvent newTestCase(@Nonnull TestIdentifier testIdentifier, boolean isIgnored){
+    public static TestCaseEvent newTestCase(@Nonnull TestIdentifier testIdentifier, boolean isIgnored) {
         return new TestCaseEvent(testIdentifier.getTestName(), testIdentifier.getClassName(), isIgnored);
     }
 
@@ -39,12 +39,11 @@ public class TestCaseEvent {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode( this.testMethod, this.testClass);
+        return Objects.hashCode(this.testMethod, this.testClass);
     }
 
     @Override
     public boolean equals(Object obj) {
-
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
         final TestCaseEvent other = (TestCaseEvent) obj;
