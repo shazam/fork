@@ -29,8 +29,8 @@ dependencies {
         exclude module:'hamcrest-core'
     }
     testCompile(
-            "org.jmock:jmock:2.8.2",
-            "org.jmock:jmock-junit4:2.8.2")
+            "org.jmock:jmock:$JMOCK_VERSION",
+            "org.jmock:jmock-junit4:$JMOCK_VERSION")
 }
 
 jar {

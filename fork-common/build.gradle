@@ -16,12 +16,12 @@ targetCompatibility = rootProject.sourceCompatibility
 
 dependencies {
     compile(
-            "com.google.code.findbugs:jsr305:$JSR305_VERSION",
-            "com.google.guava:guava:$GUAVA_VERSION",
-            "com.android.tools.ddms:ddmlib:$DDMLIB_VERSION",
-            "commons-io:commons-io:$COMMONS_IO_VERSION",
-            "org.apache.commons:commons-lang3:$COMMONS_LANG_VERSION",
-            "com.github.spullara.mustache.java:compiler:$MUSTACHE_VERSION",
+            "com.google.code.findbugs:jsr305:3.0.1",
+            "com.google.guava:guava:19.0",
+            "com.android.tools.ddms:ddmlib:25.1.0",
+            "commons-io:commons-io:2.5",
+            "org.apache.commons:commons-lang3:3.4",
+            "com.github.spullara.mustache.java:compiler:0.8.0",
             "com.google.code.gson:gson:$GSON_VERSION",
             "org.slf4j:slf4j-log4j12:$SLF4J_VERSION",
             "org.smali:dexlib:1.4.2"
