@@ -17,7 +17,10 @@ import java.util.Map;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
+
 public class ResultsStorage {
+    private static final String TIMINGS_FILE = "timings.csv";
     private final File output;
 
     public ResultsStorage(File output) {
@@ -25,13 +28,17 @@ public class ResultsStorage {
     }
 
     public void storeResults(Map<TestCaseEvent, Double> results) throws ResultStorageException {
+        FileWriter writer = null;
+        CSVWriter csvWriter = null;
         try {
-            FileWriter writer = new FileWriter(new File(output, "timings.csv"));
-            CSVWriter csvWriter = new CSVWriter(writer);
+            writer = new FileWriter(new File(output, TIMINGS_FILE));
+            csvWriter = new CSVWriter(writer);
             write(results, csvWriter);
-            csvWriter.close();
         } catch (IOException e) {
             throw new ResultStorageException("Failed to write results", e);
+        } finally {
+            closeQuietly(csvWriter);
+            closeQuietly(writer);
         }
     }
 
