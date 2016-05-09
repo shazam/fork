@@ -10,10 +10,17 @@
 
 package com.shazam.fork;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
+
+import groovy.lang.Closure;
 
 public class ManualPooling {
 
     public Map<String, Collection<String>> groupings;
+
+    public void groupings(Closure<?> groupingsClosure) {
+        groupings = new HashMap<>();
+        groupingsClosure.setDelegate(groupings);
+        groupingsClosure.call();
+    }
 }

@@ -9,9 +9,23 @@
  */
 package com.shazam.fork;
 
+import groovy.lang.Closure;
+
 public class PoolingStrategy {
     public Boolean splitTablets;
     public Boolean eachDevice;
     public ComputedPooling computed;
     public ManualPooling manual;
+
+    public void computed(Closure<?> computedClosure) {
+        computed = new ComputedPooling();
+        computedClosure.setDelegate(computed);
+        computedClosure.call();
+    }
+
+    public void manual(Closure<?> manualClosure) {
+        manual = new ManualPooling();
+        manualClosure.setDelegate(manual);
+        manualClosure.call();
+    }
 }

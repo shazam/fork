@@ -19,6 +19,7 @@ targetCompatibility = rootProject.sourceCompatibility
 
 dependencies {
     compile project(':fork-common')
+    compile 'org.codehaus.groovy:groovy-all:2.4.4'
     compile(
             "com.beust:jcommander:$JCOMMANDER_VERSION",
             "org.slf4j:slf4j-log4j12:$SLF4J_VERSION",

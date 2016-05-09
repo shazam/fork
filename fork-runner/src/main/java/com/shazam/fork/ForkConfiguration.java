@@ -11,6 +11,8 @@ package com.shazam.fork;
 
 import java.util.Collection;
 
+import groovy.lang.Closure;
+
 /**
  * Fork extension.
  */
@@ -85,4 +87,10 @@ public class ForkConfiguration {
      * The strategy that will be used to calculate the grouping of devices to pools.
      */
     public PoolingStrategy poolingStrategy;
+
+    public void poolingStrategy(Closure<?> poolingStrategyClosure) {
+        poolingStrategy = new PoolingStrategy();
+        poolingStrategyClosure.setDelegate(poolingStrategy);
+        poolingStrategyClosure.call();
+    }
 }

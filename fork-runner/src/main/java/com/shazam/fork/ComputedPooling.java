@@ -11,7 +11,10 @@ package com.shazam.fork;
 
 import com.shazam.fork.model.Device;
 
+import java.util.HashMap;
 import java.util.Map;
+
+import groovy.lang.Closure;
 
 public class ComputedPooling {
     public enum Characteristic implements DeviceCharacteristicReader {
@@ -51,4 +54,10 @@ public class ComputedPooling {
 
     public Characteristic characteristic;
     public Map<String, Integer> groups;
+
+    public void groups(Closure<?> groupsClosure) {
+        groups = new HashMap<>();
+        groupsClosure.setDelegate(groups);
+        groupsClosure.call();
+    }
 }
