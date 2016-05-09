@@ -18,25 +18,25 @@ public class ChimpConfiguration {
     /**
      * Output directory for Chimp's report files. If empty, the default dir will be used.
      */
-    String baseOutputDir;
+    public String baseOutputDir;
 
     /**
      * Ignore test failures flag.
      */
-    boolean ignoreFailures;
+    public boolean ignoreFailures;
 
     /**
      * The package to consider when scanning for instrumentation tests to run.
      */
-    String testPackage;
+    public String testPackage;
 
     /**
      * Regex determining the class names to consider when finding tests to run.
      */
-    String testClassRegex;
+    public String testClassRegex;
 
     /**
      * The serial of the device that the tests will run on.
      */
-    String serial;
+    public String serial;
 }

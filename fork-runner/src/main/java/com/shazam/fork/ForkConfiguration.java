@@ -19,70 +19,70 @@ public class ForkConfiguration {
     /**
      * Output directory for Fork report files. If empty, the default dir will be used.
      */
-    String baseOutputDir;
+    public String baseOutputDir;
 
     /**
      * Ignore test failures flag.
      */
-    boolean ignoreFailures;
+    public boolean ignoreFailures;
 
     /**
      * Enables code coverage.
      */
-    boolean isCoverageEnabled;
+    public boolean isCoverageEnabled;
 
     /**
      * Regex determining the class names to consider when finding tests to run.
      */
-    String testClassRegex;
+    public String testClassRegex;
 
     /**
      * The title of the final report
      */
-    String title;
+    public String title;
 
     /**
      * The subtitle of the final report
      */
-    String subtitle;
+    public String subtitle;
 
     /**
      * The package to consider when scanning for instrumentation tests to run.
      */
-    String testPackage;
+    public String testPackage;
 
     /**
      * Maximum time in milli-seconds between ADB output during a test. Prevents tests from getting stuck.
      */
-    int testOutputTimeout;
+    public int testOutputTimeout;
 
     /**
      * The size of the tests that will be executed with this run.
      */
-    String testSize;
+    public String testSize;
 
     /**
      * The collection of serials that should be excluded from this test run
      */
-    Collection<String> excludedSerials;
+    public Collection<String> excludedSerials;
 
     /**
      * Indicate that screenshots are allowed when videos are not supported.
      */
-    boolean fallbackToScreenshots;
+    public boolean fallbackToScreenshots;
 
     /**
      * Amount of re-executions of failing tests allowed.
      */
-    int totalAllowedRetryQuota;
+    public int totalAllowedRetryQuota;
 
     /**
      * Max number of time each testCase is attempted again before declaring it as a failure.
      */
-    int retryPerTestCaseQuota;
+    public int retryPerTestCaseQuota;
 
     /**
      * The strategy that will be used to calculate the grouping of devices to pools.
      */
-    PoolingStrategy poolingStrategy;
+    public PoolingStrategy poolingStrategy;
 }
