@@ -129,21 +129,6 @@ public class Configuration {
             return this;
         }
 
-        public Builder withApplicationPackage(String applicationPackage) {
-            this.applicationPackage = applicationPackage;
-            return this;
-        }
-
-        public Builder withInstrumentationPackage(String instrumentationPackage) {
-            this.instrumentationPackage = instrumentationPackage;
-            return this;
-        }
-
-        public Builder withTestRunnerClass(String testRunnerClass) {
-            this.testRunnerClass = testRunnerClass;
-            return this;
-        }
-
         public Builder withOutput(File output) {
             this.output = output;
             return this;

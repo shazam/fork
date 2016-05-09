@@ -50,12 +50,12 @@ class LoggingPerformanceTestListener extends NoOpPerformanceTestListener {
 
     @Override
     public void endIteration() {
+        long iterationDuration = millisSinceNanoTime(iterationStartTime);
         if (iteration > Defaults.ITERATIONS_TO_SKIP) {
-            long iterationDuration = millisSinceNanoTime(iterationStartTime);
             logger.debug("Iteration time: " + iterationDuration);
             timings.add(iterationDuration);
         } else {
-            logger.debug("Skipping iteration " + iteration);
+            logger.debug("Not recording iteration " + iteration + " but took: " + iterationDuration);
         }
     }
 

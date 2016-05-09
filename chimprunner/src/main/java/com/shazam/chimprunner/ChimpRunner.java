@@ -51,10 +51,10 @@ public class ChimpRunner {
 
     public ChimpRunner(Configuration configuration) {
         this.output = configuration.getOutput();
+        this.serial = configuration.getSerial();
         setConfiguration(configuration);
         adb = adb();
         deviceLoader = deviceLoader();
-        serial = configuration.getSerial();
         testSuiteLoader = testSuiteLoader();
         resultsStorage = resultsStorage();
     }
