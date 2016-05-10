@@ -22,6 +22,8 @@ import static java.util.Arrays.asList;
 
 public class PoolingStrategyInjector {
 
+    private PoolingStrategyInjector() {}
+
     public static Collection<ComputedPoolingStrategy> poolingStrategies() {
         return asList(new ComputedPoolingBySmallestWidth(), new ComputedPoolingByApi());
 

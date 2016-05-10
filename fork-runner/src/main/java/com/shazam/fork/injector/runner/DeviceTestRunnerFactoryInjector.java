@@ -16,6 +16,7 @@ import static com.shazam.fork.injector.system.InstallerInjector.installer;
 import static com.shazam.fork.injector.runner.TestRunFactoryInjector.testRunFactory;
 
 public class DeviceTestRunnerFactoryInjector {
+    private DeviceTestRunnerFactoryInjector() {}
 
     public static DeviceTestRunnerFactory deviceTestRunnerFactory() {
         return new DeviceTestRunnerFactory(installer(), testRunFactory());

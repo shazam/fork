@@ -16,6 +16,8 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 public class Utils {
 
+    private Utils() {}
+    
     public static long millisSinceNanoTime(long startNanos) {
         return millisBetweenNanoTimes(startNanos, nanoTime());
     }

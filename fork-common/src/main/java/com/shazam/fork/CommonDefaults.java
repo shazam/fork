@@ -11,6 +11,9 @@
 package com.shazam.fork;
 
 public class CommonDefaults {
+
+    private CommonDefaults() {}
+
     public static final String FORK = "fork-";
     public static final String JSON = "json";
     public static final String FORK_SUMMARY_FILENAME_FORMAT = FORK + "%s." + JSON;

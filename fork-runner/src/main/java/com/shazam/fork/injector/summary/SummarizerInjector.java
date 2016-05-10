@@ -18,6 +18,8 @@ import static com.shazam.fork.injector.summary.SummaryPrinterInjector.summaryPri
 
 public class SummarizerInjector {
 
+    private SummarizerInjector(){}
+
     public static Summarizer summarizer() {
         return new Summarizer(summaryCompiler(), summaryPrinter(), outcomeAggregator());
     }

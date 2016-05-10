@@ -16,6 +16,8 @@ import static com.shazam.fork.reporter.injector.ConfigurationInjector.configurat
 
 public class FileManagerInjector {
 
+    private FileManagerInjector() {}
+
     public static FileManager fileManager() {
         return new FileManager(configuration().getInput());
     }

@@ -17,6 +17,7 @@ import com.shazam.fork.suite.TestClassFilter;
 import static com.shazam.fork.injector.RuntimeConfigurationInjector.runtimeConfiguration;
 
 class TestClassFilterInjector {
+    private TestClassFilterInjector() {}
     public static TestClassFilter testClassFilter() {
         return new TestClassFilter(runtimeConfiguration().getFilterPattern());
     }

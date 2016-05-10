@@ -18,6 +18,8 @@ import static com.shazam.fork.injector.GsonInjector.gson;
 
 public class TestRunListenersFactoryInjector {
 
+    private TestRunListenersFactoryInjector() {}
+
     public static TestRunListenersFactory testRunListenersFactory() {
         return new TestRunListenersFactory(configuration(), fileManager(), gson());
     }

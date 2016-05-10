@@ -17,6 +17,8 @@ import com.google.gson.Gson;
 public class GsonInjector {
     private static final Gson GSON = new Gson();
 
+    private GsonInjector() {}
+
     public static Gson gson() {
         return GSON;
     }

@@ -14,6 +14,8 @@ import com.shazam.fork.suite.TestClassFactory;
 
 class TestClassFactoryInjector {
 
+    private TestClassFactoryInjector() {}
+
     static TestClassFactory testClassFactory() {
         return new TestClassFactory();
     }

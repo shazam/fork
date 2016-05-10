@@ -29,6 +29,8 @@ public class ForkRunnerInjector {
 
     private static final Logger logger = LoggerFactory.getLogger(ForkRunnerInjector.class);
 
+    private ForkRunnerInjector() {}
+
     public static ForkRunner forkRunner() {
         long startNanos = nanoTime();
 

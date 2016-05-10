@@ -21,6 +21,9 @@ import static com.shazam.fork.reporter.injector.HtmlGeneratorInjector.htmlGenera
 import static com.shazam.fork.reporter.injector.TestFlakinessToHtmlReportConverterInjector.converter;
 
 public class FlakinessReportPrinterInjector {
+
+    private FlakinessReportPrinterInjector() {}
+
     public static FlakinessReportPrinter flakinessReportPrinter() {
         File output = configuration().getOutput();
         return new HtmlFlakinessReportPrinter(output, htmlGenerator(), converter());

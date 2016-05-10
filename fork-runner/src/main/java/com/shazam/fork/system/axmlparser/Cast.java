@@ -21,6 +21,7 @@ package com.shazam.fork.system.axmlparser;
  */
 @SuppressWarnings("ALL")
 public class Cast {
+    private Cast() {}
 
     public static final CharSequence toCharSequence(String string) {
         if (string==null) {

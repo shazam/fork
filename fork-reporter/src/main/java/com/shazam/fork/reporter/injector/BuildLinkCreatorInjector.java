@@ -16,6 +16,9 @@ import com.shazam.fork.reporter.TokenBuildLinkCreator;
 import static com.shazam.fork.reporter.injector.ConfigurationInjector.configuration;
 
 public class BuildLinkCreatorInjector {
+
+    private BuildLinkCreatorInjector() {}
+
     public static BuildLinkCreator buildLinkCreator() {
         if (configuration().shouldCreateLinks()) {
             return new TokenBuildLinkCreator(configuration().getBaseUrl());

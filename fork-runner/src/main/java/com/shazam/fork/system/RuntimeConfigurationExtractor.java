@@ -27,6 +27,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class RuntimeConfigurationExtractor {
     private static final Logger logger = LoggerFactory.getLogger(RuntimeConfigurationExtractor.class);
 
+    private RuntimeConfigurationExtractor() {}
+
     @Nullable
     public static String extractFilterPattern() {
         String filterPattern = valueFrom(PARAMETER_TEST_CLASSES);

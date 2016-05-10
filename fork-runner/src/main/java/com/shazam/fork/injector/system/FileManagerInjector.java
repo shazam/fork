@@ -6,6 +6,7 @@ import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 
 public class FileManagerInjector {
 
+    private FileManagerInjector() {}
     public static FileManager fileManager() {
         return new FileManager(configuration().getOutput());
     }

@@ -16,6 +16,7 @@ import static com.shazam.fork.injector.RuntimeConfigurationInjector.runtimeConfi
 import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 
 class SummaryCompilerInjector {
+    private SummaryCompilerInjector() {}
     static SummaryCompiler summaryCompiler() {
         return new SummaryCompiler(runtimeConfiguration(), fileManager());
     }
