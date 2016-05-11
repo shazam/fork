@@ -12,12 +12,15 @@
  */
 package com.shazam.fork.system.adb;
 
-import com.android.ddmlib.*;
+import com.android.ddmlib.IDevice;
+import com.android.ddmlib.InstallException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+
+import javax.annotation.Nonnull;
 
 import static java.lang.String.format;
 
@@ -27,33 +30,47 @@ public class Installer {
 	private final String instrumentationPackage;
 	private final File apk;
 	private final File testApk;
+    private final boolean autoGrantPermissions;
 
-	public Installer(String applicationPackage, String instrumentationPackage, File apk, File testApk) {
+	public Installer(String applicationPackage,
+					 String instrumentationPackage,
+					 File apk,
+					 File testApk,
+					 boolean autoGrantPermissions) {
 		this.applicationPackage = applicationPackage;
 		this.instrumentationPackage = instrumentationPackage;
 		this.apk = apk;
 		this.testApk = testApk;
+		this.autoGrantPermissions = autoGrantPermissions;
 	}
 
 	public void prepareInstallation(IDevice device) {
 		reinstall(device, applicationPackage, apk);
 		reinstall(device, instrumentationPackage, testApk);
+		grantMockLocationInMarshmallow(device, applicationPackage);
 	}
 
 	private void reinstall(final IDevice device, final String appPackage, final File appApk) {
 		final String message = format("Error while installing %s on %s", appPackage, device.getSerialNumber());
-		tryThrice(true, message, new Runnable() {
-			public void run() {
-				try {
-                    logger.debug("Uninstalling {} from {}", appPackage, device.getSerialNumber());
-                    device.uninstallPackage(appPackage);
-                    logger.debug("Installing {} to {}", appPackage, device.getSerialNumber());
-					device.installPackage(appApk.getAbsolutePath(), true);
-				} catch (InstallException e) {
-					throw new RuntimeException(message, e);
-				}
+		tryThrice(true, message, () -> {
+			try {
+				logger.debug("Uninstalling {} from {}", appPackage, device.getSerialNumber());
+				device.uninstallPackage(appPackage);
+				logger.debug("Installing {} to {}", appPackage, device.getSerialNumber());
+				device.installPackage(appApk.getAbsolutePath(), true, optionalAutoGrantPermissionFlag(device));
+			} catch (InstallException e) {
+				throw new RuntimeException(message, e);
 			}
-		});
+        });
+	}
+
+	@Nonnull
+	private String optionalAutoGrantPermissionFlag(IDevice device) {
+		return isMarshmallowOrMore(device) && autoGrantPermissions ? "-g" : "";
+	}
+
+	private boolean isMarshmallowOrMore(@Nonnull IDevice device){
+		return device.getVersion().getApiLevel() >= 23;
 	}
 
 	private void tryThrice(boolean disaster, String message, Runnable runnable) {
@@ -72,7 +89,20 @@ public class Installer {
                     }
                     return;
                 }
-			}
-		}
-	}
+            }
+        }
+    }
+
+    private void grantMockLocationInMarshmallow(final IDevice device, final String appPackage) {
+        if (isMarshmallowOrMore(device)) {
+            CollectingShellOutputReceiver receiver = new CollectingShellOutputReceiver();
+            String command = " appops set " + appPackage + " android:mock_location allow";
+            try {
+                device.executeShellCommand(command, receiver);
+                logger.debug("When mock location granted for " + appPackage + " :" + receiver.getOutput());
+            } catch (Exception e) {
+                logger.warn("Error when executing " + command + " on " + device.getSerialNumber(), e);
+            }
+        }
+    }
 }

@@ -53,6 +53,7 @@ public class Configuration {
     private final int retryPerTestCaseQuota;
     private final boolean isCoverageEnabled;
     private final PoolingStrategy poolingStrategy;
+    private final boolean autoGrantPermissions;
 
     private Configuration(Builder builder) {
         androidSdk = builder.androidSdk;
@@ -74,6 +75,7 @@ public class Configuration {
         retryPerTestCaseQuota = builder.retryPerTestCaseQuota;
         isCoverageEnabled = builder.isCoverageEnabled;
         poolingStrategy = builder.poolingStrategy;
+        autoGrantPermissions = builder.autoGrantPermissions;
     }
 
     @Nonnull
@@ -165,6 +167,10 @@ public class Configuration {
         return poolingStrategy;
     }
 
+    public boolean isAutoGrantingPermissions() {
+        return autoGrantPermissions;
+    }
+
     public static class Builder {
         private File androidSdk;
         private File applicationApk;
@@ -185,6 +191,7 @@ public class Configuration {
         private int retryPerTestCaseQuota;
         private boolean isCoverageEnabled;
         private PoolingStrategy poolingStrategy;
+        private boolean autoGrantPermissions;
 
         public static Builder configuration() {
             return new Builder();
@@ -267,6 +274,11 @@ public class Configuration {
 
         public Builder withPoolingStrategy(@Nullable PoolingStrategy poolingStrategy) {
             this.poolingStrategy = poolingStrategy;
+            return this;
+        }
+
+        public Builder withAutoGrantPermissions(boolean autoGrantPermissions) {
+            this.autoGrantPermissions = autoGrantPermissions;
             return this;
         }
 

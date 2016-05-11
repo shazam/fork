@@ -73,6 +73,8 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
 
     PoolingStrategy poolingStrategy
 
+    boolean autoGrantPermissions;
+
     @TaskAction
     void runFork() {
         LOG.info("Run instrumentation tests $instrumentationApk for app $applicationApk")
@@ -96,6 +98,7 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
                 .withRetryPerTestCaseQuota(retryPerTestCaseQuota)
                 .withCoverageEnabled(isCoverageEnabled)
                 .withPoolingStrategy(poolingStrategy)
+                .withAutoGrantPermissions(autoGrantPermissions)
                 .build();
 
         boolean success = new Fork(configuration).run()

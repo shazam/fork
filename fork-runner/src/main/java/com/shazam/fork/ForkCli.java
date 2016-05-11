@@ -95,6 +95,7 @@ public class ForkCli {
                     .withRetryPerTestCaseQuota(forkConfiguration.retryPerTestCaseQuota)
                     .withCoverageEnabled(forkConfiguration.isCoverageEnabled)
                     .withPoolingStrategy(forkConfiguration.poolingStrategy)
+                    .withAutoGrantPermissions(forkConfiguration.autoGrantPermissions)
                     .build();
 
             Fork fork = new Fork(configuration);

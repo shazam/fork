@@ -93,6 +93,7 @@ class ForkPlugin implements Plugin<Project> {
                 retryPerTestCaseQuota = config.retryPerTestCaseQuota
                 isCoverageEnabled = config.isCoverageEnabled
                 poolingStrategy = config.poolingStrategy
+                autoGrantPermissions = config.autoGrantPermissions
                 ignoreFailures = config.ignoreFailures
 
                 dependsOn projectOutput.assemble, variant.assemble

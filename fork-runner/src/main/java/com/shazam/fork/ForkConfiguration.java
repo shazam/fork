@@ -88,6 +88,12 @@ public class ForkConfiguration {
      */
     public PoolingStrategy poolingStrategy;
 
+    /**
+     * Indicate that in Marshmallow+ all the required runtime permissions are granted automatically.
+     * Default is true.
+     */
+    public boolean autoGrantPermissions = true;
+
     public void poolingStrategy(Closure<?> poolingStrategyClosure) {
         poolingStrategy = new PoolingStrategy();
         poolingStrategyClosure.setDelegate(poolingStrategy);
