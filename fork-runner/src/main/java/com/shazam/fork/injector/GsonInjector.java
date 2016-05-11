@@ -27,6 +27,8 @@ public class GsonInjector {
         GSON = GSON_BUILDER.create();
     }
 
+    private GsonInjector() {}
+
     private static JsonSerializer<ComputedPooling.Characteristic> characteristicSerializer() {
         return (src, typeOfSrc, context) -> new JsonPrimitive(src.name());
     }

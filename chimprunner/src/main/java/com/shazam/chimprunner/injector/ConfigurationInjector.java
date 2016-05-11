@@ -16,6 +16,9 @@ public class ConfigurationInjector {
 
     private static Configuration configuration;
 
+    private ConfigurationInjector() {
+    }
+
     public static void setConfiguration(Configuration configuration) {
         ConfigurationInjector.configuration = configuration;
     }

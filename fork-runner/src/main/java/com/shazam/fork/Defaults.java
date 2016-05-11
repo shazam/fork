@@ -13,6 +13,10 @@ package com.shazam.fork;
 import java.util.concurrent.TimeUnit;
 
 class Defaults {
+
+    private Defaults() {
+    }
+
     static final long TEST_OUTPUT_TIMEOUT_MILLIS = TimeUnit.MINUTES.toMillis(1);
     static final String FORK_OUTPUT = "fork-output";
     static final int STRATEGY_LIMIT = 1;

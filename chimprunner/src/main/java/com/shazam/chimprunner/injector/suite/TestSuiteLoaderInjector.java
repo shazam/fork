@@ -18,6 +18,9 @@ import static com.shazam.chimprunner.injector.suite.TestClassMatcherInjector.tes
 
 public class TestSuiteLoaderInjector {
 
+    private TestSuiteLoaderInjector() {
+    }
+
     public static TestSuiteLoader testSuiteLoader() {
         return new TestSuiteLoader(configuration().getInstrumentationApk(), dexFileExtractor(), testClassMatcher());
     }

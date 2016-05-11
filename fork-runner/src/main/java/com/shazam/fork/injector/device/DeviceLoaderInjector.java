@@ -17,6 +17,8 @@ import static com.shazam.fork.injector.system.AdbInjector.adb;
 
 public class DeviceLoaderInjector {
 
+    private DeviceLoaderInjector() {}
+
     public static DeviceLoader deviceLoader() {
         return new DeviceLoader(adb(), deviceGeometryReader(), configuration().getExcludedSerials());
     }

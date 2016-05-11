@@ -22,6 +22,8 @@ import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 
 public class SummaryPrinterInjector {
 
+    private SummaryPrinterInjector() {}
+
     public static SummaryPrinter summaryPrinter() {
         return new CompositeSummaryPrinter(consoleSummaryPrinter(), htmlSummaryPrinter(), jsonSummarySerializer());
     }

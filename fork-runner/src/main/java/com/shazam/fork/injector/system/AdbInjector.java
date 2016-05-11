@@ -19,6 +19,8 @@ import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 public class AdbInjector {
     private static final Adb ADB = new Adb(configuration().getAndroidSdk());
 
+    private AdbInjector() {}
+
     public static Adb adb() {
         return ADB;
     }

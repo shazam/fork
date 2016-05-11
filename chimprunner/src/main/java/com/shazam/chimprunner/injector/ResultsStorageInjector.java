@@ -15,6 +15,10 @@ import com.shazam.chimprunner.ResultsStorage;
 import static com.shazam.chimprunner.injector.ConfigurationInjector.configuration;
 
 public class ResultsStorageInjector {
+
+    private ResultsStorageInjector() {
+    }
+
     public static ResultsStorage resultsStorage() {
         return new ResultsStorage(configuration().getOutput());
     }

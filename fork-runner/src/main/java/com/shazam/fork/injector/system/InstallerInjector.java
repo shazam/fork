@@ -19,6 +19,8 @@ import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 
 public class InstallerInjector {
 
+    private InstallerInjector() {}
+
     public static Installer installer() {
         Configuration configuration = configuration();
         String applicationPackage = configuration.getApplicationPackage();

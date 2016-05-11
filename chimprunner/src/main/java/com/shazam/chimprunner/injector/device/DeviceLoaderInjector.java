@@ -18,6 +18,9 @@ import static java.util.Collections.emptyList;
 
 public class DeviceLoaderInjector {
 
+    private DeviceLoaderInjector() {
+    }
+
     public static DeviceLoader deviceLoader() {
         return new DeviceLoader(adb(), deviceGeometryRetriever(), emptyList());
     }

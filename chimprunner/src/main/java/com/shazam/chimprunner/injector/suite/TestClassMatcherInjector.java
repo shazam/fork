@@ -23,6 +23,9 @@ import static com.shazam.chimprunner.injector.ConfigurationInjector.configuratio
 class TestClassMatcherInjector {
     private static final Logger log = LoggerFactory.getLogger(TestClassMatcherInjector.class);
 
+    private TestClassMatcherInjector() {
+    }
+
     static TestClassMatcher testClassMatcher() {
         Configuration configuration = configuration();
         String testPackage = configuration.getTestPackage();

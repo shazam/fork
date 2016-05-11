@@ -17,6 +17,9 @@ import static com.shazam.chimprunner.injector.ConfigurationInjector.configuratio
 public class AdbInjector {
     private static final Adb ADB = new Adb(configuration().getAndroidSdk());
 
+    private AdbInjector() {
+    }
+
     public static Adb adb() {
         return ADB;
     }

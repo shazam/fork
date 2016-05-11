@@ -19,6 +19,9 @@ public class InstallerInjector {
 
     private static final boolean AUTO_GRANT_PERMISSIONS = true;
 
+    private InstallerInjector() {
+    }
+
     public static Installer installer() {
         Configuration configuration = configuration();
         String applicationPackage = configuration.getApplicationPackage();

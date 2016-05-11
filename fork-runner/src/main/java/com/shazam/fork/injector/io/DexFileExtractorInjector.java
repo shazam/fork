@@ -16,6 +16,8 @@ import static com.shazam.fork.injector.ConfigurationInjector.configuredOutput;
 
 public class DexFileExtractorInjector {
 
+    private DexFileExtractorInjector() {}
+
     public static DexFileExtractor dexFileExtractor() {
         return new DexFileExtractor(configuredOutput());
     }

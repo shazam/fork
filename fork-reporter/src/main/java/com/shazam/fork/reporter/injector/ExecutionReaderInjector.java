@@ -17,6 +17,8 @@ import static com.shazam.fork.reporter.injector.GsonInjector.gson;
 
 public class ExecutionReaderInjector {
 
+    private ExecutionReaderInjector() {}
+
     public static ExecutionReader executionReader() {
         return new ExecutionReader(fileManager(), gson());
     }

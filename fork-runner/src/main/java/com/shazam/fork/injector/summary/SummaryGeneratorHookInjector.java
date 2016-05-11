@@ -15,6 +15,9 @@ import com.shazam.fork.summary.SummaryGeneratorHook;
 import static com.shazam.fork.injector.summary.SummarizerInjector.summarizer;
 
 public class SummaryGeneratorHookInjector {
+
+    private SummaryGeneratorHookInjector() {}
+
     public static SummaryGeneratorHook summaryGeneratorHook() {
         return new SummaryGeneratorHook(summarizer());
     }

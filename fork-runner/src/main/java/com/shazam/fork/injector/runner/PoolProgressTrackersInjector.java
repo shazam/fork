@@ -8,6 +8,9 @@ import java.util.Map;
 import static com.beust.jcommander.internal.Maps.newHashMap;
 
 public class PoolProgressTrackersInjector {
+
+    private PoolProgressTrackersInjector() {}
+
     public static Map<Pool, PoolProgressTracker> poolProgressTrackers() {
         return newHashMap();
     }

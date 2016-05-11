@@ -11,6 +11,10 @@
 package com.shazam.fork;
 
 public class CommonDefaults {
+
+    private CommonDefaults() {
+    }
+
     public static final String ANDROID_SDK = System.getenv("ANDROID_HOME");
     public static final String FORK = "fork-";
     public static final String JSON = "json";

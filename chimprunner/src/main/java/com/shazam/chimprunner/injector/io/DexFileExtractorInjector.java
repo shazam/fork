@@ -16,6 +16,9 @@ import static com.shazam.chimprunner.injector.ConfigurationInjector.configuratio
 
 public class DexFileExtractorInjector {
 
+    private DexFileExtractorInjector() {
+    }
+
     public static DexFileExtractor dexFileExtractor() {
         return new DexFileExtractor(configuration().getOutput());
     }

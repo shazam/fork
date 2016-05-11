@@ -20,6 +20,8 @@ import static com.shazam.fork.injector.pooling.CommandOutputLoggerInjector.comma
 
 class DeviceGeometryRetrieverInjector {
 
+    private DeviceGeometryRetrieverInjector() {}
+
     /**
      * Nexus S, Samsumg GT-P5110.
      * Also (h\\d+)dp and (w\\d+)dp if you want them...

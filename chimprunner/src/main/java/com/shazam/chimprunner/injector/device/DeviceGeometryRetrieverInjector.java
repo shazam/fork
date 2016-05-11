@@ -16,6 +16,9 @@ import static java.util.Collections.emptyList;
 
 public class DeviceGeometryRetrieverInjector {
 
+    private DeviceGeometryRetrieverInjector() {
+    }
+
     public static DeviceGeometryRetriever deviceGeometryRetriever() {
         return new DeviceGeometryRetriever(emptyList());
     }

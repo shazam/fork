@@ -27,6 +27,8 @@ public class ForkCli {
 
     private static final Logger logger = LoggerFactory.getLogger(ForkCli.class);
 
+    private ForkCli() {}
+
     public static class CommandLineArgs {
 
         @Parameter(names = { "--sdk" }, description = "Path to Android SDK", converter = FileConverter.class)

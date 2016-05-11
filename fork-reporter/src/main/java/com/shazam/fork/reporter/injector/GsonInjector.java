@@ -13,6 +13,9 @@ package com.shazam.fork.reporter.injector;
 import com.google.gson.Gson;
 
 public class GsonInjector {
+
+    private GsonInjector() {}
+
     private static final Gson GSON = new Gson();
 
     public static Gson gson() {

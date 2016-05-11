@@ -16,6 +16,9 @@ import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 
 class SummaryCompilerInjector {
+
+    private SummaryCompilerInjector() {}
+
     static SummaryCompiler summaryCompiler() {
         return new SummaryCompiler(configuration(), fileManager());
     }

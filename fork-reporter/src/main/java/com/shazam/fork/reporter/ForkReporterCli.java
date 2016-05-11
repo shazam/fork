@@ -23,6 +23,8 @@ import static com.shazam.fork.reporter.ForkReporter.Builder.forkReporter;
 public class ForkReporterCli {
     private static final Logger logger = LoggerFactory.getLogger(ForkReporterCli.class);
 
+    private ForkReporterCli() {}
+
     public static void main(String... args) {
         CommandLineArgs parsedArgs = new CommandLineArgs();
         JCommander jc = new JCommander(parsedArgs);

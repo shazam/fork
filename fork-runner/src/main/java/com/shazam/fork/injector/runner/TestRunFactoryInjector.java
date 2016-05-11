@@ -17,6 +17,8 @@ import static com.shazam.fork.injector.listeners.TestRunListenersFactoryInjector
 
 public class TestRunFactoryInjector {
 
+    private TestRunFactoryInjector() {}
+
     public static TestRunFactory testRunFactory() {
         return new TestRunFactory(configuration(), testRunListenersFactory());
     }

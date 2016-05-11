@@ -26,6 +26,8 @@ import java.io.InputStream;
 @SuppressWarnings("ALL")
 public class ReadUtil {
 
+    private ReadUtil() {}
+
     public static final void readCheckType(InputStream stream,int expectedType) throws IOException {
         int type=readInt(stream);
         if (type!=expectedType) {

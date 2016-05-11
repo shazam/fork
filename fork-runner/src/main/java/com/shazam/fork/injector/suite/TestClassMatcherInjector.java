@@ -23,6 +23,8 @@ import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 class TestClassMatcherInjector {
     private static final Logger log = LoggerFactory.getLogger(TestClassMatcherInjector.class);
 
+    private TestClassMatcherInjector() {}
+
     static TestClassMatcher testClassMatcher() {
         Configuration configuration = configuration();
         log.info("Fork will try to find tests in {} from your instrumentation APK.", configuration.getTestPackage());

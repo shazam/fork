@@ -13,6 +13,9 @@ package com.shazam.fork.injector.summary;
 import com.shazam.fork.summary.OutcomeAggregator;
 
 public class OutcomeAggregatorInjector {
+
+    private OutcomeAggregatorInjector() {}
+
     public static OutcomeAggregator outcomeAggregator() {
         return new OutcomeAggregator();
     }

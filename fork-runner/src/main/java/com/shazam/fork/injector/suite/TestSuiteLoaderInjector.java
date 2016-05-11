@@ -18,6 +18,8 @@ import static com.shazam.fork.injector.suite.TestClassMatcherInjector.testClassM
 
 public class TestSuiteLoaderInjector {
 
+    private TestSuiteLoaderInjector() {}
+
     public static TestSuiteLoader testSuiteLoader() {
         return new TestSuiteLoader(configuration().getInstrumentationApk(), dexFileExtractor(), testClassMatcher());
     }
