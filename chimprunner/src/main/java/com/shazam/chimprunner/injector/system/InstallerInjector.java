@@ -17,12 +17,14 @@ import static com.shazam.chimprunner.injector.ConfigurationInjector.configuratio
 
 public class InstallerInjector {
 
+    private static final boolean AUTO_GRANT_PERMISSIONS = true;
+
     public static Installer installer() {
         Configuration configuration = configuration();
         String applicationPackage = configuration.getApplicationPackage();
         String instrumentationPackage = configuration.getInstrumentationPackage();
 
         return new Installer(applicationPackage, instrumentationPackage, configuration.getApplicationApk(),
-                configuration.getInstrumentationApk());
+                configuration.getInstrumentationApk(), AUTO_GRANT_PERMISSIONS);
     }
 }
