@@ -1,12 +1,12 @@
 [![Build Status](https://travis-ci.org/shazam/fork.svg?branch=master)](https://travis-ci.org/shazam/fork)
 
-Fork & Flakiness Reporter
-===============
-The Fork project consists of two libraries:
+Fork tools
+==========
+The Fork project consists of these tools:
 
 * [**Fork**](#fork) offers the fastest way to execute Android instrumentation test suites.
 * [**Flakiness Reporter**](#flakiness-reporter) produces readable reports about test flakiness on tests suites previously executed by Fork.
-
+* [**Chimprunner**](#chimprunner) runs performance tests and keeps stats and standard reports (Systrace, memory, CPU, etc).
 
 # Fork
 When running instrumentation tests, there is a significant time overhead for developers, especially on larger test suites. Existing solutions were not satisfactory for quick feedback before pushing code to VCS and for CI purposes.
@@ -37,98 +37,169 @@ buildscript {
 
 Apply the Fork plugin
 ```
-apply plugin: 'fork'
+apply plugin: 'com.shazam.fork'
 ```
 
-You're now done. You can enable smart pooling by adding runtime parameters (*Pooling and other parameters* section). If you had any instrumentation test tasks before, the plugin has added Fork tasks. You can verify by running:
+You're now done. If you had any instrumentation test tasks before, the plugin has added Fork tasks. You can verify by running:
 
 ```
 gradlew tasks | grep fork
 ```
 
-You can specify runtime configuration for Fork with the Fork DSL. Simply add a block to your build.gradle, _e.g.,_:
+You can use Fork's DSL to configure its execution parameters. For a full list of the properties, have a look at: [**Configuring pools and runtime**](#configuring-pools-and-runtime) and related [**Examples**](#examples). It should be as easy as adding a block to your build.gradle:
 
 ```groovy
 fork {
-    baseOutputDir "/my_custom_dir"
+    title "My Fork report"
+    isCoverageEnabled true
 }
 ```
 
-Property Name          | Property Type     | Default value
----------------------- | ----------------- | -------------
-baseOutputDir          | File              | "fork"
-testPackage            | String            | (Your instrumentation APK package)
-testClassRegex         | String            | "^((?!Abstract).)*Test$"
-testOutputTimeout      | int               | 60000
-ignoreFailures         | boolean           | false
-fallbackToScreenshots  | boolean           | true
-totalAllowedRetryQuota | int               | 0
-retryPerTestCaseQuota  | int               | 1
-
 ### Standalone
-Will potentially be unsupported, as it's the least developer friendly. Check out the Fork project and execute:
+Check out the Fork project and execute:
 
 ```
 > gradlew fork-runner:run -Pargs='ARGUMENTS LIST'
 
-With the below options.         The APK and test APK parameters are mandatory:
+Available options (* mandatory).         
     --sdk                       Path to Android SDK. Defaults to the ANDROID_HOME environment variable.
-    --apk                       Path to application. This parameter is required.
-    --test-apk                  Path to test application. This parameter is required.
-    --output                    Output path. Defaults to "fork-output"
-    --test-package              The package to consider when finding tests to run. Defaults to instrumentation package.
-    --test-class-regex          Regex determining class names to consider when finding tests to run. Defaults to ^((?!Abstract).)*Test$
-    --test-timeout              The maximum amount of time during which the tests are allowed to not output any response, in milliseconds
-    --fail-on-failure           Non-zero exit code on failure. Defaults to false.
-    --fallback-to-screenshots   If a device does not support videos, define if you'd like animated GIFs (experimental). Defaults to true.
-    --total-allowed-retry-quota Total amount of allowed retries. If a test case fails and this quota hasn't been exhausted yet,
-                                the test case is scheduled to be executed again in the same device pool. Default to 0;
-    --retry-per-test-case-quota Amount of times a single test can be re-executed before declaring it a failure. Default to 1.
+    --apk (*)                   Path to application.
+    --test-apk (*)              Path to test application.
+    --config (*)                Location of the configuration file. 
 ```
-
-For example:
-```
-> gradlew fork-runner:run -Pargs='--apk /path/to/production.APK --test-apk /path/to/test.APK'
-
-```
+The properties of the configuration file are described in:  [**Configuring pools and runtime**](#configuring-pools-and-runtime) and related [**Examples**](#examples).
 
 ## Configuring pools and runtime
 One of the most useful characteristics of the library is the way it creates the device pools. There are different options, to automatically create pools by API level, shortest width dimension and whether devices are self-described as tablets. On top of that, users can also manually create pools based on serial numbers, for maximum flexibility.
 
-With either way of executing Fork (Gradle / standalone) you can specify how the pools are created by setting a combination of these environment variables:
+With either way of executing Fork ([**Gradle**](#gradle-plugin-recommended) / [**Standalone**](#standalone)) you can specify how the pools are created by setting a combination of the properties below. You can also find  [**examples**](#examples):
 
-One pooling option from:
-* **fork.tablet=(true|false)** - to configure pools depending on their manufacturer's 'tablet' flag (ro.build.characteristics)
-* **fork.pool.POOL_NAME=(Serial','?)** - to add devices with a given serial to a pool with given name,e.g. hdpi=01234567,abcdefgh
-* **fork.computed.STRATEGY=(PoolName=LowerBound','?)** - to automatically create pools based on device characteristics, where
-  * STRATEGY:=sw - by smallest width, e.g.phablet=0,tablet=720
-  * STRATEGY:=api - by api, e.g. gingerbread_and_earlier=0,honeycomb_and_later=11)
-* **fork.eachdevice=(true|false)** - to create a pool per device (a.k.a. Spoon mode). This is the default behaviour.
+Property Name          | Property Type           | Default value
+---------------------- | ----------------------- | -------------
+baseOutputDir          | File                    | "fork"
+ignoreFailures         | boolean                 | false
+isCoverageEnabled      | boolean                 | false
+testClassRegex         | String                  | "^((?!Abstract).)*Test$"
+testPackage            | String                  | (Your instrumentation APK package)
+title                  | String                  | -
+subtitle               | String                  | -
+testOutputTimeout      | int                     | 60000
+testSize               | String                  | -
+excludedSerials        | Collection&lt;String&gt;| -
+fallbackToScreenshots  | boolean                 | false
+totalAllowedRetryQuota | int                     | 0
+retryPerTestCaseQuota  | int                     | 1
+autoGrantPermissions   | boolean                 | true
+poolingStrategy        | PoolingStrategy         | -
 
-Any combination of other options from:
-* **android.test.classes=REGEX** - comma separated regexes that specify a pattern for the classes/packages to run
-* **fork.excluded.serial=(Serial','?)** - to exclude specific devices from running any tests
-* **fork.report.title=Title** - to specify a title for the generated report
-* **fork.report.subtitle=Subitle** - to specify a subtitle for the generated report
-* **fork.test.size=(small|medium|large)** - to run test methods with the corresponding size annotation
+`Poolingstrategy` is an object that describes how the device pools are created. You can choose **only one** strategy from below:
 
-*Note:* The Fork runtime parameter ```android.test.classes``` is applied _after_ both the ```testClassRegex``` and ```testPackage``` filters have been applied.
+Property Name          | Property Type       | Description |
+---------------------- | ------------------- | -------------
+splitTablets           | boolean             | configure pools depending on their manufacturer's 'tablet' flag (ro.build.characteristics)
+eachDevice             | boolean             | create a pool per device (a.k.a. Spoon-mode). This is the default behaviour.
+manual                 | ManualPooling       | configure pools manually, per serial number
+computed               | ComputedPooling     | configure pools automatically, by setting device criteria (API level, shortest width dimension)
+
+`ManualPooling`'s properties are:
+
+Property Name          | Property Type                               | Description |
+---------------------- | ------------------------------------------- | -------------
+groupings              | Map&lt;String, Collection&lt;String&gt;&gt; | map pool names to collection of device serials to be assigned to that pool
+
+`ComputedPooling`'s properties are:
+
+Property Name          | Property Type              | Description |
+---------------------- | -------------------------- | -------------
+characteristic         | Characteristic             | Possible values: "sw"\|"api" (shortest width or API level)
+groups                 | Map&lt;String, Integer&gt; | map the name of a pool to their lowest dimension for a characteristic
 
 ## Examples
-A common case can be that you want to create two pools, one for phones & small tablets (7" and below) and one for large tablets. You could execute:
-```
-gradlew forkDebugTest -Dfork.computed.sw=phablets=0,tablets=720
+
+###Gradle plugin examples
+####Automatic pooling
+A common case can be that you want to create two pools, one for phones & small tablets (7" and below) and one for large tablets. You could add to your `build.gradle` file:
+```groovy
+fork {
+    title "Fork report"
+    subtitle "automatically split phones to large tablets"
+    poolingStrategy {
+	    computed {
+		    characteristic = "sw"
+		    groups {
+			    phablets = 0
+			    tablets = 720
+			}
+	    }
+    }
+}
 ```
 The above will run tests on 2 pools, one named "phablets" and another called "tablets". The smallest width for the first pool will be 0 and for the latter 720 dpi.
 
-## Diagnostics
-(Example output to be provided)
+####Manual pooling
+```groovy
+fork {
+    title "Fork report"
+    subtitle "manually allocated devices"
+    poolingStrategy {
+	    manual {
+		    groupings {
+			    phablets = ["ABCDE", "FGHIJ"]
+			    tablets = ["12345"]
+			}
+	    }
+    }
+}
+```
+That will create two pools named "phablets" & "tablets" with devices that have the respective serial numbers.
+
+###Standalone examples
+####Automatic pooling
+Execute the following:
+```
+> gradlew fork-runner:run -Pargs='--apk /path/to/production.APK --test-apk /path/to/test.APK --config /path/to/fork-config.json'
+```
+Where the contents of `fork-config.json` are:
+```
+{
+	"title" : "Fork Report",
+	"subtitle" : "automatically split phones to tablets",
+	"poolingStrategy" : {
+		"computed" : {
+			"characteristic" : "sw",
+			"groups" : {
+				"phablets" : 0,
+				"tablets" : 720
+			}
+		}
+	}
+}
+```
+
+####Manual pooling
+Execute the following:
+```
+> gradlew fork-runner:run -Pargs='--apk /path/to/production.APK --test-apk /path/to/test.APK --config /path/to/fork-config.json'
+```
+Where the contents of `fork-config.json` are:
+```
+{
+    "title" : "Fork Report",
+    "subtitle" : "manually allocated devices",
+    "poolingStrategy" : {
+        "manual" : {
+            "phablets" : ["ABCDE", "FGHIJ"],
+            "tablets" : ["12345"]
+        }
+    }
+}
+```
 
 ## Limitations
  * The scheduling still works on a single build box with ADB, so there still is a limit by how many devices & emulators can be simultaneously connected to ADB. Eventually, Fork could be tweaked to talk over HTTP with other build agents, that would then be connected to devices over ADB. That model would tie in nicely with multi-agent CI systems, like Jenkins.
 
 # Flakiness Reporter
-One common problem with UI tests is the test flakiness from either the environment they run on or badly written tests. To help track down tests that are misbehaving, we are introducing the Flakiness reporter.
+One common problem with UI tests is the test flakiness from either the environment they run on or badly written tests. To help track down tests that are misbehaving, we introduced the Flakiness reporter.
 
 The reports produced by the Flakiness Reporter eventually make it trivial to find flaky tests and link to them and their diagnostics. Currently Jenkins is supported and it should be really easy to extend it to other types of CI servers.
 
@@ -158,7 +229,7 @@ buildscript {
 
 Apply the Jenkins Flakiness Reporter plugin
 ```
-apply plugin: 'fork-jenkins-gradle-plugin'
+apply plugin: 'com.shazam.fork.reporter.jenkins'
 ```
 
 You can easily execute the Reporter with the following command.
@@ -197,11 +268,73 @@ The Reporter works with summary files from Fork runs. For them to be accessible,
 This requires [Jenkins's HTML Publisher Plugin][2]. To be able to link to the right test runs, use a clear title.
 ![Fork HTML reports archiving](static/archive-html.png)
 
-**Note:**The [forkJenkins.jenkinsReportTitle](#gradle-plugin-configuration) parameter of the gradle configuration has to match the Report Title added here.
+**Note:** The [forkJenkins.jenkinsReportTitle](#gradle-plugin-configuration) parameter of the gradle configuration has to match the Report Title added here.
+
+# Chimprunner
+At the time of writing, not much is available around automated performance testing. Chimprunner is a very simple test runner that allows recording of somewhat accurate timings on test execution, from process creation to test finish. It all works on the Android instrumentation tests system that developers are familiar with.
+
+##How to setup
+```
+buildscript {
+    dependencies {
+        classpath 'com.shazam.chimprunner:chimprunner-gradle-plugin:0.9.0-SNAPSHOT'
+    }
+}
+```
+
+Apply the Chimprunner plugin
+```
+apply plugin: 'com.shazam.chimprunner'
+```
+
+New tasks will have been added that allow you to run familiar instrumentation tests as performance tests. Verify the tasks exist with:
+
+```
+gradlew tasks | grep chimprunner
+```
+
+##Configuring Chimprunner
+Configuring Chimprunner is simple. Add the following to your `build.gradle` file:
+```groovy
+chimprunner {
+	serial "0123456"
+	testPackage "com.example.performancetests"
+}
+```
+The full list of configurable properties (* are mandatory):
+
+Property Name          | Property Type | Default value                      | Description 
+---------------------- | --------------|----------------------------------- | -------------------
+baseOutputDir          | File          | "chimprunner"                      | the output folder
+\* serial              | String        | -                                  | the serial of the device where the performance tests will be executed
+ignoreFailures         | boolean       | false                              | whether failures of the performance tests should fail the build
+testClassRegex         | String        | "^((?!Abstract).)*Test$"           | classes that will be searched for tests
+\* testPackage         | String        | (Your instrumentation APK package) | the package where the performance tests are located  
+
+##Current reports
+Currently, Chimprunner produces a `timings.csv` file in the output folder with all the timings of tests that were executed as part of the performance tests and the average time they took after running a number of iterations. That CSV file can be then used for plotting by other tools.
+
+##Future work
+We would like to add ways of automatically launching Android performance tools & reports developers know and use already, with no or minimal code changes. We will investigate around how to provide systrace, CPU, GPU & memory usage reports. The library will probably provide some annotations that will enable various performance tools. An example could be:
+```java
+@Test
+@Systrace
+@Gpu
+public void trackListScroll() {
+	//...
+}
+
+@Test
+@Timings(iterations=10)
+public void startUpSpeed() {
+    //...
+}
+```
+The system could then provide a systrace & GPU profiling reports for the duration of the `trackListScroll()` test.
 
 #License
 
-    Copyright 2015 Shazam Entertainment Limited.
+    Copyright 2016 Shazam Entertainment Limited.
 
     Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
 

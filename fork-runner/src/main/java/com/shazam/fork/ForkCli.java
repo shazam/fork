@@ -42,7 +42,8 @@ public class ForkCli {
                 required = true)
         public File testApk;
 
-        @Parameter(names = { "--config" }, description = "Path of JSON config file", converter = FileConverter.class)
+        @Parameter(names = { "--config" }, description = "Path of JSON config file", converter = FileConverter.class,
+                required = true)
         public File configurationFile;
 
         @Parameter(names = { "-h", "--help" }, description = "Command help", help = true, hidden = true)
