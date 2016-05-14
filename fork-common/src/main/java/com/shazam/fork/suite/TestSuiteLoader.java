@@ -20,6 +20,7 @@ import java.util.*;
 
 import javax.annotation.Nonnull;
 
+import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -64,7 +65,7 @@ public class TestSuiteLoader {
         for (AnnotationDirectoryItem.MethodAnnotation method : annotationDirectoryItem.getMethodAnnotations()) {
             asList(method.annotationSet.getAnnotations()).stream()
                     .filter(annotation -> TEST_ANNOTATION.equals(stringType(annotation)))
-                    .map(annotation -> convertToTestCaseEvent(classDefItem, annotationDirectoryItem, method, annotation))
+                    .map(annotation -> convertToTestCaseEvent(classDefItem, annotationDirectoryItem, method))
                     .forEach(testCaseEvents::add);
         }
         return testCaseEvents;
@@ -73,12 +74,12 @@ public class TestSuiteLoader {
     @Nonnull
     private TestCaseEvent convertToTestCaseEvent(ClassDefItem classDefItem,
                                                  AnnotationDirectoryItem annotationDirectoryItem,
-                                                 AnnotationDirectoryItem.MethodAnnotation method,
-                                                 AnnotationItem annotation) {
+                                                 AnnotationDirectoryItem.MethodAnnotation method) {
         String testMethod = method.method.getMethodName().getStringValue();
+        AnnotationItem[] annotations = method.annotationSet.getAnnotations();
         String testClass = getClassName(classDefItem);
-        boolean ignored = isClassIgnored(annotationDirectoryItem) || isMethodIgnored(annotation);
-        return new TestCaseEvent(testMethod, testClass, ignored);
+        boolean ignored = isClassIgnored(annotationDirectoryItem) || isMethodIgnored(annotations);
+        return newTestCase(testMethod, testClass, ignored);
     }
 
     private String getClassName(ClassDefItem classDefItem) {
@@ -86,8 +87,8 @@ public class TestSuiteLoader {
         return typeDescriptor.substring(1, typeDescriptor.length() - 1).replace('/', '.');
     }
 
-    private boolean isMethodIgnored(AnnotationItem input) {
-        return containsAnnotation(IGNORE_ANNOTATION, input);
+    private boolean isMethodIgnored(AnnotationItem... annotationItems) {
+        return containsAnnotation(IGNORE_ANNOTATION, annotationItems);
     }
 
     private boolean isClassIgnored(AnnotationDirectoryItem annotationDirectoryItem) {

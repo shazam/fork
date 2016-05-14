@@ -11,6 +11,7 @@
 package com.shazam.chimprunner.injector.suite;
 
 import com.shazam.chimprunner.Configuration;
+import com.shazam.fork.suite.PackageAndClassNameMatcher;
 import com.shazam.fork.suite.TestClassMatcher;
 
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ class TestClassMatcherInjector {
         String testPackage = configuration.getTestPackage();
         log.info("Will match tests in {} from your instrumentation APK.", testPackage);
         Pattern testPackagePattern = compilePatternFor(testPackage);
-        return new TestClassMatcher(testPackagePattern, configuration.getTestClassPattern());
+        return new PackageAndClassNameMatcher(testPackagePattern, configuration.getTestClassPattern());
     }
 
     private static Pattern compilePatternFor(String packageString) {

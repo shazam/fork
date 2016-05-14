@@ -1,0 +1,30 @@
+@Ignore
+public class IgnoredClassTest {
+
+    @Test
+    public void methodOfAnIgnoredTestClass() {
+
+    }
+}
+
+public class ClassWithNoIgnoredMethodsTest {
+    @Test
+    public void firstTestMethod() {
+    }
+
+    @Test
+    public void secondTestMethod() {
+    }
+
+}
+
+public class ClassWithSomeIgnoredMethodsTest {
+    @Test
+    public void nonIgnoredTestMethod() {
+    }
+
+    @Test
+    @Ignore
+    public void ignoredTestMethod() {
+    }
+}

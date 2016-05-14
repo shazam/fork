@@ -11,7 +11,9 @@
 apply plugin: 'java'
 apply from: '../build-scripts/gradle-mvn-push.gradle'
 
+//noinspection GroovyUnusedAssignment
 sourceCompatibility = rootProject.sourceCompatibility
+//noinspection GroovyUnusedAssignment
 targetCompatibility = rootProject.sourceCompatibility
 
 dependencies {
@@ -26,6 +28,15 @@ dependencies {
             "org.slf4j:slf4j-log4j12:$SLF4J_VERSION",
             "org.smali:dexlib:1.4.2"
     )
+
+    testCompile(
+            "org.hamcrest:hamcrest-all:$HAMCREST_VERSION",
+            "org.jmock:jmock:$JMOCK_VERSION",
+            "org.jmock:jmock-junit4:$JMOCK_VERSION",
+            "com.shazam:shazamcrest:0.11")
+    testCompile("junit:junit:$JUNIT_VERSION") {
+        exclude module:'hamcrest-core'
+    }
 }
 
 jar {

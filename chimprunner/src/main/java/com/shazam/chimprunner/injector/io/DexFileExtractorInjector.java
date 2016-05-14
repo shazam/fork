@@ -10,6 +10,7 @@
 
 package com.shazam.chimprunner.injector.io;
 
+import com.shazam.fork.io.ClassesDexFileExtractor;
 import com.shazam.fork.io.DexFileExtractor;
 
 import static com.shazam.chimprunner.injector.ConfigurationInjector.configuration;
@@ -20,6 +21,6 @@ public class DexFileExtractorInjector {
     }
 
     public static DexFileExtractor dexFileExtractor() {
-        return new DexFileExtractor(configuration().getOutput());
+        return new ClassesDexFileExtractor(configuration().getOutput());
     }
 }

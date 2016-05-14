@@ -11,6 +11,7 @@
 package com.shazam.fork.injector.suite;
 
 import com.shazam.fork.Configuration;
+import com.shazam.fork.suite.PackageAndClassNameMatcher;
 import com.shazam.fork.suite.TestClassMatcher;
 
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ class TestClassMatcherInjector {
         Configuration configuration = configuration();
         log.info("Fork will try to find tests in {} from your instrumentation APK.", configuration.getTestPackage());
         Pattern testPackagePattern = compilePatternFor(configuration.getTestPackage());
-        return new TestClassMatcher(testPackagePattern, configuration.getTestClassPattern());
+        return new PackageAndClassNameMatcher(testPackagePattern, configuration.getTestClassPattern());
     }
 
     private static Pattern compilePatternFor(String packageString) {

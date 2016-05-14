@@ -15,6 +15,25 @@ import org.jf.dexlib.DexFile;
 import java.io.File;
 import java.util.Collection;
 
-public interface DexFileExtractor {
-    Collection<DexFile> getDexFiles(File apkFile);
+import static java.util.Arrays.asList;
+
+public class FakeDexFileExtractor implements DexFileExtractor {
+    private DexFile[] dexFiles;
+
+    private FakeDexFileExtractor() {
+    }
+
+    public static FakeDexFileExtractor fakeDexFileExtractor() {
+        return new FakeDexFileExtractor();
+    }
+
+    public FakeDexFileExtractor thatReturns(DexFile... dexFiles) {
+        this.dexFiles = dexFiles;
+        return this;
+    }
+
+    @Override
+    public Collection<DexFile> getDexFiles(File apkFile) {
+        return asList(dexFiles);
+    }
 }

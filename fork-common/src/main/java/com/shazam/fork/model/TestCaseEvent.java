@@ -5,13 +5,16 @@ import com.google.common.base.Objects;
 
 import javax.annotation.Nonnull;
 
+import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
+import static org.apache.commons.lang3.builder.ToStringStyle.SIMPLE_STYLE;
+
 public class TestCaseEvent {
 
     private final String testMethod;
     private final String testClass;
     private final boolean isIgnored;
 
-    public TestCaseEvent(String testMethod, String testClass, boolean isIgnored) {
+    private TestCaseEvent(String testMethod, String testClass, boolean isIgnored) {
         this.testMethod = testMethod;
         this.testClass = testClass;
         this.isIgnored = isIgnored;
@@ -44,11 +47,19 @@ public class TestCaseEvent {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
         final TestCaseEvent other = (TestCaseEvent) obj;
         return Objects.equal(this.testMethod, other.testMethod)
                 && Objects.equal(this.testClass, other.testClass);
     }
 
+    @Override
+    public String toString() {
+        return reflectionToString(this, SIMPLE_STYLE);
+    }
 }

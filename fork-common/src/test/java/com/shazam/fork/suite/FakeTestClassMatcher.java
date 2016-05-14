@@ -10,7 +10,23 @@
 
 package com.shazam.fork.suite;
 
-public interface TestClassMatcher {
+public class FakeTestClassMatcher implements TestClassMatcher {
+    private boolean matches;
 
-    boolean matchesPatterns(String typeDescriptor);
+    private FakeTestClassMatcher() {
+    }
+
+    public static FakeTestClassMatcher fakeTestClassMatcher() {
+        return new FakeTestClassMatcher();
+    }
+
+    public FakeTestClassMatcher thatAlwaysMatches() {
+        matches = true;
+        return this;
+    }
+
+    @Override
+    public boolean matchesPatterns(String typeDescriptor) {
+        return matches;
+    }
 }

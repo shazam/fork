@@ -10,6 +10,7 @@
 
 package com.shazam.fork.injector.io;
 
+import com.shazam.fork.io.ClassesDexFileExtractor;
 import com.shazam.fork.io.DexFileExtractor;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuredOutput;
@@ -19,6 +20,6 @@ public class DexFileExtractorInjector {
     private DexFileExtractorInjector() {}
 
     public static DexFileExtractor dexFileExtractor() {
-        return new DexFileExtractor(configuredOutput());
+        return new ClassesDexFileExtractor(configuredOutput());
     }
 }
