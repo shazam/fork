@@ -12,15 +12,12 @@
  */
 package com.shazam.fork.pooling;
 
-import com.shazam.fork.model.Device;
-import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.Devices;
+import com.shazam.fork.model.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.shazam.fork.model.Pool.Builder.aDevicePool;
-import static java.util.Collections.emptyList;
 
 /**
  * Create tablets/other pool based on self-reported ro.build.characteristics = tablet
@@ -30,17 +27,10 @@ public class DefaultAndTabletDevicePoolLoader implements DevicePoolLoader {
 	private static final String DEFAULT_POOL_NAME = "default_pool";
 	private static final String TABLETS = "tablets";
 
-    private final boolean useTabletFlag;
-
-	public DefaultAndTabletDevicePoolLoader(boolean useTabletFlag) {
-        this.useTabletFlag = useTabletFlag;
+	public DefaultAndTabletDevicePoolLoader() {
     }
 
 	public Collection<Pool> loadPools(Devices devices) {
-		if (!useTabletFlag) {
-            return emptyList();
-        }
-
         Collection<Pool> pools = new ArrayList<>();
         Pool.Builder defaultPoolBuilder = aDevicePool().withName(DEFAULT_POOL_NAME);
         Pool.Builder tabletPoolBuilder = aDevicePool().withName(TABLETS);
@@ -56,5 +46,4 @@ public class DefaultAndTabletDevicePoolLoader implements DevicePoolLoader {
         tabletPoolBuilder.addIfNotEmpty(pools);
 		return pools;
 	}
-
 }

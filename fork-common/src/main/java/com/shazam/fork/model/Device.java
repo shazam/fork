@@ -12,6 +12,7 @@
  */
 package com.shazam.fork.model;
 
+import com.android.annotations.Nullable;
 import com.android.ddmlib.IDevice;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -61,6 +62,7 @@ public class Device {
 		return isTablet;
 	}
 
+	@Nullable
     public DisplayGeometry getGeometry() {
         return geometry;
     }
@@ -125,7 +127,7 @@ public class Device {
 			return this;
 		}
 
-		public Builder withDisplayGeometry(DisplayGeometry geometry) {
+		public Builder withDisplayGeometry(@Nullable DisplayGeometry geometry) {
 			this.geometry = geometry;
 			return this;
 		}

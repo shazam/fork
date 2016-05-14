@@ -14,20 +14,17 @@ package com.shazam.fork;
 
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
-import com.shazam.fork.pooling.NoDevicesForPoolException;
-import com.shazam.fork.pooling.PoolLoader;
-import com.shazam.fork.runner.PoolTestRunner;
+import com.shazam.fork.pooling.*;
 import com.shazam.fork.runner.PoolTestRunnerFactory;
 import com.shazam.fork.runner.ProgressReporter;
-import com.shazam.fork.suite.TestClassLoader;
-import com.shazam.fork.suite.TestClassScanningException;
+import com.shazam.fork.suite.NoTestCasesFoundException;
+import com.shazam.fork.suite.TestSuiteLoader;
 import com.shazam.fork.summary.SummaryGeneratorHook;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
@@ -37,13 +34,13 @@ public class ForkRunner {
     private static final Logger logger = LoggerFactory.getLogger(ForkRunner.class);
 
     private final PoolLoader poolLoader;
-    private final TestClassLoader testClassLoader;
+    private final TestSuiteLoader testClassLoader;
     private final PoolTestRunnerFactory poolTestRunnerFactory;
     private final ProgressReporter progressReporter;
     private final SummaryGeneratorHook summaryGeneratorHook;
 
     public ForkRunner(PoolLoader poolLoader,
-                      TestClassLoader testClassLoader,
+                      TestSuiteLoader testClassLoader,
                       PoolTestRunnerFactory poolTestRunnerFactory,
                       ProgressReporter progressReporter,
                       SummaryGeneratorHook summaryGeneratorHook) {
@@ -62,12 +59,12 @@ public class ForkRunner {
             CountDownLatch poolCountDownLatch = new CountDownLatch(numberOfPools);
             poolExecutor = namedExecutor(numberOfPools, "PoolExecutor-%d");
 
-            List<TestCaseEvent> testCases = testClassLoader.loadTestClasses();
+            Collection<TestCaseEvent> testCases = testClassLoader.loadTestSuite();
             summaryGeneratorHook.registerHook(pools, testCases);
 
             progressReporter.start();
             for (Pool pool : pools) {
-                PoolTestRunner poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(pool, testCases,
+                Runnable poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(pool, testCases,
                         poolCountDownLatch, progressReporter);
                 poolExecutor.execute(poolTestRunner);
             }
@@ -77,11 +74,11 @@ public class ForkRunner {
             boolean overallSuccess = summaryGeneratorHook.defineOutcome();
             logger.info("Overall success: " + overallSuccess);
             return overallSuccess;
-        } catch (NoDevicesForPoolException e) {
+        } catch (NoPoolLoaderConfiguredException | NoDevicesForPoolException e) {
             logger.error("Configuring devices and pools failed", e);
             return false;
-        } catch (TestClassScanningException e) {
-            logger.error("Error when trying to scan for test classes", e);
+        } catch (NoTestCasesFoundException e) {
+            logger.error("Error when trying to find test classes", e);
             return false;
         } catch (Exception e) {
             logger.error("Error while Fork was executing", e);

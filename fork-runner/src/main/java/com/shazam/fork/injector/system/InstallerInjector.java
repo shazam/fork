@@ -13,7 +13,6 @@
 package com.shazam.fork.injector.system;
 
 import com.shazam.fork.Configuration;
-import com.shazam.fork.model.InstrumentationInfo;
 import com.shazam.fork.system.adb.Installer;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
@@ -24,11 +23,10 @@ public class InstallerInjector {
 
     public static Installer installer() {
         Configuration configuration = configuration();
-        InstrumentationInfo info = configuration.getInstrumentationInfo();
-        String applicationPackage = info.getApplicationPackage();
-        String instrumentationPackage = info.getInstrumentationPackage();
+        String applicationPackage = configuration.getApplicationPackage();
+        String instrumentationPackage = configuration.getInstrumentationPackage();
 
         return new Installer(applicationPackage, instrumentationPackage, configuration.getApplicationApk(),
-                configuration.getInstrumentationApk(), configuration.autoGrantRuntimePermissions());
+                configuration.getInstrumentationApk(), configuration.isAutoGrantingPermissions());
     }
 }

@@ -10,12 +10,17 @@
 
 package com.shazam.fork;
 
+import java.util.concurrent.TimeUnit;
+
 class Defaults {
 
-    private Defaults() {}
+    private Defaults() {
+    }
 
-    public static final int TEST_OUTPUT_TIMEOUT_MILLIS = 60 * 1000;
-    public static final String TEST_CLASS_REGEX = "^((?!Abstract).)*Test$";
-    public static final String TEST_OUTPUT = "fork-output";
-    public static final String ANDROID_SDK = System.getenv("ANDROID_HOME");
+    static final long TEST_OUTPUT_TIMEOUT_MILLIS = TimeUnit.MINUTES.toMillis(1);
+    static final String FORK_OUTPUT = "fork-output";
+    static final int STRATEGY_LIMIT = 1;
+    static final String TITLE = "Fork Report";
+    static final String SUBTITLE = "";
+    static final int RETRY_QUOTA_PER_TEST_CASE = 1;
 }

@@ -12,21 +12,19 @@
  */
 package com.shazam.fork.runner;
 
-import com.android.ddmlib.IDevice;
+import com.android.ddmlib.*;
 import com.shazam.fork.model.Device;
-import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.TestCaseEvent;
+import com.shazam.fork.model.*;
 import com.shazam.fork.system.adb.Installer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 
-import static com.shazam.fork.system.io.RemoteFileManager.createCoverageDirectory;
-import static com.shazam.fork.system.io.RemoteFileManager.createRemoteDirectory;
-import static com.shazam.fork.system.io.RemoteFileManager.removeRemoteDirectory;
+import static com.shazam.fork.system.io.RemoteFileManager.*;
 
 public class DeviceTestRunner implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(DeviceTestRunner.class);
@@ -59,11 +57,13 @@ public class DeviceTestRunner implements Runnable {
     public void run() {
         IDevice deviceInterface = device.getDeviceInterface();
         try {
+            DdmPreferences.setTimeOut(30000);
             installer.prepareInstallation(deviceInterface);
             // For when previous run crashed/disconnected and left files behind
             removeRemoteDirectory(deviceInterface);
             createRemoteDirectory(deviceInterface);
             createCoverageDirectory(deviceInterface);
+            clearLogcat(deviceInterface);
 
             TestCaseEvent testCaseEvent;
             while ((testCaseEvent = queueOfTestsInPool.poll()) != null) {
@@ -77,6 +77,14 @@ public class DeviceTestRunner implements Runnable {
         } finally {
             logger.info("Device {} from pool {} finished", device.getSerial(), pool.getName());
             deviceCountDownLatch.countDown();
+        }
+    }
+
+    private void clearLogcat(final IDevice device) {
+        try {
+            device.executeShellCommand("logcat -c", new NullOutputReceiver());
+        } catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
+            logger.warn("Could not clear logcat on device: " + device.getSerialNumber(), e);
         }
     }
 }

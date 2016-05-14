@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -33,7 +32,7 @@ public class SummaryGeneratorHook extends Thread {
     private final Summarizer summarizer;
 
     private Collection<Pool> pools;
-    private List<TestCaseEvent> testCases;
+    private Collection<TestCaseEvent> testCases;
 
     public SummaryGeneratorHook(Summarizer summarizer) {
         this.summarizer = summarizer;
@@ -46,7 +45,7 @@ public class SummaryGeneratorHook extends Thread {
      * @param pools the pools to consider for the summary
      * @param testCases the test cases for the summary
      */
-    public void registerHook(Collection<Pool> pools, List<TestCaseEvent> testCases) {
+    public void registerHook(Collection<Pool> pools, Collection<TestCaseEvent> testCases) {
         this.pools = pools;
         this.testCases = testCases;
         Runtime.getRuntime().addShutdownHook(this);
@@ -54,7 +53,7 @@ public class SummaryGeneratorHook extends Thread {
 
     /**
      * This only gets executed once, but needs to check the flag in case it finished normally and then shutdown.
-     * It can only be called after {@link SummaryGeneratorHook#registerHook(Collection, List)}.
+     * It can only be called after {@link SummaryGeneratorHook#registerHook(Collection, Collection)}.
      *
      * @return <code>true</code> - if tests have passed
      */

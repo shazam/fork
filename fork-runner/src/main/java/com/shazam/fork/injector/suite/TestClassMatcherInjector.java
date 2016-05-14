@@ -11,10 +11,13 @@
 package com.shazam.fork.injector.suite;
 
 import com.shazam.fork.Configuration;
+import com.shazam.fork.suite.PackageAndClassNameMatcher;
 import com.shazam.fork.suite.TestClassMatcher;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.regex.Pattern;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 
@@ -26,6 +29,11 @@ class TestClassMatcherInjector {
     static TestClassMatcher testClassMatcher() {
         Configuration configuration = configuration();
         log.info("Fork will try to find tests in {} from your instrumentation APK.", configuration.getTestPackage());
-        return new TestClassMatcher(configuration.getTestPackagePattern(), configuration.getTestClassPattern());
+        Pattern testPackagePattern = compilePatternFor(configuration.getTestPackage());
+        return new PackageAndClassNameMatcher(testPackagePattern, configuration.getTestClassPattern());
+    }
+
+    private static Pattern compilePatternFor(String packageString) {
+        return Pattern.compile(packageString.replace(".", "\\.") + ".*");
     }
 }

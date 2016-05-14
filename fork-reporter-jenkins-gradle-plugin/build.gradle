@@ -20,7 +20,7 @@ repositories {
 
 dependencies {
     compile project(':fork-reporter')
-    compile "com.offbytwo.jenkins:jenkins-client:0.3.0"
+    compile "com.offbytwo.jenkins:jenkins-client:0.3.4"
 }
 
 jar {

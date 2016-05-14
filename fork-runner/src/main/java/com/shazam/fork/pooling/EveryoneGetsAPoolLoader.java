@@ -12,33 +12,20 @@
  */
 package com.shazam.fork.pooling;
 
-import com.shazam.fork.model.Device;
-import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.Devices;
+import com.shazam.fork.model.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.shazam.fork.model.Pool.Builder.aDevicePool;
-import static java.util.Collections.emptyList;
 
 /**
  * Assigns one pool per device
  */
 public class EveryoneGetsAPoolLoader implements DevicePoolLoader {
 
-    private final boolean creatingPoolForEachDevice;
-
-    public EveryoneGetsAPoolLoader(boolean creatingPoolForEachDevice) {
-        this.creatingPoolForEachDevice = creatingPoolForEachDevice;
-    }
-
 	@Override
 	public Collection<Pool> loadPools(Devices devices) {
-        if (!creatingPoolForEachDevice) {
-            return emptyList();
-        }
-
         ArrayList<Pool> pools = new ArrayList<>();
         for (Device device : devices.getDevices()) {
             Pool pool = aDevicePool().addDevice(device).withName(device.getSerial()).build();

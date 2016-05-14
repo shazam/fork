@@ -15,7 +15,8 @@ import com.shazam.fork.runner.PoolTestRunnerFactory;
 import static com.shazam.fork.injector.runner.DeviceTestRunnerFactoryInjector.deviceTestRunnerFactory;
 
 public class PoolTestRunnerFactoryInjector {
-    private PoolTestRunnerFactoryInjector(){};
+
+    private PoolTestRunnerFactoryInjector() {}
 
     public static PoolTestRunnerFactory poolTestRunnerFactory() {
         return new PoolTestRunnerFactory(deviceTestRunnerFactory());

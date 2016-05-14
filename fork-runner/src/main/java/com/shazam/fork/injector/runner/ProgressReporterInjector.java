@@ -22,7 +22,9 @@ public class ProgressReporterInjector {
     private ProgressReporterInjector() {}
 
     public static ProgressReporter progressReporter() {
-        return new OverallProgressReporter(configuration(),
+        return new OverallProgressReporter(
+                configuration().getTotalAllowedRetryQuota(),
+                configuration().getRetryPerTestCaseQuota(),
                 poolProgressTrackers(),
                 poolTestCaseFailureAccumulator());
     }

@@ -19,7 +19,9 @@ import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 import static com.shazam.fork.injector.GsonInjector.gson;
 
 public class LogCatRetrieverInjector {
+
     private LogCatRetrieverInjector() {}
+
     public static LogCatRetriever logCatRetriever() {
         return new JsonLogCatRetriever(gson(), fileManager());
     }

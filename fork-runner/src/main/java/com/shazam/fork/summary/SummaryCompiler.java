@@ -13,10 +13,8 @@
 package com.shazam.fork.summary;
 
 import com.google.common.collect.Lists;
-import com.shazam.fork.RuntimeConfiguration;
-import com.shazam.fork.model.Device;
-import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.TestCaseEvent;
+import com.shazam.fork.Configuration;
+import com.shazam.fork.model.*;
 import com.shazam.fork.runner.PoolTestRunner;
 import com.shazam.fork.system.io.FileManager;
 
@@ -36,25 +34,25 @@ public class SummaryCompiler {
 
     private static final boolean STRICT = false;
 
-    private final RuntimeConfiguration runtimeConfiguration;
+    private final Configuration configuration;
     private final FileManager fileManager;
     private final Serializer serializer;
 
-    public SummaryCompiler(RuntimeConfiguration runtimeConfiguration, FileManager fileManager) {
-        this.runtimeConfiguration = runtimeConfiguration;
+    public SummaryCompiler(Configuration configuration, FileManager fileManager) {
+        this.configuration = configuration;
         this.fileManager = fileManager;
         serializer = new Persister();
     }
 
-    Summary compileSummary(Collection<Pool> pools, List<TestCaseEvent> testCases) {
+    Summary compileSummary(Collection<Pool> pools, Collection<TestCaseEvent> testCases) {
         Summary.Builder summaryBuilder = aSummary();
         for (Pool pool : pools) {
             PoolSummary poolSummary = compilePoolSummary(pool, summaryBuilder);
             summaryBuilder.addPoolSummary(poolSummary);
         }
         addIgnoredTests(testCases, summaryBuilder);
-        summaryBuilder.withTitle(runtimeConfiguration.getTitle());
-        summaryBuilder.withSubtitle(runtimeConfiguration.getSubtitle());
+        summaryBuilder.withTitle(configuration.getTitle());
+        summaryBuilder.withSubtitle(configuration.getSubtitle());
 
         return summaryBuilder.build();
     }
@@ -89,7 +87,7 @@ public class SummaryCompiler {
                 .build();
     }
 
-    private void addIgnoredTests(List<TestCaseEvent> testCases, Summary.Builder summaryBuilder) {
+    private void addIgnoredTests(Collection<TestCaseEvent> testCases, Summary.Builder summaryBuilder) {
         for (TestCaseEvent testCase : testCases) {
             if (testCase.isIgnored()) {
                 summaryBuilder.addIgnoredTest(testCase.getTestClass() + ":" + testCase.getTestMethod());

@@ -13,15 +13,15 @@
 package com.shazam.fork;
 
 import com.beust.jcommander.*;
-import com.beust.jcommander.converters.IntegerConverter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.io.*;
 
-import static com.shazam.fork.ForkBuilder.aFork;
-import static com.shazam.fork.Utils.cleanFile;
+import static com.shazam.fork.Configuration.Builder.configuration;
+import static com.shazam.fork.injector.GsonInjector.gson;
+import static com.shazam.fork.utils.Utils.cleanFile;
 
 public class ForkCli {
 
@@ -42,40 +42,12 @@ public class ForkCli {
                 required = true)
         public File testApk;
 
-        @Parameter(names = { "--output" }, description = "Output path", converter = FileConverter.class)
-        public File output;
-
-        @Parameter(names = { "--test-class-regex" }, description = "Regex determining class names to consider when finding tests to run")
-        public String testClassRegex;
-
-        @Parameter(names = { "--test-package" }, description = "The package where your tests are located. " +
-                "Defaults to the instrumentation package.")
-        public String testPackage;
-
-        @Parameter(names = { "--test-timeout" }, description = "The maximum amount of time during which the tests are " +
-                "allowed to not output any response, in milliseconds", converter = IntegerConverter.class)
-        public int testOutputTimeout = -1;
-
-        @Parameter(names = { "--fallback-to-screenshots" }, description = "Allowed to fallback to screenshots when video" +
-                " recording is not supported" , arity = 1)
-        public boolean fallbackToScreenshots = true;
-
-        @Parameter(names = { "--fail-on-failure" }, description = "Non-zero exit code on failure")
-        public boolean failOnFailure = true;
+        @Parameter(names = { "--config" }, description = "Path of JSON config file", converter = FileConverter.class,
+                required = true)
+        public File configurationFile;
 
         @Parameter(names = { "-h", "--help" }, description = "Command help", help = true, hidden = true)
         public boolean help;
-
-        @Parameter(names = { "--total-allowed-retry-quota" }, description = "Amount of re-executions of failing tests allowed.", converter = IntegerConverter.class)
-        public int totalAllowedRetryQuota = 0;
-
-        @Parameter(names = { "--retry-per-test-case-quota" }, description = "Max number of time each testCase is attempted again " +
-                "before declaring it as a failure.", converter = IntegerConverter.class)
-        public int retryPerTestCaseQuota = 1;
-
-        @Parameter(names = { "--auto-grant-runtime-permissions" }, description = "Grant all runtime permissions", arity = 1)
-        public Boolean autoGrantRuntimePermissions = true;
-
     }
 
     /* JCommander deems it necessary that this class be public. Lame. */
@@ -105,50 +77,37 @@ public class ForkCli {
             return;
         }
 
-        ForkBuilder forkBuilder = aFork()
-                .withApplicationApk(parsedArgs.apk)
-                .withInstrumentationApk(parsedArgs.testApk)
-                .withFallbackToScreenshots(parsedArgs.fallbackToScreenshots);
+        try {
+            Reader configFileReader = new FileReader(parsedArgs.configurationFile);
+            ForkConfiguration forkConfiguration = gson().fromJson(configFileReader, ForkConfiguration.class);
 
-        overrideDefaultsIfSet(forkBuilder, parsedArgs);
+            Configuration configuration = configuration()
+                    .withAndroidSdk(parsedArgs.sdk != null ? parsedArgs.sdk : cleanFile(CommonDefaults.ANDROID_SDK))
+                    .withApplicationApk(parsedArgs.apk)
+                    .withInstrumentationApk(parsedArgs.testApk)
+                    .withOutput(forkConfiguration.baseOutputDir != null ? cleanFile(forkConfiguration.baseOutputDir) : cleanFile(Defaults.FORK_OUTPUT))
+                    .withTitle(forkConfiguration.title)
+                    .withSubtitle(forkConfiguration.subtitle)
+                    .withTestClassRegex(forkConfiguration.testClassRegex)
+                    .withTestPackage(forkConfiguration.testPackage)
+                    .withTestOutputTimeout(forkConfiguration.testOutputTimeout)
+                    .withTestSize(forkConfiguration.testSize)
+                    .withExcludedSerials(forkConfiguration.excludedSerials)
+                    .withFallbackToScreenshots(forkConfiguration.fallbackToScreenshots)
+                    .withTotalAllowedRetryQuota(forkConfiguration.totalAllowedRetryQuota)
+                    .withRetryPerTestCaseQuota(forkConfiguration.retryPerTestCaseQuota)
+                    .withCoverageEnabled(forkConfiguration.isCoverageEnabled)
+                    .withPoolingStrategy(forkConfiguration.poolingStrategy)
+                    .withAutoGrantPermissions(forkConfiguration.autoGrantPermissions)
+                    .build();
 
-        Fork fork = forkBuilder.build();
-        if (!fork.run() && parsedArgs.failOnFailure) {
+            Fork fork = new Fork(configuration);
+            if (!fork.run() && !forkConfiguration.ignoreFailures) {
+                System.exit(1);
+            }
+        } catch (FileNotFoundException e) {
+            logger.error("Could not find configuration file", e);
             System.exit(1);
-        }
-    }
-
-    private static void overrideDefaultsIfSet(ForkBuilder forkBuilder, CommandLineArgs parsedArgs) {
-        if (parsedArgs.sdk != null) {
-            forkBuilder.withAndroidSdk(parsedArgs.sdk);
-        }
-
-        if (parsedArgs.output != null) {
-            forkBuilder.withOutputDirectory(parsedArgs.output);
-        }
-
-        if (parsedArgs.testClassRegex != null) {
-            forkBuilder.withTestClassRegex(parsedArgs.testClassRegex);
-        }
-
-        if (parsedArgs.testPackage != null) {
-            forkBuilder.withTestPackage(parsedArgs.testPackage);
-        }
-
-        if (parsedArgs.testOutputTimeout > -1) {
-            forkBuilder.withTestOutputTimeout(parsedArgs.testOutputTimeout);
-        }
-
-        if (parsedArgs.totalAllowedRetryQuota > 0) {
-            forkBuilder.withTotalAllowedRetryQuota(parsedArgs.totalAllowedRetryQuota);
-        }
-
-        if(parsedArgs.retryPerTestCaseQuota > -1){
-            forkBuilder.withRetryPerTestCaseQuota(parsedArgs.retryPerTestCaseQuota);
-        }
-
-        if(parsedArgs.autoGrantRuntimePermissions != null){
-            forkBuilder.withAutoGrantRuntimePermissions(parsedArgs.autoGrantRuntimePermissions);
         }
     }
 }

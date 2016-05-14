@@ -10,7 +10,13 @@
 
 package com.shazam.fork.io;
 
+import org.jf.dexlib.DexFile;
+
 import java.io.*;
+import java.util.function.Function;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 import static org.apache.commons.io.IOUtils.closeQuietly;
@@ -29,5 +35,20 @@ public class Files {
         } finally {
             closeQuietly(resourceAsStream);
         }
+    }
+
+    @Nonnull
+    public static Function<File, DexFile> convertFileToDexFile() {
+        return new Function<File, DexFile>() {
+            @Nullable
+            @Override
+            public DexFile apply(File f) {
+                try {
+                    return new DexFile(f);
+                } catch (IOException e) {
+                    return null;
+                }
+            }
+        };
     }
 }

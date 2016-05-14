@@ -17,6 +17,7 @@ import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryPlugin
 import com.android.build.gradle.api.ApkVariantOutput
 import com.android.build.gradle.api.TestVariant
+import com.shazam.fork.ForkConfiguration
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
@@ -36,7 +37,7 @@ class ForkPlugin implements Plugin<Project> {
             throw new IllegalStateException("Android plugin is not found")
         }
 
-        project.extensions.add "fork", ForkExtension
+        project.extensions.add "fork", ForkConfiguration
 
         def forkTask = project.task(TASK_PREFIX) {
             group = JavaBasePlugin.VERIFICATION_GROUP
@@ -60,7 +61,7 @@ class ForkPlugin implements Plugin<Project> {
         if (variant.outputs.size() > 1) {
             throw new UnsupportedOperationException("Fork plugin for gradle does not support abi/density splits for test apks")
         }
-        ForkExtension config = project.fork
+        ForkConfiguration config = project.fork
         return variant.testedVariant.outputs.collect { def projectOutput ->
             ForkRunTask task = project.tasks.create("${TASK_PREFIX}${variant.name.capitalize()}", ForkRunTask)
             task.configure {
@@ -72,20 +73,28 @@ class ForkPlugin implements Plugin<Project> {
                 }
                 instrumentationApk = variant.outputs[0].outputFile
 
-                File outputBase = config.baseOutputDir
-                if (!outputBase) {
+                String baseOutputDir = config.baseOutputDir
+                File outputBase
+                if (baseOutputDir) {
+                    outputBase = new File(baseOutputDir);
+                } else {
                     outputBase = new File(project.buildDir, "fork")
                 }
                 output = new File(outputBase, projectOutput.dirName)
+                title = config.title
+                subtitle = config.subtitle
                 testClassRegex = config.testClassRegex
                 testPackage = config.testPackage
-                ignoreFailures = config.ignoreFailures
                 testOutputTimeout = config.testOutputTimeout
-                fallbackToScreenshots = config.fallbackToScreenshots;
+                testSize = config.testSize
+                excludedSerials = config.excludedSerials
+                fallbackToScreenshots = config.fallbackToScreenshots
                 totalAllowedRetryQuota = config.totalAllowedRetryQuota
                 retryPerTestCaseQuota = config.retryPerTestCaseQuota
                 isCoverageEnabled = config.isCoverageEnabled
-                autoGrantRuntimePermissions = config.autoGrantRuntimePermissions
+                poolingStrategy = config.poolingStrategy
+                autoGrantPermissions = config.autoGrantPermissions
+                ignoreFailures = config.ignoreFailures
 
                 dependsOn projectOutput.assemble, variant.assemble
             }

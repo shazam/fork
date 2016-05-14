@@ -12,14 +12,14 @@ package com.shazam.fork.injector.pooling;
 
 import com.shazam.fork.pooling.PoolLoader;
 
-import static com.shazam.fork.injector.pooling.DeviceLoaderInjector.deviceLoader;
-import static com.shazam.fork.injector.pooling.DevicePoolLoaderInjector.devicePoolLoader;
+import static com.shazam.fork.injector.ConfigurationInjector.configuration;
+import static com.shazam.fork.injector.device.DeviceLoaderInjector.deviceLoader;
 
 public class PoolLoaderInjector {
 
     private PoolLoaderInjector() {}
 
     public static PoolLoader poolLoader() {
-        return new PoolLoader(deviceLoader(), devicePoolLoader());
+        return new PoolLoader(deviceLoader(), configuration());
     }
 }
