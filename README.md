@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/shazam/fork.svg?branch=master)](https://travis-ci.org/shazam/fork)
+[![Build Status](https://travis-ci.org/shazam/fork.svg?branch=master)](https://travis-ci.org/shazam/fork)  [![Codacy Badge](https://api.codacy.com/project/badge/Grade/848eae2d11bc422caec3ac215557f38c)](https://www.codacy.com/app/i-giannakakis/fork?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=shazam/fork&amp;utm_campaign=Badge_Grade)
 
 Fork tools
 ==========
