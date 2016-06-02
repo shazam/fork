@@ -2,7 +2,6 @@
 
 set -e
 
-sudo curl https://www.jpm4j.org/install/script | sh
-jpm install com.codacy:codacy-coverage-reporter:assembly
 ./gradlew -q clean jacocoMergedReport
-codacy-coverage-reporter -l Java -r build/reports/jacoco/jacocoMergedReport/jacocoMergedReport.xml
+cd build-scripts
+java -cp codacy-coverage-reporter-assembly-1.0.5.jar com.codacy.CodacyCoverageReporter -l Java -r ../build/reports/jacoco/jacocoMergedReport/jacocoMergedReport.xml
