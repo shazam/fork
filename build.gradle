@@ -15,27 +15,46 @@ task wrapper(type: Wrapper) {
 ext.sourceCompatibility = JavaVersion.VERSION_1_8
 ext.targetCompatibility = JavaVersion.VERSION_1_8
 
-subprojects {
+def repos = {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+}
+
+allprojects {
     buildscript {
-        repositories {
-            mavenLocal()
-            mavenCentral()
-            jcenter()
-        }
+        repositories repos
     }
+    repositories repos
 
-    group = GROUP
+    apply plugin: "java"
+    apply plugin: "jacoco"
+
     version = VERSION_NAME
+    group = GROUP
+}
 
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        jcenter()
-    }
-
+subprojects {
     afterEvaluate { project ->
+        jacocoTestReport.dependsOn test
+        jacocoTestReport.reports.html.enabled false
+        jacocoTestReport.reports.xml.enabled true
+
         // Weirdly archives are signed even if signing.required {false}, so also skipping task explicitly.
         signArchives.onlyIf {!VERSION_NAME.endsWith("SNAPSHOT")}
     }
+}
 
+task jacocoMergeExecutions(type: JacocoMerge, dependsOn: getTasksByName('jacocoTestReport', true)) {
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+}
+
+task jacocoMergedReport(type: JacocoReport, dependsOn: jacocoMergeExecutions) {
+    executionData jacocoMergeExecutions.destinationFile
+    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
+    classDirectories =  files(subprojects.sourceSets.main.output)
+    reports {
+        html.enabled false
+        xml.enabled true
+    }
 }
