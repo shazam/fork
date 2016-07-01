@@ -312,7 +312,8 @@ testClassRegex         | String        | "^((?!Abstract).)*Test$"           | cl
 \* testPackage         | String        | (Your instrumentation APK package) | the package where the performance tests are located  
 
 ##Current reports
-Currently, Chimprunner produces a `timings.csv` file in the output folder with all the timings of tests that were executed as part of the performance tests and the average time they took after running a number of iterations. That CSV file can be then used for plotting by other tools.
+Currently, Chimprunner produces a `timings.csv` file in the output folder with all the timings of tests that were executed as part of the performance tests and the average time they took after running a number of iterations. That CSV file can be then used for plotting by other tools. Using the Jenkins Plot plugin we can now produce historic diagrams of our startup time like the following diagram:
+![Chimprunner timing plot](static/performance-plot.png)
 
 ##Future work
 We would like to add ways of automatically launching Android performance tools & reports developers know and use already, with no or minimal code changes. We will investigate around how to provide systrace, CPU, GPU & memory usage reports. The library will probably provide some annotations that will enable various performance tools. An example could be:
