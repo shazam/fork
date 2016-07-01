@@ -25,13 +25,25 @@ Fork works out-of-the-box, without any code changes.
 There are two ways to run Fork with your builds.
 
 ### Gradle plugin (recommended)
-First, you need to add a build-script dependency:
-
+First, you need to add a build-script dependency. You can have access to snapshot builds, but stable versions are recommended.
+#### Stable
 ```
 buildscript {
-    dependencies {
-        classpath 'com.shazam.fork:fork-gradle-plugin:2.1.0-SNAPSHOT'
-    }
+  dependencies {
+    classpath 'com.shazam.fork:fork-gradle-plugin:2.0.0'
+  }
+}
+```
+#### Snapshot
+```
+buildscript {
+  repositories {
+    // other repos ...
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+  }
+  dependencies {
+    classpath 'com.shazam.fork:fork-gradle-plugin:2.1.0-SNAPSHOT'
+  }
 }
 ```
 
