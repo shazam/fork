@@ -15,7 +15,7 @@ package com.shazam.fork.gradle
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryPlugin
-import com.android.build.gradle.api.ApkVariantOutput
+import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.api.TestVariant
 import com.shazam.fork.ForkConfiguration
 import org.gradle.api.Plugin
@@ -46,61 +46,80 @@ class ForkPlugin implements Plugin<Project> {
 
         BaseExtension android = project.android
         android.testVariants.all { TestVariant variant ->
-            List<ForkRunTask> tasks = createTask(variant, project)
-            tasks.each {
-                it.configure {
-                    description = "Runs instrumentation tests on all the connected devices for '${variant.name}' variation and generates a report with screenshots"
-                }
-            }
-
-            forkTask.dependsOn tasks
+            ForkRunTask forkTaskForTestVariant = createTask(variant, project)
+            forkTask.dependsOn forkTaskForTestVariant
         }
     }
 
-    private static List<ForkRunTask> createTask(final TestVariant variant, final Project project) {
-        if (variant.outputs.size() > 1) {
-            throw new UnsupportedOperationException("Fork plugin for gradle does not support abi/density splits for test apks")
-        }
-        ForkConfiguration config = project.fork
-        return variant.testedVariant.outputs.collect { def projectOutput ->
-            ForkRunTask task = project.tasks.create("${TASK_PREFIX}${variant.name.capitalize()}", ForkRunTask)
-            task.configure {
-                group = JavaBasePlugin.VERIFICATION_GROUP
-                if (projectOutput instanceof ApkVariantOutput) {
-                    applicationApk = projectOutput.outputFile
-                } else {
-                    applicationApk = variant.outputs[0].outputFile
-                }
-                instrumentationApk = variant.outputs[0].outputFile
+    private static ForkRunTask createTask(final TestVariant variant, final Project project) {
+        checkTestVariants(variant)
+        checkTestedVariants(variant.testedVariant)
 
-                String baseOutputDir = config.baseOutputDir
-                File outputBase
-                if (baseOutputDir) {
-                    outputBase = new File(baseOutputDir);
-                } else {
-                    outputBase = new File(project.buildDir, "fork")
-                }
-                output = new File(outputBase, projectOutput.dirName)
-                title = config.title
-                subtitle = config.subtitle
-                testClassRegex = config.testClassRegex
-                testPackage = config.testPackage
-                testOutputTimeout = config.testOutputTimeout
-                testSize = config.testSize
-                excludedSerials = config.excludedSerials
-                fallbackToScreenshots = config.fallbackToScreenshots
-                totalAllowedRetryQuota = config.totalAllowedRetryQuota
-                retryPerTestCaseQuota = config.retryPerTestCaseQuota
-                isCoverageEnabled = config.isCoverageEnabled
-                poolingStrategy = config.poolingStrategy
-                autoGrantPermissions = config.autoGrantPermissions
-                ignoreFailures = config.ignoreFailures
+        def forkTask = project.tasks.create("${TASK_PREFIX}${variant.name.capitalize()}", ForkRunTask)
 
-                dependsOn projectOutput.assemble, variant.assemble
+        forkTask.configure {
+            ForkConfiguration config = project.fork
+
+            description = "Runs instrumentation tests on all the connected devices for '${variant.name}' variation and generates a report with screenshots"
+            group = JavaBasePlugin.VERIFICATION_GROUP
+
+            def firstTestedVariantOutput = variant.testedVariant.outputs.get(0)
+            applicationApk = firstTestedVariantOutput.outputFile
+            instrumentationApk = variant.outputs.get(0).outputFile
+
+            String baseOutputDir = config.baseOutputDir
+            File outputBase
+            if (baseOutputDir) {
+                outputBase = new File(baseOutputDir)
+            } else {
+                outputBase = new File(project.buildDir, "fork")
             }
-            task.outputs.upToDateWhen { false }
-            return task
-        } as List<ForkRunTask>
+            output = new File(outputBase, firstTestedVariantOutput.dirName)
+            title = config.title
+            subtitle = config.subtitle
+            testClassRegex = config.testClassRegex
+            testPackage = config.testPackage
+            testOutputTimeout = config.testOutputTimeout
+            testSize = config.testSize
+            excludedSerials = config.excludedSerials
+            fallbackToScreenshots = config.fallbackToScreenshots
+            totalAllowedRetryQuota = config.totalAllowedRetryQuota
+            retryPerTestCaseQuota = config.retryPerTestCaseQuota
+            isCoverageEnabled = config.isCoverageEnabled
+            poolingStrategy = config.poolingStrategy
+            autoGrantPermissions = config.autoGrantPermissions
+            ignoreFailures = config.ignoreFailures
+
+            dependsOn firstTestedVariantOutput.assemble, variant.assemble
+        }
+        forkTask.outputs.upToDateWhen { false }
+        return forkTask
     }
 
+    private static checkTestVariants(TestVariant testVariant) {
+        if (testVariant.outputs.size() > 1) {
+            throw new UnsupportedOperationException("The Fork plugin does not support abi/density splits for test APKs")
+        }
+    }
+
+    /**
+     * Checks that if the base variant contains more than one outputs (and has therefore splits), it is the universal APK.
+     * Otherwise, we can test the single output. This is a workaround until Fork supports test & app splits properly.
+     *
+     * @param baseVariant the tested variant
+     */
+    private static checkTestedVariants(BaseVariant baseVariant) {
+        def outputFile = baseVariant.outputs.get(0).outputFile
+        if (baseVariant.outputs.size() > 1) {
+            if (outputFile.toString().contains("universal")) {
+                return outputFile
+            }
+            throw new UnsupportedOperationException(
+                    "The Fork plugin does not support abi splits for app APKs, but supports testing via a universal APK. " +
+                    "Add the flag \"universalApk true\" in the android.splits.abi configuration."
+            )
+        } else {
+            return outputFile
+        }
+    }
 }
