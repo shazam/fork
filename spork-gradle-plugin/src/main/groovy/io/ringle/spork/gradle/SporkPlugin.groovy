@@ -10,7 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.shazam.fork.gradle
+package io.ringle.spork.gradle
 
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
@@ -23,12 +23,12 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
 
 /**
- * Gradle plugin for Fork.
+ * Gradle plugin for Spork.
  */
-class ForkPlugin implements Plugin<Project> {
+class SporkPlugin implements Plugin<Project> {
 
     /** Task name prefix. */
-    private static final String TASK_PREFIX = "fork"
+    private static final String TASK_PREFIX = "spork"
 
     @Override
     void apply(final Project project) {
@@ -37,28 +37,28 @@ class ForkPlugin implements Plugin<Project> {
             throw new IllegalStateException("Android plugin is not found")
         }
 
-        project.extensions.add "fork", ForkConfiguration
+        project.extensions.add "spork", ForkConfiguration
 
-        def forkTask = project.task(TASK_PREFIX) {
+        def sporkTask = project.task(TASK_PREFIX) {
             group = JavaBasePlugin.VERIFICATION_GROUP
             description = "Runs all the instrumentation test variations on all the connected devices"
         }
 
         BaseExtension android = project.android
         android.testVariants.all { TestVariant variant ->
-            ForkRunTask forkTaskForTestVariant = createTask(variant, project)
-            forkTask.dependsOn forkTaskForTestVariant
+            SporkRunTask sporkTaskForTestVariant = createTask(variant, project)
+            sporkTask.dependsOn sporkTaskForTestVariant
         }
     }
 
-    private static ForkRunTask createTask(final TestVariant variant, final Project project) {
+    private static SporkRunTask createTask(final TestVariant variant, final Project project) {
         checkTestVariants(variant)
         checkTestedVariants(variant.testedVariant)
 
-        def forkTask = project.tasks.create("${TASK_PREFIX}${variant.name.capitalize()}", ForkRunTask)
+        def sporkTask = project.tasks.create("${TASK_PREFIX}${variant.name.capitalize()}", SporkRunTask)
 
-        forkTask.configure {
-            ForkConfiguration config = project.fork
+        sporkTask.configure {
+            ForkConfiguration config = project.spork
 
             description = "Runs instrumentation tests on all the connected devices for '${variant.name}' variation and generates a report with screenshots"
             group = JavaBasePlugin.VERIFICATION_GROUP
@@ -76,7 +76,7 @@ class ForkPlugin implements Plugin<Project> {
             if (baseOutputDir) {
                 outputBase = new File(baseOutputDir)
             } else {
-                outputBase = new File(project.buildDir, "fork")
+                outputBase = new File(project.buildDir, "spork")
             }
             output = new File(outputBase, firstTestedVariantOutput.dirName)
             title = config.title
@@ -98,19 +98,19 @@ class ForkPlugin implements Plugin<Project> {
 
             dependsOn firstTestedVariantOutput.assemble, variant.assemble
         }
-        forkTask.outputs.upToDateWhen { false }
-        return forkTask
+        sporkTask.outputs.upToDateWhen { false }
+        return sporkTask
     }
 
     private static checkTestVariants(TestVariant testVariant) {
         if (testVariant.outputs.size() > 1) {
-            throw new UnsupportedOperationException("The Fork plugin does not support abi/density splits for test APKs")
+            throw new UnsupportedOperationException("The Spork plugin does not support abi/density splits for test APKs")
         }
     }
 
     /**
      * Checks that if the base variant contains more than one outputs (and has therefore splits), it is the universal APK.
-     * Otherwise, we can test the single output. This is a workaround until Fork supports test & app splits properly.
+     * Otherwise, we can test the single output. This is a workaround until Spork supports test & app splits properly.
      *
      * @param baseVariant the tested variant
      */
@@ -121,7 +121,7 @@ class ForkPlugin implements Plugin<Project> {
                 return outputFile
             }
             throw new UnsupportedOperationException(
-                    "The Fork plugin does not support abi splits for app APKs, but supports testing via a universal APK. " +
+                    "The Spork plugin does not support abi splits for app APKs, but supports testing via a universal APK. " +
                     "Add the flag \"universalApk true\" in the android.splits.abi configuration."
             )
         } else {

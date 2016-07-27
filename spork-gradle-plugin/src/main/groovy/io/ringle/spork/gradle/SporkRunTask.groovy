@@ -10,7 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.shazam.fork.gradle
+package io.ringle.spork.gradle
 
 import com.shazam.fork.Configuration
 import com.shazam.fork.Fork
@@ -27,12 +27,12 @@ import org.slf4j.LoggerFactory
 import static com.shazam.fork.Configuration.Builder.configuration
 
 /**
- * Task for using Fork.
+ * Task for using Spork.
  */
-class ForkRunTask extends DefaultTask implements VerificationTask {
+class SporkRunTask extends DefaultTask implements VerificationTask {
 
     /** Logger. */
-    private static final Logger LOG = LoggerFactory.getLogger(ForkRunTask.class)
+    private static final Logger LOG = LoggerFactory.getLogger(SporkRunTask.class)
 
     /** If true then test failures do not cause a build failure. */
     boolean ignoreFailures
@@ -80,7 +80,7 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
     boolean screenRecording = true
 
     @TaskAction
-    void runFork() {
+    void runSpork() {
         LOG.info("Run instrumentation tests $instrumentationApk for app $applicationApk")
         LOG.debug("Output: $output")
         LOG.debug("Ignore failures: $ignoreFailures")
