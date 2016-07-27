@@ -55,7 +55,7 @@ public class TestRunListenersFactory {
                 new SlowWarningTestRunListener(),
                 getScreenTraceTestRunListener(fileManager, pool, device),
                 new RetryListener(pool, device, testCaseEventQueue, testCase, progressReporter, fileManager),
-                getCoverageTestRunListener(configuration, device, fileManager, pool, testCase));
+                getCoverageTestRunListener(configuration, device, fileManager, pool));
     }
 
 
@@ -73,10 +73,9 @@ public class TestRunListenersFactory {
     private ITestRunListener getCoverageTestRunListener(Configuration configuration,
                                                         Device device,
                                                         FileManager fileManager,
-                                                        Pool pool,
-                                                        TestCaseEvent testCase) {
+                                                        Pool pool) {
         if (configuration.isCoverageEnabled()) {
-            return new CoverageListener(device, fileManager, pool, testCase);
+            return new CoverageListener(device, fileManager, pool);
         }
         return new NoOpITestRunListener();
     }

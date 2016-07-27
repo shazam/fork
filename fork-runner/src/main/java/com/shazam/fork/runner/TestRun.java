@@ -41,7 +41,7 @@ class TestRun {
 		RemoteAndroidTestRunner runner = new RemoteAndroidTestRunner(
 				testRunParameters.getTestPackage(),
 				testRunParameters.getTestRunner(),
-				testRunParameters.getDeviceInterface());
+				testRunParameters.getDevice().getDeviceInterface());
 
 		TestCaseEvent test = testRunParameters.getTest();
 		String testClassName = test.getTestClass();

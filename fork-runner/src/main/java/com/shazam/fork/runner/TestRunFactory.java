@@ -36,7 +36,7 @@ public class TestRunFactory {
                                  ProgressReporter progressReporter,
                                  Queue<TestCaseEvent> queueOfTestsInPool) {
         TestRunParameters testRunParameters = testRunParameters()
-                .withDeviceInterface(device.getDeviceInterface())
+                .withDevice(device)
                 .withTest(testCase)
                 .withTestPackage(configuration.getInstrumentationPackage())
                 .withTestRunner(configuration.getTestRunnerClass())

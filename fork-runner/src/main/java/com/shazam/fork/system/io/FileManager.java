@@ -37,6 +37,15 @@ public class FileManager {
         return path.toFile().listFiles();
     }
 
+    public File createFile(FileType fileType, Pool pool, Device device) {
+        try {
+            Path directory = createDirectory(fileType, pool, device);
+            return createFile(directory, device.getSafeSerial());
+        } catch (IOException e) {
+            throw new CouldNotCreateDirectoryException(e);
+        }
+    }
+
     public File createFile(FileType fileType, Pool pool, Device device, TestCaseEvent testCaseEvent){
         return createFile(fileType, pool, device, new TestIdentifier(testCaseEvent.getTestClass(), testCaseEvent.getTestMethod()));
     }

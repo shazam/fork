@@ -63,9 +63,8 @@ public class CoverageListener implements ITestRunListener {
 
     @Override
     public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
-        TestIdentifier testIdentifier = new TestIdentifier(testCase.getTestClass(), testCase.getTestMethod());
-        final String remoteFile = RemoteFileManager.getCoverageFileName(testIdentifier);
-        final File file = fileManager.createFile(COVERAGE, pool, device, testIdentifier);
+        final String remoteFile = RemoteFileManager.getCoverageFileName(device.getSafeSerial());
+        final File file = fileManager.createFile(COVERAGE, pool, device);
         try {
             device.getDeviceInterface().pullFile(remoteFile, file.getAbsolutePath());
         } catch (Exception e) {
