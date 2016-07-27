@@ -99,6 +99,11 @@ public class ForkConfiguration {
      */
     public String excludedAnnotation;
 
+	/**
+	 * Enable / Disable screen recording
+	 */	
+    public boolean screenRecording = true;
+
     public void poolingStrategy(Closure<?> poolingStrategyClosure) {
         poolingStrategy = new PoolingStrategy();
         poolingStrategyClosure.setDelegate(poolingStrategy);

@@ -82,6 +82,10 @@ public class TestRunListenersFactory {
     }
 
     private ITestRunListener getScreenTraceTestRunListener(FileManager fileManager, Pool pool, Device device) {
+        if (!configuration.isScreenRecordingEnabled()) {
+            return new NoOpITestRunListener();
+        }
+
         if (VIDEO.equals(device.getSupportedDiagnostics())) {
             return new ScreenRecorderTestRunListener(fileManager, pool, device);
         }

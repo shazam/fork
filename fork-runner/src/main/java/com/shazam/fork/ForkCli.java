@@ -100,6 +100,7 @@ public class ForkCli {
                     .withPoolingStrategy(forkConfiguration.poolingStrategy)
                     .withAutoGrantPermissions(forkConfiguration.autoGrantPermissions)
                     .withExcludedAnnotation(forkConfiguration.excludedAnnotation)
+                    .withScreenRecording(forkConfiguration.screenRecording)
                     .build();
 
             Fork fork = new Fork(configuration);

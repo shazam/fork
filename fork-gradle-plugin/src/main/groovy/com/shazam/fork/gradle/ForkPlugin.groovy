@@ -94,6 +94,8 @@ class ForkPlugin implements Plugin<Project> {
             autoGrantPermissions = config.autoGrantPermissions
             ignoreFailures = config.ignoreFailures
             excludedAnnotation = config.excludedAnnotation
+            screenRecording = config.screenRecording
+
             dependsOn firstTestedVariantOutput.assemble, variant.assemble
         }
         forkTask.outputs.upToDateWhen { false }
