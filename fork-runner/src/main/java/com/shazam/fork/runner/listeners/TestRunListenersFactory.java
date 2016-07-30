@@ -10,8 +10,9 @@
 
 package com.shazam.fork.runner.listeners;
 
-import com.android.ddmlib.testrunner.ITestRunListener;
 import com.google.gson.Gson;
+
+import com.android.ddmlib.testrunner.ITestRunListener;
 import com.shazam.fork.Configuration;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
@@ -19,7 +20,6 @@ import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.system.io.FileManager;
 
-import java.io.File;
 import java.util.List;
 import java.util.Queue;
 
@@ -34,46 +34,35 @@ public class TestRunListenersFactory {
     private final Gson gson;
 
     public TestRunListenersFactory(Configuration configuration,
-                                   FileManager fileManager,
-                                   Gson gson) {
+            FileManager fileManager,
+            Gson gson) {
         this.configuration = configuration;
         this.fileManager = fileManager;
         this.gson = gson;
     }
 
-    public List<ITestRunListener> createTestListeners(TestCaseEvent testCase,
-                                                      Device device,
-                                                      Pool pool,
-                                                      ProgressReporter progressReporter,
-                                                      Queue<TestCaseEvent> testCaseEventQueue) {
+    public List<ITestRunListener> createTestListeners(Device device,
+            Pool pool,
+            ProgressReporter progressReporter,
+            Queue<TestCaseEvent> testCaseEventQueue) {
         return asList(
                 new ProgressTestRunListener(pool, progressReporter),
-                getForkXmlTestRunListener(fileManager, configuration.getOutput(), pool, device, testCase, progressReporter),
+                getForkXmlTestRunListener(pool, device, progressReporter),
                 new ConsoleLoggingTestRunListener(configuration.getTestPackage(), device.getSerial(),
                         device.getModelName(), progressReporter),
                 new LogCatTestRunListener(gson, fileManager, pool, device),
                 new SlowWarningTestRunListener(),
                 getScreenTraceTestRunListener(fileManager, pool, device),
-                new RetryListener(pool, device, testCaseEventQueue, testCase, progressReporter, fileManager),
-                getCoverageTestRunListener(configuration, device, fileManager, pool));
+                new RetryListener(pool, device, testCaseEventQueue, progressReporter, fileManager));
     }
 
-
-    private ForkXmlTestRunListener getForkXmlTestRunListener(FileManager fileManager,
-                                                                   File output,
-                                                                   Pool pool,
-                                                                   Device device,
-                                                                   TestCaseEvent testCase,
-                                                                   ProgressReporter progressReporter) {
-        ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(fileManager, pool, device, testCase, progressReporter);
-        xmlTestRunListener.setReportDir(output);
+    private ForkXmlTestRunListener getForkXmlTestRunListener(Pool pool, Device device, ProgressReporter progressReporter) {
+        ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(fileManager, pool, device, progressReporter);
+        xmlTestRunListener.setReportDir(configuration.getOutput());
         return xmlTestRunListener;
     }
 
-    private ITestRunListener getCoverageTestRunListener(Configuration configuration,
-                                                        Device device,
-                                                        FileManager fileManager,
-                                                        Pool pool) {
+    private ITestRunListener getCoverageTestRunListener(Device device, Pool pool) {
         if (configuration.isCoverageEnabled()) {
             return new CoverageListener(device, fileManager, pool);
         }

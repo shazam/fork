@@ -13,11 +13,17 @@
 package com.shazam.fork.system.io;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
-import com.shazam.fork.model.*;
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestCaseEvent;
 
-import org.apache.commons.io.filefilter.*;
+import org.apache.commons.io.filefilter.AndFileFilter;
+import org.apache.commons.io.filefilter.PrefixFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 import java.nio.file.Path;
 
 import static com.shazam.fork.CommonDefaults.FORK_SUMMARY_FILENAME_FORMAT;
@@ -40,7 +46,7 @@ public class FileManager {
     public File createFile(FileType fileType, Pool pool, Device device) {
         try {
             Path directory = createDirectory(fileType, pool, device);
-            return createFile(directory, device.getSafeSerial());
+            return createFile(directory, createFilenameWithType(device.getSafeSerial(), fileType));
         } catch (IOException e) {
             throw new CouldNotCreateDirectoryException(e);
         }
@@ -105,6 +111,10 @@ public class FileManager {
 
     private File createFile(Path directory, String filename) {
         return new File(directory.toFile(), filename);
+    }
+
+    private String createFilenameWithType(String name, FileType fileType) {
+        return String.format("%s.%s", name, fileType.getSuffix());
     }
 
     private String createFilenameForTest(TestIdentifier testIdentifier, FileType fileType) {

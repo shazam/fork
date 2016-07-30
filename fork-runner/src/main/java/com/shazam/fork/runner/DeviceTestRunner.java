@@ -12,10 +12,18 @@
  */
 package com.shazam.fork.runner;
 
-import com.android.ddmlib.*;
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.DdmPreferences;
+import com.android.ddmlib.IDevice;
+import com.android.ddmlib.NullOutputReceiver;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.TimeoutException;
+import com.shazam.fork.Configuration;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.*;
+import com.shazam.fork.runner.listeners.CoverageListener;
 import com.shazam.fork.system.adb.Installer;
+import com.shazam.fork.system.io.FileManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +37,8 @@ import static com.shazam.fork.system.io.RemoteFileManager.*;
 public class DeviceTestRunner implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(DeviceTestRunner.class);
 
+    private final Configuration configuration;
+    private final FileManager fileManager;
     private final Installer installer;
     private final Pool pool;
     private final Device device;
@@ -37,13 +47,17 @@ public class DeviceTestRunner implements Runnable {
     private final ProgressReporter progressReporter;
     private final TestRunFactory testRunFactory;
 
-    public DeviceTestRunner(Installer installer,
+    public DeviceTestRunner(Configuration configuration,
+                            FileManager fileManager,
+                            Installer installer,
                             Pool pool,
                             Device device,
                             Queue<TestCaseEvent> queueOfTestsInPool,
                             CountDownLatch deviceCountDownLatch,
                             ProgressReporter progressReporter,
                             TestRunFactory testRunFactory) {
+        this.configuration = configuration;
+        this.fileManager = fileManager;
         this.installer = installer;
         this.pool = pool;
         this.device = device;
@@ -64,15 +78,9 @@ public class DeviceTestRunner implements Runnable {
             createRemoteDirectory(deviceInterface);
             createCoverageDirectory(deviceInterface);
             clearLogcat(deviceInterface);
-
-            TestCaseEvent testCaseEvent;
-            while ((testCaseEvent = queueOfTestsInPool.poll()) != null) {
-                TestRun testRun = testRunFactory.createTestRun(testCaseEvent,
-                        device,
-                        pool,
-                        progressReporter,
-                        queueOfTestsInPool);
-                testRun.execute();
+            testRunFactory.createTestRun(device, pool, progressReporter, queueOfTestsInPool).execute();
+            if (configuration.isCoverageEnabled()) {
+                CoverageListener.pullCoverageFile(device, pool, fileManager, logger);
             }
         } finally {
             logger.info("Device {} from pool {} finished", device.getSerial(), pool.getName());
