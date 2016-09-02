@@ -23,9 +23,14 @@ public class PackageAndClassNameMatcher implements TestClassMatcher {
 
     @Override
     public boolean matchesPatterns(String typeDescriptor) {
-        String packageName = getPackageName(typeDescriptor);
-        String className = getClassName(typeDescriptor);
-        return packagePattern.matcher(packageName).matches() && classPattern.matcher(className).matches();
+        try {
+            String packageName = getPackageName(typeDescriptor);
+            String className = getClassName(typeDescriptor);
+            return packagePattern.matcher(packageName).matches() && classPattern.matcher(className).matches();
+        } catch (StringIndexOutOfBoundsException ignored) {
+            return false;
+        }
+
     }
 
     private String getClassName(String typeDescriptor) {
