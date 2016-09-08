@@ -66,6 +66,10 @@ class ForkPlugin implements Plugin<Project> {
             def firstTestedVariantOutput = variant.testedVariant.outputs.get(0)
             applicationApk = firstTestedVariantOutput.outputFile
             instrumentationApk = variant.outputs.get(0).outputFile
+            //If we are testing a library, the app apk must be the same than the instrumentation apk
+            if (applicationApk.path.endsWith("aar")) {
+                applicationApk = instrumentationApk
+            }
 
             String baseOutputDir = config.baseOutputDir
             File outputBase
