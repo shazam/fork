@@ -14,7 +14,10 @@ import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Devices;
 import com.shazam.fork.system.adb.Adb;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
@@ -28,11 +31,17 @@ public class DeviceLoader {
     private final Adb adb;
     private final DeviceGeometryRetriever deviceGeometryRetriever;
     private final Collection<String> excludedSerials;
+    private boolean shouldRestartAdbIfNoDevices;
 
     public DeviceLoader(Adb adb, DeviceGeometryRetriever deviceGeometryRetriever, Collection<String> excludedSerials) {
+        this(adb, deviceGeometryRetriever, excludedSerials, false);
+    }
+
+    public DeviceLoader(Adb adb, DeviceGeometryRetriever deviceGeometryRetriever, Collection<String> excludedSerials, boolean shouldRestartAdbIfNoDevices) {
         this.adb = adb;
         this.deviceGeometryRetriever = deviceGeometryRetriever;
         this.excludedSerials = excludedSerials;
+        this.shouldRestartAdbIfNoDevices = shouldRestartAdbIfNoDevices;
     }
 
     /**
@@ -69,7 +78,13 @@ public class DeviceLoader {
      */
     private List<IDevice> loadAllDevices() {
         List<IDevice> devices = new ArrayList<>();
-        for (IDevice device : adb.getDevices()) {
+        Collection<IDevice> adbDevices = adb.getDevices();
+        if (adbDevices.isEmpty() && shouldRestartAdbIfNoDevices) {
+            shouldRestartAdbIfNoDevices = false;
+            adb.restart();
+            return loadAllDevices();
+        }
+        for (IDevice device : adbDevices) {
             String serialNumber = device.getSerialNumber();
             if (!excludedSerials.contains(serialNumber)) {
                 devices.add(device);

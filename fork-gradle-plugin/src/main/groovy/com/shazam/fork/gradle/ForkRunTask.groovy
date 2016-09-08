@@ -75,6 +75,8 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
 
     boolean autoGrantPermissions;
 
+    boolean restartAdbIfNoDevices
+
     @TaskAction
     void runFork() {
         LOG.info("Run instrumentation tests $instrumentationApk for app $applicationApk")
@@ -99,6 +101,7 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
                 .withCoverageEnabled(isCoverageEnabled)
                 .withPoolingStrategy(poolingStrategy)
                 .withAutoGrantPermissions(autoGrantPermissions)
+                .withRestartAdbIfNoDevices(restartAdbIfNoDevices)
                 .build();
 
         boolean success = new Fork(configuration).run()

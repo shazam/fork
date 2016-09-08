@@ -94,6 +94,11 @@ public class ForkConfiguration {
      */
     public boolean autoGrantPermissions = true;
 
+    /**
+     * Tries to restart adb if there are no devices found.
+     */
+    public boolean restartAdbIfNoDevices;
+
     public void poolingStrategy(Closure<?> poolingStrategyClosure) {
         poolingStrategy = new PoolingStrategy();
         poolingStrategyClosure.setDelegate(poolingStrategy);

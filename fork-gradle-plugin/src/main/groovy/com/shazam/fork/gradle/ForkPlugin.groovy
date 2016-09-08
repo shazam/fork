@@ -89,6 +89,7 @@ class ForkPlugin implements Plugin<Project> {
             poolingStrategy = config.poolingStrategy
             autoGrantPermissions = config.autoGrantPermissions
             ignoreFailures = config.ignoreFailures
+            restartAdbIfNoDevices = config.restartAdbIfNoDevices
 
             dependsOn firstTestedVariantOutput.assemble, variant.assemble
         }

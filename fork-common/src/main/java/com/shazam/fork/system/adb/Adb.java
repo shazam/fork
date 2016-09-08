@@ -45,6 +45,10 @@ public class Adb {
         return Arrays.asList(bridge.getDevices());
     }
 
+    public void restart() {
+        bridge.restart();
+    }
+
     public void terminate() {
         AndroidDebugBridge.terminate();
     }
