@@ -36,6 +36,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 apply from: '../build-scripts/gradle-mvn-push.gradle'
@@ -43,5 +47,4 @@ apply from: '../build-scripts/gradle-mvn-push.gradle'
 dependencies {
     compile "com.android.support.test:runner:0.5"
     compile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
-    testCompile 'junit:junit:4.12'
 }
