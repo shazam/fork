@@ -27,9 +27,20 @@
             {{#diagnosticScreenshots}}
             <img class="diagnostic {{status}}" width="35%" height="35%" src="../../../animation/{{plainPoolName}}/{{deviceSafeSerial}}/{{plainClassName}}%23{{plainMethodName}}.gif"  />
             {{/diagnosticScreenshots}}
-            <pre class="test {{status}}">{{#trace}}
-{{.}}
-{{/trace}}</pre>
+            <ul class="thumbnails">
+                {{#attachments}}
+                <li class="span2">
+                    <a href="../../../attachments/{{plainPoolName}}/{{deviceSafeSerial}}/{{.}}" class="thumbnail">
+                        <img src="../../../attachments/{{plainPoolName}}/{{deviceSafeSerial}}/{{.}}" />
+                    </a>
+                </li>
+                {{/attachments}}
+            </ul>
+            <pre class="test {{status}}">
+                {{#trace}}
+                {{.}}
+                {{/trace}}
+            </pre>
             <form>
                 <input type="text" id="filter" class="regex" placeholder="Search for regular expression"/>
                 <input type="button" value="Hide" onclick="filterTable('none')">

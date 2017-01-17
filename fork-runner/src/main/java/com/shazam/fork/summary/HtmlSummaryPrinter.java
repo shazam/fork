@@ -27,6 +27,7 @@ import static com.google.common.collect.Collections2.transform;
 import static com.shazam.fork.io.Files.copyResource;
 import static com.shazam.fork.summary.HtmlConverters.toHtmlLogCatMessages;
 import static com.shazam.fork.summary.HtmlConverters.toHtmlSummary;
+import static com.shazam.fork.summary.HtmlConverters.toUrlEncodedFilename;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 
 public class HtmlSummaryPrinter implements SummaryPrinter {
@@ -50,12 +51,17 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 	};
 	private final File htmlOutput;
 	private final File staticOutput;
-	private final LogCatRetriever retriever;
+	private final LogCatRetriever logCatRetriever;
+	private final AttachmentRetriever attachmentRetriever;
     private final HtmlGenerator htmlGenerator;
 
-    public HtmlSummaryPrinter(File rootOutput, LogCatRetriever retriever, HtmlGenerator htmlGenerator) {
-		this.retriever = retriever;
-        this.htmlGenerator = htmlGenerator;
+    public HtmlSummaryPrinter(File rootOutput,
+							  LogCatRetriever logCatRetriever,
+							  AttachmentRetriever attachmentRetriever,
+							  HtmlGenerator htmlGenerator) {
+		this.logCatRetriever = logCatRetriever;
+		this.attachmentRetriever = attachmentRetriever;
+		this.htmlGenerator = htmlGenerator;
         htmlOutput = new File(rootOutput, HTML_OUTPUT);
 		staticOutput = new File(htmlOutput, STATIC);
 	}
@@ -118,14 +124,21 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
             for (HtmlTestResult testResult : pool.testResults) {
                 String fileName = testResult.plainClassName + "__" + testResult.plainMethodName + ".html";
                 addLogcats(testResult, pool);
+				addAttachments(testResult, pool);
                 htmlGenerator.generateHtml("forkpages/pooltest.html", poolTestsDir, fileName, testResult, pool);
             }
         }
 	}
 
-    private void addLogcats(HtmlTestResult testResult, HtmlPoolSummary pool) {
+	private void addLogcats(HtmlTestResult testResult, HtmlPoolSummary pool) {
         TestIdentifier testIdentifier = new TestIdentifier(testResult.plainClassName, testResult.plainMethodName);
-        List<LogCatMessage> logCatMessages = retriever.retrieveLogCat(pool.plainPoolName, testResult.deviceSafeSerial, testIdentifier);
+        List<LogCatMessage> logCatMessages = logCatRetriever.retrieveLogCat(pool.plainPoolName, testResult.deviceSafeSerial, testIdentifier);
         testResult.logcatMessages = transform(logCatMessages, toHtmlLogCatMessages());
+    }
+
+    private void addAttachments(HtmlTestResult testResult, HtmlPoolSummary pool) {
+        TestIdentifier testIdentifier = new TestIdentifier(testResult.plainClassName, testResult.plainMethodName);
+        List<File> attachments = attachmentRetriever.retrieveAttachments(pool.plainPoolName, testResult.deviceSafeSerial, testIdentifier);
+        testResult.attachments = transform(attachments, toUrlEncodedFilename());
     }
 }

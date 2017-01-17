@@ -8,6 +8,7 @@ public enum FileType {
     ANIMATION ("animation", "gif"),
     SCREENRECORD ("screenrecord", "mp4"),
     COVERAGE ("coverage", "ec"),
+    ATTACHMENT("attachments", "jpg"),
     ;
 
     private final String directory;

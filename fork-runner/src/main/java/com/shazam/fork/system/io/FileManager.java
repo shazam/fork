@@ -37,8 +37,13 @@ public class FileManager {
         return path.toFile().listFiles();
     }
 
-    public File createFile(FileType fileType, Pool pool, Device device, TestCaseEvent testCaseEvent){
+    public File createFile(FileType fileType, Pool pool, Device device, TestCaseEvent testCaseEvent) {
         return createFile(fileType, pool, device, new TestIdentifier(testCaseEvent.getTestClass(), testCaseEvent.getTestMethod()));
+    }
+
+    public File createFile(FileType fileType, Pool pool, Device device, TestCaseEvent testCaseEvent, int sequenceNumber) {
+        return createFile(fileType, pool, device, new TestIdentifier(testCaseEvent.getTestClass(), testCaseEvent.getTestMethod()),
+                sequenceNumber);
     }
 
     public File createFile(FileType fileType, Pool pool, Device device, TestIdentifier testIdentifier, int sequenceNumber) {
@@ -72,11 +77,15 @@ public class FileManager {
     }
 
     public File[] getFiles(FileType fileType, Pool pool, Device device, TestIdentifier testIdentifier) {
+        return getFiles(fileType, pool.getName(), device.getSafeSerial(), testIdentifier);
+    }
+
+    public File[] getFiles(FileType fileType, String pool, String safeSerial, TestIdentifier testIdentifier) {
         FileFilter fileFilter = new AndFileFilter(
                 new PrefixFileFilter(testIdentifier.toString()),
                 new SuffixFileFilter(fileType.getSuffix()));
 
-        File deviceDirectory = get(output.getAbsolutePath(), fileType.getDirectory(), pool.getName(), device.getSafeSerial()).toFile();
+        File deviceDirectory = get(output.getAbsolutePath(), fileType.getDirectory(), pool, safeSerial).toFile();
         return deviceDirectory.listFiles(fileFilter);
     }
 

@@ -17,6 +17,9 @@ import com.google.common.base.Function;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Diagnostics;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+
 import javax.annotation.Nullable;
 
 import static com.google.common.collect.Collections2.transform;
@@ -26,6 +29,7 @@ import static com.shazam.fork.summary.OutcomeAggregator.toPoolOutcome;
 import static com.shazam.fork.utils.ReadableNames.readableClassName;
 import static com.shazam.fork.utils.ReadableNames.readablePoolName;
 import static com.shazam.fork.utils.ReadableNames.readableTestMethodName;
+import static java.net.URLEncoder.encode;
 
 class HtmlConverters {
 
@@ -116,4 +120,18 @@ class HtmlConverters {
 			}
 		};
 	}
+
+    public static Function<File, String> toUrlEncodedFilename() {
+        return new Function<File, String>() {
+            @Nullable
+            @Override
+            public String apply(@Nullable File file) {
+                try {
+                    return encode(file.getName(), "utf-8");
+                } catch (UnsupportedEncodingException e) {
+                    return file.getName();
+                }
+            }
+        };
+    }
 }

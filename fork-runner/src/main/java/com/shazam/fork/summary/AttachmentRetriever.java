@@ -12,25 +12,12 @@
  */
 package com.shazam.fork.summary;
 
-import java.util.Collection;
+import com.android.ddmlib.testrunner.TestIdentifier;
 
-/**
- * Plain bean class, to feed to Moustache markup files.
- */
-public class HtmlTestResult {
-	public String status;
-	public String prettyClassName;
-	public String prettyMethodName;
-	public String deviceSerial;
-	public String deviceSafeSerial;
-	public String plainMethodName;
-	public String deviceModelDespaced;
-	public String plainClassName;
-	public String poolName;
-	public Collection<HtmlLogCatMessage> logcatMessages;
-	public String timeTaken;
-	public String[] trace;
-	public Collection<String> attachments;
-    public boolean diagnosticVideo;
-    public boolean diagnosticScreenshots;
+import java.io.File;
+import java.util.List;
+
+public interface AttachmentRetriever {
+
+    List<File> retrieveAttachments(String poolName, String serial, TestIdentifier testIdentifier);
 }

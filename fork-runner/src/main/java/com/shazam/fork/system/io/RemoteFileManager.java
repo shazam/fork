@@ -16,7 +16,6 @@ import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.NullOutputReceiver;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
-import com.android.ddmlib.SyncException;
 import com.android.ddmlib.TimeoutException;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import java.io.IOException;
@@ -29,6 +28,7 @@ public class RemoteFileManager {
     private static final String FORK_DIRECTORY = "/sdcard/fork";
     private static final NullOutputReceiver NO_OP_RECEIVER = new NullOutputReceiver();
     private static final String COVERAGE_DIRECTORY = FORK_DIRECTORY + "/coverage";
+    private static final String SCREENSHOT_DIRECTORY = FORK_DIRECTORY + "/screenshot";
 
     private RemoteFileManager() {}
 
@@ -71,5 +71,9 @@ public class RemoteFileManager {
 
     private static String videoFileName(TestIdentifier test) {
         return String.format("%s-%s.mp4", test.getClassName(), test.getTestName());
+    }
+
+    public static String remoteScreenshotDirectory(String testClass, String testMethod) {
+        return SCREENSHOT_DIRECTORY + "/" + testClass + "/" + testMethod;
     }
 }

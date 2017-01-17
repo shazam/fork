@@ -55,7 +55,8 @@ public class TestRunListenersFactory {
                 new SlowWarningTestRunListener(),
                 getScreenTraceTestRunListener(fileManager, pool, device),
                 new RetryListener(pool, device, testCaseEventQueue, testCase, progressReporter, fileManager),
-                getCoverageTestRunListener(configuration, device, fileManager, pool, testCase));
+                getCoverageTestRunListener(configuration, device, fileManager, pool, testCase),
+                new AttachmentListener(device, fileManager, pool, testCase));
     }
 
 
