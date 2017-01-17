@@ -15,6 +15,9 @@ task wrapper(type: Wrapper) {
 ext.sourceCompatibility = JavaVersion.VERSION_1_8
 ext.targetCompatibility = JavaVersion.VERSION_1_8
 
+def androidProjects = project(':fork-client')
+def javaProjects = subprojects - androidProjects
+
 def repos = {
     mavenLocal()
     mavenCentral()
@@ -27,14 +30,15 @@ allprojects {
     }
     repositories repos
 
-    apply plugin: "java"
     apply plugin: "jacoco"
 
     version = VERSION_NAME
     group = GROUP
 }
 
-subprojects {
+configure(javaProjects) {
+    apply plugin: 'java'
+
     afterEvaluate { project ->
         jacocoTestReport.dependsOn test
         jacocoTestReport.reports.html.enabled false
@@ -51,8 +55,8 @@ task jacocoMergeExecutions(type: JacocoMerge, dependsOn: getTasksByName('jacocoT
 
 task jacocoMergedReport(type: JacocoReport, dependsOn: jacocoMergeExecutions) {
     executionData jacocoMergeExecutions.destinationFile
-    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
-    classDirectories =  files(subprojects.sourceSets.main.output)
+    sourceDirectories = files(javaProjects.sourceSets.main.allSource.srcDirs)
+    classDirectories =  files(javaProjects.sourceSets.main.output)
     reports {
         html.enabled false
         xml.enabled true

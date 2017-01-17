@@ -1,6 +1,14 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
+def isJarPackaging() {
+    return POM_PACKAGING == 'jar';
+}
+
+def isAarPackaging() {
+    return POM_PACKAGING == 'aar';
+}
+
 def isReleaseBuild() {
     return VERSION_NAME.contains("SNAPSHOT") == false
 }
@@ -76,26 +84,43 @@ signing {
     sign configurations.archives
 }
 
+if (isAarPackaging()) {
+    task javadoc(type: Javadoc) {
+        source = android.sourceSets.main.java.srcDirs
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    }
+}
+
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
-    from javadoc
+    if (isAarPackaging()) {
+        from javadoc.destinationDir
+    } else {
+        from javadoc
+    }
 }
 
 task sourcesJar(type: Jar) {
     classifier = 'sources'
-    from sourceSets.main.allSource
+    if (isAarPackaging()) {
+        from android.sourceSets.main.java.srcDirs
+    } else {
+        from sourceSets.main.allSource
+    }
 }
 
 artifacts {
     archives javadocJar, sourcesJar
 }
 
-install {
-    repositories {
-        mavenInstaller {
-            pom.groupId = GROUP
-            pom.artifactId = POM_ARTIFACT_ID
-            pom.version = VERSION_NAME
+if (isJarPackaging()) {
+    install {
+        repositories {
+            mavenInstaller {
+                pom.groupId = GROUP
+                pom.artifactId = POM_ARTIFACT_ID
+                pom.version = VERSION_NAME
+            }
         }
     }
 }
