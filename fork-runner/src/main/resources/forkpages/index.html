@@ -40,27 +40,33 @@
                     </table>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="alert alert-danger" role="alert">
+                    <strong>Failed tests:</strong>
+                    <ul>
+                        {{#failedTests}}
+                        <li>{{.}}</li>
+                        {{/failedTests}}
+                        {{^failedTests}}
+                        <li>None.</li>
+                        {{/failedTests}}
+                    </ul>
+                </div>
+
+                <div class="alert alert-warning" role="alert">
+                    <strong>Ignored tests:</strong>
+                    <ul>
+                        {{#ignoredTests}}
+                        <li>{{.}}</li>
+                        {{/ignoredTests}}
+                        {{^ignoredTests}}
+                        <li>None.</li>
+                        {{/ignoredTests}}
+                    </ul>
+                </div>
+            </div>
         </div>
-
-        Ignored tests:
-        <ul>
-            {{#ignoredTests}}
-            <li>{{.}}</li>
-            {{/ignoredTests}}
-            {{^ignoredTests}}
-            <li>None.</li>
-            {{/ignoredTests}}
-        </ul>
-
-        Failed tests:
-        <ul>
-            {{#failedTests}}
-            <li>{{.}}</li>
-            {{/failedTests}}
-            {{^failedTests}}
-            <li>None.</li>
-            {{/failedTests}}
-        </ul>
 
         <script type="text/javascript">
             $('.test a').popover({
