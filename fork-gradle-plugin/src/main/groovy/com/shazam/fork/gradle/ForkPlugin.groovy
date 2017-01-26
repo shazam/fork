@@ -93,7 +93,7 @@ class ForkPlugin implements Plugin<Project> {
             poolingStrategy = config.poolingStrategy
             autoGrantPermissions = config.autoGrantPermissions
             ignoreFailures = config.ignoreFailures
-
+            excludedAnnotation = config.excludedAnnotation
             dependsOn firstTestedVariantOutput.assemble, variant.assemble
         }
         forkTask.outputs.upToDateWhen { false }
