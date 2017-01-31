@@ -55,7 +55,7 @@ class TestRun {
 
         if (testRunParameters.isCoverageEnabled()) {
             runner.setCoverage(true);
-            runner.addInstrumentationArg("coverageFile", RemoteFileManager.getCoverageFileName(testClassName));
+            runner.addInstrumentationArg("coverageFile", RemoteFileManager.getCoverageFileName(new TestIdentifier(testClassName, testMethodName)));
         }
 
 		try {

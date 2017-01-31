@@ -41,8 +41,8 @@ public class RemoteFileManager {
                        "Could not create remote directory: " + COVERAGE_DIRECTORY);
     }
 
-    public static String getCoverageFileName(String testClassName) {
-        return COVERAGE_DIRECTORY + "/" + testClassName + ".ec";
+    public static String getCoverageFileName(TestIdentifier testIdentifier) {
+        return COVERAGE_DIRECTORY + "/" +testIdentifier.toString() + ".ec";
     }
 
     public static void createRemoteDirectory(IDevice device) {
