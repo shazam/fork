@@ -11,6 +11,7 @@ package com.shazam.fork.runner;
 
 import com.android.ddmlib.*;
 import com.android.ddmlib.testrunner.*;
+import com.google.common.base.Strings;
 import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.system.io.RemoteFileManager;
 
@@ -57,6 +58,13 @@ class TestRun {
             runner.setCoverage(true);
             runner.addInstrumentationArg("coverageFile", RemoteFileManager.getCoverageFileName(new TestIdentifier(testClassName, testMethodName)));
         }
+		String excludedAnnotation = testRunParameters.getExcludedAnnotation();
+		if (!Strings.isNullOrEmpty(excludedAnnotation)) {
+			logger.info("Tests annotated with {} will be excluded", excludedAnnotation);
+			runner.addInstrumentationArg("notAnnotation", excludedAnnotation);
+		} else {
+			logger.info("No excluding any test based on annotations");
+		}
 
 		try {
 			runner.run(testRunListeners);

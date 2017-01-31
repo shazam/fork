@@ -54,6 +54,7 @@ public class Configuration {
     private final boolean isCoverageEnabled;
     private final PoolingStrategy poolingStrategy;
     private final boolean autoGrantPermissions;
+    private final String excludedAnnotation;
 
     private Configuration(Builder builder) {
         androidSdk = builder.androidSdk;
@@ -76,6 +77,7 @@ public class Configuration {
         isCoverageEnabled = builder.isCoverageEnabled;
         poolingStrategy = builder.poolingStrategy;
         autoGrantPermissions = builder.autoGrantPermissions;
+        this.excludedAnnotation = builder.excludedAnnotation;
     }
 
     @Nonnull
@@ -171,6 +173,10 @@ public class Configuration {
         return autoGrantPermissions;
     }
 
+    public String getExcludedAnnotation() {
+        return excludedAnnotation;
+    }
+
     public static class Builder {
         private File androidSdk;
         private File applicationApk;
@@ -192,6 +198,7 @@ public class Configuration {
         private boolean isCoverageEnabled;
         private PoolingStrategy poolingStrategy;
         private boolean autoGrantPermissions;
+        private String excludedAnnotation;
 
         public static Builder configuration() {
             return new Builder();
@@ -279,6 +286,11 @@ public class Configuration {
 
         public Builder withAutoGrantPermissions(boolean autoGrantPermissions) {
             this.autoGrantPermissions = autoGrantPermissions;
+            return this;
+        }
+
+        public Builder withExcludedAnnotation(String excludedAnnotation) {
+            this.excludedAnnotation = excludedAnnotation;
             return this;
         }
 

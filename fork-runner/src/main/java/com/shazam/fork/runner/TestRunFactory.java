@@ -43,6 +43,7 @@ public class TestRunFactory {
                 .withTestSize(configuration.getTestSize())
                 .withTestOutputTimeout((int) configuration.getTestOutputTimeout())
                 .withCoverageEnabled(configuration.isCoverageEnabled())
+                .withExcludedAnnotation(configuration.getExcludedAnnotation())
                 .build();
 
         List<ITestRunListener> testRunListeners = testRunListenersFactory.createTestListeners(
