@@ -54,6 +54,7 @@ public class Configuration {
     private final boolean isCoverageEnabled;
     private final PoolingStrategy poolingStrategy;
     private final boolean autoGrantPermissions;
+    private final boolean restartAdbIfNoDevices;
 
     private Configuration(Builder builder) {
         androidSdk = builder.androidSdk;
@@ -76,6 +77,7 @@ public class Configuration {
         isCoverageEnabled = builder.isCoverageEnabled;
         poolingStrategy = builder.poolingStrategy;
         autoGrantPermissions = builder.autoGrantPermissions;
+        restartAdbIfNoDevices = builder.restartAdbIfNoDevices;
     }
 
     @Nonnull
@@ -171,6 +173,10 @@ public class Configuration {
         return autoGrantPermissions;
     }
 
+    public boolean isRestartAdbIfNoDevices() {
+        return restartAdbIfNoDevices;
+    }
+
     public static class Builder {
         private File androidSdk;
         private File applicationApk;
@@ -192,6 +198,7 @@ public class Configuration {
         private boolean isCoverageEnabled;
         private PoolingStrategy poolingStrategy;
         private boolean autoGrantPermissions;
+        private boolean restartAdbIfNoDevices;
 
         public static Builder configuration() {
             return new Builder();
@@ -279,6 +286,11 @@ public class Configuration {
 
         public Builder withAutoGrantPermissions(boolean autoGrantPermissions) {
             this.autoGrantPermissions = autoGrantPermissions;
+            return this;
+        }
+
+        public Builder withRestartAdbIfNoDevices(boolean restartAdbIfNoDevices) {
+            this.restartAdbIfNoDevices = restartAdbIfNoDevices;
             return this;
         }
 

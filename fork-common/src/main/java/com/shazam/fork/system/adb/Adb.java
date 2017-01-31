@@ -45,6 +45,17 @@ public class Adb {
         return Arrays.asList(bridge.getDevices());
     }
 
+    /**
+     * Restarts adb. In most of the configurations the command restart would simply work fine,
+     * but if there is another process using adb it could fail. So we are trying the command twice
+     *
+     */
+    public void restart() {
+        if (!bridge.restart()) {
+            bridge.restart();
+        }
+    }
+
     public void terminate() {
         AndroidDebugBridge.terminate();
     }

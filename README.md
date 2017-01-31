@@ -102,6 +102,7 @@ fallbackToScreenshots  | boolean                 | false
 totalAllowedRetryQuota | int                     | 0
 retryPerTestCaseQuota  | int                     | 1
 autoGrantPermissions   | boolean                 | true
+restartAdbIfNoDevices  | boolean                 | false
 poolingStrategy        | PoolingStrategy         | -
 
 `Poolingstrategy` is an object that describes how the device pools are created. You can choose **only one** strategy from below:

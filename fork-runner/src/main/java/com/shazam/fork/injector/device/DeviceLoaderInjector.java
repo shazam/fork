@@ -20,6 +20,11 @@ public class DeviceLoaderInjector {
     private DeviceLoaderInjector() {}
 
     public static DeviceLoader deviceLoader() {
-        return new DeviceLoader(adb(), deviceGeometryReader(), configuration().getExcludedSerials());
+        return new DeviceLoader(
+                adb(),
+                deviceGeometryReader(),
+                configuration().getExcludedSerials(),
+                configuration().isRestartAdbIfNoDevices()
+        );
     }
 }
