@@ -37,13 +37,13 @@ public class ForkJenkinsReportTask extends DefaultTask {
         createDir(htmlDir);
 
         JenkinsDownloader jenkinsDownloader = new JenkinsDownloader(downloadDir, extension);
-        jenkinsDownloader.downloadJenkinsFiles();
+        String reportUrlTemplate = jenkinsDownloader.downloadJenkinsFiles();
 
         forkReporter()
                 .withTitle(extension.reportTitle)
                 .withInput(downloadDir)
                 .withOutput(htmlDir)
-                .withBaseUrl(jenkinsDownloader.createBaseUrl())
+                .withBaseUrl(reportUrlTemplate)
                 .build()
                 .createReport();
     }

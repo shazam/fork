@@ -10,12 +10,27 @@
 
 package com.shazam.fork.reporter.gradle;
 
+import groovy.lang.Closure;
+
 public class ForkJenkinsReportExtension {
 
     public String reportTitle;
     public String jenkinsUrl;
     public String jenkinsUsername;
     public String jenkinsPassword;
-    public String jenkinsJobName;
     public String jenkinsReportTitle;
+    public FreestyleJob freestyleJob;
+    public FolderJob folderJob;
+
+    public void freestyleJob(Closure<?> freestyleJobClosure) {
+        freestyleJob = new FreestyleJob();
+        freestyleJobClosure.setDelegate(freestyleJob);
+        freestyleJobClosure.call();
+    }
+
+    public void folderJob(Closure<?> folderJobClosure) {
+        folderJob = new FolderJob();
+        folderJobClosure.setDelegate(folderJob);
+        folderJobClosure.call();
+    }
 }

@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
+import javax.annotation.Nullable;
+
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.shazam.fork.reporter.injector.ConfigurationInjector.setConfiguration;
 import static com.shazam.fork.reporter.injector.ExecutionReaderInjector.executionReader;
@@ -30,8 +32,8 @@ public class ForkReporter {
     private static final Logger logger = LoggerFactory.getLogger(ForkReporter.class);
 
     private final ExecutionReader reader;
-    private FlakinessSorter flakinessSorter;
-    private FlakinessReportPrinter flakinessReportPrinter;
+    private final FlakinessSorter flakinessSorter;
+    private final FlakinessReportPrinter flakinessReportPrinter;
 
     private ForkReporter(Configuration configuration) {
         setConfiguration(configuration);
@@ -80,7 +82,7 @@ public class ForkReporter {
             return this;
         }
 
-        public Builder withBaseUrl(String baseUrl) {
+        public Builder withBaseUrl(@Nullable String baseUrl) {
             if (!isNullOrEmpty(baseUrl)) {
                 this.baseUrl = baseUrl;
             }
