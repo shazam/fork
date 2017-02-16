@@ -10,7 +10,7 @@
 
 include ':fork-common'
 include ':fork-runner'
-include ':spork-gradle-plugin'
+include ':whisk-gradle-plugin'
 include ':fork-reporter'
 include ':fork-reporter-jenkins-gradle-plugin'
 include ':chimprunner'

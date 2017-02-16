@@ -10,7 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package io.ringle.spork.gradle
+package com.metova.whisk.gradle
 
 import com.shazam.fork.Configuration
 import com.shazam.fork.Fork
@@ -27,12 +27,12 @@ import org.slf4j.LoggerFactory
 import static com.shazam.fork.Configuration.Builder.configuration
 
 /**
- * Task for using Spork.
+ * Task for using Whisk.
  */
-class SporkRunTask extends DefaultTask implements VerificationTask {
+class WhiskRunTask extends DefaultTask implements VerificationTask {
 
     /** Logger. */
-    private static final Logger LOG = LoggerFactory.getLogger(SporkRunTask.class)
+    private static final Logger LOG = LoggerFactory.getLogger(WhiskRunTask.class)
 
     /** If true then test failures do not cause a build failure. */
     boolean ignoreFailures
@@ -80,7 +80,7 @@ class SporkRunTask extends DefaultTask implements VerificationTask {
     boolean screenRecording = true
 
     @TaskAction
-    void runSpork() {
+    void runWhisk() {
         LOG.info("Run instrumentation tests $instrumentationApk for app $applicationApk")
         LOG.debug("Output: $output")
         LOG.debug("Ignore failures: $ignoreFailures")
