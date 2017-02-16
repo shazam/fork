@@ -20,13 +20,11 @@ public class CoverageListener implements ITestRunListener {
     private final FileManager fileManager;
     private final Pool pool;
     private final Logger logger = LoggerFactory.getLogger(CoverageListener.class);
-    private final TestCaseEvent testCase;
 
-    public CoverageListener(Device device, FileManager fileManager, Pool pool, TestCaseEvent testCase) {
+    public CoverageListener(Device device, FileManager fileManager, Pool pool) {
         this.device = device;
         this.fileManager = fileManager;
         this.pool = pool;
-        this.testCase = testCase;
     }
 
     @Override
