@@ -10,7 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.shazam.fork.gradle
+package com.metova.whisk.gradle
 
 import com.shazam.fork.Configuration
 import com.shazam.fork.Fork
@@ -27,12 +27,12 @@ import org.slf4j.LoggerFactory
 import static com.shazam.fork.Configuration.Builder.configuration
 
 /**
- * Task for using Fork.
+ * Task for using Whisk.
  */
-class ForkRunTask extends DefaultTask implements VerificationTask {
+class WhiskRunTask extends DefaultTask implements VerificationTask {
 
     /** Logger. */
-    private static final Logger LOG = LoggerFactory.getLogger(ForkRunTask.class)
+    private static final Logger LOG = LoggerFactory.getLogger(WhiskRunTask.class)
 
     /** If true then test failures do not cause a build failure. */
     boolean ignoreFailures
@@ -73,12 +73,14 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
 
     PoolingStrategy poolingStrategy
 
-    boolean autoGrantPermissions;
+    boolean autoGrantPermissions
 
     String excludedAnnotation
 
+    boolean screenRecording = true
+
     @TaskAction
-    void runFork() {
+    void runWhisk() {
         LOG.info("Run instrumentation tests $instrumentationApk for app $applicationApk")
         LOG.debug("Output: $output")
         LOG.debug("Ignore failures: $ignoreFailures")
@@ -102,6 +104,7 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
                 .withPoolingStrategy(poolingStrategy)
                 .withAutoGrantPermissions(autoGrantPermissions)
                 .withExcludedAnnotation(excludedAnnotation)
+                .withScreenRecording(screenRecording)
                 .build();
 
         boolean success = new Fork(configuration).run()

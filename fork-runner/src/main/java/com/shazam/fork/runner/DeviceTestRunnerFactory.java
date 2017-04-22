@@ -10,18 +10,24 @@
 
 package com.shazam.fork.runner;
 
+import com.shazam.fork.Configuration;
 import com.shazam.fork.model.*;
 import com.shazam.fork.system.adb.Installer;
+import com.shazam.fork.system.io.FileManager;
 
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 
 public class DeviceTestRunnerFactory {
 
+    private final Configuration configuration;
+    private final FileManager fileManager;
     private final Installer installer;
     private final TestRunFactory testRunFactory;
 
-    public DeviceTestRunnerFactory(Installer installer, TestRunFactory testRunFactory) {
+    public DeviceTestRunnerFactory(Configuration configuration, FileManager fileManager, Installer installer, TestRunFactory testRunFactory) {
+        this.configuration = configuration;
+        this.fileManager = fileManager;
         this.installer = installer;
         this.testRunFactory = testRunFactory;
     }
@@ -33,6 +39,8 @@ public class DeviceTestRunnerFactory {
                                            ProgressReporter progressReporter
                                            ) {
         return new DeviceTestRunner(
+                configuration,
+                fileManager,
                 installer,
                 pool,
                 device,

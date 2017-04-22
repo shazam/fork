@@ -55,6 +55,7 @@ public class Configuration {
     private final PoolingStrategy poolingStrategy;
     private final boolean autoGrantPermissions;
     private final String excludedAnnotation;
+    private final boolean screenRecording;
 
     private Configuration(Builder builder) {
         androidSdk = builder.androidSdk;
@@ -78,6 +79,7 @@ public class Configuration {
         poolingStrategy = builder.poolingStrategy;
         autoGrantPermissions = builder.autoGrantPermissions;
         this.excludedAnnotation = builder.excludedAnnotation;
+        screenRecording = builder.screenRecording;
     }
 
     @Nonnull
@@ -177,6 +179,10 @@ public class Configuration {
         return excludedAnnotation;
     }
 
+    public boolean isScreenRecordingEnabled() {
+        return screenRecording;
+    }
+
     public static class Builder {
         private File androidSdk;
         private File applicationApk;
@@ -199,6 +205,7 @@ public class Configuration {
         private PoolingStrategy poolingStrategy;
         private boolean autoGrantPermissions;
         private String excludedAnnotation;
+        private boolean screenRecording;
 
         public static Builder configuration() {
             return new Builder();
@@ -291,6 +298,11 @@ public class Configuration {
 
         public Builder withExcludedAnnotation(String excludedAnnotation) {
             this.excludedAnnotation = excludedAnnotation;
+            return this;
+        }
+
+        public Builder withScreenRecording(boolean enableScreenRecord) {
+            this.screenRecording = enableScreenRecord;
             return this;
         }
 

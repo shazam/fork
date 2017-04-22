@@ -10,7 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.shazam.fork.gradle
+package com.metova.whisk.gradle
 
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
@@ -23,12 +23,12 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
 
 /**
- * Gradle plugin for Fork.
+ * Gradle plugin for Whisk.
  */
-class ForkPlugin implements Plugin<Project> {
+class WhiskPlugin implements Plugin<Project> {
 
     /** Task name prefix. */
-    private static final String TASK_PREFIX = "fork"
+    private static final String TASK_PREFIX = "whisk"
 
     @Override
     void apply(final Project project) {
@@ -37,28 +37,28 @@ class ForkPlugin implements Plugin<Project> {
             throw new IllegalStateException("Android plugin is not found")
         }
 
-        project.extensions.add "fork", ForkConfiguration
+        project.extensions.add "whisk", ForkConfiguration
 
-        def forkTask = project.task(TASK_PREFIX) {
+        def whiskTask = project.task(TASK_PREFIX) {
             group = JavaBasePlugin.VERIFICATION_GROUP
             description = "Runs all the instrumentation test variations on all the connected devices"
         }
 
         BaseExtension android = project.android
         android.testVariants.all { TestVariant variant ->
-            ForkRunTask forkTaskForTestVariant = createTask(variant, project)
-            forkTask.dependsOn forkTaskForTestVariant
+            WhiskRunTask whiskTaskForTestVariant = createTask(variant, project)
+            whiskTask.dependsOn whiskTaskForTestVariant
         }
     }
 
-    private static ForkRunTask createTask(final TestVariant variant, final Project project) {
+    private static WhiskRunTask createTask(final TestVariant variant, final Project project) {
         checkTestVariants(variant)
         checkTestedVariants(variant.testedVariant)
 
-        def forkTask = project.tasks.create("${TASK_PREFIX}${variant.name.capitalize()}", ForkRunTask)
+        def whiskTask = project.tasks.create("${TASK_PREFIX}${variant.name.capitalize()}", WhiskRunTask)
 
-        forkTask.configure {
-            ForkConfiguration config = project.fork
+        whiskTask.configure {
+            ForkConfiguration config = project.whisk
 
             description = "Runs instrumentation tests on all the connected devices for '${variant.name}' variation and generates a report with screenshots"
             group = JavaBasePlugin.VERIFICATION_GROUP
@@ -76,7 +76,7 @@ class ForkPlugin implements Plugin<Project> {
             if (baseOutputDir) {
                 outputBase = new File(baseOutputDir)
             } else {
-                outputBase = new File(project.buildDir, "fork")
+                outputBase = new File(project.buildDir, "whisk")
             }
             output = new File(outputBase, firstTestedVariantOutput.dirName)
             title = config.title
@@ -94,21 +94,23 @@ class ForkPlugin implements Plugin<Project> {
             autoGrantPermissions = config.autoGrantPermissions
             ignoreFailures = config.ignoreFailures
             excludedAnnotation = config.excludedAnnotation
+            screenRecording = config.screenRecording
+
             dependsOn firstTestedVariantOutput.assemble, variant.assemble
         }
-        forkTask.outputs.upToDateWhen { false }
-        return forkTask
+        whiskTask.outputs.upToDateWhen { false }
+        return whiskTask
     }
 
     private static checkTestVariants(TestVariant testVariant) {
         if (testVariant.outputs.size() > 1) {
-            throw new UnsupportedOperationException("The Fork plugin does not support abi/density splits for test APKs")
+            throw new UnsupportedOperationException("The Whisk plugin does not support abi/density splits for test APKs")
         }
     }
 
     /**
      * Checks that if the base variant contains more than one outputs (and has therefore splits), it is the universal APK.
-     * Otherwise, we can test the single output. This is a workaround until Fork supports test & app splits properly.
+     * Otherwise, we can test the single output. This is a workaround until Whisk supports test & app splits properly.
      *
      * @param baseVariant the tested variant
      */
@@ -119,7 +121,7 @@ class ForkPlugin implements Plugin<Project> {
                 return outputFile
             }
             throw new UnsupportedOperationException(
-                    "The Fork plugin does not support abi splits for app APKs, but supports testing via a universal APK. " +
+                    "The Whisk plugin does not support abi splits for app APKs, but supports testing via a universal APK. " +
                     "Add the flag \"universalApk true\" in the android.splits.abi configuration."
             )
         } else {

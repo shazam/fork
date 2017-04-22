@@ -36,33 +36,28 @@ public class RetryListener extends NoOpITestRunListener {
 
     @Nonnull
     private final Device device;
-    private TestIdentifier failedTest;
     @Nonnull
     private final Queue<TestCaseEvent> queueOfTestsInPool;
-    @Nonnull
-    private final TestCaseEvent currentTestCaseEvent;
+    private TestIdentifier failedTest;
     private ProgressReporter progressReporter;
     private FileManager fileManager;
     private Pool pool;
 
     public RetryListener(@Nonnull Pool pool, @Nonnull Device device,
-                         @Nonnull Queue<TestCaseEvent> queueOfTestsInPool,
-                         @Nonnull TestCaseEvent currentTestCaseEvent,
-                         @Nonnull ProgressReporter progressReporter,
-                         FileManager fileManager) {
+            @Nonnull Queue<TestCaseEvent> queueOfTestsInPool,
+            @Nonnull ProgressReporter progressReporter,
+            FileManager fileManager) {
         checkNotNull(device);
         checkNotNull(queueOfTestsInPool);
-        checkNotNull(currentTestCaseEvent);
         checkNotNull(progressReporter);
         checkNotNull(pool);
         this.device = device;
         this.queueOfTestsInPool = queueOfTestsInPool;
-        this.currentTestCaseEvent = currentTestCaseEvent;
         this.progressReporter = progressReporter;
         this.pool = pool;
         this.fileManager = fileManager;
     }
-    
+
     @Override
     public void testFailed(TestIdentifier test, String trace) {
         failedTest = test;
@@ -73,8 +68,9 @@ public class RetryListener extends NoOpITestRunListener {
     public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
         super.testRunEnded(elapsedTime, runMetrics);
         if (failedTest != null) {
-            if (progressReporter.requestRetry(pool, newTestCase(failedTest, false))) {
-                queueOfTestsInPool.add(currentTestCaseEvent);
+            TestCaseEvent failedTestCase = newTestCase(failedTest, false);
+            if (progressReporter.requestRetry(pool, failedTestCase)) {
+                queueOfTestsInPool.add(failedTestCase);
                 logger.info("Test " + failedTest.toString() + " enqueued again into pool:" + pool.getName());
                 removeFailureTraceFiles();
             } else {
@@ -83,10 +79,10 @@ public class RetryListener extends NoOpITestRunListener {
         }
     }
 
-    public void removeFailureTraceFiles( ) {
+    public void removeFailureTraceFiles() {
         final File file = fileManager.getFile(FileType.TEST, pool.getName(), device.getSafeSerial(), failedTest);
         boolean deleted = file.delete();
-        if(!deleted){
+        if (!deleted) {
             logger.warn("Failed to remove file  " + file.getAbsoluteFile() + " for a failed but enqueued again test");
         }
     }

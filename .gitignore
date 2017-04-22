@@ -14,3 +14,5 @@ local.properties
 
 # output files
 fork-output
+
+/classes

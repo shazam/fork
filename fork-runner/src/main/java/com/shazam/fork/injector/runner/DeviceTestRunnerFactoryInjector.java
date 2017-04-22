@@ -12,6 +12,8 @@ package com.shazam.fork.injector.runner;
 
 import com.shazam.fork.runner.DeviceTestRunnerFactory;
 
+import static com.shazam.fork.injector.ConfigurationInjector.configuration;
+import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
 import static com.shazam.fork.injector.system.InstallerInjector.installer;
 import static com.shazam.fork.injector.runner.TestRunFactoryInjector.testRunFactory;
 
@@ -19,6 +21,6 @@ public class DeviceTestRunnerFactoryInjector {
     private DeviceTestRunnerFactoryInjector() {}
 
     public static DeviceTestRunnerFactory deviceTestRunnerFactory() {
-        return new DeviceTestRunnerFactory(installer(), testRunFactory());
+        return new DeviceTestRunnerFactory(configuration(), fileManager(), installer(), testRunFactory());
     }
 }

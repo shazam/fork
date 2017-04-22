@@ -12,7 +12,9 @@ package com.shazam.fork.runner;
 
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.shazam.fork.Configuration;
-import com.shazam.fork.model.*;
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.runner.listeners.TestRunListenersFactory;
 
 import java.util.List;
@@ -30,24 +32,23 @@ public class TestRunFactory {
         this.testRunListenersFactory = testRunListenersFactory;
     }
 
-    public TestRun createTestRun(TestCaseEvent testCase,
-                                 Device device,
-                                 Pool pool,
-                                 ProgressReporter progressReporter,
-                                 Queue<TestCaseEvent> queueOfTestsInPool) {
+    public TestRun createTestRun(Device device,
+            Pool pool,
+            ProgressReporter progressReporter,
+            Queue<TestCaseEvent> queueOfTestsInPool) {
         TestRunParameters testRunParameters = testRunParameters()
-                .withDeviceInterface(device.getDeviceInterface())
-                .withTest(testCase)
+                .withDevice(device)
+                .withTestQueue(queueOfTestsInPool)
                 .withTestPackage(configuration.getInstrumentationPackage())
                 .withTestRunner(configuration.getTestRunnerClass())
                 .withTestSize(configuration.getTestSize())
                 .withTestOutputTimeout((int) configuration.getTestOutputTimeout())
                 .withCoverageEnabled(configuration.isCoverageEnabled())
                 .withExcludedAnnotation(configuration.getExcludedAnnotation())
+                .withPool(pool)
                 .build();
 
         List<ITestRunListener> testRunListeners = testRunListenersFactory.createTestListeners(
-                testCase,
                 device,
                 pool,
                 progressReporter,

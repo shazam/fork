@@ -33,7 +33,6 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
     private final FileManager fileManager;
     private final Pool pool;
     private final Device device;
-    private final TestCaseEvent testCase;
 
     @Nonnull
     private final ProgressReporter progressReporter;
@@ -42,18 +41,16 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
     public ForkXmlTestRunListener(FileManager fileManager,
                                   Pool pool,
                                   Device device,
-                                  TestCaseEvent testCase,
                                   @Nonnull ProgressReporter progressReporter) {
         this.fileManager = fileManager;
         this.pool = pool;
         this.device = device;
-        this.testCase = testCase;
         this.progressReporter = progressReporter;
     }
 
     @Override
     protected File getResultFile(File reportDir) {
-        return fileManager.createFile(FileType.TEST, pool, device, testCase);
+        return fileManager.createFile(FileType.TEST, pool, device);
     }
 
     @Override

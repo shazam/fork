@@ -24,6 +24,9 @@ def repos = {
 allprojects {
     buildscript {
         repositories repos
+        dependencies {
+            classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5' // Add this line
+        }
     }
     repositories repos
 
@@ -41,7 +44,7 @@ subprojects {
         jacocoTestReport.reports.xml.enabled true
 
         // Weirdly archives are signed even if signing.required {false}, so also skipping task explicitly.
-        signArchives.onlyIf {!VERSION_NAME.endsWith("SNAPSHOT")}
+        signArchives.onlyIf { !VERSION_NAME.endsWith("SNAPSHOT") }
     }
 }
 
@@ -52,7 +55,7 @@ task jacocoMergeExecutions(type: JacocoMerge, dependsOn: getTasksByName('jacocoT
 task jacocoMergedReport(type: JacocoReport, dependsOn: jacocoMergeExecutions) {
     executionData jacocoMergeExecutions.destinationFile
     sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
-    classDirectories =  files(subprojects.sourceSets.main.output)
+    classDirectories = files(subprojects.sourceSets.main.output)
     reports {
         html.enabled false
         xml.enabled true
