@@ -11,6 +11,7 @@
 package com.shazam.fork.reporter.gradle;
 
 import com.offbytwo.jenkins.JenkinsServer;
+import com.offbytwo.jenkins.client.JenkinsHttpClient;
 import com.offbytwo.jenkins.model.Artifact;
 import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.FolderJob;
@@ -21,10 +22,8 @@ import org.gradle.api.GradleException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 
@@ -32,11 +31,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static com.google.common.io.Resources.asByteSource;
 import static com.shazam.fork.CommonDefaults.BUILD_ID_TOKEN;
 import static com.shazam.fork.CommonDefaults.FORK_SUMMARY_FILENAME_FORMAT;
 import static com.shazam.fork.CommonDefaults.FORK_SUMMARY_FILENAME_REGEX;
 import static java.lang.String.format;
+import static org.apache.commons.io.IOUtils.copy;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.lang3.StringUtils.stripEnd;
 
@@ -45,11 +44,13 @@ class JenkinsDownloader {
     private final File forkSummariesDir;
     private final ForkJenkinsReportExtension extension;
     private final String baseJenkinsUrl;
+    private final JenkinsHttpClient jenkinsHttpClient;
 
     JenkinsDownloader(File forkSummariesDir, ForkJenkinsReportExtension extension) {
         this.forkSummariesDir = forkSummariesDir;
         this.extension = extension;
         this.baseJenkinsUrl = stripEnd(extension.jenkinsUrl, "/");
+        jenkinsHttpClient = getJenkinsHttpClient();
     }
 
     @Nullable
@@ -141,28 +142,39 @@ class JenkinsDownloader {
 
     @Nonnull
     private JenkinsServer getJenkinsServer() {
-        try {
-            URI serverUri = new URI(extension.jenkinsUrl);
+        return new JenkinsServer(jenkinsHttpClient);
+    }
+
+    private JenkinsHttpClient getJenkinsHttpClient() {
+        if (jenkinsHttpClient == null) {
+            URI serverUri;
+            try {
+                serverUri = new URI(extension.jenkinsUrl);
+            }
+            catch (URISyntaxException e) {
+                throw new GradleException("Error when creating URI for Jenkins server on: " + extension.jenkinsUrl, e);
+            }
             String username = extension.jenkinsUsername;
             String password = extension.jenkinsPassword;
             if (isNullOrEmpty(username) || isNullOrEmpty(password)) {
-                return new JenkinsServer(serverUri);
+                return new JenkinsHttpClient(serverUri);
+            } else {
+                return new JenkinsHttpClient(serverUri, extension.jenkinsUsername,
+                    extension.jenkinsPassword);
             }
-            return new JenkinsServer(serverUri, username, password);
-        } catch (URISyntaxException e) {
-            throw new GradleException("Error when creating URI for Jenkins server on: " + extension.jenkinsUrl, e);
         }
+        return jenkinsHttpClient;
     }
 
     private void downloadArtifact(Build build, Artifact artifact) {
         FileOutputStream output = null;
-        URL artifactUrl = getArtifactUrl(build, artifact);
+        URI artifactUri = getArtifactUri(build, artifact);
         try {
             File summaryFile = new File(forkSummariesDir, format(FORK_SUMMARY_FILENAME_FORMAT, build.getNumber()));
             output = new FileOutputStream(summaryFile);
-            asByteSource(artifactUrl).copyTo(output);
+            copy(jenkinsHttpClient.getFile(artifactUri), output);
         } catch (IOException e) {
-            throw new GradleException("Could not download artifact from: " + artifactUrl.toString(), e);
+            throw new GradleException("Could not download artifact from: " + artifactUri.toString(), e);
         } finally {
             closeQuietly(output);
         }
@@ -192,13 +204,13 @@ class JenkinsDownloader {
 
 
     @Nonnull
-    private URL getArtifactUrl(Build build, Artifact artifact) {
+    private URI getArtifactUri(Build build, Artifact artifact) {
         try {
             URI uri = new URI(build.getUrl());
             String artifactPath = uri.getPath() + "artifact/" + artifact.getRelativePath();
             URI artifactUri = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), artifactPath, "", "");
-            return artifactUri.toURL();
-        } catch (URISyntaxException | MalformedURLException e) {
+            return artifactUri;
+        } catch (URISyntaxException e) {
             throw new GradleException("Error when trying to construct artifact URL for: " + build.getUrl(), e);
         }
     }
