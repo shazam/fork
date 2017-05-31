@@ -17,8 +17,6 @@ import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.FolderJob;
 import com.offbytwo.jenkins.model.JobWithDetails;
 
-import org.apache.http.HttpHost;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.gradle.api.GradleException;
 
 import java.io.*;
