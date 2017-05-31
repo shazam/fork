@@ -19,9 +19,7 @@ import com.offbytwo.jenkins.model.JobWithDetails;
 
 import org.gradle.api.GradleException;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -168,14 +166,17 @@ class JenkinsDownloader {
 
     private void downloadArtifact(Build build, Artifact artifact) {
         FileOutputStream output = null;
+        InputStream input = null;
         URI artifactUri = getArtifactUri(build, artifact);
         try {
             File summaryFile = new File(forkSummariesDir, format(FORK_SUMMARY_FILENAME_FORMAT, build.getNumber()));
             output = new FileOutputStream(summaryFile);
-            copy(jenkinsHttpClient.getFile(artifactUri), output);
+            input = jenkinsHttpClient.getFile(artifactUri);
+            copy(input, output);
         } catch (IOException e) {
             throw new GradleException("Could not download artifact from: " + artifactUri.toString(), e);
         } finally {
+            closeQuietly(input);
             closeQuietly(output);
         }
     }
