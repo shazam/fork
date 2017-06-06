@@ -62,10 +62,20 @@ You can use Fork's DSL to configure its execution parameters. For a full list of
 
 ```groovy
 fork {
-    title "My Fork report"
-    isCoverageEnabled true
+    title = "My acceptance tests"
+    testPackage = "com.example.tests"
+    fallbackToScreenshots = true
+    poolingStrategy {
+        computed {
+            characteristic = "sw"
+            groups {
+                allDevices = 0
+            }
+        }
+    }
 }
 ```
+*Note*: The testPackage property refers to the base package name which your tests reside in.  If you have tests in multiple packages, provide the most common ancestor. 
 
 ### Standalone
 Check out the Fork project and execute:
