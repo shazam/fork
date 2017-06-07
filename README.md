@@ -42,7 +42,7 @@ buildscript {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
   }
   dependencies {
-    classpath 'com.shazam.fork:fork-gradle-plugin:2.2.0-SNAPSHOT'
+    classpath 'com.shazam.fork:fork-gradle-plugin:2.2.0'
   }
 }
 ```
@@ -242,7 +242,7 @@ To be able to use the Flakiness Reporter add these dependencies:
 ```
 buildscript {
     dependencies {
-        classpath "com.shazam.fork:fork-reporter-jenkins-gradle-plugin:2.2.0-SNAPSHOT"
+        classpath "com.shazam.fork:fork-reporter-jenkins-gradle-plugin:2.2.0"
     }
     repositories {
         maven { url "http://repo.jenkins-ci.org/public/" }
