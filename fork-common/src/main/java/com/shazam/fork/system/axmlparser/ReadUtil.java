@@ -37,15 +37,6 @@ public class ReadUtil {
         }
     }
 
-    public static final void readCheckType(IntReader reader,int expectedType) throws IOException {
-        int type=reader.readInt();
-        if (type!=expectedType) {
-            throw new IOException(
-                    "Expected chunk of type 0x"+Integer.toHexString(expectedType)+
-                            ", read 0x"+Integer.toHexString(type)+".");
-        }
-    }
-
     public static final int[] readIntArray(InputStream stream,int elementCount) throws IOException {
         int[] result=new int[elementCount];
         for (int i=0;i!=elementCount;++i) {

@@ -23,9 +23,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Parses key information from an instrumentation APK's manifest.
  */
-public class InstumentationInfoFactory {
+public class InstrumentationInfoFactory {
 
-    private InstumentationInfoFactory() {}
+    private InstrumentationInfoFactory() {}
 
 	/**
      * @param apkTestFile the instrumentation APK
