@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.shazam.fork.system.axmlparser.InstumentationInfoFactory.parseFromFile;
+import static com.shazam.fork.system.axmlparser.InstrumentationInfoFactory.parseFromFile;
 import static java.util.Arrays.asList;
 
 public class Configuration {
