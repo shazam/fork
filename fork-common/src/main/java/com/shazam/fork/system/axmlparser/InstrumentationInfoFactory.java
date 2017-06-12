@@ -10,6 +10,7 @@
 
 package com.shazam.fork.system.axmlparser;
 
+import com.shazam.axmlparser.AXMLParser;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -25,9 +26,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class InstrumentationInfoFactory {
 
-    private InstrumentationInfoFactory() {}
+    private InstrumentationInfoFactory() {
+    }
 
-	/**
+    /**
      * @param apkTestFile the instrumentation APK
      * @return the instrumentation info instance
      */
