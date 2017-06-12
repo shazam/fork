@@ -15,7 +15,7 @@ package com.shazam.fork.gradle
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryPlugin
-import com.android.build.gradle.api.BaseVariant
+import com.android.build.gradle.api.BaseVariantOutput
 import com.android.build.gradle.api.TestVariant
 import com.shazam.fork.ForkConfiguration
 import org.gradle.api.Plugin
@@ -53,50 +53,52 @@ class ForkPlugin implements Plugin<Project> {
 
     private static ForkRunTask createTask(final TestVariant variant, final Project project) {
         checkTestVariants(variant)
-        checkTestedVariants(variant.testedVariant)
 
         def forkTask = project.tasks.create("${TASK_PREFIX}${variant.name.capitalize()}", ForkRunTask)
 
-        forkTask.configure {
-            ForkConfiguration config = project.fork
+        variant.testedVariant.outputs.all { BaseVariantOutput baseVariantOutput ->
+            checkTestedVariants(baseVariantOutput)
+            forkTask.configure {
+                ForkConfiguration config = project.fork
 
-            description = "Runs instrumentation tests on all the connected devices for '${variant.name}' variation and generates a report with screenshots"
-            group = JavaBasePlugin.VERIFICATION_GROUP
 
-            def firstTestedVariantOutput = variant.testedVariant.outputs.get(0)
-            applicationApk = firstTestedVariantOutput.outputFile
-            instrumentationApk = variant.outputs.get(0).outputFile
-            //If we are testing a library, the app apk must be the same than the instrumentation apk
-            if (applicationApk.path.endsWith("aar")) {
-                applicationApk = instrumentationApk
+                description = "Runs instrumentation tests on all the connected devices for '${variant.name}' variation and generates a report with screenshots"
+                group = JavaBasePlugin.VERIFICATION_GROUP
+
+                def firstOutput = variant.outputs.asList().first()
+                instrumentationApk = new File(firstOutput.packageApplication.outputDirectory.path + "/" + firstOutput.outputFileName)
+
+                title = config.title
+                subtitle = config.subtitle
+                testClassRegex = config.testClassRegex
+                testPackage = config.testPackage
+                testOutputTimeout = config.testOutputTimeout
+                testSize = config.testSize
+                excludedSerials = config.excludedSerials
+                fallbackToScreenshots = config.fallbackToScreenshots
+                totalAllowedRetryQuota = config.totalAllowedRetryQuota
+                retryPerTestCaseQuota = config.retryPerTestCaseQuota
+                isCoverageEnabled = config.isCoverageEnabled
+                poolingStrategy = config.poolingStrategy
+                autoGrantPermissions = config.autoGrantPermissions
+                ignoreFailures = config.ignoreFailures
+                excludedAnnotation = config.excludedAnnotation
+
+                applicationApk = new File(baseVariantOutput.packageApplication.outputDirectory.path + "/" + baseVariantOutput.outputFileName)
+
+                String baseOutputDir = config.baseOutputDir
+                File outputBase
+                if (baseOutputDir) {
+                    outputBase = new File(baseOutputDir)
+                } else {
+                    outputBase = new File(project.buildDir, "fork")
+                }
+                output = new File(outputBase, baseVariantOutput.getDirName())
+
+                dependsOn variant.testedVariant.assemble, variant.assemble
             }
-
-            String baseOutputDir = config.baseOutputDir
-            File outputBase
-            if (baseOutputDir) {
-                outputBase = new File(baseOutputDir)
-            } else {
-                outputBase = new File(project.buildDir, "fork")
-            }
-            output = new File(outputBase, firstTestedVariantOutput.dirName)
-            title = config.title
-            subtitle = config.subtitle
-            testClassRegex = config.testClassRegex
-            testPackage = config.testPackage
-            testOutputTimeout = config.testOutputTimeout
-            testSize = config.testSize
-            excludedSerials = config.excludedSerials
-            fallbackToScreenshots = config.fallbackToScreenshots
-            totalAllowedRetryQuota = config.totalAllowedRetryQuota
-            retryPerTestCaseQuota = config.retryPerTestCaseQuota
-            isCoverageEnabled = config.isCoverageEnabled
-            poolingStrategy = config.poolingStrategy
-            autoGrantPermissions = config.autoGrantPermissions
-            ignoreFailures = config.ignoreFailures
-            excludedAnnotation = config.excludedAnnotation
-            dependsOn firstTestedVariantOutput.assemble, variant.assemble
+            forkTask.outputs.upToDateWhen { false }
         }
-        forkTask.outputs.upToDateWhen { false }
         return forkTask
     }
 
@@ -112,18 +114,12 @@ class ForkPlugin implements Plugin<Project> {
      *
      * @param baseVariant the tested variant
      */
-    private static checkTestedVariants(BaseVariant baseVariant) {
-        def outputFile = baseVariant.outputs.get(0).outputFile
-        if (baseVariant.outputs.size() > 1) {
-            if (outputFile.toString().contains("universal")) {
-                return outputFile
-            }
+    private static checkTestedVariants(BaseVariantOutput baseVariantOutput) {
+        if (baseVariantOutput.outputs.size() > 1) {
             throw new UnsupportedOperationException(
                     "The Fork plugin does not support abi splits for app APKs, but supports testing via a universal APK. " +
-                    "Add the flag \"universalApk true\" in the android.splits.abi configuration."
+                            "Add the flag \"universalApk true\" in the android.splits.abi configuration."
             )
-        } else {
-            return outputFile
         }
     }
 }

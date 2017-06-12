@@ -9,7 +9,7 @@
  */
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.13'
+    gradleVersion = '4.0-rc-1'
 }
 
 ext.sourceCompatibility = JavaVersion.VERSION_1_8
@@ -19,6 +19,9 @@ def repos = {
     mavenLocal()
     mavenCentral()
     jcenter()
+    maven {
+        url 'https://maven.google.com'
+    }
 }
 
 allprojects {
