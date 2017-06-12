@@ -26,7 +26,8 @@ dependencies {
             "com.github.spullara.mustache.java:compiler:0.8.0",
             "com.google.code.gson:gson:$GSON_VERSION",
             "org.slf4j:slf4j-log4j12:$SLF4J_VERSION",
-            "org.smali:dexlib:1.4.2"
+            "org.smali:dexlib:1.4.2",
+            "com.shazam:axmlparser:1.0"
     )
 
     testCompile(
