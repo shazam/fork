@@ -300,7 +300,7 @@ At the time of writing, not much is available around automated performance testi
 ```
 buildscript {
     dependencies {
-        classpath 'com.shazam.chimprunner:chimprunner-gradle-plugin:0.9.0'
+        classpath 'com.shazam.chimprunner:chimprunner-gradle-plugin:0.9.1-SNAPSHOT'
     }
 }
 ```
