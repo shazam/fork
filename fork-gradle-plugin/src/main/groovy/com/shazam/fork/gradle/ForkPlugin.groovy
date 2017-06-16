@@ -91,9 +91,9 @@ class ForkPlugin implements Plugin<Project> {
                 if (baseOutputDir) {
                     outputBase = new File(baseOutputDir)
                 } else {
-                    outputBase = new File(project.buildDir, "fork")
+                    outputBase = new File(project.buildDir, "reports/fork")
                 }
-                output = new File(outputBase, baseVariantOutput.getDirName())
+                output = new File(outputBase, variant.name)
 
                 dependsOn variant.testedVariant.assemble, variant.assemble
             }
