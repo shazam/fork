@@ -139,8 +139,8 @@ groups                 | Map&lt;String, Integer&gt; | map the name of a pool to 
 
 ## Examples
 
-###Gradle plugin examples
-####Automatic pooling
+### Gradle plugin examples
+#### Automatic pooling
 A common case can be that you want to create two pools, one for phones & small tablets (7" and below) and one for large tablets. You could add to your `build.gradle` file:
 ```groovy
 fork {
@@ -159,7 +159,7 @@ fork {
 ```
 The above will run tests on 2 pools, one named "phablets" and another called "tablets". The smallest width for the first pool will be 0 and for the latter 720 dpi.
 
-####Manual pooling
+#### Manual pooling
 ```groovy
 fork {
     title "Fork report"
@@ -176,8 +176,8 @@ fork {
 ```
 That will create two pools named "phablets" & "tablets" with devices that have the respective serial numbers.
 
-###Standalone examples
-####Automatic pooling
+### Standalone examples
+#### Automatic pooling
 Execute the following:
 ```
 > gradlew fork-runner:run -Pargs='--apk /path/to/production.APK --test-apk /path/to/test.APK --config /path/to/fork-config.json'
@@ -199,7 +199,7 @@ Where the contents of `fork-config.json` are:
 }
 ```
 
-####Manual pooling
+#### Manual pooling
 Execute the following:
 ```
 > gradlew fork-runner:run -Pargs='--apk /path/to/production.APK --test-apk /path/to/test.APK --config /path/to/fork-config.json'
@@ -296,7 +296,7 @@ This requires [Jenkins's HTML Publisher Plugin][2]. To be able to link to the ri
 # Chimprunner
 At the time of writing, not much is available around automated performance testing. Chimprunner is a very simple test runner that allows recording of somewhat accurate timings on test execution, from process creation to test finish. It all works on the Android instrumentation tests system that developers are familiar with.
 
-##How to setup
+## How to setup
 ```
 buildscript {
     dependencies {
@@ -316,7 +316,7 @@ New tasks will have been added that allow you to run familiar instrumentation te
 gradlew tasks | grep chimprunner
 ```
 
-##Configuring Chimprunner
+## Configuring Chimprunner
 Configuring Chimprunner is simple. Add the following to your `build.gradle` file:
 ```groovy
 chimprunner {
@@ -334,11 +334,11 @@ ignoreFailures         | boolean       | false                              | wh
 testClassRegex         | String        | "^((?!Abstract).)*Test$"           | classes that will be searched for tests
 \* testPackage         | String        | (Your instrumentation APK package) | the package where the performance tests are located  
 
-##Current reports
+## Current reports
 Currently, Chimprunner produces a `timings.csv` file in the output folder with all the timings of tests that were executed as part of the performance tests and the average time they took after running a number of iterations. That CSV file can be then used for plotting by other tools. Using the Jenkins Plot plugin we can now produce historic diagrams of our startup time like the following diagram:
 ![Chimprunner timing plot](static/performance-plot.png)
 
-##Future work
+## Future work
 We would like to add ways of automatically launching Android performance tools & reports developers know and use already, with no or minimal code changes. We will investigate around how to provide systrace, CPU, GPU & memory usage reports. The library will probably provide some annotations that will enable various performance tools. An example could be:
 ```java
 @Test
@@ -356,7 +356,7 @@ public void startUpSpeed() {
 ```
 The system could then provide a systrace & GPU profiling reports for the duration of the `trackListScroll()` test.
 
-#License
+# License
 
     Copyright 2016 Shazam Entertainment Limited.
 
