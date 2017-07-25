@@ -19,6 +19,7 @@ import java.io.File;
 
 import static com.shazam.fork.injector.ConfigurationInjector.setConfiguration;
 import static com.shazam.fork.injector.ForkRunnerInjector.forkRunner;
+import static com.shazam.fork.injector.system.AdbInjector.adb;
 import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
 import static java.lang.System.nanoTime;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
@@ -49,6 +50,7 @@ public final class Fork {
 		} finally {
             long duration = millisSinceNanoTime(startOfTestsMs);
             logger.info(formatPeriod(0, duration, "'Total time taken:' H 'hours' m 'minutes' s 'seconds'"));
+            adb().terminate();
 		}
 	}
 }
