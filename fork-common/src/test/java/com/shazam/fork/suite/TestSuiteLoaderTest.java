@@ -28,6 +28,7 @@ import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static com.shazam.fork.suite.FakeTestClassMatcher.fakeTestClassMatcher;
 import static com.shazam.shazamcrest.MatcherAssert.assertThat;
 import static com.shazam.shazamcrest.matcher.Matchers.sameBeanAs;
+import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
 /**
@@ -92,6 +93,6 @@ public class TestSuiteLoaderTest {
 
     @Nonnull
     private Matcher<TestCaseEvent> sameTestEventAs(String testClass, String testMethod, boolean isIgnored) {
-        return sameBeanAs(newTestCase(testMethod, testClass, isIgnored));
+        return sameBeanAs(newTestCase(testMethod, testClass, isIgnored, emptyList()));
     }
 }

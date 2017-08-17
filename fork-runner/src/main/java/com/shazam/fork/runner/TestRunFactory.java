@@ -39,6 +39,7 @@ public class TestRunFactory {
                 .withDeviceInterface(device.getDeviceInterface())
                 .withTest(testCase)
                 .withTestPackage(configuration.getInstrumentationPackage())
+                .withApplicationPackage(configuration.getApplicationPackage())
                 .withTestRunner(configuration.getTestRunnerClass())
                 .withTestSize(configuration.getTestSize())
                 .withTestOutputTimeout((int) configuration.getTestOutputTimeout())

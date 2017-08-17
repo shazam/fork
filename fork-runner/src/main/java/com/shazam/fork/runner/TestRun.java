@@ -9,8 +9,13 @@
  */
 package com.shazam.fork.runner;
 
-import com.android.ddmlib.*;
-import com.android.ddmlib.testrunner.*;
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.TimeoutException;
+import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
+import com.android.ddmlib.testrunner.ITestRunListener;
+import com.android.ddmlib.testrunner.RemoteAndroidTestRunner;
+import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.common.base.Strings;
 import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.system.io.RemoteFileManager;
@@ -21,57 +26,65 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
+import static com.shazam.fork.Utils.grantAllPermissionsIfAllowed;
+import static com.shazam.fork.Utils.revokePermissions;
 import static java.lang.String.format;
 
 class TestRun {
-	private static final Logger logger = LoggerFactory.getLogger(TestRun.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(TestRun.class);
     private final String poolName;
-	private final TestRunParameters testRunParameters;
-	private final List<ITestRunListener> testRunListeners;
+    private final TestRunParameters testRunParameters;
+    private final List<ITestRunListener> testRunListeners;
 
     public TestRun(String poolName,
-				   TestRunParameters testRunParameters,
-				   List<ITestRunListener> testRunListeners) {
+                   TestRunParameters testRunParameters,
+                   List<ITestRunListener> testRunListeners) {
         this.poolName = poolName;
-		this.testRunParameters = testRunParameters;
-		this.testRunListeners = testRunListeners;
-	}
+        this.testRunParameters = testRunParameters;
+        this.testRunListeners = testRunListeners;
+    }
 
-	public void execute() {
-		RemoteAndroidTestRunner runner = new RemoteAndroidTestRunner(
-				testRunParameters.getTestPackage(),
-				testRunParameters.getTestRunner(),
-				testRunParameters.getDeviceInterface());
+    public void execute() {
+        RemoteAndroidTestRunner runner = new RemoteAndroidTestRunner(
+                testRunParameters.getTestPackage(),
+                testRunParameters.getTestRunner(),
+                testRunParameters.getDeviceInterface());
 
-		TestCaseEvent test = testRunParameters.getTest();
-		String testClassName = test.getTestClass();
-		String testMethodName = test.getTestMethod();
-		IRemoteAndroidTestRunner.TestSize testSize = testRunParameters.getTestSize();
-		if (testSize != null) {
-			runner.setTestSize(testSize);
-		}
-		runner.setRunName(poolName);
-		runner.setMethodName(testClassName, testMethodName);
-		runner.setMaxtimeToOutputResponse(testRunParameters.getTestOutputTimeout());
+        TestCaseEvent test = testRunParameters.getTest();
+        String testClassName = test.getTestClass();
+        String testMethodName = test.getTestMethod();
+        IRemoteAndroidTestRunner.TestSize testSize = testRunParameters.getTestSize();
+        if (testSize != null) {
+            runner.setTestSize(testSize);
+        }
+        runner.setRunName(poolName);
+        runner.setMethodName(testClassName, testMethodName);
+        runner.setMaxtimeToOutputResponse(testRunParameters.getTestOutputTimeout());
 
         if (testRunParameters.isCoverageEnabled()) {
             runner.setCoverage(true);
             runner.addInstrumentationArg("coverageFile", RemoteFileManager.getCoverageFileName(new TestIdentifier(testClassName, testMethodName)));
         }
-		String excludedAnnotation = testRunParameters.getExcludedAnnotation();
-		if (!Strings.isNullOrEmpty(excludedAnnotation)) {
-			logger.info("Tests annotated with {} will be excluded", excludedAnnotation);
-			runner.addInstrumentationArg("notAnnotation", excludedAnnotation);
-		} else {
-			logger.info("No excluding any test based on annotations");
-		}
+        String excludedAnnotation = testRunParameters.getExcludedAnnotation();
+        if (!Strings.isNullOrEmpty(excludedAnnotation)) {
+            logger.info("Tests annotated with {} will be excluded", excludedAnnotation);
+            runner.addInstrumentationArg("notAnnotation", excludedAnnotation);
+        } else {
+            logger.info("No excluding any test based on annotations");
+        }
 
-		try {
-			runner.run(testRunListeners);
-		} catch (ShellCommandUnresponsiveException | TimeoutException e) {
-			logger.warn("Test: " + testClassName + " got stuck. You can increase the timeout in settings if it's too strict");
-		} catch (AdbCommandRejectedException | IOException e) {
-			throw new RuntimeException(format("Error while running test %s %s", test.getTestClass(), test.getTestMethod()), e);
-		}
-	}
+        List<String> permissionsToRevoke = testRunParameters.getTest().getPermissionsToRevoke();
+        revokePermissions(testRunParameters.getApplicationPackage(), testRunParameters.getDeviceInterface(), permissionsToRevoke);
+
+        try {
+            runner.run(testRunListeners);
+        } catch (ShellCommandUnresponsiveException | TimeoutException e) {
+            logger.warn("Test: " + testClassName + " got stuck. You can increase the timeout in settings if it's too strict");
+        } catch (AdbCommandRejectedException | IOException e) {
+            throw new RuntimeException(format("Error while running test %s %s", test.getTestClass(), test.getTestMethod()), e);
+        } finally {
+            grantAllPermissionsIfAllowed(testRunParameters.getApplicationPackage(), testRunParameters.getDeviceInterface());
+        }
+    }
 }

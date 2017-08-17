@@ -66,7 +66,7 @@ public class Installer {
 
 	@Nonnull
 	private String optionalAutoGrantPermissionFlag(IDevice device) {
-		return isMarshmallowOrMore(device) && autoGrantPermissions ? "-g" : "";
+		return isMarshmallowOrMore(device) && autoGrantPermissions ? "-t -g" : "-t";
 	}
 
 	private boolean isMarshmallowOrMore(@Nonnull IDevice device){

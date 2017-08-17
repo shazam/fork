@@ -1,0 +1,10 @@
+apply plugin: 'java-library'
+apply from: '../build-scripts/gradle-mvn-push.gradle'
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+//noinspection GroovyUnusedAssignment
+sourceCompatibility = rootProject.sourceCompatibility
+//noinspection GroovyUnusedAssignment
+targetCompatibility = rootProject.sourceCompatibility

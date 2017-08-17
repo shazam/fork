@@ -13,6 +13,8 @@
 package com.shazam.fork;
 
 import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
+import com.shazam.fork.system.axmlparser.ApplicationInfo;
+import com.shazam.fork.system.axmlparser.ApplicationInfoFactory;
 import com.shazam.fork.system.axmlparser.InstrumentationInfo;
 
 import org.slf4j.Logger;
@@ -56,6 +58,8 @@ public class Configuration {
     private final boolean autoGrantPermissions;
     private final String excludedAnnotation;
 
+    private ApplicationInfo applicationInfo;
+
     private Configuration(Builder builder) {
         androidSdk = builder.androidSdk;
         applicationApk = builder.applicationApk;
@@ -78,6 +82,7 @@ public class Configuration {
         poolingStrategy = builder.poolingStrategy;
         autoGrantPermissions = builder.autoGrantPermissions;
         this.excludedAnnotation = builder.excludedAnnotation;
+        this.applicationInfo = builder.applicationInfo;
     }
 
     @Nonnull
@@ -177,6 +182,10 @@ public class Configuration {
         return excludedAnnotation;
     }
 
+    public ApplicationInfo getApplicationInfo() {
+        return applicationInfo;
+    }
+
     public static class Builder {
         private File androidSdk;
         private File applicationApk;
@@ -199,6 +208,7 @@ public class Configuration {
         private PoolingStrategy poolingStrategy;
         private boolean autoGrantPermissions;
         private String excludedAnnotation;
+        private ApplicationInfo applicationInfo;
 
         public static Builder configuration() {
             return new Builder();
@@ -321,6 +331,7 @@ public class Configuration {
             retryPerTestCaseQuota = assignValueOrDefaultIfZero(retryPerTestCaseQuota, Defaults.RETRY_QUOTA_PER_TEST_CASE);
             logArgumentsBadInteractions();
             poolingStrategy = validatePoolingStrategy(poolingStrategy);
+            this.applicationInfo = ApplicationInfoFactory.parseFromFile(applicationApk);
             return new Configuration(this);
         }
 
