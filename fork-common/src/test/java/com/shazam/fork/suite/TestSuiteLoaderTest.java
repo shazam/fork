@@ -19,6 +19,8 @@ import org.junit.Test;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 
@@ -28,8 +30,10 @@ import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static com.shazam.fork.suite.FakeTestClassMatcher.fakeTestClassMatcher;
 import static com.shazam.shazamcrest.MatcherAssert.assertThat;
 import static com.shazam.shazamcrest.matcher.Matchers.sameBeanAs;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.iterableWithSize;
 
 /**
  * This test is based on the <code>tests.dex</code> file, which contains test classes with the following code:
@@ -87,12 +91,22 @@ public class TestSuiteLoaderTest {
                 sameTestEventAs("com.shazam.forktest.ClassWithNoIgnoredMethodsTest", "firstTestMethod", false),
                 sameTestEventAs("com.shazam.forktest.ClassWithNoIgnoredMethodsTest", "secondTestMethod", false),
                 sameTestEventAs("com.shazam.forktest.ClassWithSomeIgnoredMethodsTest", "nonIgnoredTestMethod", false),
-                sameTestEventAs("com.shazam.forktest.ClassWithSomeIgnoredMethodsTest", "ignoredTestMethod", true)
-        ));
+                sameTestEventAs("com.shazam.forktest.ClassWithSomeIgnoredMethodsTest", "ignoredTestMethod", true),
+                sameTestEventAs("com.shazam.forktest.RevokePermissionsClassTest", "methodAnnotatedWithRevokePermissionsTest",
+                        false, asList("android.permission.RECORD_AUDIO", "android.permission.ACCESS_FINE_LOCATION")),
+                sameTestEventAs("com.shazam.forktest.RevokePermissionsClassTest", "methodAnnotatedWithEmptyRevokePermissionsTest", false)
+                )
+        );
+
     }
 
     @Nonnull
     private Matcher<TestCaseEvent> sameTestEventAs(String testClass, String testMethod, boolean isIgnored) {
-        return sameBeanAs(newTestCase(testMethod, testClass, isIgnored, emptyList()));
+        return sameTestEventAs(testClass, testMethod, isIgnored, emptyList());
+    }
+
+    @Nonnull
+    private Matcher<TestCaseEvent> sameTestEventAs(String testClass, String testMethod, boolean isIgnored, List<String> permissions) {
+        return sameBeanAs(newTestCase(testMethod, testClass, isIgnored, permissions));
     }
 }

@@ -1,3 +1,7 @@
 Source code to generate tests.dex in the folder fork-common-test-dex.
 
-Run `./gradlew assembleAndroidTest` and copy ./app/build/intermediates/transforms/dexMerger/androidTest/debug/0/classes.dex
+1)Cd to the sub-folder `fork-common-test-dex`
+2)run `./gradlew assembleAndroidTest`
+3)copy ./app/build/intermediates/transforms/dexMerger/androidTest/debug/0/classes.dex into the main module called `fork-common` in src/test/resources (and rename the file in tests.dex)
+4)Cd back to `fork`
+5)run at least once `./gradlew test`

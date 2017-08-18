@@ -20,7 +20,7 @@ android {
 }
 
 dependencies {
-
-      testImplementation 'junit:junit:4.12'
-      androidTestImplementation 'junit:junit:4.12'
+    implementation fileTree(dir: './../../fork-client/build/libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'junit:junit:4.12'
 }
