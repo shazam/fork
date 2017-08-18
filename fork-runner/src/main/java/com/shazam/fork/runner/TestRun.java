@@ -76,10 +76,10 @@ class TestRun {
 		} catch (ShellCommandUnresponsiveException | TimeoutException e) {
 			logger.warn("Test: " + testClassName + " got stuck. You can increase the timeout in settings if it's too strict");
 		} catch (AdbCommandRejectedException | IOException e) {
-			throw new RuntimeException(format("Error while running test %s %s", test.getTestClass(), test.getTestMethod()), e);
-        } finally {
-            grantAllPermissionsIfAllowed(testRunParameters.getApplicationPackage(), testRunParameters.getDeviceInterface());
-        }
+		throw new RuntimeException(format("Error while running test %s %s", test.getTestClass(), test.getTestMethod()), e);
+		} finally {
+			grantAllPermissionsIfAllowed(testRunParameters.getApplicationPackage(), testRunParameters.getDeviceInterface());
+		}
 
     }
 }

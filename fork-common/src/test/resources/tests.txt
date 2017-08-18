@@ -1,30 +1,3 @@
-@Ignore
-public class IgnoredClassTest {
+Source code to generate tests.dex in the folder fork-common-test-dex.
 
-    @Test
-    public void methodOfAnIgnoredTestClass() {
-
-    }
-}
-
-public class ClassWithNoIgnoredMethodsTest {
-    @Test
-    public void firstTestMethod() {
-    }
-
-    @Test
-    public void secondTestMethod() {
-    }
-
-}
-
-public class ClassWithSomeIgnoredMethodsTest {
-    @Test
-    public void nonIgnoredTestMethod() {
-    }
-
-    @Test
-    @Ignore
-    public void ignoredTestMethod() {
-    }
-}
+Run `./gradlew assembleAndroidTest` and copy ./app/build/intermediates/transforms/dexMerger/androidTest/debug/0/classes.dex
