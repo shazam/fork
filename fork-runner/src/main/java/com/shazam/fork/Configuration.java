@@ -313,7 +313,7 @@ public class Configuration {
             title = assignValueOrDefaultIfNull(title, Defaults.TITLE);
             subtitle = assignValueOrDefaultIfNull(subtitle, Defaults.SUBTITLE);
             testClassRegex = assignValueOrDefaultIfNull(testClassRegex, CommonDefaults.TEST_CLASS_REGEX);
-            testPackage = assignValueOrDefaultIfNull(testPackage, instrumentationInfo.getInstrumentationPackage());
+            testPackage = assignValueOrDefaultIfNull(testPackage, instrumentationInfo.getApplicationPackage());
             testOutputTimeout = assignValueOrDefaultIfZero(testOutputTimeout, Defaults.TEST_OUTPUT_TIMEOUT_MILLIS);
             excludedSerials = assignValueOrDefaultIfNull(excludedSerials, Collections.<String>emptyList());
             checkArgument(totalAllowedRetryQuota >= 0, "Total allowed retry quota should not be negative.");
