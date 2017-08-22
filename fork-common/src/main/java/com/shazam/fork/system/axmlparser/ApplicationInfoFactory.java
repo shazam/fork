@@ -12,6 +12,7 @@ package com.shazam.fork.system.axmlparser;
 
 import com.shazam.axmlparser.AXMLParser;
 
+import com.shazam.fork.model.Permission;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -23,6 +24,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.annotation.Nonnull;
+
+import static com.shazam.fork.model.Permission.Builder.permission;
 
 /**
  * Parses key information from an instrumentation APK's manifest.
@@ -47,19 +50,13 @@ public class ApplicationInfoFactory {
             AXMLParser parser = new AXMLParser(is);
             int eventType = parser.getType();
 
-            List<String> permissions = new ArrayList<>();
+            List<Permission> permissions = new ArrayList<>();
             while (eventType != AXMLParser.END_DOCUMENT) {
                 if (eventType == AXMLParser.START_TAG) {
                     String parserName = parser.getName();
-                    boolean isPermission = "uses-permission".equals(parserName);
-                    if(isPermission) {
-                        //we need the attrib "name". Example: <uses-permission android:name="android.permission.XYZ"...
-                        for (int i = 0; i < parser.getAttributeCount(); i++) {
-                            String attributeName = parser.getAttributeName(i);
-                            if ("name".equals(attributeName)) {
-                                permissions.add(parser.getAttributeValueString(i));
-                            }
-                        }
+                    boolean isPermission =  parserName.startsWith("uses-permission");
+                    if (isPermission) {
+                        parsePermission(parser, permissions);
                     }
                 }
                 eventType = parser.next();
@@ -72,4 +69,26 @@ public class ApplicationInfoFactory {
             IOUtils.closeQuietly(is);
         }
     }
+
+    private static void parsePermission(AXMLParser parser, List<Permission> permissions) {
+        Permission.Builder builder = permission();
+
+        int minApi = "uses-permission-sdk-23".equals(parser.getName()) ? 23 : 1;
+        builder.withMinSdkVersion(minApi);
+
+        //we need the attribs  "name" and "maxSdkVersion". Example: <uses-permission android:name="android.permission.XYZ" android:maxSdkVersion="24"...
+        for (int i = 0; i < parser.getAttributeCount(); i++) {
+            String attributeName = parser.getAttributeName(i);
+            if ("name".equals(attributeName)) {
+                builder.withPermissionName(parser.getAttributeValueString(i));
+            }
+            if ("maxSdkVersion".equals(attributeName)) {
+                int maxSdkVersion = parser.getAttributeValue(i);
+                builder.withMaxSdkVersion(maxSdkVersion);
+            }
+        }
+        permissions.add(builder.build());
+    }
+
+
 }

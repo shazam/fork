@@ -21,8 +21,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
-import static com.shazam.fork.Utils.grantAllPermissionsIfAllowed;
-import static com.shazam.fork.Utils.revokePermissions;
+import static com.shazam.fork.PermissionUtils.grantAllPermissionsIfAllowed;
+import static com.shazam.fork.PermissionUtils.revokePermissions;
+import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 import static java.lang.String.format;
 
 class TestRun {
@@ -78,7 +79,7 @@ class TestRun {
 		} catch (AdbCommandRejectedException | IOException e) {
 		throw new RuntimeException(format("Error while running test %s %s", test.getTestClass(), test.getTestMethod()), e);
 		} finally {
-			grantAllPermissionsIfAllowed(testRunParameters.getApplicationPackage(), testRunParameters.getDeviceInterface());
+			grantAllPermissionsIfAllowed(configuration(), testRunParameters.getApplicationPackage(), testRunParameters.getDeviceInterface());
 		}
 
     }
