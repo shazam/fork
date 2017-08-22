@@ -69,8 +69,8 @@ class TestRun {
 			logger.info("No excluding any test based on annotations");
 		}
 
-        List<String> permissionsToRevoke = testRunParameters.getTest().getPermissionsToRevoke();
-        revokePermissions(testRunParameters.getApplicationPackage(), testRunParameters.getDeviceInterface(), permissionsToRevoke);
+		List<String> permissionsToRevoke = testRunParameters.getTest().getPermissionsToRevoke();
+		revokePermissions(testRunParameters.getApplicationPackage(), testRunParameters.getDeviceInterface(), permissionsToRevoke);
 
 		try {
 			runner.run(testRunListeners);

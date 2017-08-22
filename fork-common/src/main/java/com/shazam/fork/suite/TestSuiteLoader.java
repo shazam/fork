@@ -107,8 +107,8 @@ public class TestSuiteLoader {
                 .map(t -> t.getEncodedAnnotation().values)
                 .flatMap(encodedValues -> stream(encodedValues)
                         .flatMap(encodedValue -> stream(((ArrayEncodedValue) encodedValue).values)
-                                .map(encodedValue1 -> {
-                                    return ((StringEncodedValue)encodedValue1).value.getStringValue();
+                                .map(stringEncoded -> {
+                                    return ((StringEncodedValue)stringEncoded).value.getStringValue();
                                 })))
                 .collect(toList());
     }
