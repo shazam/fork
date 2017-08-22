@@ -27,7 +27,7 @@ There are two ways to run Fork with your builds.
 ### Gradle plugin (recommended)
 First, you need to add a build-script dependency. You can have access to snapshot builds, but stable versions are recommended.
 #### Stable
-```
+```gradle
 buildscript {
   dependencies {
     classpath 'com.shazam.fork:fork-gradle-plugin:2.1.0'
@@ -35,7 +35,7 @@ buildscript {
 }
 ```
 #### Snapshot
-```
+```gradle
 buildscript {
   repositories {
     // other repos ...
@@ -60,7 +60,7 @@ gradlew tasks | grep fork
 
 You can use Fork's DSL to configure its execution parameters. For a full list of the properties, have a look at: [**Configuring pools and runtime**](#configuring-pools-and-runtime) and related [**Examples**](#examples). It should be as easy as adding a block to your build.gradle:
 
-```groovy
+```gradle
 fork {
     title = "My acceptance tests"
     testPackage = "com.example.tests"
@@ -142,7 +142,7 @@ groups                 | Map&lt;String, Integer&gt; | map the name of a pool to 
 ### Gradle plugin examples
 #### Automatic pooling
 A common case can be that you want to create two pools, one for phones & small tablets (7" and below) and one for large tablets. You could add to your `build.gradle` file:
-```groovy
+```gradle
 fork {
     title "Fork report"
     subtitle "automatically split phones to large tablets"
@@ -160,7 +160,7 @@ fork {
 The above will run tests on 2 pools, one named "phablets" and another called "tablets". The smallest width for the first pool will be 0 and for the latter 720 dpi.
 
 #### Manual pooling
-```groovy
+```gradle
 fork {
     title "Fork report"
     subtitle "manually allocated devices"
@@ -183,7 +183,7 @@ Execute the following:
 > gradlew fork-runner:run -Pargs='--apk /path/to/production.APK --test-apk /path/to/test.APK --config /path/to/fork-config.json'
 ```
 Where the contents of `fork-config.json` are:
-```
+```json
 {
 	"title" : "Fork Report",
 	"subtitle" : "automatically split phones to tablets",
@@ -205,7 +205,7 @@ Execute the following:
 > gradlew fork-runner:run -Pargs='--apk /path/to/production.APK --test-apk /path/to/test.APK --config /path/to/fork-config.json'
 ```
 Where the contents of `fork-config.json` are:
-```
+```json
 {
     "title" : "Fork Report",
     "subtitle" : "manually allocated devices",
@@ -239,7 +239,7 @@ The Gradle plugin that allows the Reporter to run can be applied to a standalone
 Currently, the Reporter supports Jenkins but plugins can be written to be used with other CI servers.
 
 To be able to use the Flakiness Reporter add these dependencies:
-```
+```gradle
 buildscript {
     dependencies {
         classpath "com.shazam.fork:fork-reporter-jenkins-gradle-plugin:3.0.0-SNAPSHOT"
@@ -271,7 +271,7 @@ jenkinsJobName         | String         |  The name of the job you want to be tr
 jenkinsReportTitle     | String         |  Optional, used to link to Fork diagnostics. [The report title you use to archive Fork's report folder](#publish-forks-html-report)
 
 An example of a configuration:
-```groovy
+```gradle
 forkJenkins {
     reportTitle = "My project's awesome flakiness report"
     jenkinsUrl = "http://my-jenkins.server.net:8080/"
@@ -297,7 +297,7 @@ This requires [Jenkins's HTML Publisher Plugin][2]. To be able to link to the ri
 At the time of writing, not much is available around automated performance testing. Chimprunner is a very simple test runner that allows recording of somewhat accurate timings on test execution, from process creation to test finish. It all works on the Android instrumentation tests system that developers are familiar with.
 
 ## How to setup
-```
+```gradle
 buildscript {
     dependencies {
         classpath 'com.shazam.chimprunner:chimprunner-gradle-plugin:0.9.1-SNAPSHOT'
@@ -318,7 +318,7 @@ gradlew tasks | grep chimprunner
 
 ## Configuring Chimprunner
 Configuring Chimprunner is simple. Add the following to your `build.gradle` file:
-```groovy
+```gradle
 chimprunner {
 	serial "0123456"
 	testPackage "com.example.performancetests"
