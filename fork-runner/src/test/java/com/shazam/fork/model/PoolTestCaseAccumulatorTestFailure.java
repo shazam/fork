@@ -3,8 +3,6 @@ package com.shazam.fork.model;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
-
 import static com.shazam.fork.model.Device.Builder.aDevice;
 import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static java.util.Collections.emptyList;
