@@ -20,7 +20,7 @@ public class PermissionUtils {
                 device.executeShellCommand(format("pm revoke %s %s",
                         applicationPackage, permissionToRevoke), NO_OP_RECEIVER);
             } catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
-                throw new RuntimeException(format("Unable to revoke permission %s", permissionToRevoke), e);
+                throw new UnsupportedOperationException(format("Unable to revoke permission %s", permissionToRevoke), e);
             }
         }
     }
@@ -34,7 +34,7 @@ public class PermissionUtils {
                         device.executeShellCommand(format("pm grant %s %s",
                                 applicationPackage, permissionToGrant.getPermissionName()), NO_OP_RECEIVER);
                     } catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
-                        throw new RuntimeException(format("Unable to grant permission %s", permissionToGrant), e);
+                        throw new UnsupportedOperationException(format("Unable to grant permission %s", permissionToGrant), e);
                     }
                 }
             }

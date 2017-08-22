@@ -33,7 +33,6 @@ import static com.shazam.shazamcrest.matcher.Matchers.sameBeanAs;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.iterableWithSize;
 
 /**
  * This test is based on the <code>tests.dex</code> file, which contains test classes with the following code:
