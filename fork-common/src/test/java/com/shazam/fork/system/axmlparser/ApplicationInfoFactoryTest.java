@@ -23,7 +23,6 @@ import static com.shazam.shazamcrest.matcher.Matchers.sameBeanAs;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.*;
 
-
 public class ApplicationInfoFactoryTest {
 
     @Test
