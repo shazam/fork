@@ -218,15 +218,14 @@ Where the contents of `fork-config.json` are:
 }
 ```
 
-# Runtime Permissions
-By default fork runs auto-grating all runtime permissions on Android Marshmallow +. Is possible anyway to selectivley revoke one or more permissions per single test case.
-To do so, is possible to specify an annotation called `RevokePermission`. Here is an example:
-
+## Runtime Permissions
+By default fork runs auto-grating all runtime permissions on Android Marshmallow +. It is possible anyway to selectivley revoke one or more permissions per single test case.
+To do so, you have to add an annotation called `RevokePermission`. Here is an example:
 ```java
   @Test
   @RevokePermission({Manifest.permission.RECORD_AUDIO,
                         Manifest.permission.ACCESS_FINE_LOCATION})
-  public void justAPassingTestestRevokingRecordAudioAndFineLocation() throws Exception {
+  public void aTestRevokingRecordAudioAndFineLocation() {
     //in here RECORD_AUDIO and ACCESS_FINE_LOCATION are *not* granted.
   }
 ```
