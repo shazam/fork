@@ -88,7 +88,7 @@ public class TestSuiteLoader {
         AnnotationItem[] annotations = method.annotationSet.getAnnotations();
         String testClass = getClassName(classDefItem);
         boolean ignored = isClassIgnored(annotationDirectoryItem) || isMethodIgnored(annotations);
-        List<String> permissionsToRevoke = revokeAnnotations(annotations);
+        List<String> permissionsToRevoke = getPermissionsToRevoke(annotations);
         return newTestCase(testMethod, testClass, ignored, permissionsToRevoke);
     }
 
@@ -101,15 +101,13 @@ public class TestSuiteLoader {
         return containsAnnotation(IGNORE_ANNOTATION, annotationItems);
     }
 
-    private List<String> revokeAnnotations(AnnotationItem[] annotations) {
+    private List<String> getPermissionsToRevoke(AnnotationItem[] annotations) {
         return stream(annotations)
                 .filter(annotationItem -> REVOKE_PERMISSION_ANNOTATION.equals(stringType(annotationItem)))
-                .map(t -> t.getEncodedAnnotation().values)
+                .map(annotationItem -> annotationItem.getEncodedAnnotation().values)
                 .flatMap(encodedValues -> stream(encodedValues)
                         .flatMap(encodedValue -> stream(((ArrayEncodedValue) encodedValue).values)
-                                .map(stringEncoded -> {
-                                    return ((StringEncodedValue)stringEncoded).value.getStringValue();
-                                })))
+                                .map(stringEncoded -> ((StringEncodedValue)stringEncoded).value.getStringValue())))
                 .collect(toList());
     }
 
