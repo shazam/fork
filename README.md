@@ -219,7 +219,7 @@ Where the contents of `fork-config.json` are:
 ```
 
 ## Runtime Permissions
-By default fork auto-gratings all runtime permissions on Android Marshmallow +. It is possible anyway to selectivley revoke one or more permissions per single test case.
+By default fork auto-grants all runtime permissions on Android Marshmallow +. It is possible anyway to selectively revoke one or more permissions per single test case.
 To do so, you have to add an annotation called `RevokePermission`. Here is an example:
 ```java
   @Test
