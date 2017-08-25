@@ -19,7 +19,9 @@ import org.junit.Test;
 
 import java.io.File;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 
@@ -31,6 +33,8 @@ import static com.shazam.shazamcrest.MatcherAssert.assertThat;
 import static com.shazam.shazamcrest.matcher.Matchers.sameBeanAs;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
 /**
@@ -81,6 +85,10 @@ public class TestSuiteLoaderTest {
     @SuppressWarnings("unchecked")
     @Test
     public void populatesTestCaseEvents() throws Exception {
+        Map<String, String> multiPropertiesMap = new HashMap() {{
+            put("foo", "bar");
+            put("bux", "poi");
+        }};
         TestSuiteLoader testSuiteLoader = new TestSuiteLoader(ANY_INSTRUMENTATION_APK_FILE, fakeDexFileExtractor,
                 fakeTestClassMatcher);
 
@@ -92,19 +100,26 @@ public class TestSuiteLoaderTest {
                 sameTestEventAs("com.shazam.forktest.ClassWithSomeIgnoredMethodsTest", "ignoredTestMethod", true),
                 sameTestEventAs("com.shazam.forktest.RevokePermissionsClassTest", "methodAnnotatedWithRevokePermissionsTest",
                         false, asList("android.permission.RECORD_AUDIO", "android.permission.ACCESS_FINE_LOCATION")),
-                sameTestEventAs("com.shazam.forktest.RevokePermissionsClassTest", "methodAnnotatedWithEmptyRevokePermissionsTest", false)
+                sameTestEventAs("com.shazam.forktest.RevokePermissionsClassTest", "methodAnnotatedWithEmptyRevokePermissionsTest", false),
+                sameTestEventAs("com.shazam.forktest.PropertiesClassTest", "methodWithPropertiesTestClass", singletonMap("foo", "bar")),
+                sameTestEventAs("com.shazam.forktest.PropertiesClassTest", "methodWithMultiplePropertiesTestClass", multiPropertiesMap )
                 )
         );
 
     }
 
     @Nonnull
+    private Matcher<TestCaseEvent> sameTestEventAs(String testClass, String testMethod, Map<String, String> properties) {
+        return sameBeanAs(newTestCase(testClass, testMethod, false, emptyList(), properties));
+    }
+
+    @Nonnull
     private Matcher<TestCaseEvent> sameTestEventAs(String testClass, String testMethod, boolean isIgnored) {
-        return sameTestEventAs(testClass, testMethod, isIgnored, emptyList());
+        return sameBeanAs(newTestCase(testMethod, testClass, isIgnored, emptyList(), emptyMap()));
     }
 
     @Nonnull
     private Matcher<TestCaseEvent> sameTestEventAs(String testClass, String testMethod, boolean isIgnored, List<String> permissions) {
-        return sameBeanAs(newTestCase(testMethod, testClass, isIgnored, permissions));
+        return sameBeanAs(newTestCase(testMethod, testClass, isIgnored, permissions, emptyMap()));
     }
 }

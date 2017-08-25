@@ -6,6 +6,7 @@ import org.junit.Test;
 import static com.shazam.fork.model.Device.Builder.aDevice;
 import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -28,8 +29,8 @@ public class PoolTestCaseAccumulatorTestFailure {
             .addDevice(ANOTHER_DEVICE)
             .build();
     
-    private final TestCaseEvent A_TEST_CASE = newTestCase("a_method", "a_class", false, emptyList());
-    private final TestCaseEvent ANOTHER_TEST_CASE = newTestCase("another_method", "a_class", false, emptyList());
+    private final TestCaseEvent A_TEST_CASE = newTestCase("a_method", "a_class", false, emptyList(), emptyMap());
+    private final TestCaseEvent ANOTHER_TEST_CASE = newTestCase("another_method", "a_class", false, emptyList(), emptyMap());
 
     PoolTestCaseFailureAccumulator subject;
 

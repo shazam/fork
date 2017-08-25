@@ -31,12 +31,14 @@ import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toList;
 
 public class TestSuiteLoader {
     private static final String TEST_ANNOTATION = "Lorg/junit/Test;";
     private static final String IGNORE_ANNOTATION = "Lorg/junit/Ignore;";
     private static final String REVOKE_PERMISSION_ANNOTATION = "Lcom/shazam/fork/RevokePermission;";
+    private static final String TEST_PROPERTIES_ANNOTATION = "Lcom/shazam/fork/TestProperties;";    // TODO GV maybe we can just use TEST_PROPERTY directly?
 
     private final File instrumentationApkFile;
     private final DexFileExtractor dexFileExtractor;
@@ -89,7 +91,7 @@ public class TestSuiteLoader {
         String testClass = getClassName(classDefItem);
         boolean ignored = isClassIgnored(annotationDirectoryItem) || isMethodIgnored(annotations);
         List<String> permissionsToRevoke = getPermissionsToRevoke(annotations);
-        return newTestCase(testMethod, testClass, ignored, permissionsToRevoke);
+        return newTestCase(testMethod, testClass, ignored, permissionsToRevoke, emptyMap());    // TODO GV add proper properties
     }
 
     private String getClassName(ClassDefItem classDefItem) {
