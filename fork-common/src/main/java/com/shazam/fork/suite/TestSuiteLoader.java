@@ -12,33 +12,29 @@ package com.shazam.fork.suite;
 
 import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
-
-import org.jf.dexlib.AnnotationDirectoryItem;
-import org.jf.dexlib.AnnotationItem;
-import org.jf.dexlib.AnnotationSetItem;
-import org.jf.dexlib.ClassDefItem;
+import org.jf.dexlib.*;
+import org.jf.dexlib.EncodedValue.AnnotationEncodedSubValue;
+import org.jf.dexlib.EncodedValue.AnnotationEncodedValue;
 import org.jf.dexlib.EncodedValue.ArrayEncodedValue;
 import org.jf.dexlib.EncodedValue.StringEncodedValue;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import javax.annotation.Nonnull;
+import java.io.File;
+import java.util.*;
 
 import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class TestSuiteLoader {
     private static final String TEST_ANNOTATION = "Lorg/junit/Test;";
     private static final String IGNORE_ANNOTATION = "Lorg/junit/Ignore;";
     private static final String REVOKE_PERMISSION_ANNOTATION = "Lcom/shazam/fork/RevokePermission;";
-    private static final String TEST_PROPERTIES_ANNOTATION = "Lcom/shazam/fork/TestProperties;";    // TODO GV maybe we can just use TEST_PROPERTY directly?
+    private static final String TEST_PROPERTIES_ANNOTATION = "Lcom/shazam/fork/TestProperties;";
+    private static final String TEST_PROPERTY_ANNOTATION = "Lcom/shazam/fork/TestProperty;";
 
     private final File instrumentationApkFile;
     private final DexFileExtractor dexFileExtractor;
@@ -91,7 +87,8 @@ public class TestSuiteLoader {
         String testClass = getClassName(classDefItem);
         boolean ignored = isClassIgnored(annotationDirectoryItem) || isMethodIgnored(annotations);
         List<String> permissionsToRevoke = getPermissionsToRevoke(annotations);
-        return newTestCase(testMethod, testClass, ignored, permissionsToRevoke, emptyMap());    // TODO GV add proper properties
+        Map<String, String> properties = getTestProperties(annotations);
+        return newTestCase(testMethod, testClass, ignored, permissionsToRevoke, properties);
     }
 
     private String getClassName(ClassDefItem classDefItem) {
@@ -109,8 +106,43 @@ public class TestSuiteLoader {
                 .map(annotationItem -> annotationItem.getEncodedAnnotation().values)
                 .flatMap(encodedValues -> stream(encodedValues)
                         .flatMap(encodedValue -> stream(((ArrayEncodedValue) encodedValue).values)
-                                .map(stringEncoded -> ((StringEncodedValue)stringEncoded).value.getStringValue())))
+                                .map(stringEncoded -> ((StringEncodedValue) stringEncoded).value.getStringValue())))
                 .collect(toList());
+    }
+
+    private Map<String, String> getTestProperties(AnnotationItem[] annotations) {
+        Map<String, String> properties = new HashMap<>();
+
+        // If only one was found on the top level.
+        properties.putAll(stream(annotations)
+                .filter(annotationItem -> TEST_PROPERTY_ANNOTATION.equals(stringType(annotationItem)))
+                .map(annotationItem -> annotationItem.getEncodedAnnotation())
+                .collect(toMap(
+                        p -> ((StringEncodedValue) p.values[indexOfName(p, "key")]).value.getStringValue(),
+                        p -> ((StringEncodedValue) p.values[indexOfName(p, "value")]).value.getStringValue()
+                )));
+
+        // Else, multiple, and by definition not on top level
+        properties.putAll(stream(annotations)
+                .filter(annotationItem -> TEST_PROPERTIES_ANNOTATION.equals(stringType(annotationItem)))
+                .map(propertiesAnnotation -> propertiesAnnotation.getEncodedAnnotation().values)    // return EncodedValue[], only item is an array of TestProperties
+                .map(propertiesAnnotationValues -> propertiesAnnotationValues[0])   // return first and only value - an ArrayEncodedValue
+                .flatMap(propertyAnnotationsContainer -> stream(((ArrayEncodedValue) propertyAnnotationsContainer).values)) // return TestProperty annotations. A stream of AnnotationEncodedValue objects.
+                .map(propertyAnnotation -> ((AnnotationEncodedValue) propertyAnnotation))
+                .collect(toMap(
+                        p -> ((StringEncodedValue) p.values[indexOfName(p, "key")]).value.getStringValue(),
+                        p -> ((StringEncodedValue) p.values[indexOfName(p, "value")]).value.getStringValue()
+                )));
+        return properties;
+    }
+
+    private int indexOfName(AnnotationEncodedSubValue p, String key) {
+        int index = -1;
+        StringIdItem[] names = p.names;
+        for (int i = 0; i < names.length; i++) {
+            if (names[i].getStringValue().equals(key)) return i;
+        }
+        return index;
     }
 
     private boolean isClassIgnored(AnnotationDirectoryItem annotationDirectoryItem) {

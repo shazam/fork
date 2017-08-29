@@ -93,33 +93,33 @@ public class TestSuiteLoaderTest {
                 fakeTestClassMatcher);
 
         assertThat(testSuiteLoader.loadTestSuite(), containsInAnyOrder(
-                sameTestEventAs("com.shazam.forktest.IgnoredClassTest", "methodOfAnIgnoredTestClass", true),
-                sameTestEventAs("com.shazam.forktest.ClassWithNoIgnoredMethodsTest", "firstTestMethod", false),
-                sameTestEventAs("com.shazam.forktest.ClassWithNoIgnoredMethodsTest", "secondTestMethod", false),
-                sameTestEventAs("com.shazam.forktest.ClassWithSomeIgnoredMethodsTest", "nonIgnoredTestMethod", false),
-                sameTestEventAs("com.shazam.forktest.ClassWithSomeIgnoredMethodsTest", "ignoredTestMethod", true),
-                sameTestEventAs("com.shazam.forktest.RevokePermissionsClassTest", "methodAnnotatedWithRevokePermissionsTest",
+                sameTestEventAs("methodOfAnIgnoredTestClass", "com.shazam.forktest.IgnoredClassTest", true),
+                sameTestEventAs("firstTestMethod", "com.shazam.forktest.ClassWithNoIgnoredMethodsTest", false),
+                sameTestEventAs("secondTestMethod", "com.shazam.forktest.ClassWithNoIgnoredMethodsTest", false),
+                sameTestEventAs("nonIgnoredTestMethod", "com.shazam.forktest.ClassWithSomeIgnoredMethodsTest", false),
+                sameTestEventAs("ignoredTestMethod", "com.shazam.forktest.ClassWithSomeIgnoredMethodsTest", true),
+                sameTestEventAs("methodAnnotatedWithRevokePermissionsTest", "com.shazam.forktest.RevokePermissionsClassTest",
                         false, asList("android.permission.RECORD_AUDIO", "android.permission.ACCESS_FINE_LOCATION")),
-                sameTestEventAs("com.shazam.forktest.RevokePermissionsClassTest", "methodAnnotatedWithEmptyRevokePermissionsTest", false),
-                sameTestEventAs("com.shazam.forktest.PropertiesClassTest", "methodWithPropertiesTestClass", singletonMap("foo", "bar")),
-                sameTestEventAs("com.shazam.forktest.PropertiesClassTest", "methodWithMultiplePropertiesTestClass", multiPropertiesMap )
+                sameTestEventAs("methodAnnotatedWithEmptyRevokePermissionsTest", "com.shazam.forktest.RevokePermissionsClassTest", false),
+                sameTestEventAs("methodWithProperties", "com.shazam.forktest.PropertiesClassTest", singletonMap("foo", "bar")),
+                sameTestEventAs("methodWithMultipleProperties", "com.shazam.forktest.PropertiesClassTest", multiPropertiesMap )
                 )
         );
 
     }
 
     @Nonnull
-    private Matcher<TestCaseEvent> sameTestEventAs(String testClass, String testMethod, Map<String, String> properties) {
-        return sameBeanAs(newTestCase(testClass, testMethod, false, emptyList(), properties));
+    private Matcher<TestCaseEvent> sameTestEventAs(String testMethod, String testClass, Map<String, String> properties) {
+        return sameBeanAs(newTestCase(testMethod, testClass, false, emptyList(), properties));
     }
 
     @Nonnull
-    private Matcher<TestCaseEvent> sameTestEventAs(String testClass, String testMethod, boolean isIgnored) {
+    private Matcher<TestCaseEvent> sameTestEventAs(String testMethod, String testClass, boolean isIgnored) {
         return sameBeanAs(newTestCase(testMethod, testClass, isIgnored, emptyList(), emptyMap()));
     }
 
     @Nonnull
-    private Matcher<TestCaseEvent> sameTestEventAs(String testClass, String testMethod, boolean isIgnored, List<String> permissions) {
+    private Matcher<TestCaseEvent> sameTestEventAs(String testMethod, String testClass, boolean isIgnored, List<String> permissions) {
         return sameBeanAs(newTestCase(testMethod, testClass, isIgnored, permissions, emptyMap()));
     }
 }
