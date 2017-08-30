@@ -23,7 +23,6 @@ import java.io.File;
 import java.util.*;
 
 import static com.shazam.fork.model.TestCaseEvent.newTestCase;
-import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -70,7 +69,7 @@ public class TestSuiteLoader {
 
         List<TestCaseEvent> testCaseEvents = new ArrayList<>();
         for (AnnotationDirectoryItem.MethodAnnotation method : annotationDirectoryItem.getMethodAnnotations()) {
-            asList(method.annotationSet.getAnnotations()).stream()
+            stream(method.annotationSet.getAnnotations())
                     .filter(annotation -> TEST_ANNOTATION.equals(stringType(annotation)))
                     .map(annotation -> convertToTestCaseEvent(classDefItem, annotationDirectoryItem, method))
                     .forEach(testCaseEvents::add);
@@ -116,7 +115,7 @@ public class TestSuiteLoader {
         // If only one was found on the top level.
         properties.putAll(stream(annotations)
                 .filter(annotationItem -> TEST_PROPERTY_ANNOTATION.equals(stringType(annotationItem)))
-                .map(annotationItem -> annotationItem.getEncodedAnnotation())
+                .map(AnnotationItem::getEncodedAnnotation)
                 .collect(toMap(
                         p -> ((StringEncodedValue) p.values[indexOfName(p, "key")]).value.getStringValue(),
                         p -> ((StringEncodedValue) p.values[indexOfName(p, "value")]).value.getStringValue()
@@ -125,9 +124,9 @@ public class TestSuiteLoader {
         // Else, multiple, and by definition not on top level
         properties.putAll(stream(annotations)
                 .filter(annotationItem -> TEST_PROPERTIES_ANNOTATION.equals(stringType(annotationItem)))
-                .map(propertiesAnnotation -> propertiesAnnotation.getEncodedAnnotation().values)    // return EncodedValue[], only item is an array of TestProperties
-                .map(propertiesAnnotationValues -> propertiesAnnotationValues[0])   // return first and only value - an ArrayEncodedValue
-                .flatMap(propertyAnnotationsContainer -> stream(((ArrayEncodedValue) propertyAnnotationsContainer).values)) // return TestProperty annotations. A stream of AnnotationEncodedValue objects.
+                .map(propertiesAnnotationItem -> propertiesAnnotationItem.getEncodedAnnotation().values)
+                .map(propertiesAnnotationValues -> propertiesAnnotationValues[0])
+                .flatMap(propertyAnnotationsContainer -> stream(((ArrayEncodedValue) propertyAnnotationsContainer).values))
                 .map(propertyAnnotation -> ((AnnotationEncodedValue) propertyAnnotation))
                 .collect(toMap(
                         p -> ((StringEncodedValue) p.values[indexOfName(p, "key")]).value.getStringValue(),
