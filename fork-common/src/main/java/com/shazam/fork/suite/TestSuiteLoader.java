@@ -14,8 +14,8 @@ import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
 import org.jf.dexlib.*;
 import org.jf.dexlib.EncodedValue.AnnotationEncodedSubValue;
-import org.jf.dexlib.EncodedValue.AnnotationEncodedValue;
 import org.jf.dexlib.EncodedValue.ArrayEncodedValue;
+import org.jf.dexlib.EncodedValue.EncodedValue;
 import org.jf.dexlib.EncodedValue.StringEncodedValue;
 
 import javax.annotation.Nonnull;
@@ -23,17 +23,16 @@ import java.io.File;
 import java.util.*;
 
 import static com.shazam.fork.model.TestCaseEvent.newTestCase;
+import static java.lang.Math.min;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class TestSuiteLoader {
     private static final String TEST_ANNOTATION = "Lorg/junit/Test;";
     private static final String IGNORE_ANNOTATION = "Lorg/junit/Ignore;";
     private static final String REVOKE_PERMISSION_ANNOTATION = "Lcom/shazam/fork/RevokePermission;";
     private static final String TEST_PROPERTIES_ANNOTATION = "Lcom/shazam/fork/TestProperties;";
-    private static final String TEST_PROPERTY_ANNOTATION = "Lcom/shazam/fork/TestProperty;";
 
     private final File instrumentationApkFile;
     private final DexFileExtractor dexFileExtractor;
@@ -111,28 +110,25 @@ public class TestSuiteLoader {
 
     private Map<String, String> getTestProperties(AnnotationItem[] annotations) {
         Map<String, String> properties = new HashMap<>();
-
-        // If only one was found on the top level.
-        properties.putAll(stream(annotations)
-                .filter(annotationItem -> TEST_PROPERTY_ANNOTATION.equals(stringType(annotationItem)))
-                .map(AnnotationItem::getEncodedAnnotation)
-                .collect(toMap(
-                        p -> ((StringEncodedValue) p.values[indexOfName(p, "key")]).value.getStringValue(),
-                        p -> ((StringEncodedValue) p.values[indexOfName(p, "value")]).value.getStringValue()
-                )));
-
-        // Else, multiple, and by definition not on top level
-        properties.putAll(stream(annotations)
+        stream(annotations)
                 .filter(annotationItem -> TEST_PROPERTIES_ANNOTATION.equals(stringType(annotationItem)))
-                .map(propertiesAnnotationItem -> propertiesAnnotationItem.getEncodedAnnotation().values)
-                .map(propertiesAnnotationValues -> propertiesAnnotationValues[0])
-                .flatMap(propertyAnnotationsContainer -> stream(((ArrayEncodedValue) propertyAnnotationsContainer).values))
-                .map(propertyAnnotation -> ((AnnotationEncodedValue) propertyAnnotation))
-                .collect(toMap(
-                        p -> ((StringEncodedValue) p.values[indexOfName(p, "key")]).value.getStringValue(),
-                        p -> ((StringEncodedValue) p.values[indexOfName(p, "value")]).value.getStringValue()
-                )));
+                .map(AnnotationItem::getEncodedAnnotation)
+                .forEach(an -> {
+                    List<String> keys = getAnnotationProperty(an, "keys");
+                    List<String> values = getAnnotationProperty(an, "values");
+
+                    for (int i = 0; i < min(values.size(), keys.size()); i++) {
+                        properties.put(keys.get(i), values.get(i));
+                    }
+                });
         return properties;
+    }
+
+    private List<String> getAnnotationProperty(AnnotationEncodedSubValue an, String propertyName) {
+        EncodedValue[] values = ((ArrayEncodedValue) an.values[indexOfName(an, propertyName)]).values;
+        return stream(values)
+                .map(stringEncodedValue -> ((StringEncodedValue) stringEncodedValue).value.getStringValue())
+                .collect(toList());
     }
 
     private int indexOfName(AnnotationEncodedSubValue p, String key) {

@@ -9,5 +9,6 @@ import static java.lang.annotation.ElementType.METHOD;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({METHOD})
 public @interface TestProperties {
-    TestProperty[] value() default {};
+    String[] keys() default {};
+    String[] values() default {};
 }

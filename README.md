@@ -138,7 +138,7 @@ characteristic         | Characteristic             | Possible values: "sw"\|"ap
 groups                 | Map&lt;String, Integer&gt; | map the name of a pool to their lowest dimension for a characteristic
 
 ## Runtime Permissions
-By default fork auto-grants all runtime permissions on Android Marshmallow +. It is possible anyway to selectively revoke one or more permissions per single test case.
+By default Fork auto-grants all runtime permissions on Android Marshmallow +. It is possible anyway to selectively revoke one or more permissions per single test case.
 To do so, you have to add an annotation called `RevokePermission`. Here is an example:
 ```java
   @Test
@@ -159,18 +159,16 @@ After every test case, all the runtime permissions will be automatically re-gran
 This feature will impact only Marshmallow and subsequent devices.
 
 ## Arbitrary metadata
-Fork supports adding arbitrary metadata on any test and get them returned as `properties` on the suite level of the JUnit xml report. 
+Using Fork you can set metadata on tests and get them back in its JUnit xml reports. The metadata are added as additional `property` tags on the suite level of the report, as each test produces its own report.
 
 ```java
 @Test
-@TestProperty(key = "key1", value = "value1")
-@TestProperty(key = "key2", value = "value2")
+@TestProperties(keys = {"k1", "k2"}, values = {"v1", "v2"})
 public void testWithProperties() {
     // Test normally here
 }
 ```
-
-This feature relies on Repeated Annotations and therefore requires Java 8.
+Note that Fork will stop adding pairs after it encounters an unpaired key or value, so make sure you have the same number of keys and values. 
 
 ## Examples
 

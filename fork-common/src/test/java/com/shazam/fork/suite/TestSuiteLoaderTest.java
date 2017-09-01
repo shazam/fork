@@ -12,18 +12,16 @@ package com.shazam.fork.suite;
 
 import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
-
 import org.hamcrest.Matcher;
 import org.jf.dexlib.DexFile;
 import org.junit.Test;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nonnull;
 
 import static com.shazam.fork.io.FakeDexFileExtractor.fakeDexFileExtractor;
 import static com.shazam.fork.io.Files.convertFileToDexFile;
@@ -32,9 +30,7 @@ import static com.shazam.fork.suite.FakeTestClassMatcher.fakeTestClassMatcher;
 import static com.shazam.shazamcrest.MatcherAssert.assertThat;
 import static com.shazam.shazamcrest.matcher.Matchers.sameBeanAs;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonMap;
+import static java.util.Collections.*;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
 /**
@@ -102,7 +98,7 @@ public class TestSuiteLoaderTest {
                         false, asList("android.permission.RECORD_AUDIO", "android.permission.ACCESS_FINE_LOCATION")),
                 sameTestEventAs("methodAnnotatedWithEmptyRevokePermissionsTest", "com.shazam.forktest.RevokePermissionsClassTest", false),
                 sameTestEventAs("methodWithProperties", "com.shazam.forktest.PropertiesClassTest", singletonMap("foo", "bar")),
-                sameTestEventAs("methodWithMultipleProperties", "com.shazam.forktest.PropertiesClassTest", multiPropertiesMap )
+                sameTestEventAs("methodWithMultipleProperties", "com.shazam.forktest.PropertiesClassTest", multiPropertiesMap)
                 )
         );
 
