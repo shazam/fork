@@ -137,6 +137,41 @@ Property Name          | Property Type              | Description |
 characteristic         | Characteristic             | Possible values: "sw"\|"api" (shortest width or API level)
 groups                 | Map&lt;String, Integer&gt; | map the name of a pool to their lowest dimension for a characteristic
 
+## Runtime Permissions
+By default fork auto-grants all runtime permissions on Android Marshmallow +. It is possible anyway to selectively revoke one or more permissions per single test case.
+To do so, you have to add an annotation called `RevokePermission`. Here is an example:
+```java
+  @Test
+  @RevokePermission({Manifest.permission.RECORD_AUDIO,
+                        Manifest.permission.ACCESS_FINE_LOCATION})
+  public void aTestRevokingRecordAudioAndFineLocation() {
+    //in here RECORD_AUDIO and ACCESS_FINE_LOCATION are *not* granted.
+  }
+```
+
+Remember to add the fork client-side library to your project to have access to the annotation.
+To do so, in your app's dependencies add:
+```
+    androidTestImplementation "com.shazam.fork:fork-client:3.0.0-SNAPSHOT"
+```
+
+After every test case, all the runtime permissions will be automatically re-granted even if the test fails.
+This feature will impact only Marshmallow and subsequent devices.
+
+## Arbitrary metadata
+Fork supports adding arbitrary metadata on any test and get them returned as `properties` on the suite level of the JUnit xml report. 
+
+```java
+@Test
+@TestProperty(key = "key1", value = "value1")
+@TestProperty(key = "key2", value = "value2")
+public void testWithProperties() {
+    // Test normally here
+}
+```
+
+This feature relies on Repeated Annotations and therefore requires Java 8.
+
 ## Examples
 
 ### Gradle plugin examples
@@ -217,27 +252,6 @@ Where the contents of `fork-config.json` are:
     }
 }
 ```
-
-## Runtime Permissions
-By default fork auto-grants all runtime permissions on Android Marshmallow +. It is possible anyway to selectively revoke one or more permissions per single test case.
-To do so, you have to add an annotation called `RevokePermission`. Here is an example:
-```java
-  @Test
-  @RevokePermission({Manifest.permission.RECORD_AUDIO,
-                        Manifest.permission.ACCESS_FINE_LOCATION})
-  public void aTestRevokingRecordAudioAndFineLocation() {
-    //in here RECORD_AUDIO and ACCESS_FINE_LOCATION are *not* granted.
-  }
-```
-
-Remember to add the fork client-side library to your project to have access to the annotation.
-To do so, in your app's dependencies add:
-```
-    androidTestImplementation "com.shazam.fork:fork-client:3.0.0-SNAPSHOT"
-```
-
-After every test case, all the runtime permissions will be automatically re-granted even if the test fails.
-This feature will impact only Marshmallow and subsequent devices.
 
 ## Limitations
  * The scheduling still works on a single build box with ADB, so there still is a limit by how many devices & emulators can be simultaneously connected to ADB. Eventually, Fork could be tweaked to talk over HTTP with other build agents, that would then be connected to devices over ADB. That model would tie in nicely with multi-agent CI systems, like Jenkins.
