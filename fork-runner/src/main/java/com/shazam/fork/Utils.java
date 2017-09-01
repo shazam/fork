@@ -14,11 +14,8 @@ package com.shazam.fork;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
-
-import javax.annotation.Nullable;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
 

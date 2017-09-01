@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ForkTest</string>
+    <string name="custom_permission_name">A custom permission</string>
+</resources>

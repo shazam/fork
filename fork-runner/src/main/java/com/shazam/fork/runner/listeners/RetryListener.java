@@ -62,18 +62,18 @@ public class RetryListener extends NoOpITestRunListener {
         this.pool = pool;
         this.fileManager = fileManager;
     }
-    
+
     @Override
     public void testFailed(TestIdentifier test, String trace) {
         failedTest = test;
-        progressReporter.recordFailedTestCase(pool, newTestCase(failedTest, false));
+        progressReporter.recordFailedTestCase(pool, newTestCase(failedTest));
     }
 
     @Override
     public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
         super.testRunEnded(elapsedTime, runMetrics);
         if (failedTest != null) {
-            if (progressReporter.requestRetry(pool, newTestCase(failedTest, false))) {
+            if (progressReporter.requestRetry(pool, newTestCase(failedTest))) {
                 queueOfTestsInPool.add(currentTestCaseEvent);
                 logger.info("Test " + failedTest.toString() + " enqueued again into pool:" + pool.getName());
                 removeFailureTraceFiles();
@@ -83,10 +83,10 @@ public class RetryListener extends NoOpITestRunListener {
         }
     }
 
-    public void removeFailureTraceFiles( ) {
+    public void removeFailureTraceFiles() {
         final File file = fileManager.getFile(FileType.TEST, pool.getName(), device.getSafeSerial(), failedTest);
         boolean deleted = file.delete();
-        if(!deleted){
+        if (!deleted) {
             logger.warn("Failed to remove file  " + file.getAbsoluteFile() + " for a failed but enqueued again test");
         }
     }

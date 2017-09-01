@@ -1,0 +1,21 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.shazam.forktest">
+
+    <permission android:name="com.shazam.forktest.A_TEST_PERMISSION"
+                android:description="@string/custom_permission_name"
+                android:label=""
+                android:permissionGroup="A_PERMISSION"
+                android:protectionLevel="dangerous" />
+
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" android:maxSdkVersion="22"/>
+    <uses-permission-sdk-23 android:name="com.shazam.forktest.A_TEST_PERMISSION" android:maxSdkVersion="24"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true" />
+</manifest>

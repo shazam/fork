@@ -15,7 +15,9 @@ package com.shazam.fork.runner.listeners;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.android.ddmlib.testrunner.XmlTestRunListener;
 import com.google.common.collect.ImmutableMap;
-import com.shazam.fork.model.*;
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.system.io.FileManager;
 import com.shazam.fork.system.io.FileType;
@@ -67,7 +69,7 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
         ImmutableMap.Builder<String, String> mapBuilder = ImmutableMap.<String, String>builder()
                 .putAll(super.getPropertiesAttributes());
         if (test != null) {
-            int testFailuresCount = progressReporter.getTestFailuresCount(pool, newTestCase(test, false));
+            int testFailuresCount = progressReporter.getTestFailuresCount(pool, newTestCase(test));
             if (testFailuresCount > 0) {
                 mapBuilder
                         .put(SUMMARY_KEY_TOTAL_FAILURE_COUNT, Integer.toString(testFailuresCount))
