@@ -1,6 +1,7 @@
-package com.shazam.fork;
+package com.shazam.fork.system;
 
 import com.android.ddmlib.*;
+import com.shazam.fork.Configuration;
 import com.shazam.fork.model.Permission;
 
 import javax.annotation.Nonnull;
@@ -9,11 +10,18 @@ import java.util.List;
 
 import static java.lang.String.format;
 
-public class PermissionUtils {
+public class PermissionGrantingManager {
 
     private static final NullOutputReceiver NO_OP_RECEIVER = new NullOutputReceiver();
 
-    public static void revokePermissions(@Nonnull String applicationPackage,
+    private PermissionGrantingManager() {
+    }
+
+    public static PermissionGrantingManager permissionGrantingManager(){
+        return new PermissionGrantingManager();
+    }
+
+    public void revokePermissions(@Nonnull String applicationPackage,
                                          @Nonnull IDevice device, @Nonnull List<String> permissionsToRevoke) {
         for (String permissionToRevoke : permissionsToRevoke) {
             try {
@@ -25,7 +33,7 @@ public class PermissionUtils {
         }
     }
 
-    public static void grantAllPermissionsIfAllowed(@Nonnull Configuration configuration, @Nonnull String applicationPackage, @Nonnull IDevice device) {
+    public void grantAllPermissionsIfAllowed(@Nonnull Configuration configuration, @Nonnull String applicationPackage, @Nonnull IDevice device) {
         if (configuration.isAutoGrantingPermissions()) {
             List<Permission> permissions = configuration.getApplicationInfo().getPermissions();
             for (Permission permissionToGrant : permissions) {
