@@ -14,7 +14,6 @@ import com.android.ddmlib.testrunner.ITestRunListener;
 import com.shazam.fork.Configuration;
 import com.shazam.fork.model.*;
 import com.shazam.fork.runner.listeners.TestRunListenersFactory;
-import com.shazam.fork.system.PermissionGrantingManager;
 
 import java.util.List;
 import java.util.Queue;
