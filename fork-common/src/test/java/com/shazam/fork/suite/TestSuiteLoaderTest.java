@@ -81,10 +81,10 @@ public class TestSuiteLoaderTest {
     @SuppressWarnings("unchecked")
     @Test
     public void populatesTestCaseEvents() throws Exception {
-        Map<String, String> multiPropertiesMap = new HashMap() {{
-            put("foo", "bar");
-            put("bux", "poi");
-        }};
+        Map<String, String> multiPropertiesMap = new HashMap();
+        multiPropertiesMap.put("foo", "bar");
+        multiPropertiesMap.put("bux", "poi");
+
         TestSuiteLoader testSuiteLoader = new TestSuiteLoader(ANY_INSTRUMENTATION_APK_FILE, fakeDexFileExtractor,
                 fakeTestClassMatcher);
 

@@ -16,6 +16,7 @@ import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static com.shazam.fork.runner.FakePoolTestCaseAccumulator.aFakePoolTestCaseAccumulator;
 import static com.shazam.fork.runner.FakeProgressReporterTrackers.aFakeProgressReporterTrackers;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 
 public class OverallProgressReporterTest {
 
@@ -27,7 +28,7 @@ public class OverallProgressReporterTest {
     private final Pool A_POOL = aDevicePool()
             .addDevice(A_DEVICE)
             .build();
-    private final TestCaseEvent A_TEST_CASE = newTestCase("aTestMethod", "aTestClass", false, emptyList());
+    private final TestCaseEvent A_TEST_CASE = newTestCase("aTestMethod", "aTestClass", false, emptyList(), emptyMap());
 
     private OverallProgressReporter overallProgressReporter;
 

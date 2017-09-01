@@ -2,7 +2,6 @@ package com.shazam.forktest;
 
 import com.shazam.fork.TestProperties;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
