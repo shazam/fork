@@ -125,10 +125,15 @@ public class TestSuiteLoader {
     }
 
     private List<String> getAnnotationProperty(AnnotationEncodedSubValue an, String propertyName) {
-        EncodedValue[] values = ((ArrayEncodedValue) an.values[indexOfName(an, propertyName)]).values;
-        return stream(values)
-                .map(stringEncodedValue -> ((StringEncodedValue) stringEncodedValue).value.getStringValue())
-                .collect(toList());
+        int propValueIndex = indexOfName(an, propertyName);
+        if (propValueIndex >= 0) {
+            EncodedValue[] values = ((ArrayEncodedValue) an.values[propValueIndex]).values;
+            return stream(values)
+                    .map(stringEncodedValue -> ((StringEncodedValue) stringEncodedValue).value.getStringValue())
+                    .collect(toList());
+        } else {
+            return emptyList();
+        }
     }
 
     private int indexOfName(AnnotationEncodedSubValue p, String key) {

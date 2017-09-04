@@ -19,5 +19,17 @@ public class PropertiesClassTest {
     public void methodWithMultipleProperties() {
         assertEquals(4, 2 + 2);
     }
+
+    @Test
+    @TestProperties()
+    public void methodWithEmptyProperties() {
+        assertEquals(4, 2 + 2);
+    }
+
+    @Test
+    @TestProperties(keys = {"foo", "unmatchedkey"}, values = {"bar"})
+    public void methodWithUnmatchedKey() {
+        assertEquals(4, 2 + 2);
+    }
 }
 

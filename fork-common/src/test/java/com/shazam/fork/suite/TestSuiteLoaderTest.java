@@ -81,6 +81,7 @@ public class TestSuiteLoaderTest {
     @SuppressWarnings("unchecked")
     @Test
     public void populatesTestCaseEvents() throws Exception {
+        Map<String, String> singlePropertyMap = singletonMap("foo", "bar");
         Map<String, String> multiPropertiesMap = new HashMap();
         multiPropertiesMap.put("foo", "bar");
         multiPropertiesMap.put("bux", "poi");
@@ -97,8 +98,10 @@ public class TestSuiteLoaderTest {
                 sameTestEventAs("methodAnnotatedWithRevokePermissionsTest", "com.shazam.forktest.RevokePermissionsClassTest",
                         false, asList("android.permission.RECORD_AUDIO", "android.permission.ACCESS_FINE_LOCATION")),
                 sameTestEventAs("methodAnnotatedWithEmptyRevokePermissionsTest", "com.shazam.forktest.RevokePermissionsClassTest", false),
-                sameTestEventAs("methodWithProperties", "com.shazam.forktest.PropertiesClassTest", singletonMap("foo", "bar")),
-                sameTestEventAs("methodWithMultipleProperties", "com.shazam.forktest.PropertiesClassTest", multiPropertiesMap)
+                sameTestEventAs("methodWithProperties", "com.shazam.forktest.PropertiesClassTest", singlePropertyMap),
+                sameTestEventAs("methodWithMultipleProperties", "com.shazam.forktest.PropertiesClassTest", multiPropertiesMap),
+                sameTestEventAs("methodWithEmptyProperties", "com.shazam.forktest.PropertiesClassTest", emptyMap()),
+                sameTestEventAs("methodWithUnmatchedKey", "com.shazam.forktest.PropertiesClassTest", singlePropertyMap)
                 )
         );
 
