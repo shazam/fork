@@ -71,10 +71,11 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
         if (test != null) {
             int testFailuresCount = progressReporter.getTestFailuresCount(pool, newTestCase(test));
             if (testFailuresCount > 0) {
-                mapBuilder
-                        .put(SUMMARY_KEY_TOTAL_FAILURE_COUNT, Integer.toString(testFailuresCount))
-                        .build();
+                mapBuilder.put(SUMMARY_KEY_TOTAL_FAILURE_COUNT, Integer.toString(testFailuresCount));
             }
+        }
+        if (testCase != null) {
+            mapBuilder.putAll(testCase.getProperties());
         }
         return mapBuilder.build();
     }

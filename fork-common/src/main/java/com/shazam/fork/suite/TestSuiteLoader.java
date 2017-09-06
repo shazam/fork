@@ -12,23 +12,18 @@ package com.shazam.fork.suite;
 
 import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
-
-import org.jf.dexlib.AnnotationDirectoryItem;
-import org.jf.dexlib.AnnotationItem;
-import org.jf.dexlib.AnnotationSetItem;
-import org.jf.dexlib.ClassDefItem;
+import org.jf.dexlib.*;
+import org.jf.dexlib.EncodedValue.AnnotationEncodedSubValue;
 import org.jf.dexlib.EncodedValue.ArrayEncodedValue;
+import org.jf.dexlib.EncodedValue.EncodedValue;
 import org.jf.dexlib.EncodedValue.StringEncodedValue;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import javax.annotation.Nonnull;
+import java.io.File;
+import java.util.*;
 
 import static com.shazam.fork.model.TestCaseEvent.newTestCase;
-import static java.util.Arrays.asList;
+import static java.lang.Math.min;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -37,6 +32,7 @@ public class TestSuiteLoader {
     private static final String TEST_ANNOTATION = "Lorg/junit/Test;";
     private static final String IGNORE_ANNOTATION = "Lorg/junit/Ignore;";
     private static final String REVOKE_PERMISSION_ANNOTATION = "Lcom/shazam/fork/RevokePermission;";
+    private static final String TEST_PROPERTIES_ANNOTATION = "Lcom/shazam/fork/TestProperties;";
 
     private final File instrumentationApkFile;
     private final DexFileExtractor dexFileExtractor;
@@ -72,7 +68,7 @@ public class TestSuiteLoader {
 
         List<TestCaseEvent> testCaseEvents = new ArrayList<>();
         for (AnnotationDirectoryItem.MethodAnnotation method : annotationDirectoryItem.getMethodAnnotations()) {
-            asList(method.annotationSet.getAnnotations()).stream()
+            stream(method.annotationSet.getAnnotations())
                     .filter(annotation -> TEST_ANNOTATION.equals(stringType(annotation)))
                     .map(annotation -> convertToTestCaseEvent(classDefItem, annotationDirectoryItem, method))
                     .forEach(testCaseEvents::add);
@@ -89,7 +85,8 @@ public class TestSuiteLoader {
         String testClass = getClassName(classDefItem);
         boolean ignored = isClassIgnored(annotationDirectoryItem) || isMethodIgnored(annotations);
         List<String> permissionsToRevoke = getPermissionsToRevoke(annotations);
-        return newTestCase(testMethod, testClass, ignored, permissionsToRevoke);
+        Map<String, String> properties = getTestProperties(annotations);
+        return newTestCase(testMethod, testClass, ignored, permissionsToRevoke, properties);
     }
 
     private String getClassName(ClassDefItem classDefItem) {
@@ -107,8 +104,45 @@ public class TestSuiteLoader {
                 .map(annotationItem -> annotationItem.getEncodedAnnotation().values)
                 .flatMap(encodedValues -> stream(encodedValues)
                         .flatMap(encodedValue -> stream(((ArrayEncodedValue) encodedValue).values)
-                                .map(stringEncoded -> ((StringEncodedValue)stringEncoded).value.getStringValue())))
+                                .map(stringEncoded -> ((StringEncodedValue) stringEncoded).value.getStringValue())))
                 .collect(toList());
+    }
+
+    private Map<String, String> getTestProperties(AnnotationItem[] annotations) {
+        Map<String, String> properties = new HashMap<>();
+        stream(annotations)
+                .filter(annotationItem -> TEST_PROPERTIES_ANNOTATION.equals(stringType(annotationItem)))
+                .map(AnnotationItem::getEncodedAnnotation)
+                .forEach(an -> {
+                    List<String> keys = getAnnotationProperty(an, "keys");
+                    List<String> values = getAnnotationProperty(an, "values");
+
+                    for (int i = 0; i < min(values.size(), keys.size()); i++) {
+                        properties.put(keys.get(i), values.get(i));
+                    }
+                });
+        return properties;
+    }
+
+    private List<String> getAnnotationProperty(AnnotationEncodedSubValue an, String propertyName) {
+        int propValueIndex = indexOfName(an, propertyName);
+        if (propValueIndex >= 0) {
+            EncodedValue[] values = ((ArrayEncodedValue) an.values[propValueIndex]).values;
+            return stream(values)
+                    .map(stringEncodedValue -> ((StringEncodedValue) stringEncodedValue).value.getStringValue())
+                    .collect(toList());
+        } else {
+            return emptyList();
+        }
+    }
+
+    private int indexOfName(AnnotationEncodedSubValue p, String key) {
+        int index = -1;
+        StringIdItem[] names = p.names;
+        for (int i = 0; i < names.length; i++) {
+            if (names[i].getStringValue().equals(key)) return i;
+        }
+        return index;
     }
 
     private boolean isClassIgnored(AnnotationDirectoryItem annotationDirectoryItem) {

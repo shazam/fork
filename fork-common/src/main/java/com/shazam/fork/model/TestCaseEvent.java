@@ -4,10 +4,12 @@ import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.common.base.Objects;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 import static org.apache.commons.lang3.builder.ToStringStyle.SIMPLE_STYLE;
 
@@ -17,20 +19,22 @@ public class TestCaseEvent {
     private final String testClass;
     private final boolean isIgnored;
     private final List<String> permissionsToRevoke;
+    private final Map<String, String> properties;
 
-    private TestCaseEvent(String testMethod, String testClass, boolean isIgnored, List<String> permissionsToRevoke) {
+    private TestCaseEvent(String testMethod, String testClass, boolean isIgnored, List<String> permissionsToRevoke, Map<String, String> properties) {
         this.testMethod = testMethod;
         this.testClass = testClass;
         this.isIgnored = isIgnored;
         this.permissionsToRevoke = permissionsToRevoke;
+        this.properties = properties;
     }
 
-    public static TestCaseEvent newTestCase(String testMethod, String testClass, boolean isIgnored, List<String> permissionsToRevoke) {
-        return new TestCaseEvent(testMethod, testClass, isIgnored, permissionsToRevoke);
+    public static TestCaseEvent newTestCase(String testMethod, String testClass, boolean isIgnored, List<String> permissionsToRevoke, Map<String, String> properties) {
+        return new TestCaseEvent(testMethod, testClass, isIgnored, permissionsToRevoke, properties);
     }
 
-    public static TestCaseEvent newTestCase(@Nonnull TestIdentifier testIdentifier ) {
-        return new TestCaseEvent(testIdentifier.getTestName(), testIdentifier.getClassName(), false, emptyList());
+    public static TestCaseEvent newTestCase(@Nonnull TestIdentifier testIdentifier) {
+        return new TestCaseEvent(testIdentifier.getTestName(), testIdentifier.getClassName(), false, emptyList(), emptyMap());
     }
 
     public String getTestMethod() {
@@ -47,6 +51,10 @@ public class TestCaseEvent {
 
     public List<String> getPermissionsToRevoke() {
         return permissionsToRevoke;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
     }
 
     @Override
