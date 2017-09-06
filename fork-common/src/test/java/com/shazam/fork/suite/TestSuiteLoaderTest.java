@@ -14,6 +14,7 @@ import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
 import org.hamcrest.Matcher;
 import org.jf.dexlib.DexFile;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.annotation.Nonnull;
@@ -31,7 +32,7 @@ import static com.shazam.shazamcrest.MatcherAssert.assertThat;
 import static com.shazam.shazamcrest.matcher.Matchers.sameBeanAs;
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItems;
 
 /**
  * This test is based on the <code>tests.dex</code> file, which contains test classes with the following code:
@@ -70,6 +71,7 @@ public class TestSuiteLoaderTest {
 
     private final DexFileExtractor fakeDexFileExtractor = fakeDexFileExtractor().thatReturns(testDexFile());
     private final TestClassMatcher fakeTestClassMatcher = fakeTestClassMatcher().thatAlwaysMatches();
+    private TestSuiteLoader testSuiteLoader;
 
     private DexFile testDexFile() {
         URL testDexResourceUrl = this.getClass().getResource("/tests.dex");
@@ -78,33 +80,47 @@ public class TestSuiteLoaderTest {
         return convertFileToDexFile().apply(file);
     }
 
+    @Before
+    public void setUp() throws Exception {
+        testSuiteLoader = new TestSuiteLoader(ANY_INSTRUMENTATION_APK_FILE, fakeDexFileExtractor, fakeTestClassMatcher);
+    }
+
     @SuppressWarnings("unchecked")
     @Test
-    public void populatesTestCaseEvents() throws Exception {
+    public void setsIgnoredFlag() throws Exception {
+        assertThat(testSuiteLoader.loadTestSuite(), hasItems(
+                sameTestEventAs("methodOfAnIgnoredTestClass", "com.shazam.forktest.IgnoredClassTest", true),
+                sameTestEventAs("firstTestMethod", "com.shazam.forktest.ClassWithNoIgnoredMethodsTest", false),
+                sameTestEventAs("secondTestMethod", "com.shazam.forktest.ClassWithNoIgnoredMethodsTest", false),
+                sameTestEventAs("nonIgnoredTestMethod", "com.shazam.forktest.ClassWithSomeIgnoredMethodsTest", false),
+                sameTestEventAs("ignoredTestMethod", "com.shazam.forktest.ClassWithSomeIgnoredMethodsTest", true)));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void populatesRevokedPermissions() throws Exception {
+        String testClass = "com.shazam.forktest.RevokePermissionsClassTest";
+        List<String> permissions = asList("android.permission.RECORD_AUDIO", "android.permission.ACCESS_FINE_LOCATION");
+
+        assertThat(testSuiteLoader.loadTestSuite(), hasItems(
+                sameTestEventAs("methodAnnotatedWithRevokePermissionsTest", testClass, false, permissions),
+                sameTestEventAs("methodAnnotatedWithEmptyRevokePermissionsTest", testClass, false)));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void populatesTestProperties() throws Exception {
+        String testClass = "com.shazam.forktest.PropertiesClassTest";
         Map<String, String> singlePropertyMap = singletonMap("foo", "bar");
         Map<String, String> multiPropertiesMap = new HashMap();
         multiPropertiesMap.put("foo", "bar");
         multiPropertiesMap.put("bux", "poi");
 
-        TestSuiteLoader testSuiteLoader = new TestSuiteLoader(ANY_INSTRUMENTATION_APK_FILE, fakeDexFileExtractor,
-                fakeTestClassMatcher);
-
-        assertThat(testSuiteLoader.loadTestSuite(), containsInAnyOrder(
-                sameTestEventAs("methodOfAnIgnoredTestClass", "com.shazam.forktest.IgnoredClassTest", true),
-                sameTestEventAs("firstTestMethod", "com.shazam.forktest.ClassWithNoIgnoredMethodsTest", false),
-                sameTestEventAs("secondTestMethod", "com.shazam.forktest.ClassWithNoIgnoredMethodsTest", false),
-                sameTestEventAs("nonIgnoredTestMethod", "com.shazam.forktest.ClassWithSomeIgnoredMethodsTest", false),
-                sameTestEventAs("ignoredTestMethod", "com.shazam.forktest.ClassWithSomeIgnoredMethodsTest", true),
-                sameTestEventAs("methodAnnotatedWithRevokePermissionsTest", "com.shazam.forktest.RevokePermissionsClassTest",
-                        false, asList("android.permission.RECORD_AUDIO", "android.permission.ACCESS_FINE_LOCATION")),
-                sameTestEventAs("methodAnnotatedWithEmptyRevokePermissionsTest", "com.shazam.forktest.RevokePermissionsClassTest", false),
-                sameTestEventAs("methodWithProperties", "com.shazam.forktest.PropertiesClassTest", singlePropertyMap),
-                sameTestEventAs("methodWithMultipleProperties", "com.shazam.forktest.PropertiesClassTest", multiPropertiesMap),
-                sameTestEventAs("methodWithEmptyProperties", "com.shazam.forktest.PropertiesClassTest", emptyMap()),
-                sameTestEventAs("methodWithUnmatchedKey", "com.shazam.forktest.PropertiesClassTest", singlePropertyMap)
-                )
-        );
-
+        assertThat(testSuiteLoader.loadTestSuite(), hasItems(
+                sameTestEventAs("methodWithProperties", testClass, singlePropertyMap),
+                sameTestEventAs("methodWithMultipleProperties", testClass, multiPropertiesMap),
+                sameTestEventAs("methodWithEmptyProperties", testClass, emptyMap()),
+                sameTestEventAs("methodWithUnmatchedKey", testClass, singlePropertyMap)));
     }
 
     @Nonnull
