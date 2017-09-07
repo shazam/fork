@@ -10,6 +10,7 @@
 package com.shazam.fork.runner;
 
 import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.IDevice;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
 import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
@@ -47,10 +48,13 @@ class TestRun {
 	}
 
 	public void execute() {
+		String applicationPackage = testRunParameters.getApplicationPackage();
+		IDevice device = testRunParameters.getDeviceInterface();
+
 		RemoteAndroidTestRunner runner = new RemoteAndroidTestRunner(
 				testRunParameters.getTestPackage(),
 				testRunParameters.getTestRunner(),
-				testRunParameters.getDeviceInterface());
+				device);
 
 		TestCaseEvent test = testRunParameters.getTest();
 		String testClassName = test.getTestClass();
@@ -77,7 +81,7 @@ class TestRun {
 
 		List<String> permissionsToRevoke = testRunParameters.getTest().getPermissionsToRevoke();
 
-		permissionGrantingManager.revokePermissions(testRunParameters.getApplicationPackage(), testRunParameters.getDeviceInterface(), permissionsToRevoke);
+		permissionGrantingManager.revokePermissions(applicationPackage, device, permissionsToRevoke);
 
 		try {
 			runner.run(testRunListeners);
@@ -86,7 +90,7 @@ class TestRun {
 		} catch (AdbCommandRejectedException | IOException e) {
 			throw new RuntimeException(format("Error while running test %s %s", test.getTestClass(), test.getTestMethod()), e);
 		} finally {
-			permissionGrantingManager.grantPermissions(testRunParameters.getApplicationPackage(), testRunParameters.getDeviceInterface(), permissionsToRevoke);
+			permissionGrantingManager.restorePermissions(applicationPackage, device, permissionsToRevoke);
 		}
 
     }
