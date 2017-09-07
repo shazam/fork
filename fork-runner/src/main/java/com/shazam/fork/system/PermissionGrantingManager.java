@@ -1,12 +1,18 @@
 package com.shazam.fork.system;
 
-import com.android.ddmlib.*;
-import com.shazam.fork.Configuration;
-import com.shazam.fork.model.Permission;
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.IDevice;
+import com.android.ddmlib.NullOutputReceiver;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.TimeoutException;
 
-import javax.annotation.Nonnull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import static java.lang.String.format;
 
@@ -14,15 +20,23 @@ public class PermissionGrantingManager {
 
     private static final NullOutputReceiver NO_OP_RECEIVER = new NullOutputReceiver();
 
+    private final Logger logger = LoggerFactory.getLogger(PermissionGrantingManager.class);
+
     private PermissionGrantingManager() {
     }
 
-    public static PermissionGrantingManager permissionGrantingManager(){
+    public static PermissionGrantingManager permissionGrantingManager() {
         return new PermissionGrantingManager();
     }
 
     public void revokePermissions(@Nonnull String applicationPackage,
-                                         @Nonnull IDevice device, @Nonnull List<String> permissionsToRevoke) {
+                                  @Nonnull IDevice device,
+                                  @Nonnull List<String> permissionsToRevoke) {
+        if (permissionsToRevoke.isEmpty()) {
+            return;
+        }
+
+        long start = System.currentTimeMillis();
         for (String permissionToRevoke : permissionsToRevoke) {
             try {
                 device.executeShellCommand(format("pm revoke %s %s",
@@ -31,26 +45,27 @@ public class PermissionGrantingManager {
                 throw new UnsupportedOperationException(format("Unable to revoke permission %s", permissionToRevoke), e);
             }
         }
+        logger.debug("Revoking permissions: {} (took {}ms)", permissionsToRevoke, (System.currentTimeMillis() - start));
     }
 
-    public void grantAllPermissionsIfAllowed(@Nonnull Configuration configuration, @Nonnull String applicationPackage, @Nonnull IDevice device) {
-        if (configuration.isAutoGrantingPermissions()) {
-            List<Permission> permissions = configuration.getApplicationInfo().getPermissions();
-            for (Permission permissionToGrant : permissions) {
-                if (deviceApiLevelInRange(device, permissionToGrant)) {
-                    try {
-                        device.executeShellCommand(format("pm grant %s %s",
-                                applicationPackage, permissionToGrant.getPermissionName()), NO_OP_RECEIVER);
-                    } catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
-                        throw new UnsupportedOperationException(format("Unable to grant permission %s", permissionToGrant), e);
-                    }
-                }
+    public void grantPermissions(@Nonnull String applicationPackage,
+                                 @Nonnull IDevice device,
+                                 @Nonnull List<String> permissionsToGrant) {
+        if (permissionsToGrant.isEmpty()) {
+            return;
+        }
+
+        long start = System.currentTimeMillis();
+        for (String permissionToGrant : permissionsToGrant) {
+            try {
+                device.executeShellCommand(format("pm grant %s %s",
+                        applicationPackage, permissionToGrant), NO_OP_RECEIVER);
+            } catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
+                throw new UnsupportedOperationException(format("Unable to grant permission %s", permissionToGrant), e);
             }
         }
+
+        logger.debug("Granting permissions: {} (took {}ms)", permissionsToGrant, (System.currentTimeMillis() - start));
     }
 
-    private static boolean deviceApiLevelInRange(@Nonnull IDevice device, Permission permissionToGrant) {
-        return permissionToGrant.getMinSdkVersion() <= device.getVersion().getFeatureLevel()
-                && permissionToGrant.getMaxSdkVersion() >= device.getVersion().getFeatureLevel();
-    }
 }

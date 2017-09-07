@@ -9,8 +9,13 @@
  */
 package com.shazam.fork.runner;
 
-import com.android.ddmlib.*;
-import com.android.ddmlib.testrunner.*;
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.TimeoutException;
+import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
+import com.android.ddmlib.testrunner.ITestRunListener;
+import com.android.ddmlib.testrunner.RemoteAndroidTestRunner;
+import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.common.base.Strings;
 import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.system.PermissionGrantingManager;
@@ -22,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
-import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 import static java.lang.String.format;
 
 class TestRun {
@@ -82,7 +86,7 @@ class TestRun {
 		} catch (AdbCommandRejectedException | IOException e) {
 			throw new RuntimeException(format("Error while running test %s %s", test.getTestClass(), test.getTestMethod()), e);
 		} finally {
-			permissionGrantingManager.grantAllPermissionsIfAllowed(configuration(), testRunParameters.getApplicationPackage(), testRunParameters.getDeviceInterface());
+			permissionGrantingManager.grantPermissions(testRunParameters.getApplicationPackage(), testRunParameters.getDeviceInterface(), permissionsToRevoke);
 		}
 
     }
