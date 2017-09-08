@@ -53,24 +53,6 @@ public class PermissionGrantingManager {
         }
     }
 
-    public void grantPermissions(@Nonnull String applicationPackage,
-                                 @Nonnull IDevice device,
-                                 @Nonnull List<String> permissionsToGrant) {
-        if (!permissionsToGrant.isEmpty()) {
-            long start = System.currentTimeMillis();
-            for (String permissionToGrant : permissionsToGrant) {
-                try {
-                    device.executeShellCommand(format("pm grant %s %s",
-                            applicationPackage, permissionToGrant), NO_OP_RECEIVER);
-                } catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
-                    throw new UnsupportedOperationException(format("Unable to grant permission %s", permissionToGrant), e);
-                }
-            }
-
-            logger.debug("Granting permissions: {} (took {}ms)", permissionsToGrant, (System.currentTimeMillis() - start));
-        }
-    }
-
     public void restorePermissions(@Nonnull String applicationPackage,
                                    @Nonnull IDevice device,
                                    @Nonnull List<String> permissionsToRestore) {
@@ -85,6 +67,24 @@ public class PermissionGrantingManager {
             }
 
             grantPermissions(applicationPackage, device, permissionsToGrant);
+        }
+    }
+
+    private void grantPermissions(@Nonnull String applicationPackage,
+                                  @Nonnull IDevice device,
+                                  @Nonnull List<String> permissionsToGrant) {
+        if (!permissionsToGrant.isEmpty()) {
+            long start = System.currentTimeMillis();
+            for (String permissionToGrant : permissionsToGrant) {
+                try {
+                    device.executeShellCommand(format("pm grant %s %s",
+                            applicationPackage, permissionToGrant), NO_OP_RECEIVER);
+                } catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
+                    throw new UnsupportedOperationException(format("Unable to grant permission %s", permissionToGrant), e);
+                }
+            }
+
+            logger.debug("Granting permissions: {} (took {}ms)", permissionsToGrant, (System.currentTimeMillis() - start));
         }
     }
 
