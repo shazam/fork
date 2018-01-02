@@ -15,7 +15,7 @@ task wrapper(type: Wrapper) {
 ext.sourceCompatibility = JavaVersion.VERSION_1_8
 ext.targetCompatibility = JavaVersion.VERSION_1_8
 
-ext.androidPlugin = '3.0.0-beta5'
+ext.androidPlugin = '3.0.0'
 
 def repos = {
     mavenLocal()
