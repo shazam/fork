@@ -12,9 +12,9 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class OutcomeAggregatorTest {
     @Test
-    public void returnsFalseIfThereAreSkippedTests() {
+    public void returnsFalseIfThereAreFatalCrashedTests() {
         Summary summary = aSummary()
-                .addSkippedTest("com.example.SkippedTest:testMethod")
+                .addFatalCrashedTest("com.example.FatalCrashedTest:testMethod")
                 .addPoolSummary(aPoolSummary()
                         .withPoolName("pool")
                         .addTestResults(singleton(aTestResult()

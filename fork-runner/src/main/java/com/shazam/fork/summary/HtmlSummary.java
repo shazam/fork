@@ -25,4 +25,5 @@ public class HtmlSummary {
     public List<String> ignoredTests;
     public String overallStatus;
     public List<String> failedTests;
+    public List<String> fatalCrashedTests;
 }

@@ -17,15 +17,13 @@ import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.system.io.FileManager;
 import com.shazam.fork.system.io.FileType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.Map;
 import java.util.Queue;
-
-import javax.annotation.Nonnull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.shazam.fork.model.TestCaseEvent.newTestCase;

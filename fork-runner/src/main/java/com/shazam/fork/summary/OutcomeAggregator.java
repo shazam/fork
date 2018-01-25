@@ -29,9 +29,9 @@ public class OutcomeAggregator {
     private static final Logger logger = LoggerFactory.getLogger(OutcomeAggregator.class);
 
     public boolean aggregate(Summary summary) {
-        if (summary == null || summary.getPoolSummaries().isEmpty() || !summary.getSkippedTests().isEmpty()) {
-            if (summary != null && !summary.getSkippedTests().isEmpty()) {
-                logger.error("There are tests left unprocessed: " + summary.getSkippedTests());
+        if (summary == null || summary.getPoolSummaries().isEmpty() || !summary.getFatalCrashedTests().isEmpty()) {
+            if (summary != null && !summary.getFatalCrashedTests().isEmpty()) {
+                logger.error("There are tests left unprocessed: " + summary.getFatalCrashedTests());
             }
             return false;
         }

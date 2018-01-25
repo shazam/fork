@@ -127,12 +127,12 @@ public class SummaryCompilerTest {
     }
 
     @Test
-    public void compilesSummaryWithSkippedTestsIfTheyAreNotFoundInPassedOrFailedOrIgnored() {
+    public void compilesSummaryWithFatalCrashedTestsIfTheyAreNotFoundInPassedOrFailedOrIgnored() {
         fakeDeviceTestFilesRetriever.thatReturns(testResults);
 
         Summary summary = summaryCompiler.compileSummary(devicePools, testCaseEvents);
 
-        assertThat(summary.getSkippedTests(), hasSize(1));
-        assertThat(summary.getSkippedTests(), contains("com.example.SkippedClassTest:doesJobProperly"));
+        assertThat(summary.getFatalCrashedTests(), hasSize(1));
+        assertThat(summary.getFatalCrashedTests(), contains("com.example.SkippedClassTest:doesJobProperly"));
     }
 }

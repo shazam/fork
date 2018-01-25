@@ -62,6 +62,16 @@
             {{/failedTests}}
         </ul>
 
+        Fatal crashed tests:
+        <ul>
+            {{#fatalCrashedTests}}
+            <li>{{.}}</li>
+            {{/fatalCrashedTests}}
+            {{^fatalCrashedTests}}
+            <li>None.</li>
+            {{/fatalCrashedTests}}
+        </ul>
+
         <script type="text/javascript">
             $('.test a').popover({
                 placement: 'top',

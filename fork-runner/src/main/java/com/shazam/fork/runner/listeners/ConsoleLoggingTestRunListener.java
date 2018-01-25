@@ -14,27 +14,29 @@ package com.shazam.fork.runner.listeners;
 
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
+import com.google.common.collect.Sets;
 import com.shazam.fork.runner.ProgressReporter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
 import static java.lang.String.format;
 
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 class ConsoleLoggingTestRunListener implements ITestRunListener {
     private static final Logger logger = LoggerFactory.getLogger(ConsoleLoggingTestRunListener.class);
-	private static final SimpleDateFormat TEST_TIME = new SimpleDateFormat("mm.ss");
+    private static final SimpleDateFormat TEST_TIME = new SimpleDateFormat("mm.ss");
     private static final String PERCENT = "%02d%%";
 
     private final String serial;
     private final String modelName;
     private final ProgressReporter progressReporter;
     private final String testPackage;
+    private final Set<TestIdentifier> uncompletedTests = Sets.newConcurrentHashSet();
 
     public ConsoleLoggingTestRunListener(String testPackage, String serial, String modelName, ProgressReporter progressReporter) {
         this.serial = serial;
@@ -43,14 +45,15 @@ class ConsoleLoggingTestRunListener implements ITestRunListener {
         this.testPackage = testPackage;
     }
 
-	@Override
-	public void testRunStarted(String runName, int testCount) {
-	}
+    @Override
+    public void testRunStarted(String runName, int testCount) {
+    }
 
-	@Override
-	public void testStarted(TestIdentifier test) {
+    @Override
+    public void testStarted(TestIdentifier test) {
+        uncompletedTests.add(test);
         System.out.println(format("%s %s %s %s [%s] %s", runningTime(), progress(), failures(), modelName, serial, testCase(test)));
-	}
+    }
 
     @Override
     public void testFailed(TestIdentifier test, String trace) {
@@ -59,28 +62,32 @@ class ConsoleLoggingTestRunListener implements ITestRunListener {
 
     @Override
     public void testAssumptionFailure(TestIdentifier test, String trace) {
+        uncompletedTests.remove(test);
         logger.debug("test={}", testCase(test));
         logger.debug("assumption failure {}", trace);
     }
 
     @Override
     public void testIgnored(TestIdentifier test) {
+        uncompletedTests.remove(test);
         logger.debug("ignored test {}", testCase(test));
     }
 
     @Override
-	public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
-	}
+    public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
+        uncompletedTests.remove(test);
+    }
 
     @Override
     public void testRunFailed(String errorMessage) {
         System.out.println(format("%s %s %s %s [%s] Test run failed: %s", runningTime(), progress(), failures(), modelName, serial, errorMessage));
+        System.out.println(format("%s %s %s %s [%s] Test run failed: uncompleted tests: %s", runningTime(), progress(), failures(), modelName, serial, uncompletedTests));
     }
 
-	@Override
-	public void testRunStopped(long elapsedTime) {
+    @Override
+    public void testRunStopped(long elapsedTime) {
         System.out.println(format("%s %s %s %s [%s] Test run stopped after %s ms", runningTime(), progress(), failures(), modelName, serial, elapsedTime));
-	}
+    }
 
     @Override
     public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {

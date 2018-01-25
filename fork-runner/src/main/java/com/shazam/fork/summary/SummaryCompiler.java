@@ -59,8 +59,8 @@ public class SummaryCompiler {
         addIgnoredTests(ignoredTestResults, summaryBuilder);
         testResults.addAll(ignoredTestResults);
 
-        Collection<TestResult> skippedTestResults = getSkippedTestResults(testResults, testCases);
-        addSkippedTests(skippedTestResults, summaryBuilder);
+        Collection<TestResult> fatalCrashedTests = getFatalCrashedTests(testResults, testCases);
+        addFatalCrashedTests(fatalCrashedTests, summaryBuilder);
 
         summaryBuilder.withTitle(configuration.getTitle());
         summaryBuilder.withSubtitle(configuration.getSubtitle());
@@ -124,8 +124,8 @@ public class SummaryCompiler {
         }
     }
 
-    private Collection<TestResult> getSkippedTestResults(Collection<TestResult> processedTestResults,
-                                                         Collection<TestCaseEvent> testCases) {
+    private Collection<TestResult> getFatalCrashedTests(Collection<TestResult> processedTestResults,
+                                                        Collection<TestCaseEvent> testCases) {
         Set<TestResultItem> processedTests = processedTestResults.stream()
                 .map(testResult -> new TestResultItem(testResult.getTestClass(), testResult.getTestMethod()))
                 .collect(Collectors.toSet());
@@ -139,9 +139,9 @@ public class SummaryCompiler {
                 .collect(Collectors.toSet());
     }
 
-    private void addSkippedTests(Collection<TestResult> skippedTests, Summary.Builder summaryBuilder) {
-        for (TestResult skippedTest : skippedTests) {
-            summaryBuilder.addSkippedTest(skippedTest.getTestFullName());
+    private void addFatalCrashedTests(Collection<TestResult> fatalCrashedTests, Summary.Builder summaryBuilder) {
+        for (TestResult fatalCrashedTest : fatalCrashedTests) {
+            summaryBuilder.addFatalCrashedTest(fatalCrashedTest.getTestFullName());
         }
     }
 

@@ -25,7 +25,7 @@ public class Summary {
     private final String subtitle;
     private final List<String> ignoredTests;
     private final List<String> failedTests;
-    private final List<String> skippedTests;
+    private final List<String> fatalCrashedTests;
 
     @Nonnull
     public List<PoolSummary> getPoolSummaries() {
@@ -51,8 +51,8 @@ public class Summary {
     }
 
     @Nonnull
-    public List<String> getSkippedTests() {
-        return unmodifiableList(skippedTests);
+    public List<String> getFatalCrashedTests() {
+        return unmodifiableList(fatalCrashedTests);
     }
 
     public static class Builder {
@@ -61,7 +61,7 @@ public class Summary {
         private String title = "Report Title";
         private String subtitle = "Report Subtitle";
         private List<String> failedTests = new ArrayList<>();
-        private List<String> skippedTests = new ArrayList<>();
+        private List<String> fatalCrashedTests = new ArrayList<>();
 
         public static Builder aSummary() {
             return new Builder();
@@ -92,8 +92,8 @@ public class Summary {
             return this;
         }
 
-        public Builder addSkippedTest(String skippedTest) {
-            skippedTests.add(skippedTest);
+        public Builder addFatalCrashedTest(String fatalCrashedTest) {
+            fatalCrashedTests.add(fatalCrashedTest);
             return this;
         }
 
@@ -108,6 +108,6 @@ public class Summary {
         subtitle = builder.subtitle;
         ignoredTests = builder.ignoredTests;
         failedTests = builder.failedTests;
-        skippedTests = builder.skippedTests;
+        fatalCrashedTests = builder.fatalCrashedTests;
     }
 }
