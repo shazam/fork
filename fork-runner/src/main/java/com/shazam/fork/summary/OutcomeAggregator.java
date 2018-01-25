@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.google.common.collect.Collections2.transform;
+import static com.shazam.fork.summary.ResultStatus.IGNORED;
 import static com.shazam.fork.summary.ResultStatus.PASS;
 
 public class OutcomeAggregator {
@@ -29,7 +30,7 @@ public class OutcomeAggregator {
 
     public boolean aggregate(Summary summary) {
         if (summary == null || summary.getPoolSummaries().isEmpty() || !summary.getSkippedTests().isEmpty()) {
-            if (!summary.getSkippedTests().isEmpty()) {
+            if (summary != null && !summary.getSkippedTests().isEmpty()) {
                 logger.error("There are tests left unprocessed: " + summary.getSkippedTests());
             }
             return false;
@@ -57,7 +58,7 @@ public class OutcomeAggregator {
             @Override
             @Nullable
             public Boolean apply(@Nullable TestResult input) {
-                return PASS.equals(input.getResultStatus());
+                return PASS.equals(input.getResultStatus()) || IGNORED.equals(input.getResultStatus());
             }
         };
     }
