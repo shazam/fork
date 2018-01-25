@@ -79,7 +79,7 @@ public class ForkCli {
 
         try {
             Reader configFileReader = new FileReader(parsedArgs.configurationFile);
-            ForkConfiguration forkConfiguration = gson().fromJson(configFileReader, ForkConfiguration.class);
+            ForkConfigurationExtension forkConfiguration = gson().fromJson(configFileReader, ForkConfigurationExtension.class);
 
             Configuration configuration = configuration()
                     .withAndroidSdk(parsedArgs.sdk != null ? parsedArgs.sdk : cleanFile(CommonDefaults.ANDROID_SDK))

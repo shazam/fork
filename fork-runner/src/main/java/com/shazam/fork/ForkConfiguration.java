@@ -1,107 +1,69 @@
-/*
- * Copyright 2016 Shazam Entertainment Limited
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- *
- * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
- */
 package com.shazam.fork;
 
+import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
+import com.shazam.fork.system.axmlparser.ApplicationInfo;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.File;
 import java.util.Collection;
+import java.util.regex.Pattern;
 
-import groovy.lang.Closure;
+public interface ForkConfiguration {
+    @Nonnull
+    File getAndroidSdk();
 
-/**
- * Fork extension.
- */
-public class ForkConfiguration {
+    @Nonnull
+    File getApplicationApk();
 
-    /**
-     * Output directory for Fork report files. If empty, the default dir will be used.
-     */
-    public String baseOutputDir;
+    @Nonnull
+    File getInstrumentationApk();
 
-    /**
-     * Ignore test failures flag.
-     */
-    public boolean ignoreFailures;
+    @Nonnull
+    String getApplicationPackage();
 
-    /**
-     * Enables code coverage.
-     */
-    public boolean isCoverageEnabled;
+    @Nonnull
+    String getInstrumentationPackage();
 
-    /**
-     * Regex determining the class names to consider when finding tests to run.
-     */
-    public String testClassRegex;
+    @Nonnull
+    String getTestRunnerClass();
 
-    /**
-     * The title of the final report
-     */
-    public String title;
+    @Nonnull
+    File getOutput();
 
-    /**
-     * The subtitle of the final report
-     */
-    public String subtitle;
+    @Nonnull
+    String getTitle();
 
-    /**
-     * The package to consider when scanning for instrumentation tests to run.
-     */
-    public String testPackage;
+    @Nonnull
+    String getSubtitle();
 
-    /**
-     * Maximum time in milli-seconds between ADB output during a test. Prevents tests from getting stuck.
-     */
-    public int testOutputTimeout;
+    @Nonnull
+    Pattern getTestClassPattern();
 
-    /**
-     * The size of the tests that will be executed with this run.
-     */
-    public String testSize;
+    @Nonnull
+    String getTestPackage();
 
-    /**
-     * The collection of serials that should be excluded from this test run
-     */
-    public Collection<String> excludedSerials;
+    long getTestOutputTimeout();
 
-    /**
-     * Indicate that screenshots are allowed when videos are not supported.
-     */
-    public boolean fallbackToScreenshots;
+    @Nullable
+    IRemoteAndroidTestRunner.TestSize getTestSize();
 
-    /**
-     * Amount of re-executions of failing tests allowed.
-     */
-    public int totalAllowedRetryQuota;
+    @Nonnull
+    Collection<String> getExcludedSerials();
 
-    /**
-     * Max number of time each testCase is attempted again before declaring it as a failure.
-     */
-    public int retryPerTestCaseQuota;
+    boolean canFallbackToScreenshots();
 
-    /**
-     * The strategy that will be used to calculate the grouping of devices to pools.
-     */
-    public PoolingStrategy poolingStrategy;
+    int getTotalAllowedRetryQuota();
 
-    /**
-     * Indicate that in Marshmallow+ all the required runtime permissions are granted automatically.
-     * Default is true.
-     */
-    public boolean autoGrantPermissions = true;
+    int getRetryPerTestCaseQuota();
 
-    /**
-     * Filter test run to tests without given annotation
-     */
-    public String excludedAnnotation;
+    boolean isCoverageEnabled();
 
-    public void poolingStrategy(Closure<?> poolingStrategyClosure) {
-        poolingStrategy = new PoolingStrategy();
-        poolingStrategyClosure.setDelegate(poolingStrategy);
-        poolingStrategyClosure.call();
-    }
+    PoolingStrategy getPoolingStrategy();
+
+    boolean isAutoGrantingPermissions();
+
+    String getExcludedAnnotation();
+
+    ApplicationInfo getApplicationInfo();
 }

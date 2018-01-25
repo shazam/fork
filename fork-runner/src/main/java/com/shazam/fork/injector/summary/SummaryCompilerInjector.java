@@ -13,13 +13,13 @@ package com.shazam.fork.injector.summary;
 import com.shazam.fork.summary.SummaryCompiler;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
-import static com.shazam.fork.injector.system.FileManagerInjector.fileManager;
+import static com.shazam.fork.injector.summary.DeviceTestFilesRetrieverInjector.deviceTestFilesRetriever;
 
 class SummaryCompilerInjector {
-
-    private SummaryCompilerInjector() {}
+    private SummaryCompilerInjector() {
+    }
 
     static SummaryCompiler summaryCompiler() {
-        return new SummaryCompiler(configuration(), fileManager());
+        return new SummaryCompiler(configuration(), deviceTestFilesRetriever());
     }
 }

@@ -11,5 +11,5 @@
 package com.shazam.fork.summary;
 
 public enum ResultStatus {
-    PASS, FAIL, ERROR
+    PASS, FAIL, ERROR, IGNORED
 }

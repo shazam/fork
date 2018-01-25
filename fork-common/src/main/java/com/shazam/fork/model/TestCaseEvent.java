@@ -3,10 +3,9 @@ package com.shazam.fork.model;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.common.base.Objects;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nonnull;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
@@ -34,7 +33,12 @@ public class TestCaseEvent {
     }
 
     public static TestCaseEvent newTestCase(@Nonnull TestIdentifier testIdentifier) {
-        return new TestCaseEvent(testIdentifier.getTestName(), testIdentifier.getClassName(), false, emptyList(), emptyMap());
+        return newTestCase(testIdentifier, false);
+    }
+
+    public static TestCaseEvent newTestCase(@Nonnull TestIdentifier testIdentifier, boolean isIgnored) {
+        return new TestCaseEvent(testIdentifier.getTestName(), testIdentifier.getClassName(), isIgnored,
+                emptyList(), emptyMap());
     }
 
     public String getTestMethod() {

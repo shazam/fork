@@ -33,7 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.shazam.fork.system.axmlparser.InstrumentationInfoFactory.parseFromFile;
 import static java.util.Arrays.asList;
 
-public class Configuration {
+public class Configuration implements ForkConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
     private final File androidSdk;
@@ -85,103 +85,125 @@ public class Configuration {
         this.applicationInfo = builder.applicationInfo;
     }
 
+    @Override
     @Nonnull
     public File getAndroidSdk() {
         return androidSdk;
     }
 
+    @Override
     @Nonnull
     public File getApplicationApk() {
         return applicationApk;
     }
 
+    @Override
     @Nonnull
     public File getInstrumentationApk() {
         return instrumentationApk;
     }
 
+    @Override
     @Nonnull
     public String getApplicationPackage() {
         return applicationPackage;
     }
 
+    @Override
     @Nonnull
     public String getInstrumentationPackage() {
         return instrumentationPackage;
     }
 
+    @Override
     @Nonnull
     public String getTestRunnerClass() {
         return testRunnerClass;
     }
 
+    @Override
     @Nonnull
     public File getOutput() {
         return output;
     }
 
+    @Override
     @Nonnull
     public String getTitle() {
         return title;
     }
 
+    @Override
     @Nonnull
     public String getSubtitle() {
         return subtitle;
     }
 
+    @Override
     @Nonnull
     public Pattern getTestClassPattern() {
         return testClassPattern;
     }
 
+    @Override
     @Nonnull
     public String getTestPackage() {
         return testPackage;
     }
 
+    @Override
     public long getTestOutputTimeout() {
         return testOutputTimeout;
     }
 
+    @Override
     @Nullable
     public IRemoteAndroidTestRunner.TestSize getTestSize() {
         return testSize;
     }
 
+    @Override
     @Nonnull
     public Collection<String> getExcludedSerials() {
         return excludedSerials;
     }
 
+    @Override
     public boolean canFallbackToScreenshots() {
         return fallbackToScreenshots;
     }
 
+    @Override
     public int getTotalAllowedRetryQuota() {
         return totalAllowedRetryQuota;
     }
 
+    @Override
     public int getRetryPerTestCaseQuota() {
         return retryPerTestCaseQuota;
     }
 
+    @Override
     public boolean isCoverageEnabled() {
         return isCoverageEnabled;
     }
 
+    @Override
     public PoolingStrategy getPoolingStrategy() {
         return poolingStrategy;
     }
 
+    @Override
     public boolean isAutoGrantingPermissions() {
         return autoGrantPermissions;
     }
 
+    @Override
     public String getExcludedAnnotation() {
         return excludedAnnotation;
     }
 
+    @Override
     public ApplicationInfo getApplicationInfo() {
         return applicationInfo;
     }

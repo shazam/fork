@@ -12,22 +12,24 @@
  */
 package com.shazam.fork.summary;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
+import static java.util.Collections.unmodifiableList;
 
 
 public class Summary {
     private final List<PoolSummary> poolSummaries;
     private final String title;
     private final String subtitle;
-    private final ArrayList<String> ignoredTests;
-    private final ArrayList<String> failedTests;
+    private final List<String> ignoredTests;
+    private final List<String> failedTests;
+    private final List<String> skippedTests;
 
     @Nonnull
     public List<PoolSummary> getPoolSummaries() {
-        return poolSummaries;
+        return unmodifiableList(poolSummaries);
     }
 
     public String getTitle() {
@@ -39,20 +41,27 @@ public class Summary {
     }
 
     @Nonnull
-    public ArrayList<String> getIgnoredTests() {
-        return ignoredTests;
+    public List<String> getIgnoredTests() {
+        return unmodifiableList(ignoredTests);
     }
 
-    public ArrayList<String> getFailedTests() {
-        return failedTests;
+    @Nonnull
+    public List<String> getFailedTests() {
+        return unmodifiableList(failedTests);
+    }
+
+    @Nonnull
+    public List<String> getSkippedTests() {
+        return unmodifiableList(skippedTests);
     }
 
     public static class Builder {
         private final List<PoolSummary> poolSummaries = new ArrayList<>();
-        private final ArrayList<String> ignoredTests = new ArrayList<>();
+        private final List<String> ignoredTests = new ArrayList<>();
         private String title = "Report Title";
         private String subtitle = "Report Subtitle";
-        private ArrayList<String> failedTests =  new ArrayList<>();
+        private List<String> failedTests = new ArrayList<>();
+        private List<String> skippedTests = new ArrayList<>();
 
         public static Builder aSummary() {
             return new Builder();
@@ -83,6 +92,11 @@ public class Summary {
             return this;
         }
 
+        public Builder addSkippedTest(String skippedTest) {
+            skippedTests.add(skippedTest);
+            return this;
+        }
+
         public Summary build() {
             return new Summary(this);
         }
@@ -94,5 +108,6 @@ public class Summary {
         subtitle = builder.subtitle;
         ignoredTests = builder.ignoredTests;
         failedTests = builder.failedTests;
+        skippedTests = builder.skippedTests;
     }
 }
