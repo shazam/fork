@@ -13,21 +13,25 @@
 package com.shazam.fork.summary;
 
 import com.google.common.base.Function;
-
 import org.apache.commons.lang3.BooleanUtils;
-
-import java.util.Collection;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.List;
 
 import static com.google.common.collect.Collections2.transform;
 import static com.shazam.fork.summary.ResultStatus.PASS;
 
 public class OutcomeAggregator {
+    private static final Logger logger = LoggerFactory.getLogger(OutcomeAggregator.class);
 
     public boolean aggregate(Summary summary) {
-        if (summary == null || summary.getPoolSummaries().isEmpty()) {
+        if (summary == null || summary.getPoolSummaries().isEmpty() || !summary.getSkippedTests().isEmpty()) {
+            if (!summary.getSkippedTests().isEmpty()) {
+                logger.error("There are tests left unprocessed: " + summary.getSkippedTests());
+            }
             return false;
         }
 
@@ -61,5 +65,4 @@ public class OutcomeAggregator {
     private static Boolean and(final Collection<Boolean> booleans) {
         return BooleanUtils.and(booleans.toArray(new Boolean[booleans.size()]));
     }
-
 }
