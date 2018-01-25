@@ -12,7 +12,7 @@ package com.shazam.chimprunner.gradle
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryPlugin
-import com.android.build.gradle.api.ApkVariantOutput
+import com.android.build.gradle.api.BaseVariantOutput
 import com.android.build.gradle.api.TestVariant
 import com.shazam.chimprunner.ChimpConfiguration
 import org.gradle.api.Plugin
@@ -38,32 +38,34 @@ class ChimpRunnerPlugin implements Plugin<Project> {
 
         BaseExtension android = project.android
         android.testVariants.all { TestVariant variant ->
-            List<ChimpRunnerTask> tasks = createTask(variant, project)
-            tasks.each {
-                it.configure {
-                    description = "Runs performance tests on a selected device for '${variant.name}' variation and generates a file containing reports"
-                }
-            }
-
-            chimprunnerTask.dependsOn tasks
+            ChimpRunnerTask chimpRunnerTask = createTask(variant, project)
+            chimprunnerTask.dependsOn chimpRunnerTask
         }
     }
 
-    private static List<ChimpRunnerTask> createTask(final TestVariant variant, final Project project) {
+    private static ChimpRunnerTask createTask(final TestVariant variant, final Project project) {
         if (variant.outputs.size() > 1) {
             throw new UnsupportedOperationException("The Chimprunner Gradle plugin for gradle does not support abi/density splits for test apks")
         }
-        ChimpConfiguration config = project.chimprunner
-        return variant.testedVariant.outputs.collect { def projectOutput ->
-            ChimpRunnerTask task = project.tasks.create("${TASK_PREFIX}${variant.name.capitalize()}", ChimpRunnerTask)
+        ChimpRunnerTask task = project.tasks.create("${TASK_PREFIX}${variant.name.capitalize()}", ChimpRunnerTask)
+
+        variant.testedVariant.outputs.all { BaseVariantOutput baseVariantOutput ->
+            checkTestedVariants(baseVariantOutput)
             task.configure {
+                ChimpConfiguration config = project.chimprunner
+
+                description = "Runs performance tests on a selected device for '${variant.name}' variation and generates a file containing reports"
                 group = REPORTING_GROUP
-                if (projectOutput instanceof ApkVariantOutput) {
-                    applicationApk = projectOutput.outputFile
-                } else {
-                    applicationApk = variant.outputs[0].outputFile
-                }
-                instrumentationApk = variant.outputs[0].outputFile
+
+                applicationApk = new File(baseVariantOutput.packageApplication.outputDirectory.path + "/" + baseVariantOutput.outputFileName)
+
+                def firstOutput = variant.outputs.asList().first()
+                instrumentationApk = new File(firstOutput.packageApplication.outputDirectory.path + "/" + firstOutput.outputFileName)
+
+                testClassRegex = config.testClassRegex
+                testPackage = config.testPackage
+                ignoreFailures = config.ignoreFailures
+                serial = config.serial
 
                 String baseOutputDir = config.baseOutputDir
                 File outputBase
@@ -72,17 +74,27 @@ class ChimpRunnerPlugin implements Plugin<Project> {
                 } else {
                     outputBase = new File(project.buildDir, "chimprunner")
                 }
-                output = new File(outputBase, projectOutput.dirName)
-                testClassRegex = config.testClassRegex
-                testPackage = config.testPackage
-                ignoreFailures = config.ignoreFailures
-                serial = config.serial
+                output = new File(outputBase, baseVariantOutput.dirName)
 
-                dependsOn projectOutput.assemble, variant.assemble
+                dependsOn baseVariantOutput.assemble, variant.assemble
             }
             task.outputs.upToDateWhen { false }
-            return task
-        } as List<ChimpRunnerTask>
+        }
+        return task
     }
 
+    /**
+     * Checks that if the base variant contains more than one outputs (and has therefore splits), it is the universal APK.
+     * Otherwise, we can test the single output. This is a workaround until Fork supports test & app splits properly.
+     *
+     * @param baseVariant the tested variant
+     */
+    private static checkTestedVariants(BaseVariantOutput baseVariantOutput) {
+        if (baseVariantOutput.outputs.size() > 1) {
+            throw new UnsupportedOperationException(
+                    "The Fork plugin does not support abi splits for app APKs, but supports testing via a universal APK. " +
+                            "Add the flag \"universalApk true\" in the android.splits.abi configuration."
+            )
+        }
+    }
 }

@@ -61,7 +61,6 @@ class ForkPlugin implements Plugin<Project> {
             forkTask.configure {
                 ForkConfiguration config = project.fork
 
-
                 description = "Runs instrumentation tests on all the connected devices for '${variant.name}' variation and generates a report with screenshots"
                 group = JavaBasePlugin.VERIFICATION_GROUP
 
