@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.Set;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toSet;
 
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 class ConsoleLoggingTestRunListener extends NoOpITestRunListener {
@@ -72,10 +73,9 @@ class ConsoleLoggingTestRunListener extends NoOpITestRunListener {
 
     @Override
     public void testRunFailed(String errorMessage) {
-        System.out.println(format("%s %s %s %s [%s] Test run failed: %s", runningTime(), progress(), failures(),
-                modelName, serial, errorMessage));
-        System.out.println(format("%s %s %s %s [%s] Test run failed: %s", runningTime(), progress(),
-                failures(), modelName, serial, startedTests));
+        Set<String> tests = startedTests.stream().map(this::testCase).collect(toSet());
+        System.out.println(format("%s %s %s %s [%s] Test run failed: %s %s", runningTime(), progress(), failures(),
+                modelName, serial, tests, errorMessage));
     }
 
     @Override
