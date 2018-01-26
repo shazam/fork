@@ -42,7 +42,7 @@ buildscript {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
   }
   dependencies {
-    classpath 'com.shazam.fork:fork-gradle-plugin:3.2.0-SNAPSHOT'
+    classpath 'com.shazam.fork:fork-gradle-plugin:3.3.0-SNAPSHOT'
   }
 }
 ```
@@ -152,7 +152,7 @@ To do so, you have to add an annotation called `RevokePermission`. Here is an ex
 Remember to add the fork client-side library to your project to have access to the annotation.
 To do so, in your app's dependencies add:
 ```
-    androidTestImplementation "com.shazam.fork:fork-client:3.2.0-SNAPSHOT"
+    androidTestImplementation "com.shazam.fork:fork-client:3.2.0"
 ```
 
 After every test case, all the runtime permissions will be automatically re-granted even if the test fails.
@@ -275,7 +275,7 @@ To be able to use the Flakiness Reporter add these dependencies:
 ```gradle
 buildscript {
     dependencies {
-        classpath "com.shazam.fork:fork-reporter-jenkins-gradle-plugin:3.2.0-SNAPSHOT"
+        classpath "com.shazam.fork:fork-reporter-jenkins-gradle-plugin:3.2.0"
     }
     repositories {
         maven { url "http://repo.jenkins-ci.org/public/" }
@@ -333,7 +333,7 @@ At the time of writing, not much is available around automated performance testi
 ```gradle
 buildscript {
     dependencies {
-        classpath 'com.shazam.chimprunner:chimprunner-gradle-plugin:3.2.0-SNAPSHOT'
+        classpath 'com.shazam.chimprunner:chimprunner-gradle-plugin:3.2.0'
     }
 }
 ```
