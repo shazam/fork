@@ -11,81 +11,83 @@
 package com.shazam.fork.runner.listeners;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
+import com.shazam.fork.device.DeviceTestFilesCleaner;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
-import com.shazam.fork.runner.ProgressReporter;
-import com.shazam.fork.system.io.FileManager;
-import com.shazam.fork.system.io.FileType;
+import com.shazam.fork.runner.TestRetryer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
-import java.io.File;
 import java.util.Map;
-import java.util.Queue;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 
 public class RetryListener extends NoOpITestRunListener {
-
     private static final Logger logger = LoggerFactory.getLogger(RetryListener.class);
-
-    @Nonnull
     private final Device device;
-    private TestIdentifier failedTest;
-    @Nonnull
-    private final Queue<TestCaseEvent> queueOfTestsInPool;
-    @Nonnull
     private final TestCaseEvent currentTestCaseEvent;
-    private ProgressReporter progressReporter;
-    private FileManager fileManager;
-    private Pool pool;
+    private final TestRetryer testRetryer;
+    private final Pool pool;
+    private final DeviceTestFilesCleaner deviceTestFilesCleaner;
+    private TestIdentifier startedTest;
+    private TestIdentifier failedTest;
 
-    public RetryListener(@Nonnull Pool pool, @Nonnull Device device,
-                         @Nonnull Queue<TestCaseEvent> queueOfTestsInPool,
-                         @Nonnull TestCaseEvent currentTestCaseEvent,
-                         @Nonnull ProgressReporter progressReporter,
-                         FileManager fileManager) {
+    public RetryListener(Pool pool,
+                         Device device,
+                         TestCaseEvent currentTestCaseEvent,
+                         TestRetryer testRetryer,
+                         DeviceTestFilesCleaner deviceTestFilesCleaner) {
         checkNotNull(device);
-        checkNotNull(queueOfTestsInPool);
         checkNotNull(currentTestCaseEvent);
-        checkNotNull(progressReporter);
         checkNotNull(pool);
+        this.testRetryer = testRetryer;
         this.device = device;
-        this.queueOfTestsInPool = queueOfTestsInPool;
         this.currentTestCaseEvent = currentTestCaseEvent;
-        this.progressReporter = progressReporter;
         this.pool = pool;
-        this.fileManager = fileManager;
+        this.deviceTestFilesCleaner = deviceTestFilesCleaner;
+    }
+
+    @Override
+    public void testStarted(TestIdentifier test) {
+        startedTest = test;
     }
 
     @Override
     public void testFailed(TestIdentifier test, String trace) {
         failedTest = test;
-        progressReporter.recordFailedTestCase(pool, newTestCase(failedTest));
+    }
+
+    @Override
+    public void testRunFailed(String errorMessage) {
+        logger.info("Test run failed due to a fatal error: " + errorMessage);
+        if (failedTest == null) {
+            logger.info("Reschedule all started tests by this test run");
+            rescheduleTestExecution(startedTest);
+        }
     }
 
     @Override
     public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
-        super.testRunEnded(elapsedTime, runMetrics);
         if (failedTest != null) {
-            if (progressReporter.requestRetry(pool, newTestCase(failedTest))) {
-                queueOfTestsInPool.add(currentTestCaseEvent);
-                logger.info("Test " + failedTest.toString() + " enqueued again into pool:" + pool.getName());
-                removeFailureTraceFiles();
-            } else {
-                logger.info("Test " + failedTest.toString() + " failed on device " + device.getSafeSerial() + " but retry is not allowed.");
-            }
+            rescheduleTestExecution(failedTest);
         }
     }
 
-    public void removeFailureTraceFiles() {
-        final File file = fileManager.getFile(FileType.TEST, pool.getName(), device.getSafeSerial(), failedTest);
-        boolean deleted = file.delete();
-        if (!deleted) {
-            logger.warn("Failed to remove file  " + file.getAbsoluteFile() + " for a failed but enqueued again test");
+    private void rescheduleTestExecution(TestIdentifier test) {
+        if (testRetryer.rescheduleTestExecution(test, currentTestCaseEvent)) {
+            logger.info("Test " + test.toString() + " enqueued again into pool:" + pool.getName());
+            removeFailureTraceFiles(test);
+        } else {
+            logger.info("Test " + test.toString() + " failed on device " + device.getSafeSerial()
+                    + " but retry is not allowed.");
+        }
+    }
+
+    private void removeFailureTraceFiles(TestIdentifier test) {
+        boolean isDeleted = deviceTestFilesCleaner.deleteTraceFiles(test);
+        if (!isDeleted) {
+            logger.warn("Failed to remove a trace filed for a failed but enqueued again test");
         }
     }
 }

@@ -16,12 +16,12 @@ import java.util.Set;
 import static com.shazam.fork.summary.TestResult.Builder.aTestResult;
 import static java.util.Collections.emptyList;
 
-public class ForkDeviceTestFilesRetriever implements DeviceTestFilesRetriever {
+public class DeviceTestFilesRetrieverImpl implements DeviceTestFilesRetriever {
     private static final boolean STRICT = false;
     private final FileManager fileManager;
     private final Serializer serializer;
 
-    public ForkDeviceTestFilesRetriever(FileManager fileManager, Serializer serializer) {
+    public DeviceTestFilesRetrieverImpl(FileManager fileManager, Serializer serializer) {
         this.fileManager = fileManager;
         this.serializer = serializer;
     }
