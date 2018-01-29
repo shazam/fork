@@ -133,6 +133,7 @@ public class SummaryCompilerTest {
         Summary summary = summaryCompiler.compileSummary(devicePools, testCaseEvents);
 
         assertThat(summary.getFatalCrashedTests(), hasSize(1));
-        assertThat(summary.getFatalCrashedTests(), contains("com.example.SkippedClassTest:doesJobProperly"));
+        assertThat(summary.getFatalCrashedTests(),
+                contains("com.example.SkippedClassTest#doesJobProperly on Unknown device"));
     }
 }

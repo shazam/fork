@@ -17,7 +17,6 @@ import com.shazam.fork.ForkConfiguration;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
-import com.shazam.fork.runner.PoolTestRunner;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -25,9 +24,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.shazam.fork.model.Device.Builder.aDevice;
+import static com.shazam.fork.runner.PoolTestRunner.DROPPED_BY;
 import static com.shazam.fork.summary.PoolSummary.Builder.aPoolSummary;
+import static com.shazam.fork.summary.ResultStatus.ERROR;
+import static com.shazam.fork.summary.ResultStatus.FAIL;
 import static com.shazam.fork.summary.Summary.Builder.aSummary;
 import static com.shazam.fork.summary.TestResult.Builder.aTestResult;
+import static java.lang.String.format;
+import static java.util.Locale.ENGLISH;
 
 public class SummaryCompiler {
     private final ForkConfiguration configuration;
@@ -52,7 +56,7 @@ public class SummaryCompiler {
                     .build();
 
             summaryBuilder.addPoolSummary(poolSummary);
-            addFailedTests(testResultsForPool, summaryBuilder);
+            addFailedOrFatalCrashedTests(testResultsForPool, summaryBuilder);
         }
 
         Collection<TestResult> ignoredTestResults = getIgnoredTestResults(testCases);
@@ -88,26 +92,27 @@ public class SummaryCompiler {
         return testResults;
     }
 
-    private Device getPoolWatchdog(String poolName) {
+    private static Device getPoolWatchdog(String poolName) {
         return aDevice()
-                .withSerial(PoolTestRunner.DROPPED_BY + poolName)
+                .withSerial(DROPPED_BY + poolName)
                 .withManufacturer("Clumsy-" + poolName)
                 .withModel("Clumsy=" + poolName)
                 .build();
     }
 
-    private void addFailedTests(Collection<TestResult> testResults, Summary.Builder summaryBuilder) {
+    private static void addFailedOrFatalCrashedTests(Collection<TestResult> testResults, Summary.Builder summaryBuilder) {
         for (TestResult testResult : testResults) {
             int totalFailureCount = testResult.getTotalFailureCount();
             if (totalFailureCount > 0) {
-                String failedTest = totalFailureCount + " times " + testResult.getTestClass()
-                        + "#" + testResult.getTestMethod() + " on " + testResult.getDevice().getSerial();
+                String failedTest = format(ENGLISH, "%d times %s", totalFailureCount, getTestResultData(testResult));
                 summaryBuilder.addFailedTests(failedTest);
+            } else if (testResult.getResultStatus() == ERROR || testResult.getResultStatus() == FAIL) {
+                summaryBuilder.addFatalCrashedTest(getTestResultData(testResult));
             }
         }
     }
 
-    private Collection<TestResult> getIgnoredTestResults(Collection<TestCaseEvent> testCases) {
+    private static Collection<TestResult> getIgnoredTestResults(Collection<TestCaseEvent> testCases) {
         return testCases.stream()
                 .filter(TestCaseEvent::isIgnored)
                 .map(testCaseEvent -> aTestResult()
@@ -118,14 +123,14 @@ public class SummaryCompiler {
                 .collect(Collectors.toSet());
     }
 
-    private void addIgnoredTests(Collection<TestResult> ignoredTestResults, Summary.Builder summaryBuilder) {
+    private static void addIgnoredTests(Collection<TestResult> ignoredTestResults, Summary.Builder summaryBuilder) {
         for (TestResult testResult : ignoredTestResults) {
             summaryBuilder.addIgnoredTest(testResult.getTestFullName());
         }
     }
 
-    private Collection<TestResult> getFatalCrashedTests(Collection<TestResult> processedTestResults,
-                                                        Collection<TestCaseEvent> testCases) {
+    private static Collection<TestResult> getFatalCrashedTests(Collection<TestResult> processedTestResults,
+                                                               Collection<TestCaseEvent> testCases) {
         Set<TestResultItem> processedTests = processedTestResults.stream()
                 .map(testResult -> new TestResultItem(testResult.getTestClass(), testResult.getTestMethod()))
                 .collect(Collectors.toSet());
@@ -139,10 +144,15 @@ public class SummaryCompiler {
                 .collect(Collectors.toSet());
     }
 
-    private void addFatalCrashedTests(Collection<TestResult> fatalCrashedTests, Summary.Builder summaryBuilder) {
+    private static void addFatalCrashedTests(Collection<TestResult> fatalCrashedTests, Summary.Builder summaryBuilder) {
         for (TestResult fatalCrashedTest : fatalCrashedTests) {
-            summaryBuilder.addFatalCrashedTest(fatalCrashedTest.getTestFullName());
+            summaryBuilder.addFatalCrashedTest(getTestResultData(fatalCrashedTest));
         }
+    }
+
+    private static String getTestResultData(TestResult testResult) {
+        return format(ENGLISH, "%s#%s on %s", testResult.getTestClass(), testResult.getTestMethod(),
+                testResult.getDeviceSerial());
     }
 
     private static class TestResultItem {

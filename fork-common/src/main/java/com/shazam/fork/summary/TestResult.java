@@ -16,11 +16,17 @@ import com.shazam.fork.model.Device;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.shazam.fork.summary.ResultStatus.ERROR;
+import static com.shazam.fork.summary.ResultStatus.FAIL;
+import static com.shazam.fork.summary.ResultStatus.IGNORED;
+import static com.shazam.fork.summary.ResultStatus.PASS;
+import static java.lang.String.format;
+import static java.util.Locale.ENGLISH;
+import static java.util.Objects.hash;
 
 public class TestResult {
     public static final String SUMMARY_KEY_TOTAL_FAILURE_COUNT = "totalFailureCount";
@@ -67,15 +73,15 @@ public class TestResult {
     @Nonnull
     public ResultStatus getResultStatus() {
         if (isIgnored) {
-            return ResultStatus.IGNORED;
+            return IGNORED;
         }
         if (!isNullOrEmpty(errorTrace)) {
-            return ResultStatus.ERROR;
+            return ERROR;
         }
         if (!isNullOrEmpty(failureTrace)) {
-            return ResultStatus.FAIL;
+            return FAIL;
         }
-        return ResultStatus.PASS;
+        return PASS;
     }
 
     public String getTrace() {
@@ -87,6 +93,13 @@ public class TestResult {
             default:
                 return "";
         }
+    }
+
+    public String getDeviceSerial() {
+        if (device != null) {
+            return device.getSerial();
+        }
+        return "Unknown device";
     }
 
     @Override
@@ -101,13 +114,12 @@ public class TestResult {
 
     @Override
     public int hashCode() {
-        return Objects.hash(device, testClass, testMethod);
+        return hash(device, testClass, testMethod);
     }
 
     @Override
     public String toString() {
-        return String.format(Locale.ENGLISH, "TestResult{test=%s,device=%s,time=%f}", getTestFullName(),
-                device, timeTaken);
+        return format(ENGLISH, "TestResult{test=%s,device=%s,time=%f}", getTestFullName(), device, timeTaken);
     }
 
     public static class Builder {

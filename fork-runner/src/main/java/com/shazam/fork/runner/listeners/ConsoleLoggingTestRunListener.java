@@ -13,29 +13,25 @@
 package com.shazam.fork.runner.listeners;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
-import com.google.common.collect.Sets;
 import com.shazam.fork.runner.ProgressReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Set;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toSet;
 
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 class ConsoleLoggingTestRunListener extends NoOpITestRunListener {
     private static final Logger logger = LoggerFactory.getLogger(ConsoleLoggingTestRunListener.class);
     private static final SimpleDateFormat TEST_TIME = new SimpleDateFormat("mm.ss");
     private static final String PERCENT = "%02d%%";
-
     private final String serial;
     private final String modelName;
     private final ProgressReporter progressReporter;
     private final String testPackage;
-    private final Set<TestIdentifier> startedTests = Sets.newConcurrentHashSet();
+    private TestIdentifier startedTest;
 
     ConsoleLoggingTestRunListener(String testPackage,
                                   String serial,
@@ -49,7 +45,7 @@ class ConsoleLoggingTestRunListener extends NoOpITestRunListener {
 
     @Override
     public void testStarted(TestIdentifier test) {
-        startedTests.add(test);
+        startedTest = test;
         System.out.println(format("%s %s %s %s [%s] %s", runningTime(), progress(), failures(), modelName,
                 serial, testCase(test)));
     }
@@ -73,9 +69,8 @@ class ConsoleLoggingTestRunListener extends NoOpITestRunListener {
 
     @Override
     public void testRunFailed(String errorMessage) {
-        Set<String> tests = startedTests.stream().map(this::testCase).collect(toSet());
         System.out.println(format("%s %s %s %s [%s] Test run failed: %s %s", runningTime(), progress(), failures(),
-                modelName, serial, tests, errorMessage));
+                modelName, serial, testCase(startedTest), errorMessage));
     }
 
     @Override
