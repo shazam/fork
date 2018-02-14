@@ -1,78 +1,82 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Fork Execution</title>
-        <link href="http://fonts.googleapis.com/css?family=Roboto:regular,medium,thin,italic,mediumitalic,bold" rel="stylesheet">
-        <link href="static/bootstrap.min.css" rel="stylesheet">
-        <link href="static/bootstrap-responsive.min.css" rel="stylesheet">
-        <link href="static/spoon.css" rel="stylesheet">
-        <link href="static/fork.css" rel="stylesheet">
-        <script src="static/jquery.min.js"></script>
-        <script src="static/bootstrap.min.js"></script>
-    </head>
-    <body>
-        <div class="container">
-            <div class="hero-unit {{overallStatus}}">
-                <h1>{{title}}</h1>
-                <p><a href="index.html" target="_top">{{subtitle}}</a></p>
-            </div>
-            <div class="row">
-                <div class="span12">
-                    <table class="birds-eye">
-                        <tbody>
-                            {{#pools}}
-                            <tr class="device">
-                                <th colspan="{{testCount}}">
-                                	<a href="pools/{{plainPoolName}}.html">{{prettyPoolName}}</a>
-                                </th>
-                            </tr>
-                            <tr class="result">
-                                {{#testResults}}
-                                <td class="test {{status}}">
-                                    <a href="pools/{{plainPoolName}}/{{plainClassName}}__{{plainMethodName}}.html" id="testMethod" data-original-title="{{prettyClassName}}" data-content="{{prettyMethodName}} ({{deviceModelDespaced}}) [{{deviceSerial}}]">&nbsp;</a>
-                                </td>
-                                {{/testResults}}
-                            </tr>
-                            {{/pools}}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="alert alert-danger" role="alert">
-                    <strong>Failed tests:</strong>
-                    <ul>
-                        {{#failedTests}}
-                        <li>{{.}}</li>
-                        {{/failedTests}}
-                        {{^failedTests}}
-                        <li>None.</li>
-                        {{/failedTests}}
-                    </ul>
-                </div>
-
-                <div class="alert alert-warning" role="alert">
-                    <strong>Ignored tests:</strong>
-                    <ul>
-                        {{#ignoredTests}}
-                        <li>{{.}}</li>
-                        {{/ignoredTests}}
-                        {{^ignoredTests}}
-                        <li>None.</li>
-                        {{/ignoredTests}}
-                    </ul>
-                </div>
-            </div>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fork Execution</title>
+    <link href="http://fonts.googleapis.com/css?family=Roboto:regular,medium,thin,italic,mediumitalic,bold"
+          rel="stylesheet">
+    <link href="static/bootstrap.min.css" rel="stylesheet">
+    <link href="static/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="static/spoon.css" rel="stylesheet">
+    <link href="static/fork.css" rel="stylesheet">
+    <script src="static/jquery.min.js"></script>
+    <script src="static/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="hero-unit {{overallStatus}}">
+        <h1>{{title}}</h1>
+        <p><a href="index.html" target="_top">{{subtitle}}</a></p>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <table class="birds-eye">
+                <tbody>
+                {{#pools}}
+                <tr class="device">
+                    <th colspan="{{testCount}}">
+                        <a href="pools/{{plainPoolName}}.html">{{prettyPoolName}}</a>
+                    </th>
+                </tr>
+                <tr class="result">
+                    {{#testResults}}
+                    <td class="test {{status}}">
+                        <a href="pools/{{plainPoolName}}/{{plainClassName}}__{{plainMethodName}}.html"
+                           id="testMethod" data-original-title="{{prettyClassName}}"
+                           data-content="{{prettyMethodName}} ({{deviceModelDespaced}}) [{{deviceSerial}}]">
+                            &nbsp;</a>
+                    </td>
+                    {{/testResults}}
+                </tr>
+                {{/pools}}
+                </tbody>
+            </table>
         </div>
+    </div>
 
-        <script type="text/javascript">
+    <div class="row">
+        <div class="span12">
+            <p>
+            <div class="alert alert-danger" role="alert">
+                <strong>Failed tests:</strong>
+                <ul>
+                    {{#failedTests}}
+                    <li>{{.}}</li>
+                    {{/failedTests}}
+                </ul>
+            </div>
+            </p>
+            <p>
+            <div class="alert alert-warning" role="alert">
+                <strong>Ignored tests:</strong>
+                <ul>
+                    {{#ignoredTests}}
+                    <li>{{.}}</li>
+                    {{/ignoredTests}}
+                </ul>
+            </div>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
             $('.test a').popover({
                 placement: 'top',
                 trigger: 'hover'
             });
-        </script>
-    </body>
+
+</script>
+</body>
 </html>
