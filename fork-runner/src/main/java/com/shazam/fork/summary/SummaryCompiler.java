@@ -132,7 +132,14 @@ public class SummaryCompiler {
     private static Collection<TestResult> getFatalCrashedTests(Collection<TestResult> processedTestResults,
                                                                Collection<TestCaseEvent> testCases) {
         Set<TestResultItem> processedTests = processedTestResults.stream()
-                .map(testResult -> new TestResultItem(testResult.getTestClass(), testResult.getTestMethod()))
+                .map(testResult -> {
+                    // Parameterized runner (and probably others) will generate methods names
+                    // like testMethod[2] or testMethod[foo 2 bar]
+                    // But they will be just 'testMethod' in allTests set
+                    String testMethodWithChildren = testResult.getTestMethod();
+                    String testMethod = testMethodWithChildren.split("\\[")[0];
+                    return new TestResultItem(testResult.getTestClass(), testMethod);
+                })
                 .collect(Collectors.toSet());
         Set<TestResultItem> allTests = testCases.stream()
                 .map(testCaseEvent -> new TestResultItem(testCaseEvent.getTestClass(), testCaseEvent.getTestMethod()))
