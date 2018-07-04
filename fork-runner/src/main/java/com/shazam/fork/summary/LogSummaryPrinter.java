@@ -31,7 +31,7 @@ public class LogSummaryPrinter implements SummaryPrinter {
     private static final Logger logger = LoggerFactory.getLogger(LogSummaryPrinter.class);
 
     @Override
-    public void print(Summary summary) {
+    public void print(boolean isSuccessful, Summary summary) {
         for (ResultStatus resultStatus : new ResultStatus[]{FAIL, ERROR}) {
             for (PoolSummary poolSummary : summary.getPoolSummaries()) {
                 StringBuilder out = getPoolSummary(poolSummary, resultStatus);

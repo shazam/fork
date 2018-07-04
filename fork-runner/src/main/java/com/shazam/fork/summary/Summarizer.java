@@ -16,20 +16,16 @@ import com.shazam.fork.model.TestCaseEvent;
 import java.util.Collection;
 
 public class Summarizer {
-
     private final SummaryCompiler summaryCompiler;
     private final SummaryPrinter summaryPrinter;
-    private final OutcomeAggregator outcomeAggregator;
 
-    public Summarizer(SummaryCompiler summaryCompiler, SummaryPrinter summaryPrinter, OutcomeAggregator outcomeAggregator) {
+    public Summarizer(SummaryCompiler summaryCompiler, SummaryPrinter summaryPrinter) {
         this.summaryCompiler = summaryCompiler;
         this.summaryPrinter = summaryPrinter;
-        this.outcomeAggregator = outcomeAggregator;
     }
 
-    boolean summarize(Collection<Pool> pools, Collection<TestCaseEvent> testCases) {
+    public void summarize(boolean isSuccessful, Collection<Pool> pools, Collection<TestCaseEvent> testCases) {
         Summary summary = summaryCompiler.compileSummary(pools, testCases);
-        summaryPrinter.print(summary);
-        return outcomeAggregator.aggregate(summary);
+        summaryPrinter.print(isSuccessful, summary);
     }
 }

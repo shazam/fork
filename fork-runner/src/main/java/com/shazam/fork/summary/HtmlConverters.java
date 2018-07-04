@@ -16,20 +16,23 @@ import com.android.ddmlib.logcat.LogCatMessage;
 import com.google.common.base.Function;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Diagnostics;
+import org.apache.commons.lang3.BooleanUtils;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 
 import static com.google.common.collect.Collections2.transform;
 import static com.shazam.fork.model.Diagnostics.SCREENSHOTS;
 import static com.shazam.fork.model.Diagnostics.VIDEO;
-import static com.shazam.fork.summary.OutcomeAggregator.toPoolOutcome;
+import static com.shazam.fork.summary.ResultStatus.IGNORED;
+import static com.shazam.fork.summary.ResultStatus.PASS;
 import static com.shazam.fork.utils.ReadableNames.readableClassName;
 import static com.shazam.fork.utils.ReadableNames.readablePoolName;
 import static com.shazam.fork.utils.ReadableNames.readableTestMethodName;
 
 class HtmlConverters {
 
-	public static HtmlSummary toHtmlSummary(Summary summary) {
+	public static HtmlSummary toHtmlSummary(boolean isSuccessful, Summary summary) {
 		HtmlSummary htmlSummary = new HtmlSummary();
 		htmlSummary.title = summary.getTitle();
 		htmlSummary.subtitle = summary.getSubtitle();
@@ -37,7 +40,7 @@ class HtmlConverters {
 		htmlSummary.ignoredTests = summary.getIgnoredTests();
 		htmlSummary.failedTests = summary.getFailedTests();
         htmlSummary.fatalCrashedTests = summary.getFatalCrashedTests();
-        htmlSummary.overallStatus = new OutcomeAggregator().aggregate(summary) ? "pass" : "fail";
+        htmlSummary.overallStatus = isSuccessful ? "pass" : "fail";
 		return htmlSummary;
 	}
 
@@ -98,6 +101,32 @@ class HtmlConverters {
 			result = "warn";
 		}
 		return result;
+	}
+
+	private static Function<? super PoolSummary, Boolean> toPoolOutcome() {
+		return new Function<PoolSummary, Boolean>() {
+			@Override
+			@Nullable
+			public Boolean apply(@Nullable PoolSummary input) {
+				final Collection<TestResult> testResults = input.getTestResults();
+				final Collection<Boolean> testOutcomes = transform(testResults, toTestOutcome());
+				return !testOutcomes.isEmpty() && and(testOutcomes);
+			}
+		};
+	}
+
+	private static Function<TestResult, Boolean> toTestOutcome() {
+		return new Function<TestResult, Boolean>() {
+			@Override
+			@Nullable
+			public Boolean apply(@Nullable TestResult input) {
+				return PASS.equals(input.getResultStatus()) || IGNORED.equals(input.getResultStatus());
+			}
+		};
+	}
+
+	private static Boolean and(final Collection<Boolean> booleans) {
+		return BooleanUtils.and(booleans.toArray(new Boolean[booleans.size()]));
 	}
 
 	public static Function<LogCatMessage, HtmlLogCatMessage> toHtmlLogCatMessages() {

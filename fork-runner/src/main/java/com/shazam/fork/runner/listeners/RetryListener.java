@@ -61,8 +61,8 @@ public class RetryListener extends NoOpITestRunListener {
     @Override
     public void testRunFailed(String errorMessage) {
         logger.info("Test run failed due to a fatal error: " + errorMessage);
-        if (failedTest == null) {
-            logger.info("Reschedule all started tests by this test run");
+        if (failedTest == null && startedTest != null) {
+            System.out.println("Reschedule a started test by this test run");
             rescheduleTestExecution(startedTest);
         }
     }

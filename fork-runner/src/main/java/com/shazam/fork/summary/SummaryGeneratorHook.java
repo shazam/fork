@@ -14,7 +14,6 @@ package com.shazam.fork.summary;
 
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +41,7 @@ public class SummaryGeneratorHook extends Thread {
      * Sets the pools and test classes for which a summary will be created either at normal execution or as a
      * shutdown hook.
      *
-     * @param pools the pools to consider for the summary
+     * @param pools     the pools to consider for the summary
      * @param testCases the test cases for the summary
      */
     public void registerHook(Collection<Pool> pools, Collection<TestCaseEvent> testCases) {
@@ -57,20 +56,19 @@ public class SummaryGeneratorHook extends Thread {
      *
      * @return <code>true</code> - if tests have passed
      */
-    public boolean defineOutcome() {
+    public void generateSummary(boolean isSuccessful) {
         if (hasNotRunYet.compareAndSet(true, false)) {
-            return summarizer.summarize(pools, testCases);
+            summarizer.summarize(isSuccessful, pools, testCases);
         }
-        return false;
     }
 
     @Override
-	public void run() {
-		if (hasNotRunYet.get()) {
-			logger.info("************************************************************************************");
-			logger.info("************************** SUMMARY GENERATION SHUTDOWN HOOK ************************");
-			logger.info("************************************************************************************");
-			defineOutcome();
-		}
-	}
+    public void run() {
+        if (hasNotRunYet.get()) {
+            logger.info("************************************************************************************");
+            logger.info("************************** SUMMARY GENERATION SHUTDOWN HOOK ************************");
+            logger.info("************************************************************************************");
+            generateSummary(false);
+        }
+    }
 }

@@ -1,21 +1,17 @@
 package com.shazam.fork.summary;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
-import com.shazam.fork.ForkConfiguration;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
-import org.jmock.Expectations;
-import org.jmock.auto.Mock;
-import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.HashMap;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.shazam.fork.FakeForkConfiguration.aFakeForkConfiguration;
 import static com.shazam.fork.model.Device.Builder.aDevice;
 import static com.shazam.fork.model.Pool.Builder.aDevicePool;
 import static com.shazam.fork.model.TestCaseEvent.newTestCase;
@@ -29,11 +25,6 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 public class SummaryCompilerTest {
-    @Rule
-    public JUnitRuleMockery mockery = new JUnitRuleMockery();
-    @Mock
-    private ForkConfiguration mockConfiguration;
-
     private final FakeDeviceTestFilesRetriever fakeDeviceTestFilesRetriever = aFakeDeviceTestFilesRetriever();
     private SummaryCompiler summaryCompiler;
 
@@ -84,15 +75,12 @@ public class SummaryCompilerTest {
             newTestCase("doesJobProperly", "com.example.FailedClassTest", false,
                     emptyList(), testMetricsForFailedTest),
             newTestCase(new TestIdentifier("com.example.IgnoredClassTest", "doesJobProperly"), true),
-            newTestCase(new TestIdentifier("com.example.SkippedClassTest", "doesJobProperly"))
+            newTestCase(new TestIdentifier("com.example.FatalCrashedTest", "doesJobProperly"))
     );
 
     @Before
     public void setUp() {
-        summaryCompiler = new SummaryCompiler(mockConfiguration, fakeDeviceTestFilesRetriever);
-        mockery.checking(new Expectations() {{
-            allowing(mockConfiguration);
-        }});
+        summaryCompiler = new SummaryCompiler(aFakeForkConfiguration(), fakeDeviceTestFilesRetriever);
     }
 
     @Test
@@ -134,6 +122,6 @@ public class SummaryCompilerTest {
 
         assertThat(summary.getFatalCrashedTests(), hasSize(1));
         assertThat(summary.getFatalCrashedTests(),
-                contains("com.example.SkippedClassTest#doesJobProperly on Unknown device"));
+                contains("com.example.FatalCrashedTest#doesJobProperly on Unknown device"));
     }
 }

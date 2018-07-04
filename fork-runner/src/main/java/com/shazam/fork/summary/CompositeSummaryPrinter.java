@@ -9,9 +9,9 @@ public class CompositeSummaryPrinter implements SummaryPrinter {
     }
 
     @Override
-    public void print(Summary summary) {
+    public void print(boolean isSuccessful, Summary summary) {
         for (SummaryPrinter summaryPrinter : summaryPrinters) {
-            summaryPrinter.print(summary);
+            summaryPrinter.print(isSuccessful, summary);
         }
     }
 }

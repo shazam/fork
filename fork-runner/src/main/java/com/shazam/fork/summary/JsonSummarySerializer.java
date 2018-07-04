@@ -32,7 +32,7 @@ public class JsonSummarySerializer implements SummaryPrinter {
     }
 
     @Override
-    public void print(Summary summary) {
+    public void print(boolean isSuccessful, Summary summary) {
         FileWriter writer = null;
         try {
             File summaryFile = fileManager.createSummaryFile();

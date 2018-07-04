@@ -41,6 +41,10 @@ public class TestCaseEvent {
                 emptyList(), emptyMap());
     }
 
+    public String getTestFullName() {
+        return testClass + ":" + testMethod;
+    }
+
     public String getTestMethod() {
         return testMethod;
     }

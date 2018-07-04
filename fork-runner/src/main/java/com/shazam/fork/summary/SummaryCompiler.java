@@ -103,12 +103,19 @@ public class SummaryCompiler {
     private static void addFailedOrFatalCrashedTests(Collection<TestResult> testResults, Summary.Builder summaryBuilder) {
         for (TestResult testResult : testResults) {
             int totalFailureCount = testResult.getTotalFailureCount();
-            if (totalFailureCount > 0) {
-                String failedTest = format(ENGLISH, "%d times %s", totalFailureCount, getTestResultData(testResult));
-                summaryBuilder.addFailedTests(failedTest);
-            } else if (testResult.getResultStatus() == ERROR || testResult.getResultStatus() == FAIL) {
-                summaryBuilder.addFatalCrashedTest(getTestResultData(testResult));
+            ResultStatus resultStatus = testResult.getResultStatus();
+            if (totalFailureCount > 0 || resultStatus == ERROR || resultStatus == FAIL) {
+                summaryBuilder.addFailedTests(getFailedTestMessage(testResult));
             }
+        }
+    }
+
+    private static String getFailedTestMessage(TestResult testResult) {
+        int totalFailureCount = testResult.getTotalFailureCount();
+        if (totalFailureCount > 0) {
+            return format(ENGLISH, "%d times %s", totalFailureCount, getTestResultData(testResult));
+        } else {
+            return getTestResultData(testResult);
         }
     }
 

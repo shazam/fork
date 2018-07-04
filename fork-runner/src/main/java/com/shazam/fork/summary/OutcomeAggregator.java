@@ -12,58 +12,23 @@
  */
 package com.shazam.fork.summary;
 
-import com.google.common.base.Function;
-import org.apache.commons.lang3.BooleanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.shazam.fork.aggregator.AggregatedTestResult;
+import com.shazam.fork.aggregator.PoolTestResult;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.List;
 
-import static com.google.common.collect.Collections2.transform;
 import static com.shazam.fork.summary.ResultStatus.IGNORED;
 import static com.shazam.fork.summary.ResultStatus.PASS;
 
 public class OutcomeAggregator {
-    private static final Logger logger = LoggerFactory.getLogger(OutcomeAggregator.class);
-
-    public boolean aggregate(Summary summary) {
-        if (summary == null || summary.getPoolSummaries().isEmpty() || !summary.getFatalCrashedTests().isEmpty()) {
-            if (summary != null && !summary.getFatalCrashedTests().isEmpty()) {
-                logger.error("There are tests left unprocessed: " + summary.getFatalCrashedTests());
-            }
+    @SuppressWarnings("SimplifiableIfStatement")
+    public boolean aggregate(AggregatedTestResult aggregatedTestResult) {
+        if (!aggregatedTestResult.getFatalCrashedTests().isEmpty()) {
             return false;
         }
-
-        List<PoolSummary> poolSummaries = summary.getPoolSummaries();
-        Collection<Boolean> poolOutcomes = transform(poolSummaries, toPoolOutcome());
-        return and(poolOutcomes);
-    }
-
-    public static Function<? super PoolSummary, Boolean> toPoolOutcome() {
-        return new Function<PoolSummary, Boolean>() {
-            @Override
-            @Nullable
-            public Boolean apply(@Nullable PoolSummary input) {
-                final Collection<TestResult> testResults = input.getTestResults();
-                final Collection<Boolean> testOutcomes = transform(testResults, toTestOutcome());
-                return !testOutcomes.isEmpty() && and(testOutcomes);
-            }
-        };
-    }
-
-    private static Function<TestResult, Boolean> toTestOutcome() {
-        return new Function<TestResult, Boolean>() {
-            @Override
-            @Nullable
-            public Boolean apply(@Nullable TestResult input) {
-                return PASS.equals(input.getResultStatus()) || IGNORED.equals(input.getResultStatus());
-            }
-        };
-    }
-
-    private static Boolean and(final Collection<Boolean> booleans) {
-        return BooleanUtils.and(booleans.toArray(new Boolean[booleans.size()]));
+        return aggregatedTestResult.getPoolTestResults().stream()
+                .map(PoolTestResult::getTestResults)
+                .flatMap(Collection::stream)
+                .allMatch(testResult -> testResult.getResultStatus() == PASS || testResult.getResultStatus() == IGNORED);
     }
 }

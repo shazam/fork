@@ -62,11 +62,11 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
-	public void print(Summary summary) {
+	public void print(boolean isSuccessful, Summary summary) {
         htmlOutput.mkdirs();
 		copyAssets();
 		generateCssFromLess();
-		HtmlSummary htmlSummary = toHtmlSummary(summary);
+		HtmlSummary htmlSummary = toHtmlSummary(isSuccessful, summary);
         htmlGenerator.generateHtml("forkpages/index.html", htmlOutput, INDEX_FILENAME, htmlSummary);
         generatePoolHtml(htmlSummary);
 		generatePoolTestsHtml(htmlSummary);
