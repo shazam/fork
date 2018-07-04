@@ -17,6 +17,7 @@ import com.shazam.fork.runner.ProgressReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -31,7 +32,6 @@ class ConsoleLoggingTestRunListener extends NoOpITestRunListener {
     private final String modelName;
     private final ProgressReporter progressReporter;
     private final String testPackage;
-    private TestIdentifier startedTest;
 
     ConsoleLoggingTestRunListener(String testPackage,
                                   String serial,
@@ -45,7 +45,6 @@ class ConsoleLoggingTestRunListener extends NoOpITestRunListener {
 
     @Override
     public void testStarted(TestIdentifier test) {
-        startedTest = test;
         System.out.println(format("%s %s %s %s [%s] %s", runningTime(), progress(), failures(), modelName,
                 serial, testCase(test)));
     }
@@ -69,8 +68,8 @@ class ConsoleLoggingTestRunListener extends NoOpITestRunListener {
 
     @Override
     public void testRunFailed(String errorMessage) {
-        System.out.println(format("%s %s %s %s [%s] Test run failed: %s %s", runningTime(), progress(), failures(),
-                modelName, serial, testCase(startedTest), errorMessage));
+        System.out.println(format("%s %s %s %s [%s] Test run failed\n%s", runningTime(), progress(), failures(),
+                modelName, serial, errorMessage));
     }
 
     @Override
@@ -83,7 +82,7 @@ class ConsoleLoggingTestRunListener extends NoOpITestRunListener {
         return TEST_TIME.format(new Date(progressReporter.millisSinceTestsStarted()));
     }
 
-    private String testCase(TestIdentifier test) {
+    private String testCase(@Nonnull TestIdentifier test) {
         return test.toString().replaceAll(testPackage, "");
     }
 
