@@ -12,6 +12,8 @@
  */
 package com.shazam.fork.summary;
 
+import com.shazam.fork.aggregator.AggregatedTestResult;
+import com.shazam.fork.aggregator.Aggregator;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 import org.slf4j.Logger;
@@ -29,12 +31,14 @@ public class SummaryGeneratorHook extends Thread {
 
     private final AtomicBoolean hasNotRunYet = new AtomicBoolean(true);
     private final Summarizer summarizer;
+    private final Aggregator aggregator;
 
     private Collection<Pool> pools;
     private Collection<TestCaseEvent> testCases;
 
-    public SummaryGeneratorHook(Summarizer summarizer) {
+    public SummaryGeneratorHook(Summarizer summarizer, Aggregator aggregator) {
         this.summarizer = summarizer;
+        this.aggregator = aggregator;
     }
 
     /**
@@ -53,12 +57,10 @@ public class SummaryGeneratorHook extends Thread {
     /**
      * This only gets executed once, but needs to check the flag in case it finished normally and then shutdown.
      * It can only be called after {@link SummaryGeneratorHook#registerHook(Collection, Collection)}.
-     *
-     * @return <code>true</code> - if tests have passed
      */
-    public void generateSummary(boolean isSuccessful) {
+    public void generateSummary(boolean isSuccessful, AggregatedTestResult aggregatedTestResult) {
         if (hasNotRunYet.compareAndSet(true, false)) {
-            summarizer.summarize(isSuccessful, pools, testCases);
+            summarizer.summarize(isSuccessful, aggregatedTestResult);
         }
     }
 
@@ -68,7 +70,7 @@ public class SummaryGeneratorHook extends Thread {
             logger.info("************************************************************************************");
             logger.info("************************** SUMMARY GENERATION SHUTDOWN HOOK ************************");
             logger.info("************************************************************************************");
-            generateSummary(false);
+            generateSummary(false, aggregator.aggregateTestResults(pools, testCases));
         }
     }
 }

@@ -10,10 +10,7 @@
 
 package com.shazam.fork.summary;
 
-import com.shazam.fork.model.Pool;
-import com.shazam.fork.model.TestCaseEvent;
-
-import java.util.Collection;
+import com.shazam.fork.aggregator.AggregatedTestResult;
 
 public class Summarizer {
     private final SummaryCompiler summaryCompiler;
@@ -24,8 +21,8 @@ public class Summarizer {
         this.summaryPrinter = summaryPrinter;
     }
 
-    public void summarize(boolean isSuccessful, Collection<Pool> pools, Collection<TestCaseEvent> testCases) {
-        Summary summary = summaryCompiler.compileSummary(pools, testCases);
+    public void summarize(boolean isSuccessful, AggregatedTestResult aggregatedTestResult) {
+        Summary summary = summaryCompiler.compileSummary(aggregatedTestResult);
         summaryPrinter.print(isSuccessful, summary);
     }
 }

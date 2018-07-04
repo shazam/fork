@@ -12,13 +12,15 @@ package com.shazam.fork.injector.summary;
 
 import com.shazam.fork.summary.SummaryGeneratorHook;
 
+import static com.shazam.fork.injector.aggregator.AggregatorInjector.aggregator;
 import static com.shazam.fork.injector.summary.SummarizerInjector.summarizer;
 
 public class SummaryGeneratorHookInjector {
-
-    private SummaryGeneratorHookInjector() {}
+    private SummaryGeneratorHookInjector() {
+        throw new AssertionError("No instances");
+    }
 
     public static SummaryGeneratorHook summaryGeneratorHook() {
-        return new SummaryGeneratorHook(summarizer());
+        return new SummaryGeneratorHook(summarizer(), aggregator());
     }
 }

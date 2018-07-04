@@ -94,7 +94,7 @@ public class ForkRunner {
             boolean isSuccessful = outcomeAggregator.aggregate(aggregatedTestResult);
             logger.info("Overall success: " + isSuccessful);
 
-            summaryGeneratorHook.generateSummary(isSuccessful);
+            summaryGeneratorHook.generateSummary(isSuccessful, aggregatedTestResult);
 
             return isSuccessful;
         } catch (NoPoolLoaderConfiguredException | NoDevicesForPoolException e) {
