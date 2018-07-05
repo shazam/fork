@@ -69,14 +69,12 @@ public class ForkRunner {
         ExecutorService poolExecutor = null;
         try {
             Collection<Pool> pools = poolLoader.loadPools();
-            int numberOfPools = pools.size();
-            CountDownLatch poolCountDownLatch = new CountDownLatch(numberOfPools);
-            poolExecutor = namedExecutor(numberOfPools, "PoolExecutor-%d");
+            poolExecutor = namedExecutor(pools.size(), "PoolExecutor-%d");
 
             Collection<TestCaseEvent> testCases = testClassLoader.loadTestSuite();
             summaryGeneratorHook.registerHook(pools, testCases);
 
-            executeTests(poolCountDownLatch, poolExecutor, pools, testCases);
+            executeTests(poolExecutor, pools, testCases);
 
             AggregatedTestResult aggregatedTestResult = aggregator.aggregateTestResults(pools, testCases);
             if (!aggregatedTestResult.getFatalCrashedTests().isEmpty()) {
@@ -85,7 +83,7 @@ public class ForkRunner {
 
                 Collection<TestCaseEvent> testsToExecute =
                         findFatalCrashedTestCases(testCases, aggregatedTestResult.getFatalCrashedTests());
-                executeTests(poolCountDownLatch, poolExecutor, pools, testsToExecute);
+                executeTests(poolExecutor, pools, testsToExecute);
 
                 aggregatedTestResult = aggregator.aggregateTestResults(pools, testCases);
 
@@ -116,12 +114,13 @@ public class ForkRunner {
         }
     }
 
-    private void executeTests(CountDownLatch poolCountDownLatch,
-                              ExecutorService poolExecutor,
+    private void executeTests(ExecutorService poolExecutor,
                               Collection<Pool> pools,
                               Collection<TestCaseEvent> testCases) throws InterruptedException {
         ProgressReporter progressReporter = progressReporterFactory.createProgressReporter();
         progressReporter.start();
+
+        CountDownLatch poolCountDownLatch = new CountDownLatch(pools.size());
 
         for (Pool pool : pools) {
             Runnable poolTestRunner =
