@@ -14,6 +14,6 @@ package com.shazam.fork.summary;
 
 public interface SummaryPrinter {
 
-	void print(Summary summary);
+	void print(boolean isSuccessful, Summary summary);
 
 }

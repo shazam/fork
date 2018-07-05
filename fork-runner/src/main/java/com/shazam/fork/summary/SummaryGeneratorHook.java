@@ -12,9 +12,10 @@
  */
 package com.shazam.fork.summary;
 
+import com.shazam.fork.aggregator.AggregatedTestResult;
+import com.shazam.fork.aggregator.Aggregator;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,19 +31,21 @@ public class SummaryGeneratorHook extends Thread {
 
     private final AtomicBoolean hasNotRunYet = new AtomicBoolean(true);
     private final Summarizer summarizer;
+    private final Aggregator aggregator;
 
     private Collection<Pool> pools;
     private Collection<TestCaseEvent> testCases;
 
-    public SummaryGeneratorHook(Summarizer summarizer) {
+    public SummaryGeneratorHook(Summarizer summarizer, Aggregator aggregator) {
         this.summarizer = summarizer;
+        this.aggregator = aggregator;
     }
 
     /**
      * Sets the pools and test classes for which a summary will be created either at normal execution or as a
      * shutdown hook.
      *
-     * @param pools the pools to consider for the summary
+     * @param pools     the pools to consider for the summary
      * @param testCases the test cases for the summary
      */
     public void registerHook(Collection<Pool> pools, Collection<TestCaseEvent> testCases) {
@@ -54,23 +57,20 @@ public class SummaryGeneratorHook extends Thread {
     /**
      * This only gets executed once, but needs to check the flag in case it finished normally and then shutdown.
      * It can only be called after {@link SummaryGeneratorHook#registerHook(Collection, Collection)}.
-     *
-     * @return <code>true</code> - if tests have passed
      */
-    public boolean defineOutcome() {
+    public void generateSummary(boolean isSuccessful, AggregatedTestResult aggregatedTestResult) {
         if (hasNotRunYet.compareAndSet(true, false)) {
-            return summarizer.summarize(pools, testCases);
+            summarizer.summarize(isSuccessful, aggregatedTestResult);
         }
-        return false;
     }
 
     @Override
-	public void run() {
-		if (hasNotRunYet.get()) {
-			logger.info("************************************************************************************");
-			logger.info("************************** SUMMARY GENERATION SHUTDOWN HOOK ************************");
-			logger.info("************************************************************************************");
-			defineOutcome();
-		}
-	}
+    public void run() {
+        if (hasNotRunYet.get()) {
+            logger.info("************************************************************************************");
+            logger.info("************************** SUMMARY GENERATION SHUTDOWN HOOK ************************");
+            logger.info("************************************************************************************");
+            generateSummary(false, aggregator.aggregateTestResults(pools, testCases));
+        }
+    }
 }

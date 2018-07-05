@@ -12,23 +12,32 @@
  */
 package com.shazam.fork;
 
+import com.shazam.fork.aggregator.AggregatedTestResult;
+import com.shazam.fork.aggregator.Aggregator;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
-import com.shazam.fork.pooling.*;
+import com.shazam.fork.pooling.NoDevicesForPoolException;
+import com.shazam.fork.pooling.NoPoolLoaderConfiguredException;
+import com.shazam.fork.pooling.PoolLoader;
 import com.shazam.fork.runner.PoolTestRunnerFactory;
 import com.shazam.fork.runner.ProgressReporter;
+import com.shazam.fork.runner.ProgressReporterFactory;
 import com.shazam.fork.suite.NoTestCasesFoundException;
 import com.shazam.fork.suite.TestSuiteLoader;
+import com.shazam.fork.summary.OutcomeAggregator;
 import com.shazam.fork.summary.SummaryGeneratorHook;
-
+import com.shazam.fork.summary.TestResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
 import static com.shazam.fork.Utils.namedExecutor;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 public class ForkRunner {
     private static final Logger logger = LoggerFactory.getLogger(ForkRunner.class);
@@ -36,44 +45,59 @@ public class ForkRunner {
     private final PoolLoader poolLoader;
     private final TestSuiteLoader testClassLoader;
     private final PoolTestRunnerFactory poolTestRunnerFactory;
-    private final ProgressReporter progressReporter;
+    private final ProgressReporterFactory progressReporterFactory;
     private final SummaryGeneratorHook summaryGeneratorHook;
+    private final OutcomeAggregator outcomeAggregator;
+    private final Aggregator aggregator;
 
     public ForkRunner(PoolLoader poolLoader,
                       TestSuiteLoader testClassLoader,
                       PoolTestRunnerFactory poolTestRunnerFactory,
-                      ProgressReporter progressReporter,
-                      SummaryGeneratorHook summaryGeneratorHook) {
+                      ProgressReporterFactory progressReporterFactory,
+                      SummaryGeneratorHook summaryGeneratorHook,
+                      OutcomeAggregator outcomeAggregator, Aggregator aggregator) {
         this.poolLoader = poolLoader;
         this.testClassLoader = testClassLoader;
         this.poolTestRunnerFactory = poolTestRunnerFactory;
-        this.progressReporter = progressReporter;
+        this.progressReporterFactory = progressReporterFactory;
         this.summaryGeneratorHook = summaryGeneratorHook;
+        this.outcomeAggregator = outcomeAggregator;
+        this.aggregator = aggregator;
     }
 
     public boolean run() {
         ExecutorService poolExecutor = null;
         try {
             Collection<Pool> pools = poolLoader.loadPools();
-            int numberOfPools = pools.size();
-            CountDownLatch poolCountDownLatch = new CountDownLatch(numberOfPools);
-            poolExecutor = namedExecutor(numberOfPools, "PoolExecutor-%d");
+            poolExecutor = namedExecutor(pools.size(), "PoolExecutor-%d");
 
             Collection<TestCaseEvent> testCases = testClassLoader.loadTestSuite();
             summaryGeneratorHook.registerHook(pools, testCases);
 
-            progressReporter.start();
-            for (Pool pool : pools) {
-                Runnable poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(pool, testCases,
-                        poolCountDownLatch, progressReporter);
-                poolExecutor.execute(poolTestRunner);
-            }
-            poolCountDownLatch.await();
-            progressReporter.stop();
+            executeTests(poolExecutor, pools, testCases);
 
-            boolean overallSuccess = summaryGeneratorHook.defineOutcome();
-            logger.info("Overall success: " + overallSuccess);
-            return overallSuccess;
+            AggregatedTestResult aggregatedTestResult = aggregator.aggregateTestResults(pools, testCases);
+            if (!aggregatedTestResult.getFatalCrashedTests().isEmpty()) {
+                reportMissingTests(aggregatedTestResult);
+                System.out.println("Scheduling their re-execution");
+
+                Collection<TestCaseEvent> testsToExecute =
+                        findFatalCrashedTestCases(testCases, aggregatedTestResult.getFatalCrashedTests());
+                executeTests(poolExecutor, pools, testsToExecute);
+
+                aggregatedTestResult = aggregator.aggregateTestResults(pools, testCases);
+
+                if (!aggregatedTestResult.getFatalCrashedTests().isEmpty()) {
+                    reportMissingTests(aggregatedTestResult);
+                }
+            }
+
+            boolean isSuccessful = outcomeAggregator.aggregate(aggregatedTestResult);
+            logger.info("Overall success: " + isSuccessful);
+
+            summaryGeneratorHook.generateSummary(isSuccessful, aggregatedTestResult);
+
+            return isSuccessful;
         } catch (NoPoolLoaderConfiguredException | NoDevicesForPoolException e) {
             logger.error("Configuring devices and pools failed", e);
             return false;
@@ -88,5 +112,44 @@ public class ForkRunner {
                 poolExecutor.shutdown();
             }
         }
+    }
+
+    private void executeTests(ExecutorService poolExecutor,
+                              Collection<Pool> pools,
+                              Collection<TestCaseEvent> testCases) throws InterruptedException {
+        ProgressReporter progressReporter = progressReporterFactory.createProgressReporter();
+        progressReporter.start();
+
+        CountDownLatch poolCountDownLatch = new CountDownLatch(pools.size());
+
+        for (Pool pool : pools) {
+            Runnable poolTestRunner =
+                    poolTestRunnerFactory.createPoolTestRunner(pool, testCases, poolCountDownLatch, progressReporter);
+            poolExecutor.execute(poolTestRunner);
+        }
+        poolCountDownLatch.await();
+
+        progressReporter.stop();
+    }
+
+    private static void reportMissingTests(AggregatedTestResult aggregatedTestResult) {
+        System.out.println("Test reports are not found for some tests");
+        System.out.println("Affected tests: " + getAffectedTests(aggregatedTestResult));
+    }
+
+    private static Collection<String> getAffectedTests(AggregatedTestResult aggregatedTestResult) {
+        return aggregatedTestResult.getFatalCrashedTests().stream()
+                .map(TestResult::getTestFullName)
+                .collect(toList());
+    }
+
+    private static Collection<TestCaseEvent> findFatalCrashedTestCases(Collection<TestCaseEvent> testCases,
+                                                                       Collection<TestResult> fatalCrashedTests) {
+        Set<String> tests = fatalCrashedTests.stream()
+                .map(TestResult::getTestFullName)
+                .collect(toSet());
+        return testCases.stream()
+                .filter(event -> tests.contains(event.getTestFullName()))
+                .collect(toList());
     }
 }

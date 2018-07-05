@@ -13,13 +13,13 @@ package com.shazam.fork.injector.summary;
 import com.shazam.fork.summary.SummaryCompiler;
 
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
-import static com.shazam.fork.injector.summary.DeviceTestFilesRetrieverInjector.deviceTestFilesRetriever;
 
-class SummaryCompilerInjector {
+final class SummaryCompilerInjector {
     private SummaryCompilerInjector() {
+        throw new AssertionError("No instances");
     }
 
     static SummaryCompiler summaryCompiler() {
-        return new SummaryCompiler(configuration(), deviceTestFilesRetriever());
+        return new SummaryCompiler(configuration());
     }
 }

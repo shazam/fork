@@ -13,14 +13,15 @@
 package com.shazam.fork.injector;
 
 import com.shazam.fork.ForkRunner;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.shazam.fork.injector.aggregator.AggregatorInjector.aggregator;
 import static com.shazam.fork.injector.pooling.PoolLoaderInjector.poolLoader;
 import static com.shazam.fork.injector.runner.PoolTestRunnerFactoryInjector.poolTestRunnerFactory;
-import static com.shazam.fork.injector.runner.ProgressReporterInjector.progressReporter;
+import static com.shazam.fork.injector.runner.ProgressReporterFactoryInjector.progressReporterFactory;
 import static com.shazam.fork.injector.suite.TestSuiteLoaderInjector.testSuiteLoader;
+import static com.shazam.fork.injector.summary.OutcomeAggregatorInjector.outcomeAggregator;
 import static com.shazam.fork.injector.summary.SummaryGeneratorHookInjector.summaryGeneratorHook;
 import static com.shazam.fork.utils.Utils.millisSinceNanoTime;
 import static java.lang.System.nanoTime;
@@ -29,7 +30,8 @@ public class ForkRunnerInjector {
 
     private static final Logger logger = LoggerFactory.getLogger(ForkRunnerInjector.class);
 
-    private ForkRunnerInjector() {}
+    private ForkRunnerInjector() {
+    }
 
     public static ForkRunner forkRunner() {
         long startNanos = nanoTime();
@@ -38,8 +40,11 @@ public class ForkRunnerInjector {
                 poolLoader(),
                 testSuiteLoader(),
                 poolTestRunnerFactory(),
-                progressReporter(),
-                summaryGeneratorHook());
+                progressReporterFactory(),
+                summaryGeneratorHook(),
+                outcomeAggregator(),
+                aggregator()
+        );
 
         logger.debug("Bootstrap of ForkRunner took: {} milliseconds", millisSinceNanoTime(startNanos));
 

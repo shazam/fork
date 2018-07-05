@@ -1,58 +1,76 @@
 package com.shazam.fork.summary;
 
+import com.shazam.fork.aggregator.AggregatedTestResult;
 import org.junit.Test;
 
-import static com.shazam.fork.summary.PoolSummary.Builder.aPoolSummary;
-import static com.shazam.fork.summary.Summary.Builder.aSummary;
+import static com.shazam.fork.aggregator.AggregatedTestResult.Builder.aggregatedTestResult;
+import static com.shazam.fork.aggregator.PoolTestResult.Builder.poolTestResult;
+import static com.shazam.fork.model.Pool.Builder.aDevicePool;
 import static com.shazam.fork.summary.TestResult.Builder.aTestResult;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 public class OutcomeAggregatorTest {
     @Test
-    public void returnsFalseIfThereAreFatalCrashedTests() {
-        Summary summary = aSummary()
-                .addFatalCrashedTest("com.example.FatalCrashedTest:testMethod")
-                .addPoolSummary(aPoolSummary()
-                        .withPoolName("pool")
-                        .addTestResults(singleton(aTestResult()
-                                .withTestClass("com.example.SuccessfulTest")
-                                .withTestMethod("testMethod")
-                                .withTimeTaken(15.0f)
-                                .build()))
-                        .build())
+    public void returnsFalseWhenThereAreFatalCrashedTests() {
+        AggregatedTestResult aggregatedTestResult = aggregatedTestResult()
+                .withFatalCrashedTests(singletonList(aTestResult().build()))
                 .build();
 
-        boolean successful = new OutcomeAggregator().aggregate(summary);
+        boolean isSuccessful = new OutcomeAggregator().aggregate(aggregatedTestResult);
 
-        assertThat(successful, equalTo(false));
+        assertThat(isSuccessful, equalTo(false));
     }
 
     @Test
-    public void returnsTrueIfThereAreOnlyPassedAndIgnoredTests() {
-        Summary summary = aSummary()
-                .addIgnoredTest("com.example.IgnoredTest:testMethod")
-                .addPoolSummary(aPoolSummary()
-                        .withPoolName("pool")
-                        .addTestResults(asList(
-                                aTestResult()
-                                        .withTestClass("com.example.SuccessfulTest")
-                                        .withTestMethod("testMethod")
-                                        .withTimeTaken(15.0f)
-                                        .build(),
-                                aTestResult()
-                                        .withTestClass("com.example.IgnoredTest")
-                                        .withTestMethod("testMethod")
-                                        .withIgnored(true)
-                                        .build()
-                        ))
-                        .build())
+    public void returnsFalseWhenThereAreFailedTests() {
+        AggregatedTestResult aggregatedTestResult = aggregatedTestResult()
+                .withPoolTestResults(asList(
+                        poolTestResult()
+                                .withPool(aDevicePool().build())
+                                .withTestResults(asList(
+                                        aTestResult()
+                                                .withErrorTrace("aTrace")
+                                                .build(),
+                                        aTestResult().build()
+                                ))
+                                .build(),
+                        poolTestResult()
+                                .withPool(aDevicePool().build())
+                                .withTestResults(singletonList(aTestResult().build()))
+                                .build()
+                ))
                 .build();
 
-        boolean successful = new OutcomeAggregator().aggregate(summary);
+        boolean isSuccessful = new OutcomeAggregator().aggregate(aggregatedTestResult);
 
-        assertThat(successful, equalTo(true));
+        assertThat(isSuccessful, equalTo(false));
+    }
+
+    @Test
+    public void returnsTrueWhenThereAreOnlyPassedAndIgnoredTests() {
+        AggregatedTestResult aggregatedTestResult = aggregatedTestResult()
+                .withPoolTestResults(asList(
+                        poolTestResult()
+                                .withPool(aDevicePool().build())
+                                .withTestResults(singletonList(aTestResult().build()))
+                                .build(),
+                        poolTestResult()
+                                .withPool(aDevicePool().build())
+                                .withTestResults(asList(
+                                        aTestResult()
+                                                .withIgnored(true)
+                                                .build(),
+                                        aTestResult().build()
+                                ))
+                                .build()
+                ))
+                .build();
+
+        boolean isSuccessful = new OutcomeAggregator().aggregate(aggregatedTestResult);
+
+        assertThat(isSuccessful, equalTo(true));
     }
 }

@@ -12,15 +12,15 @@ package com.shazam.fork.injector.summary;
 
 import com.shazam.fork.summary.Summarizer;
 
-import static com.shazam.fork.injector.summary.OutcomeAggregatorInjector.outcomeAggregator;
 import static com.shazam.fork.injector.summary.SummaryCompilerInjector.summaryCompiler;
 import static com.shazam.fork.injector.summary.SummaryPrinterInjector.summaryPrinter;
 
-public class SummarizerInjector {
-
-    private SummarizerInjector() {}
+public final class SummarizerInjector {
+    private SummarizerInjector() {
+        throw new AssertionError("No instances");
+    }
 
     public static Summarizer summarizer() {
-        return new Summarizer(summaryCompiler(), summaryPrinter(), outcomeAggregator());
+        return new Summarizer(summaryCompiler(), summaryPrinter());
     }
 }
