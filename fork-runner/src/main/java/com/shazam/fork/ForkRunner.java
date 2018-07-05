@@ -21,6 +21,7 @@ import com.shazam.fork.pooling.NoPoolLoaderConfiguredException;
 import com.shazam.fork.pooling.PoolLoader;
 import com.shazam.fork.runner.PoolTestRunnerFactory;
 import com.shazam.fork.runner.ProgressReporter;
+import com.shazam.fork.runner.ProgressReporterFactory;
 import com.shazam.fork.suite.NoTestCasesFoundException;
 import com.shazam.fork.suite.TestSuiteLoader;
 import com.shazam.fork.summary.OutcomeAggregator;
@@ -44,7 +45,7 @@ public class ForkRunner {
     private final PoolLoader poolLoader;
     private final TestSuiteLoader testClassLoader;
     private final PoolTestRunnerFactory poolTestRunnerFactory;
-    private final ProgressReporter progressReporter;
+    private final ProgressReporterFactory progressReporterFactory;
     private final SummaryGeneratorHook summaryGeneratorHook;
     private final OutcomeAggregator outcomeAggregator;
     private final Aggregator aggregator;
@@ -52,13 +53,13 @@ public class ForkRunner {
     public ForkRunner(PoolLoader poolLoader,
                       TestSuiteLoader testClassLoader,
                       PoolTestRunnerFactory poolTestRunnerFactory,
-                      ProgressReporter progressReporter,
+                      ProgressReporterFactory progressReporterFactory,
                       SummaryGeneratorHook summaryGeneratorHook,
                       OutcomeAggregator outcomeAggregator, Aggregator aggregator) {
         this.poolLoader = poolLoader;
         this.testClassLoader = testClassLoader;
         this.poolTestRunnerFactory = poolTestRunnerFactory;
-        this.progressReporter = progressReporter;
+        this.progressReporterFactory = progressReporterFactory;
         this.summaryGeneratorHook = summaryGeneratorHook;
         this.outcomeAggregator = outcomeAggregator;
         this.aggregator = aggregator;
@@ -79,8 +80,7 @@ public class ForkRunner {
 
             AggregatedTestResult aggregatedTestResult = aggregator.aggregateTestResults(pools, testCases);
             if (!aggregatedTestResult.getFatalCrashedTests().isEmpty()) {
-                System.out.println("Test reports were not found for some tests");
-                System.out.println("Affected tests: " + aggregatedTestResult.getFatalCrashedTests());
+                reportMissingTests(aggregatedTestResult);
                 System.out.println("Scheduling their re-execution");
 
                 Collection<TestCaseEvent> testsToExecute =
@@ -88,8 +88,11 @@ public class ForkRunner {
                 executeTests(poolCountDownLatch, poolExecutor, pools, testsToExecute);
 
                 aggregatedTestResult = aggregator.aggregateTestResults(pools, testCases);
-            }
 
+                if (!aggregatedTestResult.getFatalCrashedTests().isEmpty()) {
+                    reportMissingTests(aggregatedTestResult);
+                }
+            }
 
             boolean isSuccessful = outcomeAggregator.aggregate(aggregatedTestResult);
             logger.info("Overall success: " + isSuccessful);
@@ -117,14 +120,28 @@ public class ForkRunner {
                               ExecutorService poolExecutor,
                               Collection<Pool> pools,
                               Collection<TestCaseEvent> testCases) throws InterruptedException {
+        ProgressReporter progressReporter = progressReporterFactory.createProgressReporter();
         progressReporter.start();
+
         for (Pool pool : pools) {
-            Runnable poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(pool, testCases,
-                    poolCountDownLatch, progressReporter);
+            Runnable poolTestRunner =
+                    poolTestRunnerFactory.createPoolTestRunner(pool, testCases, poolCountDownLatch, progressReporter);
             poolExecutor.execute(poolTestRunner);
         }
         poolCountDownLatch.await();
+
         progressReporter.stop();
+    }
+
+    private static void reportMissingTests(AggregatedTestResult aggregatedTestResult) {
+        System.out.println("Test reports are not found for some tests");
+        System.out.println("Affected tests: " + getAffectedTests(aggregatedTestResult));
+    }
+
+    private static Collection<String> getAffectedTests(AggregatedTestResult aggregatedTestResult) {
+        return aggregatedTestResult.getFatalCrashedTests().stream()
+                .map(TestResult::getTestFullName)
+                .collect(toList());
     }
 
     private static Collection<TestCaseEvent> findFatalCrashedTestCases(Collection<TestCaseEvent> testCases,

@@ -111,7 +111,7 @@ public class SummaryCompilerTest {
         Summary summary = summaryCompiler.compileSummary(aggregatedTestResult);
 
         assertThat(summary.getIgnoredTests(), hasSize(1));
-        assertThat(summary.getIgnoredTests(), contains("com.example.IgnoredClassTest:doesJobProperly"));
+        assertThat(summary.getIgnoredTests(), contains("com.example.IgnoredClassTest#doesJobProperly"));
     }
 
     @Test

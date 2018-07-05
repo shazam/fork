@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import static com.shazam.fork.injector.aggregator.AggregatorInjector.aggregator;
 import static com.shazam.fork.injector.pooling.PoolLoaderInjector.poolLoader;
 import static com.shazam.fork.injector.runner.PoolTestRunnerFactoryInjector.poolTestRunnerFactory;
-import static com.shazam.fork.injector.runner.ProgressReporterInjector.progressReporter;
+import static com.shazam.fork.injector.runner.ProgressReporterFactoryInjector.progressReporterFactory;
 import static com.shazam.fork.injector.suite.TestSuiteLoaderInjector.testSuiteLoader;
 import static com.shazam.fork.injector.summary.OutcomeAggregatorInjector.outcomeAggregator;
 import static com.shazam.fork.injector.summary.SummaryGeneratorHookInjector.summaryGeneratorHook;
@@ -40,7 +40,7 @@ public class ForkRunnerInjector {
                 poolLoader(),
                 testSuiteLoader(),
                 poolTestRunnerFactory(),
-                progressReporter(),
+                progressReporterFactory(),
                 summaryGeneratorHook(),
                 outcomeAggregator(),
                 aggregator()

@@ -42,7 +42,7 @@ public class TestCaseEvent {
     }
 
     public String getTestFullName() {
-        return testClass + ":" + testMethod;
+        return testClass + "#" + testMethod;
     }
 
     public String getTestMethod() {

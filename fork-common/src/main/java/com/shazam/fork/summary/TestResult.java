@@ -49,7 +49,7 @@ public class TestResult {
     }
 
     public String getTestFullName() {
-        return testClass + ":" + testMethod;
+        return testClass + "#" + testMethod;
     }
 
     public String getTestClass() {
