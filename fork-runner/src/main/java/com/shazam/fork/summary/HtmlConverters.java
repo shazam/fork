@@ -94,14 +94,13 @@ class HtmlConverters {
 		};
 	}
 
-	private static String computeStatus(@Nullable TestResult input) {
-		String result  = input.getResultStatus().name().toLowerCase();
-		if(input.getResultStatus() == ResultStatus.PASS
-				&& input.getTotalFailureCount() > 0){
-			result = "warn";
-		}
-		return result;
-	}
+    private static String computeStatus(@Nullable TestResult input) {
+        String result = input.getResultStatus().name().toLowerCase();
+        if (input.getResultStatus() == PASS && input.getTotalFailureCount() > 0) {
+            result = "warn";
+        }
+        return result;
+    }
 
 	private static Function<? super PoolSummary, Boolean> toPoolOutcome() {
 		return new Function<PoolSummary, Boolean>() {

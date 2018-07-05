@@ -33,9 +33,11 @@ public class FilesRetrieverBasedAggregatorTest {
                     .build()
     );
 
-    private final HashMap<String, String> testMetricsForFailedTest = new HashMap<String, String>() {{
-        put(SUMMARY_KEY_TOTAL_FAILURE_COUNT, "10");
-    }};
+    private static final HashMap<String, String> TEST_METRICS_FOR_FAILED_TEST = new HashMap<>();
+
+    static {
+        TEST_METRICS_FOR_FAILED_TEST.put(SUMMARY_KEY_TOTAL_FAILURE_COUNT, "10");
+    }
 
     private final TestResult completedTest = aTestResult()
             .withDevice(ignoredDevice)
@@ -54,7 +56,7 @@ public class FilesRetrieverBasedAggregatorTest {
             .withTestClass("com.example.FailedClassTest")
             .withTestMethod("doesJobProperly")
             .withFailureTrace("a failure stacktrace")
-            .withTestMetrics(testMetricsForFailedTest)
+            .withTestMetrics(TEST_METRICS_FOR_FAILED_TEST)
             .build();
     private final TestResult ignoreTest = aTestResult()
             .withTestClass("com.example.IgnoredClassTest")
@@ -78,7 +80,7 @@ public class FilesRetrieverBasedAggregatorTest {
             newTestCase(new TestIdentifier("com.example.CompletedClassTest", "doesJobProperly")),
             newTestCase(new TestIdentifier("com.example.CompletedClassTest2", "doesJobProperly")),
             newTestCase("doesJobProperly", "com.example.FailedClassTest", false,
-                    emptyList(), testMetricsForFailedTest),
+                    emptyList(), TEST_METRICS_FOR_FAILED_TEST),
             newTestCase(new TestIdentifier("com.example.IgnoredClassTest", "doesJobProperly"), true),
             newTestCase(new TestIdentifier("com.example.FatalCrashedTest", "doesJobProperly"))
     );

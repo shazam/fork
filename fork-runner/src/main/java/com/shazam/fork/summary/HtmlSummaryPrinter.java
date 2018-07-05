@@ -15,8 +15,8 @@ package com.shazam.fork.summary;
 import com.android.ddmlib.logcat.LogCatMessage;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.common.io.Resources;
+import com.shazam.fork.ForkException;
 import com.shazam.fork.io.HtmlGenerator;
-
 import org.lesscss.LessCompiler;
 
 import java.io.File;
@@ -79,16 +79,16 @@ public class HtmlSummaryPrinter implements SummaryPrinter {
 	}
 
     private void generateCssFromLess() {
-		try {
-			LessCompiler compiler = new LessCompiler();
-			String less = Resources.toString(getClass().getResource("/spoon.less"), UTF_8);
-			String css = compiler.compile(less);
-			File cssFile = new File(staticOutput, "spoon.css");
-			writeStringToFile(cssFile, css);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+        try {
+            LessCompiler compiler = new LessCompiler();
+            String less = Resources.toString(getClass().getResource("/spoon.less"), UTF_8);
+            String css = compiler.compile(less);
+            File cssFile = new File(staticOutput, "spoon.css");
+            writeStringToFile(cssFile, css);
+        } catch (Exception e) {
+            throw new ForkException(e);
+        }
+    }
 
     /**
      * Generates an HTML page for each pool, with multiple tests
