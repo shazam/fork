@@ -16,7 +16,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.shazam.fork.model.Device.Builder.aDevice;
 import static com.shazam.fork.model.Pool.Builder.aDevicePool;
 import static com.shazam.fork.model.TestCaseEvent.newTestCase;
-import static com.shazam.fork.summary.FakeDeviceTestFilesRetriever.aFakeDeviceTestFilesRetriever;
+import static com.shazam.fork.summary.FakeDeviceTestFilesRetriever.fakeDeviceTestFilesRetriever;
 import static com.shazam.fork.summary.TestResult.Builder.aTestResult;
 import static com.shazam.fork.summary.TestResult.SUMMARY_KEY_TOTAL_FAILURE_COUNT;
 import static java.util.Collections.emptyList;
@@ -85,7 +85,7 @@ public class FilesRetrieverBasedAggregatorTest {
             newTestCase(new TestIdentifier("com.example.FatalCrashedTest", "doesJobProperly"))
     );
 
-    private final FakeDeviceTestFilesRetriever fakeDeviceTestFilesRetriever = aFakeDeviceTestFilesRetriever();
+    private final FakeDeviceTestFilesRetriever fakeDeviceTestFilesRetriever = fakeDeviceTestFilesRetriever();
     private FilesRetrieverBasedAggregator aggregator;
 
     @Before

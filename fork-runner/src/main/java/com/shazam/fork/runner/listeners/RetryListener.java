@@ -15,47 +15,44 @@ import com.shazam.fork.device.DeviceTestFilesCleaner;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
-import com.shazam.fork.runner.TestRetryer;
+import com.shazam.fork.runner.FailedTestScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 
 public class RetryListener extends NoOpITestRunListener {
     private static final Logger logger = LoggerFactory.getLogger(RetryListener.class);
     private final Device device;
-    private final TestCaseEvent currentTestCaseEvent;
-    private final TestRetryer testRetryer;
+    private final FailedTestScheduler failedTestScheduler;
     private final Pool pool;
     private final DeviceTestFilesCleaner deviceTestFilesCleaner;
-    private TestIdentifier startedTest;
-    private TestIdentifier failedTest;
+    private TestCaseEvent startedTest;
+    private TestCaseEvent failedTest;
 
     public RetryListener(Pool pool,
                          Device device,
-                         TestCaseEvent currentTestCaseEvent,
-                         TestRetryer testRetryer,
+                         FailedTestScheduler failedTestScheduler,
                          DeviceTestFilesCleaner deviceTestFilesCleaner) {
         checkNotNull(device);
-        checkNotNull(currentTestCaseEvent);
         checkNotNull(pool);
-        this.testRetryer = testRetryer;
+        this.failedTestScheduler = failedTestScheduler;
         this.device = device;
-        this.currentTestCaseEvent = currentTestCaseEvent;
         this.pool = pool;
         this.deviceTestFilesCleaner = deviceTestFilesCleaner;
     }
 
     @Override
     public void testStarted(TestIdentifier test) {
-        startedTest = test;
+        startedTest = newTestCase(test);
     }
 
     @Override
     public void testFailed(TestIdentifier test, String trace) {
-        failedTest = test;
+        failedTest = newTestCase(test);
     }
 
     @Override
@@ -74,18 +71,18 @@ public class RetryListener extends NoOpITestRunListener {
         }
     }
 
-    private void rescheduleTestExecution(TestIdentifier test) {
-        if (testRetryer.rescheduleTestExecution(test, currentTestCaseEvent)) {
-            logger.info("Test " + test.toString() + " enqueued again into pool:" + pool.getName());
-            removeFailureTraceFiles(test);
+    private void rescheduleTestExecution(TestCaseEvent testCase) {
+        if (failedTestScheduler.rescheduleTestExecution(testCase)) {
+            logger.info("Test " + testCase.getTestFullName() + " enqueued again into pool:" + pool.getName());
+            removeFailureTraceFiles(testCase);
         } else {
-            logger.info("Test " + test.toString() + " failed on device " + device.getSafeSerial()
+            logger.info("Test " + testCase.getTestFullName() + " failed on device " + device.getSafeSerial()
                     + " but retry is not allowed.");
         }
     }
 
-    private void removeFailureTraceFiles(TestIdentifier test) {
-        boolean isDeleted = deviceTestFilesCleaner.deleteTraceFiles(test);
+    private void removeFailureTraceFiles(TestCaseEvent testCase) {
+        boolean isDeleted = deviceTestFilesCleaner.deleteTraceFiles(testCase);
         if (!isDeleted) {
             logger.warn("Failed to remove a trace filed for a failed but enqueued again test");
         }

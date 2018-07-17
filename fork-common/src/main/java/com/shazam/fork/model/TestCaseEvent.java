@@ -13,14 +13,17 @@ import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToStrin
 import static org.apache.commons.lang3.builder.ToStringStyle.SIMPLE_STYLE;
 
 public class TestCaseEvent {
-
     private final String testMethod;
     private final String testClass;
     private final boolean isIgnored;
     private final List<String> permissionsToRevoke;
     private final Map<String, String> properties;
 
-    private TestCaseEvent(String testMethod, String testClass, boolean isIgnored, List<String> permissionsToRevoke, Map<String, String> properties) {
+    private TestCaseEvent(String testMethod,
+                          String testClass,
+                          boolean isIgnored,
+                          List<String> permissionsToRevoke,
+                          Map<String, String> properties) {
         this.testMethod = testMethod;
         this.testClass = testClass;
         this.isIgnored = isIgnored;
@@ -28,7 +31,16 @@ public class TestCaseEvent {
         this.properties = properties;
     }
 
-    public static TestCaseEvent newTestCase(String testMethod, String testClass, boolean isIgnored, List<String> permissionsToRevoke, Map<String, String> properties) {
+    @Nonnull
+    public static TestCaseEvent newTestCase(@Nonnull String testClass, @Nonnull String testMethod) {
+        return newTestCase(testMethod, testClass, false, emptyList(), emptyMap());
+    }
+
+    public static TestCaseEvent newTestCase(String testMethod,
+                                            String testClass,
+                                            boolean isIgnored,
+                                            List<String> permissionsToRevoke,
+                                            Map<String, String> properties) {
         return new TestCaseEvent(testMethod, testClass, isIgnored, permissionsToRevoke, properties);
     }
 

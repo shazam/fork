@@ -10,8 +10,9 @@
 
 package com.shazam.fork.runner;
 
-import com.shazam.fork.model.*;
-
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.PoolTestCaseAccumulator;
+import com.shazam.fork.model.TestCaseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,12 +116,12 @@ public class OverallProgressReporter implements ProgressReporter {
         private final AtomicInteger totalAllowedRetryLeft;
         private final StringBuilder logBuilder = new StringBuilder();
 
-        public RetryWatchdog(int totalAllowedRetryQuota, int retryPerTestCaseQuota) {
+        RetryWatchdog(int totalAllowedRetryQuota, int retryPerTestCaseQuota) {
             totalAllowedRetryLeft = new AtomicInteger(totalAllowedRetryQuota);
             maxRetryPerTestCaseQuota = retryPerTestCaseQuota;
         }
 
-        public boolean requestRetry(int currentSingleTestCaseFailures) {
+        boolean requestRetry(int currentSingleTestCaseFailures) {
             boolean totalAllowedRetryAvailable = totalAllowedRetryAvailable();
             boolean singleTestAllowed = currentSingleTestCaseFailures <= maxRetryPerTestCaseQuota;
             boolean result = totalAllowedRetryAvailable && singleTestAllowed;
@@ -134,15 +135,14 @@ public class OverallProgressReporter implements ProgressReporter {
         }
 
         private void log(int testCaseFailures, boolean singleTestAllowed, boolean result) {
-            if(logger.isDebugEnabled()) {
-                logBuilder.setLength(0); //clean up.
-                logBuilder.append("Retry requested ")
-                        .append(result ? " and allowed. " : " but not allowed. ")
-                        .append("Total retry left :").append(totalAllowedRetryLeft.get())
-                        .append(" and Single Test case retry left: ")
-                        .append(singleTestAllowed ? maxRetryPerTestCaseQuota - testCaseFailures : 0);
-                logger.debug(logBuilder.toString());
-            }
+            logBuilder.setLength(0); //clean up.
+            logBuilder.append("Retry requested ")
+                    .append(result ? " and allowed. " : " but not allowed. ")
+                    .append("Total retry left :").append(totalAllowedRetryLeft.get())
+                    .append(" and Single Test case retry left: ")
+                    .append(singleTestAllowed ? maxRetryPerTestCaseQuota - testCaseFailures : 0);
+            logger.debug(logBuilder.toString());
+            System.out.println(logBuilder.toString());
         }
     }
 }
