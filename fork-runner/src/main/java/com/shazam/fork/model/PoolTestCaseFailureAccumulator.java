@@ -10,43 +10,48 @@
 
 package com.shazam.fork.model;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 
-import static com.google.common.collect.FluentIterable.from;
+import java.util.function.Predicate;
+
 import static com.google.common.collect.HashMultimap.create;
 
 /**
  * Class that keeps track of the number of times each testCase is executed for device.
  */
 public class PoolTestCaseFailureAccumulator implements PoolTestCaseAccumulator {
-    private SetMultimap<Pool, TestCaseEventCounter> map = Multimaps.synchronizedSetMultimap(create());
+    private final SetMultimap<Pool, TestCaseEventCounter> testCaseCounters = create();
 
     @Override
     public void record(Pool pool, TestCaseEvent testCaseEvent) {
-        if (!map.containsKey(pool)) {
-            map.put(pool, createNew(testCaseEvent));
-        }
+        synchronized (testCaseCounters) {
+            if (!testCaseCounters.containsKey(pool)) {
+                testCaseCounters.put(pool, createNew(testCaseEvent));
+            }
 
-        if (!from(map.get(pool)).anyMatch(isSameTestCase(testCaseEvent))) {
-            map.get(pool).add(
-                    createNew(testCaseEvent)
-                            .withIncreasedCount());
-        } else {
-            from(map.get(pool))
-                    .firstMatch(isSameTestCase(testCaseEvent)).get()
-                    .increaseCount();
+            boolean hasCountedBefore = testCaseCounters.get(pool).stream()
+                    .anyMatch(isSameTestCase(testCaseEvent));
+            if (hasCountedBefore) {
+                testCaseCounters.get(pool).stream()
+                        .filter(isSameTestCase(testCaseEvent))
+                        .findFirst()
+                        .ifPresent(TestCaseEventCounter::increaseCount);
+            } else {
+                testCaseCounters.get(pool).add(createNew(testCaseEvent).withIncreasedCount());
+            }
         }
     }
 
     @Override
     public int getCount(Pool pool, TestCaseEvent testCaseEvent) {
-        if (map.containsKey(pool)) {
-            return from(map.get(pool))
-                    .firstMatch(isSameTestCase(testCaseEvent)).or(TestCaseEventCounter.EMPTY)
-                    .getCount();
+        if (testCaseCounters.containsKey(pool)) {
+            synchronized (testCaseCounters) {
+                return testCaseCounters.get(pool).stream()
+                        .filter(isSameTestCase(testCaseEvent))
+                        .findFirst()
+                        .orElse(TestCaseEventCounter.EMPTY)
+                        .getCount();
+            }
         } else {
             return 0;
         }
@@ -54,26 +59,19 @@ public class PoolTestCaseFailureAccumulator implements PoolTestCaseAccumulator {
 
     @Override
     public int getCount(TestCaseEvent testCaseEvent) {
-        int result = 0;
-        ImmutableList<TestCaseEventCounter> counters = from(map.values())
-                .filter(isSameTestCase(testCaseEvent)).toList();
-        for (TestCaseEventCounter counter : counters) {
-            result += counter.getCount();
+        synchronized (testCaseCounters) {
+            return testCaseCounters.values().stream()
+                    .filter(isSameTestCase(testCaseEvent))
+                    .mapToInt(TestCaseEventCounter::getCount)
+                    .sum();
         }
-        return result;
     }
 
     private static TestCaseEventCounter createNew(final TestCaseEvent testCaseEvent) {
         return new TestCaseEventCounter(testCaseEvent, 0);
     }
 
-    private static Predicate<TestCaseEventCounter> isSameTestCase(final TestCaseEvent testCaseEvent) {
-        return new Predicate<TestCaseEventCounter>() {
-            @Override
-            public boolean apply(TestCaseEventCounter input) {
-                return input.getTestCaseEvent() != null
-                        && testCaseEvent.equals(input.getTestCaseEvent());
-            }
-        };
+    private static Predicate<TestCaseEventCounter> isSameTestCase(TestCaseEvent testCaseEvent) {
+        return testCaseEventCounter -> testCaseEventCounter.getTestCaseEvent().equals(testCaseEvent);
     }
 }

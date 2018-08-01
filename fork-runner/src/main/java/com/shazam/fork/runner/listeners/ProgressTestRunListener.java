@@ -58,7 +58,7 @@ class ProgressTestRunListener implements ITestRunListener {
 
     @Override
     public void testRunFailed(String errorMessage) {
-
+        poolProgressTracker.failedTest();
     }
 
     @Override

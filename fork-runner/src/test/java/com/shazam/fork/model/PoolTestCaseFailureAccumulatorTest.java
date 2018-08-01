@@ -9,7 +9,7 @@ import static com.shazam.fork.model.TestCaseEvent.Builder.testCaseEvent;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class PoolTestCaseAccumulatorTestFailure {
+public class PoolTestCaseFailureAccumulatorTest {
     private final Device A_DEVICE = aDevice()
             .withSerial("a_device")
             .build();
