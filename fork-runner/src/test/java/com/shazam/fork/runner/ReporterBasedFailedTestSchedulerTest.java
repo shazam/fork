@@ -23,7 +23,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import static com.shazam.fork.model.Pool.Builder.aDevicePool;
-import static com.shazam.fork.model.TestCaseEvent.newTestCase;
+import static com.shazam.fork.model.TestCaseEvent.Builder.testCaseEvent;
 import static com.shazam.fork.runner.FakeProgressReporter.fakeProgressReporter;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -44,6 +44,10 @@ public class ReporterBasedFailedTestSchedulerTest {
             .build();
 
     private ReporterBasedFailedTestScheduler testScheduler;
+    private TestCaseEvent testCase = testCaseEvent()
+            .withTestClass("com.shazam.fork.TestClass")
+            .withTestMethod("testMethod")
+            .build();
 
     @Before
     public void setUp() {
@@ -53,7 +57,6 @@ public class ReporterBasedFailedTestSchedulerTest {
     @Test
     public void recordsFailedTestCase() {
         testScheduler = new ReporterBasedFailedTestScheduler(mockProgressReporter, pool, testsQueue);
-        TestCaseEvent testCase = newTestCase("com.shazam.fork.TestClass", "testMethod");
 
         mockery.checking(new Expectations() {{
             oneOf(mockProgressReporter).recordFailedTestCase(pool, testCase);
@@ -68,7 +71,6 @@ public class ReporterBasedFailedTestSchedulerTest {
     public void addsTestCaseToQueueWhenRetryIsAllowed() {
         fakeProgressReporter.thatAlwaysAllowTestToBeRescheduled();
         testScheduler = new ReporterBasedFailedTestScheduler(fakeProgressReporter, pool, testsQueue);
-        TestCaseEvent testCase = newTestCase("com.shazam.fork.TestClass", "testMethod");
 
         testScheduler.rescheduleTestExecution(testCase);
 
@@ -79,7 +81,6 @@ public class ReporterBasedFailedTestSchedulerTest {
     public void returnsTrueWhenTestCaseIsRescheduled() {
         fakeProgressReporter.thatAlwaysAllowTestToBeRescheduled();
         testScheduler = new ReporterBasedFailedTestScheduler(fakeProgressReporter, pool, testsQueue);
-        TestCaseEvent testCase = newTestCase("com.shazam.fork.TestClass", "testMethod");
 
         assertThat(testScheduler.rescheduleTestExecution(testCase), equalTo(true));
     }
@@ -88,7 +89,6 @@ public class ReporterBasedFailedTestSchedulerTest {
     public void doesNotAddTestCaseToQueueWhenRetryIsNotAllowed() {
         fakeProgressReporter.thatAlwaysDisallowTestToBeRescheduled();
         testScheduler = new ReporterBasedFailedTestScheduler(fakeProgressReporter, pool, testsQueue);
-        TestCaseEvent testCase = newTestCase("com.shazam.fork.TestClass", "testMethod");
 
         testScheduler.rescheduleTestExecution(testCase);
 
@@ -99,7 +99,6 @@ public class ReporterBasedFailedTestSchedulerTest {
     public void returnsFalseWhenTestCaseIsNotRescheduled() {
         fakeProgressReporter.thatAlwaysDisallowTestToBeRescheduled();
         testScheduler = new ReporterBasedFailedTestScheduler(fakeProgressReporter, pool, testsQueue);
-        TestCaseEvent testCase = newTestCase("com.shazam.fork.TestClass", "testMethod");
 
         assertThat(testScheduler.rescheduleTestExecution(testCase), equalTo(false));
     }

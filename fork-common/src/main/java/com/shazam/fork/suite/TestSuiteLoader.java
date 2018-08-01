@@ -12,17 +12,25 @@ package com.shazam.fork.suite;
 
 import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
-import org.jf.dexlib.*;
+import org.jf.dexlib.AnnotationDirectoryItem;
+import org.jf.dexlib.AnnotationItem;
+import org.jf.dexlib.AnnotationSetItem;
+import org.jf.dexlib.ClassDefItem;
 import org.jf.dexlib.EncodedValue.AnnotationEncodedSubValue;
 import org.jf.dexlib.EncodedValue.ArrayEncodedValue;
 import org.jf.dexlib.EncodedValue.EncodedValue;
 import org.jf.dexlib.EncodedValue.StringEncodedValue;
+import org.jf.dexlib.StringIdItem;
 
 import javax.annotation.Nonnull;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static com.shazam.fork.model.TestCaseEvent.newTestCase;
+import static com.shazam.fork.model.TestCaseEvent.Builder.testCaseEvent;
 import static java.lang.Math.min;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
@@ -83,10 +91,16 @@ public class TestSuiteLoader {
         String testMethod = method.method.getMethodName().getStringValue();
         AnnotationItem[] annotations = method.annotationSet.getAnnotations();
         String testClass = getClassName(classDefItem);
-        boolean ignored = isClassIgnored(annotationDirectoryItem) || isMethodIgnored(annotations);
+        boolean isIgnored = isClassIgnored(annotationDirectoryItem) || isMethodIgnored(annotations);
         List<String> permissionsToRevoke = getPermissionsToRevoke(annotations);
         Map<String, String> properties = getTestProperties(annotations);
-        return newTestCase(testMethod, testClass, ignored, permissionsToRevoke, properties);
+        return testCaseEvent()
+                .withTestClass(testClass)
+                .withTestMethod(testMethod)
+                .withIsIgnored(isIgnored)
+                .withPermissionsToRevoke(permissionsToRevoke)
+                .withProperties(properties)
+                .build();
     }
 
     private String getClassName(ClassDefItem classDefItem) {

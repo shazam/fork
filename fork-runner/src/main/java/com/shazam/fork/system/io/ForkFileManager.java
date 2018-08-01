@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import static com.shazam.fork.CommonDefaults.FORK_SUMMARY_FILENAME_FORMAT;
-import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static com.shazam.fork.system.io.FileType.TEST;
 import static java.nio.file.Files.createDirectories;
 import static java.nio.file.Paths.get;
@@ -53,7 +52,7 @@ public class ForkFileManager implements FileManager {
     public File createFile(FileType fileType, Pool pool, Device device, TestIdentifier testIdentifier) {
         try {
             Path directory = createDirectory(fileType, pool, device);
-            String filename = createFilenameForTest(newTestCase(testIdentifier), fileType);
+            String filename = createFilenameForTest(TestCaseEvent.from(testIdentifier), fileType);
             return createFile(directory, filename);
         } catch (IOException e) {
             throw new CouldNotCreateDirectoryException(e);
@@ -83,7 +82,7 @@ public class ForkFileManager implements FileManager {
 
     @Override
     public File getFile(FileType fileType, String pool, String safeSerial, TestIdentifier testIdentifier) {
-        String filenameForTest = createFilenameForTest(newTestCase(testIdentifier), fileType);
+        String filenameForTest = createFilenameForTest(TestCaseEvent.from(testIdentifier), fileType);
         Path path = get(output.getAbsolutePath(), fileType.getDirectory(), pool, safeSerial, filenameForTest);
         return path.toFile();
     }
