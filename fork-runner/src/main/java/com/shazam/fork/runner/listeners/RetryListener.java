@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 
 public class RetryListener extends NoOpITestRunListener {
     private static final Logger logger = LoggerFactory.getLogger(RetryListener.class);
@@ -47,12 +46,12 @@ public class RetryListener extends NoOpITestRunListener {
 
     @Override
     public void testStarted(TestIdentifier test) {
-        startedTest = newTestCase(test);
+        startedTest = TestCaseEvent.from(test);
     }
 
     @Override
     public void testFailed(TestIdentifier test, String trace) {
-        failedTest = newTestCase(test);
+        failedTest = TestCaseEvent.from(test);
     }
 
     @Override

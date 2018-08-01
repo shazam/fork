@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import static com.shazam.fork.model.Device.Builder.aDevice;
 import static com.shazam.fork.model.Pool.Builder.aDevicePool;
-import static com.shazam.fork.model.TestCaseEvent.newTestCase;
+import static com.shazam.fork.model.TestCaseEvent.Builder.testCaseEvent;
 import static com.shazam.fork.runner.FakePoolTestCaseAccumulator.fakePoolTestCaseAccumulator;
 import static com.shazam.fork.runner.FakeProgressReporterTrackers.aFakeProgressReporterTrackers;
 
@@ -26,8 +26,10 @@ public class OverallProgressReporterTest {
     private final Pool A_POOL = aDevicePool()
             .addDevice(A_DEVICE)
             .build();
-    private final TestCaseEvent A_TEST_CASE =
-            newTestCase("aTestClass", "aTestMethod");
+    private final TestCaseEvent A_TEST_CASE = testCaseEvent()
+            .withTestClass("aTestClass")
+            .withTestMethod("aTestMethod")
+            .build();
 
     private OverallProgressReporter overallProgressReporter;
 

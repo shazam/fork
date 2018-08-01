@@ -1,6 +1,5 @@
 package com.shazam.fork.aggregator;
 
-import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
@@ -15,11 +14,10 @@ import java.util.HashMap;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.shazam.fork.model.Device.Builder.aDevice;
 import static com.shazam.fork.model.Pool.Builder.aDevicePool;
-import static com.shazam.fork.model.TestCaseEvent.newTestCase;
+import static com.shazam.fork.model.TestCaseEvent.Builder.testCaseEvent;
 import static com.shazam.fork.summary.FakeDeviceTestFilesRetriever.fakeDeviceTestFilesRetriever;
 import static com.shazam.fork.summary.TestResult.Builder.aTestResult;
 import static com.shazam.fork.summary.TestResult.SUMMARY_KEY_TOTAL_FAILURE_COUNT;
-import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
@@ -77,12 +75,29 @@ public class FilesRetrieverBasedAggregatorTest {
     );
 
     private final Collection<TestCaseEvent> testCaseEvents = newArrayList(
-            newTestCase(new TestIdentifier("com.example.CompletedClassTest", "doesJobProperly")),
-            newTestCase(new TestIdentifier("com.example.CompletedClassTest2", "doesJobProperly")),
-            newTestCase("doesJobProperly", "com.example.FailedClassTest", false,
-                    emptyList(), TEST_METRICS_FOR_FAILED_TEST),
-            newTestCase(new TestIdentifier("com.example.IgnoredClassTest", "doesJobProperly"), true),
-            newTestCase(new TestIdentifier("com.example.FatalCrashedTest", "doesJobProperly"))
+            testCaseEvent()
+                    .withTestClass("com.example.CompletedClassTest")
+                    .withTestMethod("doesJobProperly")
+                    .build(),
+            testCaseEvent()
+                    .withTestClass("com.example.CompletedClassTest2")
+                    .withTestMethod("doesJobProperly")
+                    .build(),
+            testCaseEvent()
+                    .withTestClass("com.example.FailedClassTest")
+                    .withTestMethod("doesJobProperly")
+                    .withProperties(TEST_METRICS_FOR_FAILED_TEST)
+                    .withIsIgnored(false)
+                    .build(),
+            testCaseEvent()
+                    .withTestClass("com.example.IgnoredClassTest")
+                    .withTestMethod("doesJobProperly")
+                    .withIsIgnored(true)
+                    .build(),
+            testCaseEvent()
+                    .withTestClass("com.example.FatalCrashedTest")
+                    .withTestMethod("doesJobProperly")
+                    .build()
     );
 
     private final FakeDeviceTestFilesRetriever fakeDeviceTestFilesRetriever = fakeDeviceTestFilesRetriever();

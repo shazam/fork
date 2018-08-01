@@ -17,7 +17,6 @@ import org.junit.Test;
 import static com.shazam.fork.device.FakeDeviceTestFilesCleaner.fakeDeviceTestFilesCleaner;
 import static com.shazam.fork.model.Device.Builder.aDevice;
 import static com.shazam.fork.model.Pool.Builder.aDevicePool;
-import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static com.shazam.fork.util.TestPipelineEmulator.Builder.testPipelineEmulator;
 
 public class RetryListenerTest {
@@ -37,7 +36,7 @@ public class RetryListenerTest {
             .build();
 
     private final TestIdentifier fatalCrashedTest = new TestIdentifier("com.example.FatalCrashedTest", "testMethod");
-    private final TestCaseEvent fatalCrashedTestCaseEvent = newTestCase(fatalCrashedTest);
+    private final TestCaseEvent fatalCrashedTestCaseEvent = TestCaseEvent.from(fatalCrashedTest);
 
     @Test
     public void reschedulesTestIfTestRunFailedAndDeleteTraceFiles() {

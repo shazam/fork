@@ -26,44 +26,45 @@ import java.util.Map;
 
 import static com.shazam.fork.io.FakeDexFileExtractor.fakeDexFileExtractor;
 import static com.shazam.fork.io.Files.convertFileToDexFile;
-import static com.shazam.fork.model.TestCaseEvent.newTestCase;
+import static com.shazam.fork.model.TestCaseEvent.Builder.testCaseEvent;
 import static com.shazam.fork.suite.FakeTestClassMatcher.fakeTestClassMatcher;
 import static com.shazam.shazamcrest.MatcherAssert.assertThat;
 import static com.shazam.shazamcrest.matcher.Matchers.sameBeanAs;
 import static java.util.Arrays.asList;
-import static java.util.Collections.*;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.hasItems;
 
 /**
  * This test is based on the <code>tests.dex</code> file, which contains test classes with the following code:
  * <blockquote><pre>
- *{@literal}@Ignore
- *public class IgnoredClassTest {
+ * {@literal}@Ignore
+ * public class IgnoredClassTest {
  *    {@literal}@Test
  *    public void methodOfAnIgnoredTestClass() {
  *    }
- *}
- *
- *public class ClassWithNoIgnoredMethodsTest {
+ * }
+ * <p>
+ * public class ClassWithNoIgnoredMethodsTest {
  *    {@literal}@Test
  *    public void firstTestMethod() {
  *    }
- *
+ * <p>
  *    {@literal}@Test
  *    public void secondTestMethod() {
  *    }
- *}
- *
- *public class ClassWithSomeIgnoredMethodsTest {
+ * }
+ * <p>
+ * public class ClassWithSomeIgnoredMethodsTest {
  *    {@literal}@Test
  *    public void nonIgnoredTestMethod() {
  *    }
- *
+ * <p>
  *    {@literal}@Test
  *    {@literal}@Ignore
  *    public void ignoredTestMethod() {
  *    }
- *}
+ * }
  * </pre></blockquote>
  */
 public class TestSuiteLoaderTest {
@@ -81,7 +82,7 @@ public class TestSuiteLoaderTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         testSuiteLoader = new TestSuiteLoader(ANY_INSTRUMENTATION_APK_FILE, fakeDexFileExtractor, fakeTestClassMatcher);
     }
 
@@ -125,16 +126,35 @@ public class TestSuiteLoaderTest {
 
     @Nonnull
     private Matcher<TestCaseEvent> sameTestEventAs(String testMethod, String testClass, Map<String, String> properties) {
-        return sameBeanAs(newTestCase(testMethod, testClass, false, emptyList(), properties));
+        return sameBeanAs(
+                testCaseEvent()
+                        .withTestClass(testClass)
+                        .withTestMethod(testMethod)
+                        .withProperties(properties)
+                        .build()
+        );
     }
 
     @Nonnull
     private Matcher<TestCaseEvent> sameTestEventAs(String testMethod, String testClass, boolean isIgnored) {
-        return sameBeanAs(newTestCase(testMethod, testClass, isIgnored, emptyList(), emptyMap()));
+        return sameBeanAs(
+                testCaseEvent()
+                        .withTestClass(testClass)
+                        .withTestMethod(testMethod)
+                        .withIsIgnored(isIgnored)
+                        .build()
+        );
     }
 
     @Nonnull
     private Matcher<TestCaseEvent> sameTestEventAs(String testMethod, String testClass, boolean isIgnored, List<String> permissions) {
-        return sameBeanAs(newTestCase(testMethod, testClass, isIgnored, permissions, emptyMap()));
+        return sameBeanAs(
+                testCaseEvent()
+                        .withTestClass(testClass)
+                        .withTestMethod(testMethod)
+                        .withIsIgnored(isIgnored)
+                        .withPermissionsToRevoke(permissions)
+                        .build()
+        );
     }
 }
