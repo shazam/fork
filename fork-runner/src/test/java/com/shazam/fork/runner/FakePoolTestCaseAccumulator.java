@@ -4,16 +4,29 @@ import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.PoolTestCaseAccumulator;
 import com.shazam.fork.model.TestCaseEvent;
 
+import javax.annotation.Nonnull;
+
 public class FakePoolTestCaseAccumulator implements PoolTestCaseAccumulator {
+    private int poolCount;
+    private int testCaseCount;
 
-    private int count = 0;
+    private FakePoolTestCaseAccumulator() {
+    }
 
-    public static FakePoolTestCaseAccumulator aFakePoolTestCaseAccumulator(){
+    @Nonnull
+    public static FakePoolTestCaseAccumulator fakePoolTestCaseAccumulator() {
         return new FakePoolTestCaseAccumulator();
     }
 
-    public FakePoolTestCaseAccumulator thatAlwaysReturns(int count){
-        this.count = count;
+    @Nonnull
+    public FakePoolTestCaseAccumulator thatAlwaysReturnsPoolCount(int count) {
+        poolCount = count;
+        return this;
+    }
+
+    @Nonnull
+    public FakePoolTestCaseAccumulator thatAlwaysReturnsTestCaseCount(int count) {
+        testCaseCount = count;
         return this;
     }
 
@@ -23,11 +36,11 @@ public class FakePoolTestCaseAccumulator implements PoolTestCaseAccumulator {
 
     @Override
     public int getCount(Pool pool, TestCaseEvent testCaseEvent) {
-        return count;
+        return poolCount;
     }
 
     @Override
     public int getCount(TestCaseEvent testCaseEvent) {
-        return count;
+        return testCaseCount;
     }
 }

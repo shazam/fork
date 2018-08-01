@@ -35,12 +35,12 @@ public class TestPipelineEmulator {
             return new Builder();
         }
 
-        public Builder withTrace(String trace) {
+        public Builder withTestFailed(String trace) {
             this.trace = trace;
             return this;
         }
 
-        public Builder withFatalErrorMessage(String fatalErrorMessage) {
+        public Builder withTestRunFailed(String fatalErrorMessage) {
             this.fatalErrorMessage = fatalErrorMessage;
             return this;
         }

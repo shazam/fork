@@ -17,6 +17,7 @@ import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 
 public interface FileManager {
@@ -33,4 +34,9 @@ public interface FileManager {
     File[] getFiles(FileType fileType, Pool pool, Device device, TestIdentifier testIdentifier);
 
     File getFile(FileType fileType, String pool, String safeSerial, TestIdentifier testIdentifier);
+
+    File getFile(@Nonnull FileType fileType,
+                 @Nonnull Pool pool,
+                 @Nonnull Device device,
+                 @Nonnull TestCaseEvent testCase);
 }

@@ -27,7 +27,6 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import static com.shazam.fork.model.TestCaseEvent.newTestCase;
 import static com.shazam.fork.summary.TestResult.SUMMARY_KEY_TOTAL_FAILURE_COUNT;
 
 public class ForkXmlTestRunListener extends XmlTestRunListener {
@@ -69,7 +68,7 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
         ImmutableMap.Builder<String, String> mapBuilder = ImmutableMap.<String, String>builder()
                 .putAll(super.getPropertiesAttributes());
         if (test != null) {
-            int testFailuresCount = progressReporter.getTestFailuresCount(pool, newTestCase(test));
+            int testFailuresCount = progressReporter.getTestFailuresCount(pool, TestCaseEvent.from(test));
             if (testFailuresCount > 0) {
                 mapBuilder.put(SUMMARY_KEY_TOTAL_FAILURE_COUNT, Integer.toString(testFailuresCount));
             }

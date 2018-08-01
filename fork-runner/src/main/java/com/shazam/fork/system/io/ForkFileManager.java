@@ -8,6 +8,7 @@ import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class ForkFileManager implements FileManager {
     public File createFile(FileType fileType, Pool pool, Device device, TestIdentifier testIdentifier) {
         try {
             Path directory = createDirectory(fileType, pool, device);
-            String filename = createFilenameForTest(testIdentifier, fileType);
+            String filename = createFilenameForTest(TestCaseEvent.from(testIdentifier), fileType);
             return createFile(directory, filename);
         } catch (IOException e) {
             throw new CouldNotCreateDirectoryException(e);
@@ -81,8 +82,22 @@ public class ForkFileManager implements FileManager {
 
     @Override
     public File getFile(FileType fileType, String pool, String safeSerial, TestIdentifier testIdentifier) {
-        String filenameForTest = createFilenameForTest(testIdentifier, fileType);
+        String filenameForTest = createFilenameForTest(TestCaseEvent.from(testIdentifier), fileType);
         Path path = get(output.getAbsolutePath(), fileType.getDirectory(), pool, safeSerial, filenameForTest);
+        return path.toFile();
+    }
+
+    @Override
+    public File getFile(@Nonnull FileType fileType,
+                        @Nonnull Pool pool,
+                        @Nonnull Device device,
+                        @Nonnull TestCaseEvent testCase) {
+        String filenameForTest = createFilenameForTest(testCase, fileType);
+        Path path = get(output.getAbsolutePath(),
+                fileType.getDirectory(),
+                pool.getName(),
+                device.getSafeSerial(),
+                filenameForTest);
         return path.toFile();
     }
 
@@ -98,8 +113,8 @@ public class ForkFileManager implements FileManager {
         return new File(directory.toFile(), filename);
     }
 
-    private String createFilenameForTest(TestIdentifier testIdentifier, FileType fileType) {
-        return String.format("%s.%s", testIdentifier.toString(), fileType.getSuffix());
+    private String createFilenameForTest(TestCaseEvent testCase, FileType fileType) {
+        return String.format("%s.%s", testCase.getTestFullName(), fileType.getSuffix());
     }
 
     private String createFilenameForTest(TestIdentifier testIdentifier, FileType fileType, int sequenceNumber) {

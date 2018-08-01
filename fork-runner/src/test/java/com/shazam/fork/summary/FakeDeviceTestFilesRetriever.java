@@ -14,7 +14,7 @@ public class FakeDeviceTestFilesRetriever implements DeviceTestFilesRetriever {
     private FakeDeviceTestFilesRetriever() {
     }
 
-    public static FakeDeviceTestFilesRetriever aFakeDeviceTestFilesRetriever() {
+    public static FakeDeviceTestFilesRetriever fakeDeviceTestFilesRetriever() {
         return new FakeDeviceTestFilesRetriever();
     }
 
