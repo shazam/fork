@@ -42,7 +42,7 @@ buildscript {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
   }
   dependencies {
-    classpath 'com.shazam.fork:fork-gradle-plugin:3.6.0-SNAPSHOT'
+    classpath 'com.shazam.fork:fork-gradle-plugin:3.7.0-SNAPSHOT'
   }
 }
 ```
