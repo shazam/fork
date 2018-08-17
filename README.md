@@ -202,12 +202,13 @@ fork {
 		    groupings {
 			    phablets = ["ABCDE", "FGHIJ"]
 			    tablets = ["12345"]
+			    emulators = [".*:5555"]
 			}
 	    }
     }
 }
 ```
-That will create two pools named "phablets" & "tablets" with devices that have the respective serial numbers.
+That will create three pools named "phablets", "tablets" & "emulators" with devices that have the respective serial numbers. Emulators will be selected automatically by a regexp.
 
 ### Standalone examples
 #### Automatic pooling
