@@ -38,7 +38,8 @@ dependencies {
     }
     testCompile(
             "org.jmock:jmock:$JMOCK_VERSION",
-            "org.jmock:jmock-junit4:$JMOCK_VERSION")
+            "org.jmock:jmock-junit4:$JMOCK_VERSION",
+            "com.shazam:shazamcrest:$SHAZAMCREST_VERSION")
 }
 
 jar {
