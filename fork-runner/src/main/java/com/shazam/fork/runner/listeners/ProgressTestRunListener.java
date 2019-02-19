@@ -19,7 +19,6 @@ import com.shazam.fork.runner.ProgressReporter;
 import java.util.Map;
 
 class ProgressTestRunListener implements ITestRunListener {
-
     private final PoolProgressTracker poolProgressTracker;
 
     ProgressTestRunListener(Pool pool, ProgressReporter progressReporter) {
@@ -58,7 +57,7 @@ class ProgressTestRunListener implements ITestRunListener {
 
     @Override
     public void testRunFailed(String errorMessage) {
-        poolProgressTracker.failedTest();
+        poolProgressTracker.failedTestRun();
     }
 
     @Override

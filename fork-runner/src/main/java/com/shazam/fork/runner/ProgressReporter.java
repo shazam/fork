@@ -30,7 +30,9 @@ public interface ProgressReporter {
      */
     long millisSinceTestsStarted();
 
-    int getFailures();
+    int getTestFailures();
+
+    int getTestRunFailures();
 
     float getProgress();
 

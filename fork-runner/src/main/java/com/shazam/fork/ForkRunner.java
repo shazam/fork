@@ -81,9 +81,9 @@ public class ForkRunner {
                 reportMissingTests(aggregatedTestResult);
                 System.out.println("Scheduling their re-execution");
 
-                Collection<TestCaseEvent> testsToExecute =
+                Collection<TestCaseEvent> fatalCrashedTestCases =
                         findFatalCrashedTestCases(testCases, aggregatedTestResult.getFatalCrashedTests());
-                executeTests(poolExecutor, pools, testsToExecute);
+                executeTests(poolExecutor, pools, fatalCrashedTestCases);
 
                 aggregatedTestResult = aggregator.aggregateTestResults(pools, testCases);
 

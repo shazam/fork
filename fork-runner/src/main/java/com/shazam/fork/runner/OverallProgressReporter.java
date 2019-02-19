@@ -72,10 +72,19 @@ public class OverallProgressReporter implements ProgressReporter {
     }
 
     @Override
-    public int getFailures() {
+    public int getTestFailures() {
         int sum = 0;
         for (PoolProgressTracker value : poolProgressTrackers.values()) {
             sum += value.getNumberOfFailedTests();
+        }
+        return sum;
+    }
+
+    @Override
+    public int getTestRunFailures() {
+        int sum = 0;
+        for (PoolProgressTracker value : poolProgressTrackers.values()) {
+            sum += value.getNumberOfFailedTestRuns();
         }
         return sum;
     }
@@ -137,8 +146,9 @@ public class OverallProgressReporter implements ProgressReporter {
         private void log(int testCaseFailures, boolean singleTestAllowed, boolean result) {
             logBuilder.setLength(0); //clean up.
             logBuilder.append("Retry requested ")
-                    .append(result ? " and allowed. " : " but not allowed. ")
-                    .append("Total retry left :").append(totalAllowedRetryLeft.get())
+                    .append(result ? "and allowed. " : "but not allowed. ")
+                    .append("Total retry left: ")
+                    .append(totalAllowedRetryLeft.get())
                     .append(" and Single Test case retry left: ")
                     .append(singleTestAllowed ? maxRetryPerTestCaseQuota - testCaseFailures : 0);
             logger.debug(logBuilder.toString());

@@ -15,6 +15,7 @@ public class PoolProgressTrackerImpl implements PoolProgressTracker {
     private final int totalTests;
     private int failedTests;
     private int completedTests;
+    private int failedTestRuns;
 
     public PoolProgressTrackerImpl(int totalTests) {
         this.totalTests = totalTests;
@@ -31,6 +32,11 @@ public class PoolProgressTrackerImpl implements PoolProgressTracker {
     }
 
     @Override
+    public void failedTestRun() {
+        failedTestRuns++;
+    }
+
+    @Override
     public void trackTestEnqueuedAgain() {
         completedTests--;
         failedTests--;
@@ -44,5 +50,10 @@ public class PoolProgressTrackerImpl implements PoolProgressTracker {
     @Override
     public int getNumberOfFailedTests() {
         return failedTests;
+    }
+
+    @Override
+    public int getNumberOfFailedTestRuns() {
+        return failedTestRuns;
     }
 }
