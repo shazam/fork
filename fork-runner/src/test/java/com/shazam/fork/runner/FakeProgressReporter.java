@@ -64,7 +64,12 @@ public final class FakeProgressReporter implements ProgressReporter {
     }
 
     @Override
-    public int getFailures() {
+    public int getTestFailures() {
+        return 0;
+    }
+
+    @Override
+    public int getTestRunFailures() {
         return 0;
     }
 

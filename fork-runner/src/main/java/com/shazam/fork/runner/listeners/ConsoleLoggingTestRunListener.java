@@ -45,14 +45,14 @@ class ConsoleLoggingTestRunListener extends NoOpITestRunListener {
 
     @Override
     public void testStarted(TestIdentifier test) {
-        System.out.println(format("%s %s %s %s [%s] %s", runningTime(), progress(), failures(), modelName,
-                serial, testCase(test)));
+        System.out.println(format("%s %s %s %s %s [%s] %s", runningTime(), progress(), failures(),
+                runFailures(), modelName, serial, testCase(test)));
     }
 
     @Override
     public void testFailed(TestIdentifier test, String trace) {
-        System.out.println(format("%s %s %s %s [%s] Failed %s\n %s", runningTime(), progress(), failures(), modelName,
-                serial, testCase(test), trace));
+        System.out.println(format("%s %s %s %s %s [%s] Failed %s\n %s", runningTime(), progress(),
+                failures(), runFailures(), modelName, serial, testCase(test), trace));
     }
 
     @Override
@@ -68,14 +68,14 @@ class ConsoleLoggingTestRunListener extends NoOpITestRunListener {
 
     @Override
     public void testRunFailed(String errorMessage) {
-        System.out.println(format("%s %s %s %s [%s] Test run failed\n%s", runningTime(), progress(), failures(),
-                modelName, serial, errorMessage));
+        System.out.println(format("%s %s %s %s %s [%s] Test run failed\n%s", runningTime(),
+                progress(), failures(), runFailures(), modelName, serial, errorMessage));
     }
 
     @Override
     public void testRunStopped(long elapsedTime) {
-        System.out.println(format("%s %s %s %s [%s] Test run stopped after %s ms", runningTime(), progress(),
-                failures(), modelName, serial, elapsedTime));
+        System.out.println(format("%s %s %s %s %s [%s] Test run stopped after %s ms", runningTime(),
+                progress(), failures(), runFailures(), modelName, serial, elapsedTime));
     }
 
     private String runningTime() {
@@ -92,6 +92,10 @@ class ConsoleLoggingTestRunListener extends NoOpITestRunListener {
     }
 
     private int failures() {
-        return progressReporter.getFailures();
+        return progressReporter.getTestFailures();
+    }
+
+    private int runFailures() {
+        return progressReporter.getTestRunFailures();
     }
 }

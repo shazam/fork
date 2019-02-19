@@ -15,9 +15,13 @@ public interface PoolProgressTracker {
 
     void failedTest();
 
+    void failedTestRun();
+
     void trackTestEnqueuedAgain();
 
     float getProgress();
 
     int getNumberOfFailedTests();
+
+    int getNumberOfFailedTestRuns();
 }
