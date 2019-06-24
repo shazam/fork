@@ -39,7 +39,7 @@ public class RetryListenerTest {
     private final TestCaseEvent fatalCrashedTestCaseEvent = TestCaseEvent.from(fatalCrashedTest);
 
     @Test
-    public void reschedulesTestIfTestRunFailedAndDeleteTraceFiles() {
+    public void reschedulesTestAndDeletesTraceFilesWhenRunFailed() {
         RetryListener retryListener =
                 new RetryListener(pool, device, mockFailedTestScheduler, mockDeviceTestFilesCleaner);
 
@@ -51,13 +51,13 @@ public class RetryListenerTest {
         }});
 
         TestPipelineEmulator emulator = testPipelineEmulator()
-                .withTestRunFailed("fatal error")
+                .withTestFailed("assert exception")
                 .build();
         emulator.emulateFor(retryListener, fatalCrashedTest);
     }
 
     @Test
-    public void doesNotDeleteTraceFilesIfCannotRescheduleTestAfterTestRunFailed() {
+    public void doesNotDeleteTraceFilesIfCannotRescheduleTestWhenRunFailed() {
         RetryListener retryListener =
                 new RetryListener(pool, device, mockFailedTestScheduler, mockDeviceTestFilesCleaner);
 
@@ -69,7 +69,7 @@ public class RetryListenerTest {
         }});
 
         TestPipelineEmulator emulator = testPipelineEmulator()
-                .withTestRunFailed("fatal error")
+                .withTestFailed("assert exception")
                 .build();
         emulator.emulateFor(retryListener, fatalCrashedTest);
     }
@@ -85,6 +85,22 @@ public class RetryListenerTest {
 
         TestPipelineEmulator emulator = testPipelineEmulator()
                 .withTestFailed("assert exception")
+                .withTestRunFailed("fatal error")
+                .build();
+        emulator.emulateFor(retryListener, fatalCrashedTest);
+    }
+
+    @Test
+    public void doesNotRescheduleTestWhenTestRunFailsWithoutCrash() {
+        RetryListener retryListener =
+                new RetryListener(pool, device, mockFailedTestScheduler, fakeDeviceTestFilesCleaner);
+
+        mockery.checking(new Expectations() {{
+            never(mockFailedTestScheduler);
+            never(mockDeviceTestFilesCleaner);
+        }});
+
+        TestPipelineEmulator emulator = testPipelineEmulator()
                 .withTestRunFailed("fatal error")
                 .build();
         emulator.emulateFor(retryListener, fatalCrashedTest);
