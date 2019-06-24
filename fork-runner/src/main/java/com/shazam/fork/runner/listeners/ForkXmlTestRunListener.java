@@ -12,6 +12,7 @@
  */
 package com.shazam.fork.runner.listeners;
 
+import com.android.annotations.NonNull;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.android.ddmlib.testrunner.XmlTestRunListener;
 import com.google.common.collect.ImmutableMap;
@@ -22,10 +23,9 @@ import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.system.io.FileManager;
 import com.shazam.fork.system.io.FileType;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.Map;
-
-import javax.annotation.Nonnull;
 
 import static com.shazam.fork.summary.TestResult.SUMMARY_KEY_TOTAL_FAILURE_COUNT;
 
@@ -34,6 +34,7 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
     private final FileManager fileManager;
     private final Pool pool;
     private final Device device;
+    @NonNull
     private final TestCaseEvent testCase;
 
     @Nonnull
@@ -73,9 +74,7 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
                 mapBuilder.put(SUMMARY_KEY_TOTAL_FAILURE_COUNT, Integer.toString(testFailuresCount));
             }
         }
-        if (testCase != null) {
-            mapBuilder.putAll(testCase.getProperties());
-        }
+        mapBuilder.putAll(testCase.getProperties()); // <--
         return mapBuilder.build();
     }
 }

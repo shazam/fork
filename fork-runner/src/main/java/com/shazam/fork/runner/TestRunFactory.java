@@ -10,9 +10,12 @@
 
 package com.shazam.fork.runner;
 
+import com.android.annotations.NonNull;
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.shazam.fork.Configuration;
-import com.shazam.fork.model.*;
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.runner.listeners.TestRunListenersFactory;
 
 import java.util.List;
@@ -31,7 +34,7 @@ public class TestRunFactory {
         this.testRunListenersFactory = testRunListenersFactory;
     }
 
-    public TestRun createTestRun(TestCaseEvent testCase,
+    public TestRun createTestRun(@NonNull TestCaseEvent testCase,
                                  Device device,
                                  Pool pool,
                                  ProgressReporter progressReporter,
