@@ -9,8 +9,8 @@ after_success:
 
 env:
   global:
-    - secure: "IBWM76W+P/6SYdclfagmghoBY0d8ej1JcczVlCPt8vIWEOKwXxpcOVwkD7Nq59nBrua8mOTXY9puTM9ZXHWxpUpVAjWwGmlUGpFExnXd6mhvEilCU13kXovx+rRtLcpampysqgWjikFw6jICylKGkJkCpBmqo31oikptyd7uKOI="
-    - secure: "SOZay3H1w7nXrfBgy5VkjbsQtr3xGRr+9ahKSujYZqy6m5McwswL2jgJz+y6znPnX/2uB/F9dCGp67R1Hymz7150V502uHc7ytOhCQA4lTb5eYhZKjPkyuTdBuwynUquez3qsLrwLV7ss5daSNkSmTubkeVDB2JD5ctW23UweD4="
+    - secure: "Uuh4ZKeptnRU7wWdFTZ9Yf+mAj4DBAZI6qxPRbis5HqGhOZtXoJX55HOpZZS2/DZa8VI//6yb1LqIgnrAgCIM3jGn3vQYH6ZXGhdCJWXhl1nemvOrdw56M3ULeZvcCo9AKvPMjW/GYPvlAxhVTDRvPPXRiw8ZLk+Gu/t/qDGqFg="
+    - secure: "TU3LBBorpDuGtRKB60XnasaE33HT6DTnI6iXIqIagduYjb+VlPOcSrVuicvwCIi8v6fne//Q3rBTbmRIbPMDOcyCZ0ME+1A9Ob1EA1ZHuwtkfW7m6gQw5hmZ0Y+6PwqJ69jGGGL2DL88ToCxxXwqTcw2u46IV8RUTBNyi7anSTY="
     - secure: "WPj3HMQTvkRhKdNdWeI5vdljCIPHezN/g59LnjTuTHrbJ73+o+FiK0cgBtLnJTXn+ZrSTCMfEQuCUPXvOs/skPlhVz1sldtlUyMfxBvNen2NeFuR/b5B8cpqE1ojInQFn6xDGZEEJ6cpHYuSKFjERCyxgOCOUOHQUnWXGISzeK4="
 
 sudo: false
