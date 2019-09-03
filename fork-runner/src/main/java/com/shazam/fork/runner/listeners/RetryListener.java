@@ -36,7 +36,7 @@ public class RetryListener extends NoOpITestRunListener {
     private final TestCaseEvent runningTestCase;
 
     private TestCaseEvent startedTest;
-    private TestCaseEvent endedTest;
+    private TestCaseEvent failedTest;
 
     public RetryListener(Pool pool,
                          Device device,
@@ -57,7 +57,23 @@ public class RetryListener extends NoOpITestRunListener {
 
     @Override
     public void testFailed(TestIdentifier test, String trace) {
-        rescheduleTestExecution();
+        failedTest = TestCaseEvent.from(test);
+    }
+
+    @Override
+    public void testRunFailed(String errorMessage) {
+        logger.info("Test run failed due to a fatal error: " + errorMessage);
+        if (failedTest == null && startedTest != null) {
+            System.out.println("Reschedule a test started by this test run");
+            rescheduleTestExecution();
+        }
+    }
+
+    @Override
+    public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
+        if (failedTest != null) {
+            rescheduleTestExecution();
+        }
     }
 
     private void rescheduleTestExecution() {
@@ -74,23 +90,6 @@ public class RetryListener extends NoOpITestRunListener {
         boolean isDeleted = deviceTestFilesCleaner.deleteTraceFiles(testCase);
         if (!isDeleted) {
             logger.warn("Failed to remove a trace filed for a failed but enqueued again test");
-        }
-    }
-
-    @Override
-    public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
-        endedTest = TestCaseEvent.from(test);
-    }
-
-    @Override
-    public void testRunFailed(String errorMessage) {
-        logger.info("Test run failed due to a fatal error: " + errorMessage);
-        boolean testStarted = startedTest != null;
-        boolean testNotEnded = endedTest == null;
-        boolean testCrashed = testStarted && testNotEnded;
-        if (testCrashed) {
-            System.out.println("Reschedule a test started by this test run");
-            rescheduleTestExecution();
         }
     }
 }
