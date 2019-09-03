@@ -41,7 +41,7 @@ public class RetryListenerTest {
     @Test
     public void reschedulesTestAndDeletesTraceFilesWhenRunFailed() {
         RetryListener retryListener =
-                new RetryListener(pool, device, mockFailedTestScheduler, mockDeviceTestFilesCleaner);
+                new RetryListener(pool, device, mockFailedTestScheduler, mockDeviceTestFilesCleaner, fatalCrashedTestCaseEvent);
 
         mockery.checking(new Expectations() {{
             oneOf(mockFailedTestScheduler).rescheduleTestExecution(fatalCrashedTestCaseEvent);
@@ -59,7 +59,7 @@ public class RetryListenerTest {
     @Test
     public void doesNotDeleteTraceFilesIfCannotRescheduleTestWhenRunFailed() {
         RetryListener retryListener =
-                new RetryListener(pool, device, mockFailedTestScheduler, mockDeviceTestFilesCleaner);
+                new RetryListener(pool, device, mockFailedTestScheduler, mockDeviceTestFilesCleaner, fatalCrashedTestCaseEvent);
 
         mockery.checking(new Expectations() {{
             oneOf(mockFailedTestScheduler).rescheduleTestExecution(fatalCrashedTestCaseEvent);
@@ -77,7 +77,7 @@ public class RetryListenerTest {
     @Test
     public void reschedulesTestWhenTestFailsAndThenTestRunCrashes() {
         RetryListener retryListener =
-                new RetryListener(pool, device, mockFailedTestScheduler, fakeDeviceTestFilesCleaner);
+                new RetryListener(pool, device, mockFailedTestScheduler, fakeDeviceTestFilesCleaner, fatalCrashedTestCaseEvent);
 
         mockery.checking(new Expectations() {{
             oneOf(mockFailedTestScheduler).rescheduleTestExecution(fatalCrashedTestCaseEvent);
@@ -93,7 +93,7 @@ public class RetryListenerTest {
     @Test
     public void doesNotRescheduleTestWhenTestRunFailsWithoutCrash() {
         RetryListener retryListener =
-                new RetryListener(pool, device, mockFailedTestScheduler, fakeDeviceTestFilesCleaner);
+                new RetryListener(pool, device, mockFailedTestScheduler, fakeDeviceTestFilesCleaner, fatalCrashedTestCaseEvent);
 
         mockery.checking(new Expectations() {{
             never(mockFailedTestScheduler);

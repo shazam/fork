@@ -57,18 +57,19 @@ public class TestRunListenersFactory {
                 new LogCatTestRunListener(gson, fileManager, pool, device),
                 new SlowWarningTestRunListener(),
                 getScreenTraceTestRunListener(fileManager, pool, device),
-                buildRetryListener(device, pool, progressReporter, testCaseEventQueue),
+                buildRetryListener(device, pool, progressReporter, testCaseEventQueue, testCase),
                 getCoverageTestRunListener(configuration, device, fileManager, pool, testCase));
     }
 
     private RetryListener buildRetryListener(Device device,
                                              Pool pool,
                                              ProgressReporter progressReporter,
-                                             Queue<TestCaseEvent> testCaseEventQueue) {
+                                             Queue<TestCaseEvent> testCaseEventQueue,
+                                             TestCaseEvent testCase) {
         ReporterBasedFailedTestScheduler testScheduler =
                 new ReporterBasedFailedTestScheduler(progressReporter, pool, testCaseEventQueue);
         FileManagerBasedDeviceTestFilesCleaner deviceTestFilesCleaner = new FileManagerBasedDeviceTestFilesCleaner(fileManager, pool, device);
-        return new RetryListener(pool, device, testScheduler, deviceTestFilesCleaner);
+        return new RetryListener(pool, device, testScheduler, deviceTestFilesCleaner, testCase);
     }
 
     private ForkXmlTestRunListener getForkXmlTestRunListener(FileManager fileManager,

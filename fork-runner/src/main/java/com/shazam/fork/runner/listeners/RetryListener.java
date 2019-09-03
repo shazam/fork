@@ -16,10 +16,13 @@ import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.runner.FailedTestScheduler;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -29,19 +32,22 @@ public class RetryListener extends NoOpITestRunListener {
     private final FailedTestScheduler failedTestScheduler;
     private final Pool pool;
     private final DeviceTestFilesCleaner deviceTestFilesCleaner;
+    @Nonnull
+    private final TestCaseEvent runningTestCase;
+
     private TestCaseEvent startedTest;
     private TestCaseEvent endedTest;
 
     public RetryListener(Pool pool,
                          Device device,
                          FailedTestScheduler failedTestScheduler,
-                         DeviceTestFilesCleaner deviceTestFilesCleaner) {
-        checkNotNull(device);
-        checkNotNull(pool);
+                         DeviceTestFilesCleaner deviceTestFilesCleaner,
+                         @Nonnull TestCaseEvent runningTestCase) {
         this.failedTestScheduler = failedTestScheduler;
-        this.device = device;
-        this.pool = pool;
+        this.device = checkNotNull(device);
+        this.pool = checkNotNull(pool);
         this.deviceTestFilesCleaner = deviceTestFilesCleaner;
+        this.runningTestCase = checkNotNull(runningTestCase);
     }
 
     @Override
@@ -51,15 +57,15 @@ public class RetryListener extends NoOpITestRunListener {
 
     @Override
     public void testFailed(TestIdentifier test, String trace) {
-        rescheduleTestExecution(TestCaseEvent.from(test));
+        rescheduleTestExecution();
     }
 
-    private void rescheduleTestExecution(TestCaseEvent testCase) {
-        if (failedTestScheduler.rescheduleTestExecution(testCase)) {
-            logger.info("Test " + testCase.getTestFullName() + " enqueued again into pool:" + pool.getName());
-            removeFailureTraceFiles(testCase);
+    private void rescheduleTestExecution() {
+        if (failedTestScheduler.rescheduleTestExecution(runningTestCase)) {
+            logger.info("Test " + runningTestCase.getTestFullName() + " enqueued again into pool:" + pool.getName());
+            removeFailureTraceFiles(runningTestCase);
         } else {
-            logger.info("Test " + testCase.getTestFullName() + " failed on device " + device.getSafeSerial()
+            logger.info("Test " + runningTestCase.getTestFullName() + " failed on device " + device.getSafeSerial()
                     + " but retry is not allowed.");
         }
     }
@@ -84,7 +90,7 @@ public class RetryListener extends NoOpITestRunListener {
         boolean testCrashed = testStarted && testNotEnded;
         if (testCrashed) {
             System.out.println("Reschedule a test started by this test run");
-            rescheduleTestExecution(startedTest);
+            rescheduleTestExecution();
         }
     }
 }
