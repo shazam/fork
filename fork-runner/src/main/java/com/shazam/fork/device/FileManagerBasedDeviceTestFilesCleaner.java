@@ -5,11 +5,13 @@ import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.system.io.FileManager;
 import com.shazam.fork.system.io.FileType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import java.io.File;
+
+import javax.annotation.Nonnull;
 
 public class FileManagerBasedDeviceTestFilesCleaner implements DeviceTestFilesCleaner {
     private static final Logger logger = LoggerFactory.getLogger(FileManagerBasedDeviceTestFilesCleaner.class);
@@ -28,7 +30,7 @@ public class FileManagerBasedDeviceTestFilesCleaner implements DeviceTestFilesCl
         File file = fileManager.getFile(FileType.TEST, pool, device, testCase);
         boolean isDeleted = file.delete();
         if (!isDeleted) {
-            logger.warn("Failed to delete a file %s", file.getAbsolutePath());
+            logger.warn("Failed to delete a file {}", file.getAbsolutePath());
         }
         return isDeleted;
     }
