@@ -10,7 +10,6 @@
 
 package com.shazam.fork.runner;
 
-import com.android.annotations.NonNull;
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.shazam.fork.Configuration;
 import com.shazam.fork.model.Device;
@@ -20,6 +19,8 @@ import com.shazam.fork.runner.listeners.TestRunListenersFactory;
 
 import java.util.List;
 import java.util.Queue;
+
+import javax.annotation.Nonnull;
 
 import static com.shazam.fork.runner.TestRunParameters.Builder.testRunParameters;
 import static com.shazam.fork.system.PermissionGrantingManager.permissionGrantingManager;
@@ -34,7 +35,7 @@ public class TestRunFactory {
         this.testRunListenersFactory = testRunListenersFactory;
     }
 
-    public TestRun createTestRun(@NonNull TestCaseEvent testCase,
+    public TestRun createTestRun(@Nonnull TestCaseEvent testCase,
                                  Device device,
                                  Pool pool,
                                  ProgressReporter progressReporter,
