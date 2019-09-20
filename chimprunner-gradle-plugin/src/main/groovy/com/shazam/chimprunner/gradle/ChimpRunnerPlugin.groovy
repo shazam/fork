@@ -75,8 +75,7 @@ class ChimpRunnerPlugin implements Plugin<Project> {
                     outputBase = new File(project.buildDir, "chimprunner")
                 }
                 output = new File(outputBase, baseVariantOutput.dirName)
-
-                dependsOn baseVariantOutput.assemble, variant.assemble
+                dependsOn variant.testedVariant.assembleProvider.name, variant.assembleProvider.name
             }
             task.outputs.upToDateWhen { false }
         }
