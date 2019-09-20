@@ -18,22 +18,27 @@ sourceCompatibility = rootProject.sourceCompatibility
 targetCompatibility = rootProject.sourceCompatibility
 
 dependencies {
-    implementation project(':fork-common')
-    implementation("com.android.tools.ddms:ddmlib:25.1.0")
-
-    compile(
-            "org.slf4j:slf4j-log4j12:$SLF4J_VERSION",
-            "com.beust:jcommander:$JCOMMANDER_VERSION",
+    implementation(
+            project(':fork-common'),
+            "com.android.tools.ddms:ddmlib:$ddmlibVersion",
+            "com.google.guava:guava:$guavaVersion",
+            "com.google.code.findbugs:jsr305:$jsr305Version",
+            "com.google.code.gson:gson:$gsonVersion",
+            "commons-io:commons-io:$commonsIoVersion",
+            "org.apache.commons:commons-lang3:$commonsLangVersion",
+            "org.slf4j:slf4j-log4j12:$slf4jVersion",
+            "com.beust:jcommander:$jcommanderVersion",
             "au.com.bytecode:opencsv:2.4"
     )
 
-    testCompile("org.hamcrest:hamcrest-all:$HAMCREST_VERSION")
-    testCompile("junit:junit:$JUNIT_VERSION") {
-        exclude module:'hamcrest-core'
+    testImplementation(
+            "org.hamcrest:hamcrest-all:$hamcrestVersion",
+            "org.jmock:jmock:$jmockVersion",
+            "org.jmock:jmock-junit4:$jmockVersion"
+    )
+    testImplementation("junit:junit:$junitVersion") {
+        exclude module: 'hamcrest-core'
     }
-    testCompile(
-            "org.jmock:jmock:$JMOCK_VERSION",
-            "org.jmock:jmock-junit4:$JMOCK_VERSION")
 }
 
 jar {
@@ -51,7 +56,7 @@ jar {
 run {
     systemProperties System.getProperties()
 
-    if(project.hasProperty('args')) {
+    if (project.hasProperty('args')) {
         args project.args.split('\\s+')
     }
 }

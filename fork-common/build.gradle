@@ -17,28 +17,27 @@ sourceCompatibility = rootProject.sourceCompatibility
 targetCompatibility = rootProject.sourceCompatibility
 
 dependencies {
-    implementation("com.android.tools:common:25.1.0")
-    implementation("com.android.tools.ddms:ddmlib:25.1.0")
-
-    compile(
-            "com.google.code.findbugs:jsr305:3.0.1",
-            "com.google.guava:guava:19.0",
-            "commons-io:commons-io:2.5",
-            "org.apache.commons:commons-lang3:3.4",
-            "com.github.spullara.mustache.java:compiler:0.8.0",
-            "com.google.code.gson:gson:$GSON_VERSION",
-            "org.slf4j:slf4j-log4j12:$SLF4J_VERSION",
+    implementation(
+            "com.android.tools:common:$ddmlibVersion",
+            "com.android.tools.ddms:ddmlib:$ddmlibVersion",
+            "commons-io:commons-io:$commonsIoVersion",
+            "com.google.guava:guava:$guavaVersion",
+            "org.apache.commons:commons-lang3:$commonsLangVersion",
+            "com.github.spullara.mustache.java:compiler:$mustacheVersion",
+            "com.google.code.gson:gson:$gsonVersion",
+            "org.slf4j:slf4j-log4j12:$slf4jVersion",
             "org.smali:dexlib:1.4.2",
             "com.shazam:axmlparser:1.0"
     )
 
-    testCompile(
-            "org.hamcrest:hamcrest-all:$HAMCREST_VERSION",
-            "org.jmock:jmock:$JMOCK_VERSION",
-            "org.jmock:jmock-junit4:$JMOCK_VERSION",
-            "com.shazam:shazamcrest:$SHAZAMCREST_VERSION")
-    testCompile("junit:junit:$JUNIT_VERSION") {
-        exclude module:'hamcrest-core'
+    testImplementation(
+            "org.hamcrest:hamcrest-all:$hamcrestVersion",
+            "org.jmock:jmock:$jmockVersion",
+            "org.jmock:jmock-junit4:$jmockVersion",
+            "com.shazam:shazamcrest:$shazamcrestVersion"
+    )
+    testImplementation("junit:junit:$junitVersion") {
+        exclude module: 'hamcrest-core'
     }
 }
 

@@ -16,11 +16,13 @@ sourceCompatibility = rootProject.sourceCompatibility
 targetCompatibility = rootProject.sourceCompatibility
 
 dependencies {
-    implementation gradleApi()
-    implementation localGroovy()
-    implementation project(':fork-common')
-    implementation project(':fork-runner')
-    implementation "com.android.tools.build:gradle:$androidPlugin"
+    implementation(
+            gradleApi(),
+            localGroovy(),
+            project(':fork-common'),
+            project(':fork-runner'),
+            "com.android.tools.build:gradle:$androidPluginVersion"
+    )
 }
 
 jar {

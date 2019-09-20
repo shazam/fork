@@ -19,8 +19,11 @@ repositories {
 }
 
 dependencies {
-    compile project(':fork-reporter')
-    compile "com.offbytwo.jenkins:jenkins-client:0.3.4"
+    implementation(
+            project(':fork-common'),
+            project(':fork-reporter'),
+            "com.offbytwo.jenkins:jenkins-client:0.3.4",
+            "org.apache.commons:commons-lang3:$commonsLangVersion")
 }
 
 jar {
