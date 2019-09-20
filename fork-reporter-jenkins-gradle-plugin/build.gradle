@@ -9,6 +9,7 @@
  */
 
 apply plugin: 'java-gradle-plugin'
+apply from: '../build-scripts/manifest.gradle'
 apply from: '../build-scripts/gradle-mvn-push.gradle'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -24,15 +25,4 @@ dependencies {
             project(':fork-reporter'),
             "com.offbytwo.jenkins:jenkins-client:0.3.4",
             "org.apache.commons:commons-lang3:$commonsLangVersion")
-}
-
-jar {
-    manifest {
-        attributes 'Implementation-Title': POM_NAME,
-                'Implementation-Version': VERSION_NAME,
-                'Built-By': System.getProperty('user.name'),
-                'Built-Date': new Date(),
-                'Built-JDK': System.getProperty('java.version'),
-                'Built-Gradle': gradle.gradleVersion
-    }
 }

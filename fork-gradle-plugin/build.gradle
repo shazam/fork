@@ -10,6 +10,7 @@
 
 apply plugin: 'groovy'
 apply plugin: 'project-report'
+apply from: '../build-scripts/manifest.gradle'
 apply from: '../build-scripts/gradle-mvn-push.gradle'
 
 sourceCompatibility = rootProject.sourceCompatibility
@@ -24,16 +25,3 @@ dependencies {
             "com.android.tools.build:gradle:$androidPluginVersion"
     )
 }
-
-jar {
-    manifest {
-        attributes 'Implementation-Title': POM_NAME,
-                'Implementation-Version': VERSION_NAME,
-                'Built-By': System.getProperty('user.name'),
-                'Built-Date': new Date(),
-                'Built-JDK': System.getProperty('java.version'),
-                'Built-Gradle': gradle.gradleVersion
-    }
-}
-
-

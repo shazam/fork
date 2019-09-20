@@ -10,6 +10,8 @@
 
 apply plugin: 'java'
 apply plugin: 'application'
+apply from: '../build-scripts/manifest.gradle'
+apply from: '../build-scripts/runner.gradle'
 apply from: '../build-scripts/gradle-mvn-push.gradle'
 
 mainClassName = 'com.shazam.chimprunner.ChimpCli'
@@ -43,20 +45,6 @@ dependencies {
 
 jar {
     manifest {
-        attributes 'Implementation-Title': POM_NAME,
-                'Implementation-Version': VERSION_NAME,
-                'Built-By': System.getProperty('user.name'),
-                'Built-Date': new Date(),
-                'Built-JDK': System.getProperty('java.version'),
-                'Built-Gradle': gradle.gradleVersion,
-                'Main-class': mainClassName
-    }
-}
-
-run {
-    systemProperties System.getProperties()
-
-    if (project.hasProperty('args')) {
-        args project.args.split('\\s+')
+        attributes 'Main-class': mainClassName
     }
 }
