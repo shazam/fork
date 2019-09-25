@@ -12,8 +12,10 @@ package com.shazam.chimprunner.gradle
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryPlugin
+import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.api.BaseVariantOutput
 import com.android.build.gradle.api.TestVariant
+import com.android.build.gradle.tasks.PackageAndroidArtifact
 import com.shazam.chimprunner.ChimpConfiguration
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -56,16 +58,13 @@ class ChimpRunnerPlugin implements Plugin<Project> {
 
                 description = "Runs performance tests on a selected device for '${variant.name}' variation and generates a file containing reports"
                 group = REPORTING_GROUP
-
-                applicationApk = new File(baseVariantOutput.packageApplication.outputDirectory.path + "/" + baseVariantOutput.outputFileName)
-
-                def firstOutput = variant.outputs.asList().first()
-                instrumentationApk = new File(firstOutput.packageApplication.outputDirectory.path + "/" + firstOutput.outputFileName)
-
                 testClassRegex = config.testClassRegex
                 testPackage = config.testPackage
                 ignoreFailures = config.ignoreFailures
                 serial = config.serial
+
+                instrumentationApk = getApkFileFromPackageAndroidArtifact(variant)
+                applicationApk = getApkFileFromPackageAndroidArtifact(variant.testedVariant)
 
                 String baseOutputDir = config.baseOutputDir
                 File outputBase
@@ -80,6 +79,11 @@ class ChimpRunnerPlugin implements Plugin<Project> {
             task.outputs.upToDateWhen { false }
         }
         return task
+    }
+
+    private static File getApkFileFromPackageAndroidArtifact(BaseVariant variant) {
+        PackageAndroidArtifact application = variant.packageApplicationProvider.get()
+        return new File(application.outputDirectory, application.apkNames.first())
     }
 
     /**
