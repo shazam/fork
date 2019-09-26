@@ -31,5 +31,4 @@ public class HtmlTestResult {
 	public String timeTaken;
 	public String[] trace;
     public boolean diagnosticVideo;
-    public boolean diagnosticScreenshots;
 }

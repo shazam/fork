@@ -12,12 +12,17 @@
  */
 package com.shazam.fork;
 
-import com.beust.jcommander.*;
-
+import com.beust.jcommander.IStringConverter;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.Reader;
 
 import static com.shazam.fork.Configuration.Builder.configuration;
 import static com.shazam.fork.injector.GsonInjector.gson;
@@ -93,7 +98,6 @@ public class ForkCli {
                     .withTestOutputTimeout(forkConfiguration.testOutputTimeout)
                     .withTestSize(forkConfiguration.testSize)
                     .withExcludedSerials(forkConfiguration.excludedSerials)
-                    .withFallbackToScreenshots(forkConfiguration.fallbackToScreenshots)
                     .withTotalAllowedRetryQuota(forkConfiguration.totalAllowedRetryQuota)
                     .withRetryPerTestCaseQuota(forkConfiguration.retryPerTestCaseQuota)
                     .withCoverageEnabled(forkConfiguration.isCoverageEnabled)

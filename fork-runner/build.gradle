@@ -33,8 +33,7 @@ dependencies {
             "com.beust:jcommander:$jcommanderVersion",
             "org.slf4j:slf4j-log4j12:$slf4jVersion",
             "com.google.code.gson:gson:$gsonVersion",
-            "org.simpleframework:simple-xml:2.7.1",
-            "com.madgag:animated-gif-lib:1.2"
+            "org.simpleframework:simple-xml:2.7.1"
     )
     implementation("org.lesscss:lesscss:1.7.0.1.1") {
         exclude module: "slf4j-simple"
