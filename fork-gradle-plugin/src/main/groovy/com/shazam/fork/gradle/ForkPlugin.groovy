@@ -15,11 +15,14 @@ package com.shazam.fork.gradle
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryPlugin
+import com.android.build.gradle.api.ApkVariant
 import com.android.build.gradle.api.BaseVariantOutput
 import com.android.build.gradle.api.TestVariant
+import com.android.build.gradle.tasks.PackageAndroidArtifact
 import com.shazam.fork.ForkConfigurationExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.plugins.JavaBasePlugin
 
 /**
@@ -46,12 +49,12 @@ class ForkPlugin implements Plugin<Project> {
 
         BaseExtension android = project.android
         android.testVariants.all { TestVariant variant ->
-            ForkRunTask forkTaskForTestVariant = createTask(variant, project)
+            Task forkTaskForTestVariant = createTask(variant, project)
             forkTask.dependsOn forkTaskForTestVariant
         }
     }
 
-    private static ForkRunTask createTask(final TestVariant variant, final Project project) {
+    private static Task createTask(final TestVariant variant, final Project project) {
         checkTestVariants(variant)
 
         def forkTask = project.tasks.create("${TASK_PREFIX}${variant.name.capitalize()}", ForkRunTask)
@@ -63,10 +66,6 @@ class ForkPlugin implements Plugin<Project> {
 
                 description = "Runs instrumentation tests on all the connected devices for '${variant.name}' variation and generates a report with screenshots"
                 group = JavaBasePlugin.VERIFICATION_GROUP
-
-                def firstOutput = variant.outputs.asList().first()
-                instrumentationApk = new File(firstOutput.packageApplication.outputDirectory.path + "/" + firstOutput.outputFileName)
-
                 title = config.title
                 subtitle = config.subtitle
                 testClassRegex = config.testClassRegex
@@ -82,8 +81,8 @@ class ForkPlugin implements Plugin<Project> {
                 autoGrantPermissions = config.autoGrantPermissions
                 ignoreFailures = config.ignoreFailures
                 excludedAnnotation = config.excludedAnnotation
-
-                applicationApk = new File(baseVariantOutput.packageApplication.outputDirectory.path + "/" + baseVariantOutput.outputFileName)
+                instrumentationApk = getApkFileFromPackageAndroidArtifact(variant)
+                applicationApk = getApkFileFromPackageAndroidArtifact(variant.testedVariant as ApkVariant)
 
                 String baseOutputDir = config.baseOutputDir
                 File outputBase
@@ -93,12 +92,16 @@ class ForkPlugin implements Plugin<Project> {
                     outputBase = new File(project.buildDir, "reports/fork")
                 }
                 output = new File(outputBase, variant.name)
-
-                dependsOn variant.testedVariant.assemble, variant.assemble
+                dependsOn variant.testedVariant.assembleProvider.name, variant.assembleProvider.name
             }
             forkTask.outputs.upToDateWhen { false }
         }
         return forkTask
+    }
+
+    private static File getApkFileFromPackageAndroidArtifact(ApkVariant variant) {
+        PackageAndroidArtifact application = variant.packageApplicationProvider.get()
+        return new File(application.outputDirectory, application.apkNames.first())
     }
 
     private static checkTestVariants(TestVariant testVariant) {

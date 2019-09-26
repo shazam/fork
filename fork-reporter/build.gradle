@@ -10,6 +10,8 @@
 
 apply plugin: 'java'
 apply plugin: 'application'
+apply from: '../build-scripts/manifest.gradle'
+apply from: '../build-scripts/runner.gradle'
 apply from: '../build-scripts/gradle-mvn-push.gradle'
 
 mainClassName = 'com.shazam.fork.reporter.ForkReporterCli'
@@ -18,30 +20,21 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
-    compile project(':fork-common')
-    compile(
-            "com.beust:jcommander:$JCOMMANDER_VERSION",
-            "org.slf4j:slf4j-log4j12:$SLF4J_VERSION",
-            "com.google.code.gson:gson:$GSON_VERSION",
+    implementation(
+            project(':fork-common'),
+            "com.google.code.findbugs:jsr305:$jsr305Version",
+            "com.google.guava:guava:$guavaVersion",
+            "com.github.spullara.mustache.java:compiler:$mustacheVersion",
+            "commons-io:commons-io:$commonsIoVersion",
+            "org.apache.commons:commons-lang3:$commonsLangVersion",
+            "com.beust:jcommander:$jcommanderVersion",
+            "org.slf4j:slf4j-log4j12:$slf4jVersion",
+            "com.google.code.gson:gson:$gsonVersion"
     )
 }
 
 jar {
     manifest {
-        attributes 'Implementation-Title': POM_NAME,
-                'Implementation-Version': VERSION_NAME,
-                'Built-By': System.getProperty('user.name'),
-                'Built-Date': new Date(),
-                'Built-JDK': System.getProperty('java.version'),
-                'Built-Gradle': gradle.gradleVersion,
-                'Main-class': mainClassName
-    }
-}
-
-run {
-    systemProperties System.getProperties()
-
-    if (project.hasProperty('args')) {
-        args project.args.split('\\s+')
+        attributes 'Main-class': mainClassName
     }
 }

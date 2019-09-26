@@ -10,7 +10,6 @@
 
 package com.shazam.fork.runner.listeners;
 
-import com.android.annotations.NonNull;
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.google.gson.Gson;
 import com.shazam.fork.Configuration;
@@ -25,6 +24,8 @@ import com.shazam.fork.system.io.FileManager;
 import java.io.File;
 import java.util.List;
 import java.util.Queue;
+
+import javax.annotation.Nonnull;
 
 import static com.shazam.fork.model.Diagnostics.SCREENSHOTS;
 import static com.shazam.fork.model.Diagnostics.VIDEO;
@@ -44,7 +45,7 @@ public class TestRunListenersFactory {
         this.gson = gson;
     }
 
-    public List<ITestRunListener> createTestListeners(@NonNull TestCaseEvent testCase,
+    public List<ITestRunListener> createTestListeners(@Nonnull TestCaseEvent testCase,
                                                       Device device,
                                                       Pool pool,
                                                       ProgressReporter progressReporter,
@@ -76,7 +77,7 @@ public class TestRunListenersFactory {
                                                              File output,
                                                              Pool pool,
                                                              Device device,
-                                                             @NonNull TestCaseEvent testCase,
+                                                             @Nonnull TestCaseEvent testCase,
                                                              ProgressReporter progressReporter) {
         ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(fileManager, pool, device, testCase, progressReporter);
         xmlTestRunListener.setReportDir(output);

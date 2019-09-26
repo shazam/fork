@@ -10,6 +10,8 @@
 
 apply plugin: 'java'
 apply plugin: 'application'
+apply from: '../build-scripts/manifest.gradle'
+apply from: '../build-scripts/runner.gradle'
 apply from: '../build-scripts/gradle-mvn-push.gradle'
 
 mainClassName = 'com.shazam.fork.ForkCli'
@@ -18,46 +20,38 @@ sourceCompatibility = rootProject.sourceCompatibility
 targetCompatibility = rootProject.sourceCompatibility
 
 dependencies {
-    compile project(':fork-common')
-    compile 'org.codehaus.groovy:groovy-all:2.4.11'
-    compile(
-            "com.beust:jcommander:$JCOMMANDER_VERSION",
-            "org.slf4j:slf4j-log4j12:$SLF4J_VERSION",
-            "com.google.code.gson:gson:$GSON_VERSION",
-            'org.simpleframework:simple-xml:2.7.1',
-            'com.madgag:animated-gif-lib:1.2',
+    implementation(
+            project(':fork-common'),
+            "com.android.tools:common:$ddmlibVersion",
+            "com.android.tools.ddms:ddmlib:$ddmlibVersion",
+            "com.google.code.findbugs:jsr305:$jsr305Version",
+            "com.google.guava:guava:$guavaVersion",
+            "org.codehaus.groovy:groovy-all:2.5.4",
+            "org.apache.commons:commons-lang3:$commonsLangVersion",
+            "commons-io:commons-io:$commonsIoVersion",
+            "com.github.spullara.mustache.java:compiler:$mustacheVersion",
+            "com.beust:jcommander:$jcommanderVersion",
+            "org.slf4j:slf4j-log4j12:$slf4jVersion",
+            "com.google.code.gson:gson:$gsonVersion",
+            "org.simpleframework:simple-xml:2.7.1",
+            "com.madgag:animated-gif-lib:1.2"
     )
-
-    compile('org.lesscss:lesscss:1.7.0.1.1') {
-        exclude module: 'slf4j-simple'
+    implementation("org.lesscss:lesscss:1.7.0.1.1") {
+        exclude module: "slf4j-simple"
     }
 
-    testCompile("org.hamcrest:hamcrest-all:$HAMCREST_VERSION")
-    testCompile("junit:junit:$JUNIT_VERSION") {
-        exclude module:'hamcrest-core'
+    testImplementation(
+            "org.hamcrest:hamcrest-all:$hamcrestVersion",
+            "org.jmock:jmock:$jmockVersion",
+            "org.jmock:jmock-junit4:$jmockVersion",
+            "com.shazam:shazamcrest:$shazamcrestVersion")
+    testImplementation("junit:junit:$junitVersion") {
+        exclude module: "hamcrest-core"
     }
-    testCompile(
-            "org.jmock:jmock:$JMOCK_VERSION",
-            "org.jmock:jmock-junit4:$JMOCK_VERSION",
-            "com.shazam:shazamcrest:$SHAZAMCREST_VERSION")
 }
 
 jar {
     manifest {
-        attributes 'Implementation-Title': POM_NAME,
-                'Implementation-Version': VERSION_NAME,
-                'Built-By': System.getProperty('user.name'),
-                'Built-Date': new Date(),
-                'Built-JDK': System.getProperty('java.version'),
-                'Built-Gradle': gradle.gradleVersion,
-                'Main-class': mainClassName
-    }
-}
-
-run {
-    systemProperties System.getProperties()
-
-    if(project.hasProperty('args')) {
-        args project.args.split('\\s+')
+        attributes 'Main-class': mainClassName
     }
 }

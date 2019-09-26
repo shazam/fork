@@ -12,8 +12,9 @@
  */
 package com.shazam.fork.model;
 
-import com.android.annotations.Nullable;
 import com.android.ddmlib.IDevice;
+
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
