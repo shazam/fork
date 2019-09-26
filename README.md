@@ -64,7 +64,6 @@ You can use Fork's DSL to configure its execution parameters. For a full list of
 fork {
     title = "My acceptance tests"
     testPackage = "com.example.tests"
-    fallbackToScreenshots = true
     poolingStrategy {
         computed {
             characteristic = "sw"
@@ -108,7 +107,6 @@ subtitle               | String                  | -
 testOutputTimeout      | int                     | 60000
 testSize               | String                  | -
 excludedSerials        | Collection&lt;String&gt;| -
-fallbackToScreenshots  | boolean                 | false
 totalAllowedRetryQuota | int                     | 0
 retryPerTestCaseQuota  | int                     | 1
 autoGrantPermissions   | boolean                 | true
