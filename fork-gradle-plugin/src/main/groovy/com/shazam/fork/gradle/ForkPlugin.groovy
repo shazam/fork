@@ -73,7 +73,6 @@ class ForkPlugin implements Plugin<Project> {
                 testOutputTimeout = config.testOutputTimeout
                 testSize = config.testSize
                 excludedSerials = config.excludedSerials
-                fallbackToScreenshots = config.fallbackToScreenshots
                 totalAllowedRetryQuota = config.totalAllowedRetryQuota
                 retryPerTestCaseQuota = config.retryPerTestCaseQuota
                 isCoverageEnabled = config.isCoverageEnabled
