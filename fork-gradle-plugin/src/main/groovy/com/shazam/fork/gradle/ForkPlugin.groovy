@@ -15,7 +15,7 @@ package com.shazam.fork.gradle
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryPlugin
-import com.android.build.gradle.api.BaseVariant
+import com.android.build.gradle.api.ApkVariant
 import com.android.build.gradle.api.BaseVariantOutput
 import com.android.build.gradle.api.TestVariant
 import com.android.build.gradle.tasks.PackageAndroidArtifact
@@ -82,7 +82,7 @@ class ForkPlugin implements Plugin<Project> {
                 ignoreFailures = config.ignoreFailures
                 excludedAnnotation = config.excludedAnnotation
                 instrumentationApk = getApkFileFromPackageAndroidArtifact(variant)
-                applicationApk = getApkFileFromPackageAndroidArtifact(variant.testedVariant)
+                applicationApk = getApkFileFromPackageAndroidArtifact(variant.testedVariant as ApkVariant)
 
                 String baseOutputDir = config.baseOutputDir
                 File outputBase
@@ -99,7 +99,7 @@ class ForkPlugin implements Plugin<Project> {
         return forkTask
     }
 
-    private static File getApkFileFromPackageAndroidArtifact(BaseVariant variant) {
+    private static File getApkFileFromPackageAndroidArtifact(ApkVariant variant) {
         PackageAndroidArtifact application = variant.packageApplicationProvider.get()
         return new File(application.outputDirectory, application.apkNames.first())
     }

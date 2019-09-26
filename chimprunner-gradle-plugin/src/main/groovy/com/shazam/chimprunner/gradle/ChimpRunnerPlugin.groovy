@@ -12,7 +12,7 @@ package com.shazam.chimprunner.gradle
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryPlugin
-import com.android.build.gradle.api.BaseVariant
+import com.android.build.gradle.api.ApkVariant
 import com.android.build.gradle.api.BaseVariantOutput
 import com.android.build.gradle.api.TestVariant
 import com.android.build.gradle.tasks.PackageAndroidArtifact
@@ -64,7 +64,7 @@ class ChimpRunnerPlugin implements Plugin<Project> {
                 serial = config.serial
 
                 instrumentationApk = getApkFileFromPackageAndroidArtifact(variant)
-                applicationApk = getApkFileFromPackageAndroidArtifact(variant.testedVariant)
+                applicationApk = getApkFileFromPackageAndroidArtifact(variant.testedVariant as ApkVariant)
 
                 String baseOutputDir = config.baseOutputDir
                 File outputBase
@@ -81,7 +81,7 @@ class ChimpRunnerPlugin implements Plugin<Project> {
         return task
     }
 
-    private static File getApkFileFromPackageAndroidArtifact(BaseVariant variant) {
+    private static File getApkFileFromPackageAndroidArtifact(ApkVariant variant) {
         PackageAndroidArtifact application = variant.packageApplicationProvider.get()
         return new File(application.outputDirectory, application.apkNames.first())
     }
