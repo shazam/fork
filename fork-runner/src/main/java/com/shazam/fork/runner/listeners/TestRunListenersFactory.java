@@ -21,13 +21,11 @@ import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.runner.ReporterBasedFailedTestScheduler;
 import com.shazam.fork.system.io.FileManager;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.List;
 import java.util.Queue;
 
-import javax.annotation.Nonnull;
-
-import static com.shazam.fork.model.Diagnostics.SCREENSHOTS;
 import static com.shazam.fork.model.Diagnostics.VIDEO;
 import static java.util.Arrays.asList;
 
@@ -98,10 +96,6 @@ public class TestRunListenersFactory {
     private ITestRunListener getScreenTraceTestRunListener(FileManager fileManager, Pool pool, Device device) {
         if (VIDEO.equals(device.getSupportedDiagnostics())) {
             return new ScreenRecorderTestRunListener(fileManager, pool, device);
-        }
-
-        if (SCREENSHOTS.equals(device.getSupportedDiagnostics()) && configuration.canFallbackToScreenshots()) {
-            return new ScreenCaptureTestRunListener(fileManager, pool, device);
         }
 
         return new NoOpITestRunListener();

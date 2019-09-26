@@ -69,11 +69,6 @@ public class ForkConfigurationExtension {
     public Collection<String> excludedSerials;
 
     /**
-     * Indicate that screenshots are allowed when videos are not supported.
-     */
-    public boolean fallbackToScreenshots;
-
-    /**
      * Amount of re-executions of failing tests allowed.
      */
     public int totalAllowedRetryQuota;

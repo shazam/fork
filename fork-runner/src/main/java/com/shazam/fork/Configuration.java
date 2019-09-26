@@ -16,22 +16,20 @@ import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
 import com.shazam.fork.system.axmlparser.ApplicationInfo;
 import com.shazam.fork.system.axmlparser.ApplicationInfoFactory;
 import com.shazam.fork.system.axmlparser.InstrumentationInfo;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Pattern;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.shazam.fork.system.axmlparser.InstrumentationInfoFactory.parseFromFile;
-import static java.util.Arrays.asList;
 
 public class Configuration implements ForkConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
@@ -50,15 +48,13 @@ public class Configuration implements ForkConfiguration {
     private final long testOutputTimeout;
     private final IRemoteAndroidTestRunner.TestSize testSize;
     private final Collection<String> excludedSerials;
-    private final boolean fallbackToScreenshots;
     private final int totalAllowedRetryQuota;
     private final int retryPerTestCaseQuota;
     private final boolean isCoverageEnabled;
     private final PoolingStrategy poolingStrategy;
     private final boolean autoGrantPermissions;
     private final String excludedAnnotation;
-
-    private ApplicationInfo applicationInfo;
+    private final ApplicationInfo applicationInfo;
 
     private Configuration(Builder builder) {
         androidSdk = builder.androidSdk;
@@ -75,7 +71,6 @@ public class Configuration implements ForkConfiguration {
         testOutputTimeout = builder.testOutputTimeout;
         testSize = builder.testSize;
         excludedSerials = builder.excludedSerials;
-        fallbackToScreenshots = builder.fallbackToScreenshots;
         totalAllowedRetryQuota = builder.totalAllowedRetryQuota;
         retryPerTestCaseQuota = builder.retryPerTestCaseQuota;
         isCoverageEnabled = builder.isCoverageEnabled;
@@ -169,11 +164,6 @@ public class Configuration implements ForkConfiguration {
     }
 
     @Override
-    public boolean canFallbackToScreenshots() {
-        return fallbackToScreenshots;
-    }
-
-    @Override
     public int getTotalAllowedRetryQuota() {
         return totalAllowedRetryQuota;
     }
@@ -223,7 +213,6 @@ public class Configuration implements ForkConfiguration {
         private long testOutputTimeout;
         private IRemoteAndroidTestRunner.TestSize testSize;
         private Collection<String> excludedSerials;
-        private boolean fallbackToScreenshots;
         private int totalAllowedRetryQuota;
         private int retryPerTestCaseQuota;
         private boolean isCoverageEnabled;
@@ -291,11 +280,6 @@ public class Configuration implements ForkConfiguration {
             return this;
         }
 
-        public Builder withFallbackToScreenshots(boolean fallbackToScreenshots) {
-            this.fallbackToScreenshots = fallbackToScreenshots;
-            return this;
-        }
-
         public Builder withTotalAllowedRetryQuota(int totalAllowedRetryQuota) {
             this.totalAllowedRetryQuota = totalAllowedRetryQuota;
             return this;
@@ -347,7 +331,7 @@ public class Configuration implements ForkConfiguration {
             testClassRegex = assignValueOrDefaultIfNull(testClassRegex, CommonDefaults.TEST_CLASS_REGEX);
             testPackage = assignValueOrDefaultIfNull(testPackage, instrumentationInfo.getApplicationPackage());
             testOutputTimeout = assignValueOrDefaultIfZero(testOutputTimeout, Defaults.TEST_OUTPUT_TIMEOUT_MILLIS);
-            excludedSerials = assignValueOrDefaultIfNull(excludedSerials, Collections.<String>emptyList());
+            excludedSerials = assignValueOrDefaultIfNull(excludedSerials, Collections.emptyList());
             checkArgument(totalAllowedRetryQuota >= 0, "Total allowed retry quota should not be negative.");
             checkArgument(retryPerTestCaseQuota >= 0, "Retry per test case quota should not be negative.");
             retryPerTestCaseQuota = assignValueOrDefaultIfZero(retryPerTestCaseQuota, Defaults.RETRY_QUOTA_PER_TEST_CASE);
@@ -383,12 +367,11 @@ public class Configuration implements ForkConfiguration {
                 poolingStrategy = new PoolingStrategy();
                 poolingStrategy.eachDevice = true;
             } else {
-                long selectedStrategies = asList(
+                long selectedStrategies = Stream.of(
                         poolingStrategy.eachDevice,
                         poolingStrategy.splitTablets,
                         poolingStrategy.computed,
                         poolingStrategy.manual)
-                        .stream()
                         .filter(p -> p != null)
                         .count();
                 if (selectedStrategies > Defaults.STRATEGY_LIMIT) {
