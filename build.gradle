@@ -13,11 +13,11 @@ ext.targetCompatibility = JavaVersion.VERSION_1_8
 
 ext {
     androidPluginVersion = "3.5.0"
-    ddmlibVersion = "25.1.0"
+    ddmlibVersion = "26.5.0"
     jcommanderVersion = "1.48"
     slf4jVersion = "1.7.21"
     guavaVersion = "19.0"
-    gsonVersion = "2.6.2"
+    gsonVersion = "2.8.5"
     jsr305Version = "3.0.2"
     commonsIoVersion = "2.5"
     commonsLangVersion = "3.4"
