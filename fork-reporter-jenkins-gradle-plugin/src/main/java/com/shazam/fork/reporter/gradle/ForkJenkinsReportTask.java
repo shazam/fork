@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Shazam Entertainment Limited
+ * Copyright 2019 Apple Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  *
@@ -25,7 +25,6 @@ public class ForkJenkinsReportTask extends DefaultTask {
     private static final String DOWNLOAD_DIR = "json";
     private static final String REPORT_DIR = "html";
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @TaskAction
     public void runForkJenkins() {
         ForkJenkinsReportExtension extension = getProject().getExtensions().getByType(ForkJenkinsReportExtension.class);

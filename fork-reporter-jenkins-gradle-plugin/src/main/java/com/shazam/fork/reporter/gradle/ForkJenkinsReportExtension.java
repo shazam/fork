@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Shazam Entertainment Limited
+ * Copyright 2019 Apple Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  *
@@ -19,6 +19,7 @@ public class ForkJenkinsReportExtension {
     public String jenkinsUsername;
     public String jenkinsPassword;
     public String jenkinsReportTitle;
+    public boolean escapeUnderscores = true;
     public FreestyleJob freestyleJob;
     public FolderJob folderJob;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Shazam Entertainment Limited
+ * Copyright 2019 Apple Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  *
@@ -26,7 +26,6 @@ public class TokenTestLinkCreator implements TestLinkCreator {
             return null;
         }
 
-        String baseTestUrl = stripEnd(buildLink, "/") + TEST_PATH;
-        return String.format(baseTestUrl, poolName, testLabel.getClassName(), testLabel.getMethod());
+        return stripEnd(buildLink, "/") + String.format(TEST_PATH, poolName, testLabel.getClassName(), testLabel.getMethod());
     }
 }
