@@ -25,7 +25,6 @@ public class ForkJenkinsReportTask extends DefaultTask {
     private static final String DOWNLOAD_DIR = "json";
     private static final String REPORT_DIR = "html";
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @TaskAction
     public void runForkJenkins() {
         ForkJenkinsReportExtension extension = getProject().getExtensions().getByType(ForkJenkinsReportExtension.class);

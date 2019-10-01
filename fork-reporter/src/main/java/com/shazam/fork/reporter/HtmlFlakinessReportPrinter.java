@@ -38,7 +38,6 @@ public class HtmlFlakinessReportPrinter implements FlakinessReportPrinter {
         this.converter = converter;
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void printReport(FlakinessReport flakinessReport) {
         recreateOutputFolder();

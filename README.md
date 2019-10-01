@@ -48,13 +48,13 @@ buildscript {
 ```
 
 Apply the Fork plugin
-```
+```gradle
 apply plugin: 'com.shazam.fork'
 ```
 
 You're now done. If you had any instrumentation test tasks before, the plugin has added Fork tasks. You can verify by running:
 
-```
+```bash
 gradlew tasks | grep fork
 ```
 
@@ -79,7 +79,7 @@ fork {
 ### Standalone
 Check out the Fork project and execute:
 
-```
+```bash
 > gradlew fork-runner:run -Pargs='ARGUMENTS LIST'
 
 Available options (* mandatory).         
@@ -149,7 +149,7 @@ To do so, you have to add an annotation called `RevokePermission`. Here is an ex
 
 Remember to add the fork client-side library to your project to have access to the annotation.
 To do so, in your app's dependencies add:
-```
+```gradle
     androidTestImplementation "com.shazam.fork:fork-client:3.9.0"
 ```
 
@@ -211,7 +211,7 @@ That will create three pools named "phablets", "tablets" & "emulators" with devi
 ### Standalone examples
 #### Automatic pooling
 Execute the following:
-```
+```bash
 > gradlew fork-runner:run -Pargs='--apk /path/to/production.APK --test-apk /path/to/test.APK --config /path/to/fork-config.json'
 ```
 Where the contents of `fork-config.json` are:
@@ -233,7 +233,7 @@ Where the contents of `fork-config.json` are:
 
 #### Manual pooling
 Execute the following:
-```
+```bash
 > gradlew fork-runner:run -Pargs='--apk /path/to/production.APK --test-apk /path/to/test.APK --config /path/to/fork-config.json'
 ```
 Where the contents of `fork-config.json` are:
@@ -283,12 +283,12 @@ buildscript {
 ```
 
 Apply the Jenkins Flakiness Reporter plugin
-```
+```gradle
 apply plugin: 'com.shazam.fork.reporter.jenkins'
 ```
 
 You can easily execute the Reporter with the following command.
-```
+```bash
 gradlew forkJenkinsReport
 ```
 
@@ -301,6 +301,7 @@ reportTitle            | String         |  The title you want your report to hav
 jenkinsUrl             | String         |  The base URL of your Jenkins Server
 jenkinsJobName         | String         |  The name of the job you want to be tracked
 jenkinsReportTitle     | String         |  Optional, used to link to Fork diagnostics. [The report title you use to archive Fork's report folder](#publish-forks-html-report)
+escapeUnderscores      | boolean        |  Optional, should have the same value as [HTML Publisher](https://plugins.jenkins.io/htmlpublisher) (default: true)
 
 An example of a configuration:
 ```gradle
@@ -338,13 +339,13 @@ buildscript {
 ```
 
 Apply the Chimprunner plugin
-```
+```gradle
 apply plugin: 'com.shazam.chimprunner'
 ```
 
 New tasks will have been added that allow you to run familiar instrumentation tests as performance tests. Verify the tasks exist with:
 
-```
+```bash
 gradlew tasks | grep chimprunner
 ```
 

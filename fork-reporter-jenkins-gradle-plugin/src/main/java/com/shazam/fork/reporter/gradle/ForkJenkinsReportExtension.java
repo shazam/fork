@@ -19,6 +19,7 @@ public class ForkJenkinsReportExtension {
     public String jenkinsUsername;
     public String jenkinsPassword;
     public String jenkinsReportTitle;
+    public boolean escapeUnderscores = true;
     public FreestyleJob freestyleJob;
     public FolderJob folderJob;
 

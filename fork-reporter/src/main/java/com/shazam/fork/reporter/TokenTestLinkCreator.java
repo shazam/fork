@@ -26,7 +26,6 @@ public class TokenTestLinkCreator implements TestLinkCreator {
             return null;
         }
 
-        String baseTestUrl = stripEnd(buildLink, "/") + TEST_PATH;
-        return String.format(baseTestUrl, poolName, testLabel.getClassName(), testLabel.getMethod());
+        return stripEnd(buildLink, "/") + String.format(TEST_PATH, poolName, testLabel.getClassName(), testLabel.getMethod());
     }
 }
