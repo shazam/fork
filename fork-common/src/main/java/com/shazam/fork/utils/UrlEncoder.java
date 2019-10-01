@@ -15,8 +15,7 @@ public class UrlEncoder {
             return URLEncoder.encode(string, UTF_8.name())
                     .replaceAll("\\+", "%20");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return "";
+            throw new RuntimeException(e);
         }
     }
 }

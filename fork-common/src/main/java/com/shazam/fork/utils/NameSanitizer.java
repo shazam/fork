@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class NameSanitizer {
-    private Pattern pattern;
+    private final Pattern pattern;
 
     public NameSanitizer(boolean escapeUnderscores) {
         pattern = createMatchingPattern(escapeUnderscores);
