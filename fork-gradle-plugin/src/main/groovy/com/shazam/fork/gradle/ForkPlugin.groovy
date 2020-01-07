@@ -80,8 +80,12 @@ class ForkPlugin implements Plugin<Project> {
                 autoGrantPermissions = config.autoGrantPermissions
                 ignoreFailures = config.ignoreFailures
                 excludedAnnotation = config.excludedAnnotation
-                instrumentationApk = getApkFileFromPackageAndroidArtifact(variant)
-                applicationApk = getApkFileFromPackageAndroidArtifact(variant.testedVariant as ApkVariant)
+                instrumentationApk = config.instrumentationApkName != null ?
+                        getApkFileWithCustomName(variant, config.instrumentationApkName) :
+                        getApkFileFromPackageAndroidArtifact(variant)
+                applicationApk = config.applicationApkName != null ?
+                        getApkFileWithCustomName(variant.testedVariant as ApkVariant, config.applicationApkName) :
+                        getApkFileFromPackageAndroidArtifact(variant.testedVariant as ApkVariant)
 
                 String baseOutputDir = config.baseOutputDir
                 File outputBase
@@ -96,6 +100,11 @@ class ForkPlugin implements Plugin<Project> {
             forkTask.outputs.upToDateWhen { false }
         }
         return forkTask
+    }
+
+    private static File getApkFileWithCustomName(ApkVariant variant, String name) {
+        PackageAndroidArtifact application = variant.packageApplicationProvider.get()
+        return new File(application.outputDirectory, name)
     }
 
     private static File getApkFileFromPackageAndroidArtifact(ApkVariant variant) {
