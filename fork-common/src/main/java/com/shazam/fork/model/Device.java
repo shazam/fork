@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Shazam Entertainment Limited
+ * Copyright 2019 Apple Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License.
@@ -12,8 +12,9 @@
  */
 package com.shazam.fork.model;
 
-import com.android.annotations.Nullable;
 import com.android.ddmlib.IDevice;
+
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Shazam Entertainment Limited
+ * Copyright 2019 Apple Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  *
@@ -9,6 +9,7 @@
  */
 
 apply plugin: 'java-gradle-plugin'
+apply from: '../build-scripts/manifest.gradle'
 apply from: '../build-scripts/gradle-mvn-push.gradle'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -19,17 +20,9 @@ repositories {
 }
 
 dependencies {
-    compile project(':fork-reporter')
-    compile "com.offbytwo.jenkins:jenkins-client:0.3.4"
-}
-
-jar {
-    manifest {
-        attributes 'Implementation-Title': POM_NAME,
-                'Implementation-Version': VERSION_NAME,
-                'Built-By': System.getProperty('user.name'),
-                'Built-Date': new Date(),
-                'Built-JDK': System.getProperty('java.version'),
-                'Built-Gradle': gradle.gradleVersion
-    }
+    implementation(
+            project(':fork-common'),
+            project(':fork-reporter'),
+            "com.offbytwo.jenkins:jenkins-client:0.3.4",
+            "org.apache.commons:commons-lang3:$commonsLangVersion")
 }

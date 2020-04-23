@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Shazam Entertainment Limited
+ * Copyright 2019 Apple Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  *
@@ -12,8 +12,10 @@ package com.shazam.chimprunner.gradle
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryPlugin
+import com.android.build.gradle.api.ApkVariant
 import com.android.build.gradle.api.BaseVariantOutput
 import com.android.build.gradle.api.TestVariant
+import com.android.build.gradle.tasks.PackageAndroidArtifact
 import com.shazam.chimprunner.ChimpConfiguration
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -56,16 +58,13 @@ class ChimpRunnerPlugin implements Plugin<Project> {
 
                 description = "Runs performance tests on a selected device for '${variant.name}' variation and generates a file containing reports"
                 group = REPORTING_GROUP
-
-                applicationApk = new File(baseVariantOutput.packageApplication.outputDirectory.path + "/" + baseVariantOutput.outputFileName)
-
-                def firstOutput = variant.outputs.asList().first()
-                instrumentationApk = new File(firstOutput.packageApplication.outputDirectory.path + "/" + firstOutput.outputFileName)
-
                 testClassRegex = config.testClassRegex
                 testPackage = config.testPackage
                 ignoreFailures = config.ignoreFailures
                 serial = config.serial
+
+                instrumentationApk = getApkFileFromPackageAndroidArtifact(variant)
+                applicationApk = getApkFileFromPackageAndroidArtifact(variant.testedVariant as ApkVariant)
 
                 String baseOutputDir = config.baseOutputDir
                 File outputBase
@@ -75,12 +74,16 @@ class ChimpRunnerPlugin implements Plugin<Project> {
                     outputBase = new File(project.buildDir, "chimprunner")
                 }
                 output = new File(outputBase, baseVariantOutput.dirName)
-
-                dependsOn baseVariantOutput.assemble, variant.assemble
+                dependsOn variant.testedVariant.assembleProvider.name, variant.assembleProvider.name
             }
             task.outputs.upToDateWhen { false }
         }
         return task
+    }
+
+    private static File getApkFileFromPackageAndroidArtifact(ApkVariant variant) {
+        PackageAndroidArtifact application = variant.packageApplicationProvider.get()
+        return new File(application.outputDirectory, application.apkNames.first())
     }
 
     /**

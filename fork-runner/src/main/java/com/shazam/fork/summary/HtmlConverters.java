@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Shazam Entertainment Limited
+ * Copyright 2019 Apple Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License.
@@ -22,13 +22,10 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 
 import static com.google.common.collect.Collections2.transform;
-import static com.shazam.fork.model.Diagnostics.SCREENSHOTS;
 import static com.shazam.fork.model.Diagnostics.VIDEO;
 import static com.shazam.fork.summary.ResultStatus.IGNORED;
 import static com.shazam.fork.summary.ResultStatus.PASS;
-import static com.shazam.fork.utils.ReadableNames.readableClassName;
-import static com.shazam.fork.utils.ReadableNames.readablePoolName;
-import static com.shazam.fork.utils.ReadableNames.readableTestMethodName;
+import static com.shazam.fork.utils.ReadableNames.*;
 
 class HtmlConverters {
 
@@ -88,7 +85,6 @@ class HtmlConverters {
 				htmlTestResult.deviceModelDespaced = device.getModelName().replace(" ", "_");
                 Diagnostics supportedDiagnostics = device.getSupportedDiagnostics();
                 htmlTestResult.diagnosticVideo = VIDEO.equals(supportedDiagnostics);
-                htmlTestResult.diagnosticScreenshots = SCREENSHOTS.equals(supportedDiagnostics);
 				return htmlTestResult;
 			}
 		};

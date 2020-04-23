@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Shazam Entertainment Limited
+ * Copyright 2019 Apple Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  *
@@ -16,39 +16,40 @@ import com.offbytwo.jenkins.model.Artifact;
 import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.FolderJob;
 import com.offbytwo.jenkins.model.JobWithDetails;
-
+import com.shazam.fork.utils.NameSanitizer;
 import org.gradle.api.GradleException;
-
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static com.shazam.fork.CommonDefaults.BUILD_ID_TOKEN;
-import static com.shazam.fork.CommonDefaults.FORK_SUMMARY_FILENAME_FORMAT;
-import static com.shazam.fork.CommonDefaults.FORK_SUMMARY_FILENAME_REGEX;
+import static com.shazam.fork.CommonDefaults.*;
+import static com.shazam.fork.utils.UrlEncoder.encodeUrl;
 import static java.lang.String.format;
-import static org.apache.commons.io.IOUtils.copy;
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.IOUtils.copy;
 import static org.apache.commons.lang3.StringUtils.stripEnd;
 
 class JenkinsDownloader {
-
     private final File forkSummariesDir;
     private final ForkJenkinsReportExtension extension;
     private final String baseJenkinsUrl;
     private final JenkinsHttpClient jenkinsHttpClient;
+    private final NameSanitizer nameSanitizer;
 
     JenkinsDownloader(File forkSummariesDir, ForkJenkinsReportExtension extension) {
         this.forkSummariesDir = forkSummariesDir;
         this.extension = extension;
         this.baseJenkinsUrl = stripEnd(extension.jenkinsUrl, "/");
         jenkinsHttpClient = getJenkinsHttpClient();
+        nameSanitizer = new NameSanitizer(extension.escapeUnderscores);
     }
 
     @Nullable
@@ -62,7 +63,6 @@ class JenkinsDownloader {
 
             jobWithDetails
                     .getBuilds()
-                    .stream()
                     .forEach(build -> getDetailsFromBuild(build).stream()
                             .filter(this::isForkSummaryArtifact)
                             .forEach(artifact -> downloadArtifact(build, artifact)));
@@ -109,13 +109,13 @@ class JenkinsDownloader {
             return null;
         }
         String freestylePattern = "%s/job/%s/%s/%s";
-        String encodedJobName = encode(extension.freestyleJob.jobName);
+        String encodedJobName = encodeUrl(extension.freestyleJob.jobName);
         return String.format(freestylePattern, baseJenkinsUrl, encodedJobName, BUILD_ID_TOKEN, encodedReportTitle);
     }
 
     private JobWithDetails folderJobWithDetails() throws IOException {
-        String jobName = extension.folderJob.jobName;
-        String folderName = extension.folderJob.folderName;
+        String jobName = encodeUrl(extension.folderJob.jobName);
+        String folderName = encodeUrl(extension.folderJob.folderName);
         String folderUrl = baseJenkinsUrl + String.format("/job/%s/", folderName);
         return getJenkinsServer().getJob(new FolderJob(folderName, folderUrl), jobName);
     }
@@ -125,8 +125,8 @@ class JenkinsDownloader {
             return null;
         }
         String folderPattern = "%s/job/%s/job/%s/%s/%s";
-        String folderName = encode(extension.folderJob.folderName);
-        String folderJobName = encode(extension.folderJob.jobName);
+        String folderName = encodeUrl(extension.folderJob.folderName);
+        String folderJobName = encodeUrl(extension.folderJob.jobName);
         return String.format(folderPattern, baseJenkinsUrl, folderName, folderJobName, BUILD_ID_TOKEN, encodedReportTitle);
     }
 
@@ -148,8 +148,7 @@ class JenkinsDownloader {
             URI serverUri;
             try {
                 serverUri = new URI(extension.jenkinsUrl);
-            }
-            catch (URISyntaxException e) {
+            } catch (URISyntaxException e) {
                 throw new GradleException("Error when creating URI for Jenkins server on: " + extension.jenkinsUrl, e);
             }
             String username = extension.jenkinsUsername;
@@ -158,7 +157,7 @@ class JenkinsDownloader {
                 return new JenkinsHttpClient(serverUri);
             } else {
                 return new JenkinsHttpClient(serverUri, extension.jenkinsUsername,
-                    extension.jenkinsPassword);
+                        extension.jenkinsPassword);
             }
         }
         return jenkinsHttpClient;
@@ -187,30 +186,15 @@ class JenkinsDownloader {
         if (isNullOrEmpty(jenkinsReportTitle)) {
             return null;
         }
-        return encodeReportTitle(jenkinsReportTitle);
+        return nameSanitizer.sanitizeReportName(jenkinsReportTitle, extension.escapeUnderscores);
     }
-
-    /**
-     * Jenkins doesn't properly URL encode the report titles. The only noticable change is it replaces spaces with
-     * underscores.
-     */
-    private String encodeReportTitle(String jenkinsReportTitle) {
-        return jenkinsReportTitle.replaceAll("\\s", "_");
-    }
-
-    @SuppressWarnings("deprecation")
-    private String encode(String pathPart) {
-        return URLEncoder.encode(pathPart).replaceAll("\\+", "%20");
-    }
-
 
     @Nonnull
     private URI getArtifactUri(Build build, Artifact artifact) {
         try {
             URI uri = new URI(build.getUrl());
             String artifactPath = uri.getPath() + "artifact/" + artifact.getRelativePath();
-            URI artifactUri = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), artifactPath, "", "");
-            return artifactUri;
+            return new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), artifactPath, "", "");
         } catch (URISyntaxException e) {
             throw new GradleException("Error when trying to construct artifact URL for: " + build.getUrl(), e);
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Shazam Entertainment Limited
+ * Copyright 2019 Apple Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License.
@@ -12,7 +12,6 @@
  */
 package com.shazam.fork.runner.listeners;
 
-import com.android.annotations.NonNull;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.android.ddmlib.testrunner.XmlTestRunListener;
 import com.google.common.collect.ImmutableMap;
@@ -23,9 +22,10 @@ import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.system.io.FileManager;
 import com.shazam.fork.system.io.FileType;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 
 import static com.shazam.fork.summary.TestResult.SUMMARY_KEY_TOTAL_FAILURE_COUNT;
 
@@ -34,7 +34,7 @@ public class ForkXmlTestRunListener extends XmlTestRunListener {
     private final FileManager fileManager;
     private final Pool pool;
     private final Device device;
-    @NonNull
+    @Nonnull
     private final TestCaseEvent testCase;
 
     @Nonnull

@@ -104,11 +104,6 @@ public final class FakeForkConfiguration implements ForkConfiguration {
     }
 
     @Override
-    public boolean canFallbackToScreenshots() {
-        return false;
-    }
-
-    @Override
     public int getTotalAllowedRetryQuota() {
         return 0;
     }

@@ -51,8 +51,6 @@ public interface ForkConfiguration {
     @Nonnull
     Collection<String> getExcludedSerials();
 
-    boolean canFallbackToScreenshots();
-
     int getTotalAllowedRetryQuota();
 
     int getRetryPerTestCaseQuota();

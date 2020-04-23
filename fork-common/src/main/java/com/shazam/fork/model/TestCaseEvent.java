@@ -16,10 +16,15 @@ import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToStrin
 import static org.apache.commons.lang3.builder.ToStringStyle.SIMPLE_STYLE;
 
 public class TestCaseEvent {
+    @Nonnull
     private final String testMethod;
+    @Nonnull
     private final String testClass;
+    @Nonnull
     private final boolean isIgnored;
+    @Nonnull
     private final List<String> permissionsToRevoke;
+    @Nonnull
     private final Map<String, String> properties;
 
     private TestCaseEvent(Builder builder) {
@@ -69,21 +74,27 @@ public class TestCaseEvent {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hashCode(this.testMethod, this.testClass);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TestCaseEvent that = (TestCaseEvent) o;
+
+        if (isIgnored != that.isIgnored) return false;
+        if (!testMethod.equals(that.testMethod)) return false;
+        if (!testClass.equals(that.testClass)) return false;
+        if (!permissionsToRevoke.equals(that.permissionsToRevoke)) return false;
+        return properties.equals(that.properties);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final TestCaseEvent other = (TestCaseEvent) obj;
-        return Objects.equal(this.testMethod, other.testMethod)
-                && Objects.equal(this.testClass, other.testClass);
+    public int hashCode() {
+        int result = testMethod.hashCode();
+        result = 31 * result + testClass.hashCode();
+        result = 31 * result + (isIgnored ? 1 : 0);
+        result = 31 * result + permissionsToRevoke.hashCode();
+        result = 31 * result + properties.hashCode();
+        return result;
     }
 
     @Override

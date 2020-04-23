@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Shazam Entertainment Limited
+ * Copyright 2019 Apple Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  *
@@ -7,15 +7,26 @@
  *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.1'
-}
-
 ext.sourceCompatibility = JavaVersion.VERSION_1_8
 ext.targetCompatibility = JavaVersion.VERSION_1_8
 
-ext.androidPlugin = '3.0.0'
+
+ext {
+    androidPluginVersion = "3.5.0"
+    ddmlibVersion = "26.5.0"
+    jcommanderVersion = "1.48"
+    slf4jVersion = "1.7.21"
+    guavaVersion = "19.0"
+    gsonVersion = "2.8.5"
+    jsr305Version = "3.0.2"
+    commonsIoVersion = "2.5"
+    commonsLangVersion = "3.4"
+    mustacheVersion = "0.8.0"
+    junitVersion = "4.12"
+    jmockVersion = "2.8.2"
+    hamcrestVersion = "1.3"
+    shazamcrestVersion = "0.11"
+}
 
 def repos = {
     mavenLocal()
@@ -46,7 +57,7 @@ subprojects {
         jacocoTestReport.reports.xml.enabled true
 
         // Weirdly archives are signed even if signing.required {false}, so also skipping task explicitly.
-        signArchives.onlyIf {!VERSION_NAME.endsWith("SNAPSHOT")}
+        signArchives.onlyIf { !VERSION_NAME.endsWith("SNAPSHOT") }
     }
 }
 
@@ -57,7 +68,7 @@ task jacocoMergeExecutions(type: JacocoMerge, dependsOn: getTasksByName('jacocoT
 task jacocoMergedReport(type: JacocoReport, dependsOn: jacocoMergeExecutions) {
     executionData jacocoMergeExecutions.destinationFile
     sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
-    classDirectories =  files(subprojects.sourceSets.main.output)
+    classDirectories = files(subprojects.sourceSets.main.output)
     reports {
         html.enabled false
         xml.enabled true

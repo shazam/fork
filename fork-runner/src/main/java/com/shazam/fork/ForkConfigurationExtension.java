@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Shazam Entertainment Limited
+ * Copyright 2019 Apple Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  *
@@ -67,11 +67,6 @@ public class ForkConfigurationExtension {
      * The collection of serials that should be excluded from this test run
      */
     public Collection<String> excludedSerials;
-
-    /**
-     * Indicate that screenshots are allowed when videos are not supported.
-     */
-    public boolean fallbackToScreenshots;
 
     /**
      * Amount of re-executions of failing tests allowed.

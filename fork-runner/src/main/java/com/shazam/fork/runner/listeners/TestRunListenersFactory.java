@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Shazam Entertainment Limited
+ * Copyright 2019 Apple Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  *
@@ -10,7 +10,6 @@
 
 package com.shazam.fork.runner.listeners;
 
-import com.android.annotations.NonNull;
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.google.gson.Gson;
 import com.shazam.fork.Configuration;
@@ -22,11 +21,11 @@ import com.shazam.fork.runner.ProgressReporter;
 import com.shazam.fork.runner.ReporterBasedFailedTestScheduler;
 import com.shazam.fork.system.io.FileManager;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.List;
 import java.util.Queue;
 
-import static com.shazam.fork.model.Diagnostics.SCREENSHOTS;
 import static com.shazam.fork.model.Diagnostics.VIDEO;
 import static java.util.Arrays.asList;
 
@@ -44,7 +43,7 @@ public class TestRunListenersFactory {
         this.gson = gson;
     }
 
-    public List<ITestRunListener> createTestListeners(@NonNull TestCaseEvent testCase,
+    public List<ITestRunListener> createTestListeners(@Nonnull TestCaseEvent testCase,
                                                       Device device,
                                                       Pool pool,
                                                       ProgressReporter progressReporter,
@@ -57,25 +56,26 @@ public class TestRunListenersFactory {
                 new LogCatTestRunListener(gson, fileManager, pool, device),
                 new SlowWarningTestRunListener(),
                 getScreenTraceTestRunListener(fileManager, pool, device),
-                buildRetryListener(device, pool, progressReporter, testCaseEventQueue),
+                buildRetryListener(device, pool, progressReporter, testCaseEventQueue, testCase),
                 getCoverageTestRunListener(configuration, device, fileManager, pool, testCase));
     }
 
     private RetryListener buildRetryListener(Device device,
                                              Pool pool,
                                              ProgressReporter progressReporter,
-                                             Queue<TestCaseEvent> testCaseEventQueue) {
+                                             Queue<TestCaseEvent> testCaseEventQueue,
+                                             TestCaseEvent testCase) {
         ReporterBasedFailedTestScheduler testScheduler =
                 new ReporterBasedFailedTestScheduler(progressReporter, pool, testCaseEventQueue);
         FileManagerBasedDeviceTestFilesCleaner deviceTestFilesCleaner = new FileManagerBasedDeviceTestFilesCleaner(fileManager, pool, device);
-        return new RetryListener(pool, device, testScheduler, deviceTestFilesCleaner);
+        return new RetryListener(pool, device, testScheduler, deviceTestFilesCleaner, testCase);
     }
 
     private ForkXmlTestRunListener getForkXmlTestRunListener(FileManager fileManager,
                                                              File output,
                                                              Pool pool,
                                                              Device device,
-                                                             @NonNull TestCaseEvent testCase,
+                                                             @Nonnull TestCaseEvent testCase,
                                                              ProgressReporter progressReporter) {
         ForkXmlTestRunListener xmlTestRunListener = new ForkXmlTestRunListener(fileManager, pool, device, testCase, progressReporter);
         xmlTestRunListener.setReportDir(output);
@@ -96,10 +96,6 @@ public class TestRunListenersFactory {
     private ITestRunListener getScreenTraceTestRunListener(FileManager fileManager, Pool pool, Device device) {
         if (VIDEO.equals(device.getSupportedDiagnostics())) {
             return new ScreenRecorderTestRunListener(fileManager, pool, device);
-        }
-
-        if (SCREENSHOTS.equals(device.getSupportedDiagnostics()) && configuration.canFallbackToScreenshots()) {
-            return new ScreenCaptureTestRunListener(fileManager, pool, device);
         }
 
         return new NoOpITestRunListener();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Shazam Entertainment Limited
+ * Copyright 2019 Apple Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  *
@@ -10,25 +10,17 @@
 
 apply plugin: 'groovy'
 apply plugin: 'project-report'
+apply from: '../build-scripts/manifest.gradle'
 apply from: '../build-scripts/gradle-mvn-push.gradle'
 
 sourceCompatibility = rootProject.sourceCompatibility
 targetCompatibility = rootProject.sourceCompatibility
 
 dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile project(':chimprunner')
-    compile "com.android.tools.build:gradle:$androidPlugin"
-}
-
-jar {
-    manifest {
-        attributes 'Implementation-Title': POM_NAME,
-                'Implementation-Version': VERSION_NAME,
-                'Built-By': System.getProperty('user.name'),
-                'Built-Date': new Date(),
-                'Built-JDK': System.getProperty('java.version'),
-                'Built-Gradle': gradle.gradleVersion
-    }
+    implementation(
+            gradleApi(),
+            localGroovy(),
+            project(':chimprunner'),
+            "com.android.tools.build:gradle:$androidPluginVersion"
+    )
 }
