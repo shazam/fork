@@ -100,7 +100,7 @@ class ForkPlugin implements Plugin<Project> {
 
     private static File getApkFileFromPackageAndroidArtifact(ApkVariant variant) {
         PackageAndroidArtifact application = variant.packageApplicationProvider.get()
-        return new File(application.outputDirectory, application.apkNames.first())
+        return new File(application.outputDirectory.asFile.get(), application.apkNames.first())
     }
 
     private static checkTestVariants(TestVariant testVariant) {
