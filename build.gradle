@@ -12,7 +12,7 @@ ext.targetCompatibility = JavaVersion.VERSION_1_8
 
 
 ext {
-    androidPluginVersion = "3.6.3"
+    androidPluginVersion = "4.0.0"
     ddmlibVersion = "26.5.0"
     jcommanderVersion = "1.48"
     slf4jVersion = "1.7.21"
@@ -67,8 +67,8 @@ task jacocoMergeExecutions(type: JacocoMerge, dependsOn: getTasksByName('jacocoT
 
 task jacocoMergedReport(type: JacocoReport, dependsOn: jacocoMergeExecutions) {
     executionData jacocoMergeExecutions.destinationFile
-    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
-    classDirectories = files(subprojects.sourceSets.main.output)
+    sourceDirectories.from(files(subprojects.sourceSets.main.allSource.srcDirs))
+    classDirectories.from(files(subprojects.sourceSets.main.output))
     reports {
         html.enabled false
         xml.enabled true
