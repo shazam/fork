@@ -13,7 +13,7 @@ package com.shazam.fork.suite;
 import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
 import org.hamcrest.Matcher;
-import org.jf.dexlib.DexFile;
+import org.jf.dexlib2.iface.DexFile;
 import org.junit.Before;
 import org.junit.Test;
 

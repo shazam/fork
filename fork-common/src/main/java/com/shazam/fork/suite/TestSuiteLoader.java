@@ -12,28 +12,30 @@ package com.shazam.fork.suite;
 
 import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
-import org.jf.dexlib.AnnotationDirectoryItem;
-import org.jf.dexlib.AnnotationItem;
-import org.jf.dexlib.AnnotationSetItem;
-import org.jf.dexlib.ClassDefItem;
-import org.jf.dexlib.EncodedValue.AnnotationEncodedSubValue;
-import org.jf.dexlib.EncodedValue.ArrayEncodedValue;
-import org.jf.dexlib.EncodedValue.EncodedValue;
-import org.jf.dexlib.EncodedValue.StringEncodedValue;
-import org.jf.dexlib.StringIdItem;
+
+import org.jf.dexlib2.iface.Annotation;
+import org.jf.dexlib2.iface.AnnotationElement;
+import org.jf.dexlib2.iface.ClassDef;
+import org.jf.dexlib2.iface.DexFile;
+import org.jf.dexlib2.iface.Method;
+import org.jf.dexlib2.iface.value.ArrayEncodedValue;
+import org.jf.dexlib2.iface.value.EncodedValue;
+import org.jf.dexlib2.iface.value.StringEncodedValue;
 
 import javax.annotation.Nonnull;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static com.shazam.fork.model.TestCaseEvent.Builder.testCaseEvent;
 import static java.lang.Math.min;
-import static java.util.Arrays.stream;
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 public class TestSuiteLoader {
@@ -54,9 +56,9 @@ public class TestSuiteLoader {
 
     public Collection<TestCaseEvent> loadTestSuite() throws NoTestCasesFoundException {
         List<TestCaseEvent> testCaseEvents = dexFileExtractor.getDexFiles(instrumentationApkFile).stream()
-                .map(dexFile -> dexFile.ClassDefsSection.getItems())
+                .map(DexFile::getClasses)
                 .flatMap(Collection::stream)
-                .filter(c -> testClassMatcher.matchesPatterns(c.getClassType().getTypeDescriptor()))
+                .filter(c -> testClassMatcher.matchesPatterns(c.getType()))
                 .map(this::convertClassToTestCaseEvents)
                 .flatMap(Collection::stream)
                 .collect(toList());
@@ -68,30 +70,25 @@ public class TestSuiteLoader {
     }
 
     @Nonnull
-    private List<TestCaseEvent> convertClassToTestCaseEvents(ClassDefItem classDefItem) {
-        AnnotationDirectoryItem annotationDirectoryItem = classDefItem.getAnnotations();
-        if (annotationDirectoryItem == null) {
-            return emptyList();
-        }
-
+    private List<TestCaseEvent> convertClassToTestCaseEvents(ClassDef classDefItem) {
         List<TestCaseEvent> testCaseEvents = new ArrayList<>();
-        for (AnnotationDirectoryItem.MethodAnnotation method : annotationDirectoryItem.getMethodAnnotations()) {
-            stream(method.annotationSet.getAnnotations())
-                    .filter(annotation -> TEST_ANNOTATION.equals(stringType(annotation)))
-                    .map(annotation -> convertToTestCaseEvent(classDefItem, annotationDirectoryItem, method))
-                    .forEach(testCaseEvents::add);
-        }
+
+        Iterable<? extends Method> methods = classDefItem.getMethods();
+        StreamSupport.stream(methods.spliterator(), false)
+                .filter(method -> method.getAnnotations().stream().anyMatch(annotation -> TEST_ANNOTATION.equals(annotation.getType())))
+                .map(method -> convertToTestCaseEvent(classDefItem, method)).forEach(testCaseEvents::add);
+
         return testCaseEvents;
     }
 
     @Nonnull
-    private TestCaseEvent convertToTestCaseEvent(ClassDefItem classDefItem,
-                                                 AnnotationDirectoryItem annotationDirectoryItem,
-                                                 AnnotationDirectoryItem.MethodAnnotation method) {
-        String testMethod = method.method.getMethodName().getStringValue();
-        AnnotationItem[] annotations = method.annotationSet.getAnnotations();
+    private TestCaseEvent convertToTestCaseEvent(ClassDef classDefItem, Method method) {
+        String testMethod = method.getName();
+        Set<? extends Annotation> annotations = method.getAnnotations();
+
         String testClass = getClassName(classDefItem);
-        boolean isIgnored = isClassIgnored(annotationDirectoryItem) || isMethodIgnored(annotations);
+
+        boolean isIgnored = isClassIgnored(classDefItem) || isMethodIgnored(annotations);
         List<String> permissionsToRevoke = getPermissionsToRevoke(annotations);
         Map<String, String> properties = getTestProperties(annotations);
         return testCaseEvent()
@@ -103,33 +100,32 @@ public class TestSuiteLoader {
                 .build();
     }
 
-    private String getClassName(ClassDefItem classDefItem) {
-        String typeDescriptor = classDefItem.getClassType().getTypeDescriptor();
+    private String getClassName(ClassDef classDefItem) {
+        String typeDescriptor = classDefItem.getType();
         return typeDescriptor.substring(1, typeDescriptor.length() - 1).replace('/', '.');
     }
 
-    private boolean isMethodIgnored(AnnotationItem... annotationItems) {
-        return containsAnnotation(IGNORE_ANNOTATION, annotationItems);
+    private boolean isMethodIgnored(Set<? extends Annotation> annotations) {
+        return containsAnnotation(IGNORE_ANNOTATION, annotations);
     }
 
-    private List<String> getPermissionsToRevoke(AnnotationItem[] annotations) {
-        return stream(annotations)
-                .filter(annotationItem -> REVOKE_PERMISSION_ANNOTATION.equals(stringType(annotationItem)))
-                .map(annotationItem -> annotationItem.getEncodedAnnotation().values)
-                .flatMap(encodedValues -> stream(encodedValues)
-                        .flatMap(encodedValue -> stream(((ArrayEncodedValue) encodedValue).values)
-                                .map(stringEncoded -> ((StringEncodedValue) stringEncoded).value.getStringValue())))
-                .collect(toList());
+    private List<String> getPermissionsToRevoke(Set<? extends Annotation> annotations) {
+        return annotations.stream()
+                .filter(annotationItem -> REVOKE_PERMISSION_ANNOTATION.equals(annotationItem.getType()))
+                .flatMap(annotation -> (annotation.getElements())
+                        .stream()).map(AnnotationElement::getValue)
+                .flatMap(encodedValue -> ((ArrayEncodedValue) encodedValue).getValue().stream())
+                .map(stringEncoded -> ((StringEncodedValue) stringEncoded).getValue()).collect(Collectors.toList());
     }
 
-    private Map<String, String> getTestProperties(AnnotationItem[] annotations) {
+    private Map<String, String> getTestProperties(Set<? extends Annotation> annotations) {
         Map<String, String> properties = new HashMap<>();
-        stream(annotations)
-                .filter(annotationItem -> TEST_PROPERTIES_ANNOTATION.equals(stringType(annotationItem)))
-                .map(AnnotationItem::getEncodedAnnotation)
-                .forEach(an -> {
-                    List<String> keys = getAnnotationProperty(an, "keys");
-                    List<String> values = getAnnotationProperty(an, "values");
+        annotations.stream()
+                .filter(annotationItem -> TEST_PROPERTIES_ANNOTATION.equals(annotationItem.getType()))
+                .forEach(annotation -> {
+                    Set<? extends AnnotationElement> elements = annotation.getElements();
+                    List<String> keys = getAnnotationProperty(elements, "keys");
+                    List<String> values = getAnnotationProperty(elements, "values");
 
                     for (int i = 0; i < min(values.size(), keys.size()); i++) {
                         properties.put(keys.get(i), values.get(i));
@@ -138,40 +134,29 @@ public class TestSuiteLoader {
         return properties;
     }
 
-    private List<String> getAnnotationProperty(AnnotationEncodedSubValue an, String propertyName) {
-        int propValueIndex = indexOfName(an, propertyName);
-        if (propValueIndex >= 0) {
-            EncodedValue[] values = ((ArrayEncodedValue) an.values[propValueIndex]).values;
-            return stream(values)
-                    .map(stringEncodedValue -> ((StringEncodedValue) stringEncodedValue).value.getStringValue())
-                    .collect(toList());
-        } else {
-            return emptyList();
+    private List<String> getAnnotationProperty(Set<? extends AnnotationElement> elements, String propertyName) {
+        List<String> result = new ArrayList<>();
+        for (AnnotationElement annotationElement : elements) {
+            if (annotationElement.getName().equals(propertyName)) {
+                ArrayEncodedValue array = (ArrayEncodedValue) annotationElement.getValue();
+                for (EncodedValue value : array.getValue()) {
+                    result.add(((StringEncodedValue) value).getValue());
+                }
+            }
         }
+
+        return result;
     }
 
-    private int indexOfName(AnnotationEncodedSubValue p, String key) {
-        int index = -1;
-        StringIdItem[] names = p.names;
-        for (int i = 0; i < names.length; i++) {
-            if (names[i].getStringValue().equals(key)) return i;
-        }
-        return index;
-    }
-
-    private boolean isClassIgnored(AnnotationDirectoryItem annotationDirectoryItem) {
-        AnnotationSetItem classAnnotations = annotationDirectoryItem.getClassAnnotations();
-        if (classAnnotations == null) {
+    private boolean isClassIgnored(ClassDef classDef) {
+        Set<? extends Annotation> classAnnotations = classDef.getAnnotations();
+        if (classAnnotations.isEmpty()) {
             return false;
         }
-        return containsAnnotation(IGNORE_ANNOTATION, classAnnotations.getAnnotations());
+        return containsAnnotation(IGNORE_ANNOTATION, classAnnotations);
     }
 
-    private boolean containsAnnotation(String comparisonAnnotation, AnnotationItem... annotations) {
-        return stream(annotations).anyMatch(annotation -> comparisonAnnotation.equals(stringType(annotation)));
-    }
-
-    private String stringType(AnnotationItem annotation) {
-        return annotation.getEncodedAnnotation().annotationType.getTypeDescriptor();
+    private boolean containsAnnotation(String comparisonAnnotation, Set<? extends Annotation> annotations) {
+        return annotations.stream().anyMatch(annotation -> comparisonAnnotation.equals(annotation.getType()));
     }
 }
