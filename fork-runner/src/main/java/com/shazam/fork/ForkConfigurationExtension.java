@@ -44,6 +44,16 @@ public class ForkConfigurationExtension {
     public String title;
 
     /**
+     * The custom name for the Application APK, if not passed, the regular APK name will be used
+     */
+    public String applicationApkName;
+
+    /**
+     * The custom name for the Instrumentation APK, if not passed, the regular APK name will be used
+     */
+    public String instrumentationApkName;
+
+    /**
      * The subtitle of the final report
      */
     public String subtitle;
