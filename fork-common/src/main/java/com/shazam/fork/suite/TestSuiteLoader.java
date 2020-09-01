@@ -23,6 +23,7 @@ import org.jf.dexlib2.iface.value.EncodedValue;
 import org.jf.dexlib2.iface.value.StringEncodedValue;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,11 +48,18 @@ public class TestSuiteLoader {
     private final File instrumentationApkFile;
     private final DexFileExtractor dexFileExtractor;
     private final TestClassMatcher testClassMatcher;
+    @Nullable
+    private final String excludedAnnotation;
 
     public TestSuiteLoader(File instrumentationApkFile, DexFileExtractor dexFileExtractor, TestClassMatcher testClassMatcher) {
+        this(instrumentationApkFile, dexFileExtractor, testClassMatcher, null);
+    }
+
+    public TestSuiteLoader(File instrumentationApkFile, DexFileExtractor dexFileExtractor, TestClassMatcher testClassMatcher, @Nullable String excludedAnnotation) {
         this.instrumentationApkFile = instrumentationApkFile;
         this.dexFileExtractor = dexFileExtractor;
         this.testClassMatcher = testClassMatcher;
+        this.excludedAnnotation = excludedAnnotation != null ? "L" + excludedAnnotation.replaceAll("\\.", "/") + ";" : null;
     }
 
     public Collection<TestCaseEvent> loadTestSuite() throws NoTestCasesFoundException {
@@ -106,7 +114,7 @@ public class TestSuiteLoader {
     }
 
     private boolean isMethodIgnored(Set<? extends Annotation> annotations) {
-        return containsAnnotation(IGNORE_ANNOTATION, annotations);
+        return containsAnnotation(IGNORE_ANNOTATION, annotations) || containsAnnotation(excludedAnnotation, annotations);
     }
 
     private List<String> getPermissionsToRevoke(Set<? extends Annotation> annotations) {
@@ -156,7 +164,7 @@ public class TestSuiteLoader {
         return containsAnnotation(IGNORE_ANNOTATION, classAnnotations);
     }
 
-    private boolean containsAnnotation(String comparisonAnnotation, Set<? extends Annotation> annotations) {
-        return annotations.stream().anyMatch(annotation -> comparisonAnnotation.equals(annotation.getType()));
+    private boolean containsAnnotation(@Nullable String comparisonAnnotation, Set<? extends Annotation> annotations) {
+        return annotations.stream().anyMatch(annotation -> comparisonAnnotation != null && comparisonAnnotation.equals(annotation.getType()));
     }
 }

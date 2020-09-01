@@ -65,6 +65,20 @@ import static org.hamcrest.Matchers.hasItems;
  *    public void ignoredTestMethod() {
  *    }
  * }
+ * <p>
+ * public class ClassWithNoIgnoredMethodsTest {
+ *     {@literal}@Test
+ *     public void firstTestMethod() {
+ *         assertEquals(4, 2 + 2);
+ *     }
+ *
+ *     {@literal}@Test
+ *     {@literal}@ExcludedAnnotation
+ *     public void secondTestMethod() {
+ *         assertEquals(4, 2 + 2);
+ *     }
+ *
+ * }
  * </pre></blockquote>
  */
 public class TestSuiteLoaderTest {
@@ -83,8 +97,30 @@ public class TestSuiteLoaderTest {
 
     @Before
     public void setUp() {
-        testSuiteLoader = new TestSuiteLoader(ANY_INSTRUMENTATION_APK_FILE, fakeDexFileExtractor, fakeTestClassMatcher);
+        testSuiteLoader = new TestSuiteLoader(ANY_INSTRUMENTATION_APK_FILE, fakeDexFileExtractor, fakeTestClassMatcher, "com.shazam.forktest.ExcludedAnnotation");
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void setsExcludedAnnotationFlag() throws Exception {
+        assertThat(testSuiteLoader.loadTestSuite(), hasItems(
+                sameTestEventAs("includedMethod", "com.shazam.forktest.ClassWithExcludedAnnotationTest", false),
+                sameTestEventAs("excludedMethod", "com.shazam.forktest.ClassWithExcludedAnnotationTest", true)));
+    }
+
+    @Test
+    public void EmptyExcludedAnnotationWorks() throws Exception {
+        TestSuiteLoader loader = new TestSuiteLoader(ANY_INSTRUMENTATION_APK_FILE, fakeDexFileExtractor, fakeTestClassMatcher, "");
+        assertThat(loader.loadTestSuite(), hasItems(
+                sameTestEventAs("includedMethod", "com.shazam.forktest.ClassWithExcludedAnnotationTest", false),
+                sameTestEventAs("excludedMethod", "com.shazam.forktest.ClassWithExcludedAnnotationTest", false)));
+
+        loader = new TestSuiteLoader(ANY_INSTRUMENTATION_APK_FILE, fakeDexFileExtractor, fakeTestClassMatcher, null);
+        assertThat(loader.loadTestSuite(), hasItems(
+                sameTestEventAs("includedMethod", "com.shazam.forktest.ClassWithExcludedAnnotationTest", false),
+                sameTestEventAs("excludedMethod", "com.shazam.forktest.ClassWithExcludedAnnotationTest", false)));
+    }
+
 
     @SuppressWarnings("unchecked")
     @Test
