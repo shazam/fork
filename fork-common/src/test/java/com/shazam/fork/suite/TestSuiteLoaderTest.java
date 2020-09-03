@@ -109,7 +109,7 @@ public class TestSuiteLoaderTest {
     }
 
     @Test
-    public void EmptyExcludedAnnotationWorks() throws Exception {
+    public void emptyExcludedAnnotationWorks() throws Exception {
         TestSuiteLoader loader = new TestSuiteLoader(ANY_INSTRUMENTATION_APK_FILE, fakeDexFileExtractor, fakeTestClassMatcher, "");
         assertThat(loader.loadTestSuite(), hasItems(
                 sameTestEventAs("includedMethod", "com.shazam.forktest.ClassWithExcludedAnnotationTest", false),
