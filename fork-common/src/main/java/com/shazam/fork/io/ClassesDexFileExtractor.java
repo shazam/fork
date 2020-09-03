@@ -10,7 +10,7 @@
 
 package com.shazam.fork.io;
 
-import org.jf.dexlib.DexFile;
+import org.jf.dexlib2.iface.DexFile;
 
 import java.io.*;
 import java.util.Collection;

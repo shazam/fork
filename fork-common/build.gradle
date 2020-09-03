@@ -27,7 +27,7 @@ dependencies {
             "com.github.spullara.mustache.java:compiler:$mustacheVersion",
             "com.google.code.gson:gson:$gsonVersion",
             "org.slf4j:slf4j-log4j12:$slf4jVersion",
-            "org.smali:dexlib:1.4.2",
+            "org.smali:dexlib2:2.4.0",
             "com.shazam:axmlparser:1.0"
     )
 

@@ -10,7 +10,10 @@
 
 package com.shazam.fork.io;
 
-import org.jf.dexlib.DexFile;
+
+import org.jf.dexlib2.DexFileFactory;
+import org.jf.dexlib2.Opcodes;
+import org.jf.dexlib2.iface.DexFile;
 
 import java.io.*;
 import java.util.function.Function;
@@ -44,7 +47,7 @@ public class Files {
             @Override
             public DexFile apply(File f) {
                 try {
-                    return new DexFile(f);
+                    return DexFileFactory.loadDexFile(f, Opcodes.getDefault());
                 } catch (IOException e) {
                     return null;
                 }
