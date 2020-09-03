@@ -112,6 +112,8 @@ retryPerTestCaseQuota  | int                     | 1
 autoGrantPermissions   | boolean                 | true
 poolingStrategy        | PoolingStrategy         | -
 excludedAnnotation     | String                  | (tests with this annotation are excluded)
+applicationApkName     | String                  | -
+instrumentationApkName | String                  | -
 
 `Poolingstrategy` is an object that describes how the device pools are created. You can choose **only one** strategy from below:
 
