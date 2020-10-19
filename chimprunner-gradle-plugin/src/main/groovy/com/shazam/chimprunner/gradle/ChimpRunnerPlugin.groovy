@@ -82,8 +82,12 @@ class ChimpRunnerPlugin implements Plugin<Project> {
     }
 
     private static File getApkFileFromPackageAndroidArtifact(ApkVariant variant) {
+        def apkFileNames = new ArrayList<>()
+        variant.outputs.all { BaseVariantOutput baseVariantOutput ->
+            apkFileNames.add(baseVariantOutput.outputFile.name)
+        }
         PackageAndroidArtifact application = variant.packageApplicationProvider.get()
-        return new File(application.outputDirectory.getAsFile().get(), application.apkNames.first())
+        return new File(application.outputDirectory.getAsFile().get(), apkFileNames.sort().first())
     }
 
     /**
