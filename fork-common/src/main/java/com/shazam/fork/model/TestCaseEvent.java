@@ -2,7 +2,6 @@ package com.shazam.fork.model;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.common.base.Objects;
-
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +19,7 @@ public class TestCaseEvent {
     private final String testMethod;
     @Nonnull
     private final String testClass;
-    @Nonnull
+
     private final boolean isIgnored;
     @Nonnull
     private final List<String> permissionsToRevoke;
@@ -73,28 +72,30 @@ public class TestCaseEvent {
         return unmodifiableMap(properties);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        TestCaseEvent that = (TestCaseEvent) o;
-
-        if (isIgnored != that.isIgnored) return false;
-        if (!testMethod.equals(that.testMethod)) return false;
-        if (!testClass.equals(that.testClass)) return false;
-        if (!permissionsToRevoke.equals(that.permissionsToRevoke)) return false;
-        return properties.equals(that.properties);
-    }
-
+    /**
+     * Only testClass and testMethod considered as this class can be synthetized from
+     * @see com.android.ddmlib.testrunner.TestIdentifier that contains only class and method.
+     */
     @Override
     public int hashCode() {
-        int result = testMethod.hashCode();
-        result = 31 * result + testClass.hashCode();
-        result = 31 * result + (isIgnored ? 1 : 0);
-        result = 31 * result + permissionsToRevoke.hashCode();
-        result = 31 * result + properties.hashCode();
-        return result;
+        return Objects.hashCode(this.testMethod, this.testClass);
+    }
+
+    /**
+     * Only testClass and testMethod considered as this class can be synthetized from
+     * @see com.android.ddmlib.testrunner.TestIdentifier that contains only class and method.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TestCaseEvent other = (TestCaseEvent) obj;
+        return Objects.equal(this.testMethod, other.testMethod)
+                && Objects.equal(this.testClass, other.testClass);
     }
 
     @Override
