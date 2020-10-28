@@ -34,7 +34,7 @@ public class ForkFileManager implements FileManager {
 
     @Override
     public File createFile(FileType fileType, Pool pool, Device device, TestCaseEvent testCaseEvent) {
-        return createFile(fileType, pool, device, new TestIdentifier(testCaseEvent.getTestClass(), testCaseEvent.getTestMethod()));
+        return createFile(fileType, pool, device, testCaseEvent.toTestIdentifier());
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ForkFileManager implements FileManager {
     public File createFile(FileType fileType, Pool pool, Device device, TestIdentifier testIdentifier) {
         try {
             Path directory = createDirectory(fileType, pool, device);
-            String filename = createFilenameForTest(TestCaseEvent.from(testIdentifier), fileType);
+            String filename = createFilenameForTest(testIdentifier, fileType);
             return createFile(directory, filename);
         } catch (IOException e) {
             throw new CouldNotCreateDirectoryException(e);
@@ -82,7 +82,7 @@ public class ForkFileManager implements FileManager {
 
     @Override
     public File getFile(FileType fileType, String pool, String safeSerial, TestIdentifier testIdentifier) {
-        String filenameForTest = createFilenameForTest(TestCaseEvent.from(testIdentifier), fileType);
+        String filenameForTest = createFilenameForTest(testIdentifier, fileType);
         Path path = get(output.getAbsolutePath(), fileType.getDirectory(), pool, safeSerial, filenameForTest);
         return path.toFile();
     }
@@ -91,8 +91,8 @@ public class ForkFileManager implements FileManager {
     public File getFile(@Nonnull FileType fileType,
                         @Nonnull Pool pool,
                         @Nonnull Device device,
-                        @Nonnull TestCaseEvent testCase) {
-        String filenameForTest = createFilenameForTest(testCase, fileType);
+                        @Nonnull TestIdentifier testIdentifier) {
+        String filenameForTest = createFilenameForTest(testIdentifier, fileType);
         Path path = get(output.getAbsolutePath(),
                 fileType.getDirectory(),
                 pool.getName(),
@@ -113,8 +113,8 @@ public class ForkFileManager implements FileManager {
         return new File(directory.toFile(), filename);
     }
 
-    private String createFilenameForTest(TestCaseEvent testCase, FileType fileType) {
-        return String.format("%s.%s", testCase.getTestFullName(), fileType.getSuffix());
+    private String createFilenameForTest(TestIdentifier testIdentifier, FileType fileType) {
+        return String.format("%s.%s", testIdentifier.toString(), fileType.getSuffix());
     }
 
     private String createFilenameForTest(TestIdentifier testIdentifier, FileType fileType, int sequenceNumber) {

@@ -35,8 +35,8 @@ public class RetryListener extends NoOpITestRunListener {
     @Nonnull
     private final TestCaseEvent runningTestCase;
 
-    private TestCaseEvent startedTest;
-    private TestCaseEvent failedTest;
+    private TestIdentifier startedTest;
+    private TestIdentifier failedTest;
 
     public RetryListener(Pool pool,
                          Device device,
@@ -52,12 +52,12 @@ public class RetryListener extends NoOpITestRunListener {
 
     @Override
     public void testStarted(TestIdentifier test) {
-        startedTest = TestCaseEvent.from(test);
+        startedTest = test;
     }
 
     @Override
     public void testFailed(TestIdentifier test, String trace) {
-        failedTest = TestCaseEvent.from(test);
+        failedTest = test;
     }
 
     @Override

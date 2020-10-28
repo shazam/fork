@@ -47,7 +47,7 @@ public class PoolTestCaseFailureAccumulatorTest {
         subject.record(A_POOL, A_TEST_CASE);
         subject.record(A_POOL, A_TEST_CASE);
 
-        int actualCount = subject.getCount(A_TEST_CASE);
+        int actualCount = subject.getCount(A_TEST_CASE.toTestIdentifier());
 
         assertThat(actualCount, equalTo(2));
     }
@@ -57,7 +57,7 @@ public class PoolTestCaseFailureAccumulatorTest {
         subject.record(A_POOL, A_TEST_CASE);
         subject.record(A_POOL, A_TEST_CASE);
 
-        int actualCount = subject.getCount(A_POOL, A_TEST_CASE);
+        int actualCount = subject.getCount(A_POOL, A_TEST_CASE.toTestIdentifier());
 
         assertThat(actualCount, equalTo(2));
     }
@@ -67,7 +67,7 @@ public class PoolTestCaseFailureAccumulatorTest {
         subject.record(A_POOL, A_TEST_CASE);
         subject.record(ANOTHER_POOL, A_TEST_CASE);
 
-        int actualCount = subject.getCount(A_TEST_CASE);
+        int actualCount = subject.getCount(A_TEST_CASE.toTestIdentifier());
 
         assertThat(actualCount, equalTo(2));
     }
@@ -76,7 +76,7 @@ public class PoolTestCaseFailureAccumulatorTest {
     public void shouldNotReturnTestCasesForDifferentPool() {
         subject.record(A_POOL, A_TEST_CASE);
 
-        int actualCountForAnotherDevice = subject.getCount(ANOTHER_POOL, A_TEST_CASE);
+        int actualCountForAnotherDevice = subject.getCount(ANOTHER_POOL, A_TEST_CASE.toTestIdentifier());
 
         assertThat(actualCountForAnotherDevice, equalTo(0));
     }
@@ -86,8 +86,8 @@ public class PoolTestCaseFailureAccumulatorTest {
         subject.record(A_POOL, A_TEST_CASE);
         subject.record(A_POOL, ANOTHER_TEST_CASE);
 
-        int actualCount = subject.getCount(A_POOL, A_TEST_CASE);
-        int anotherActualCount = subject.getCount(A_POOL, ANOTHER_TEST_CASE);
+        int actualCount = subject.getCount(A_POOL, A_TEST_CASE.toTestIdentifier());
+        int anotherActualCount = subject.getCount(A_POOL, ANOTHER_TEST_CASE.toTestIdentifier());
 
         assertThat(actualCount, equalTo(1));
         assertThat(anotherActualCount, equalTo(1));

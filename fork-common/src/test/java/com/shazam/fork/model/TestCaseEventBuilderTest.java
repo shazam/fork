@@ -1,11 +1,14 @@
 package com.shazam.fork.model;
 
+import com.android.ddmlib.testrunner.TestIdentifier;
+
 import org.junit.Test;
 
 import java.util.HashMap;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class TestCaseEventBuilderTest {
@@ -53,5 +56,27 @@ public class TestCaseEventBuilderTest {
                 .build();
 
         assertThat(testCaseEventA, not(equalTo(testCaseEventB)));
+    }
+
+    @Test
+    public void generatedTestIdentifierHasCorrectClassName() {
+        TestCaseEvent testCaseEvent = new TestCaseEvent.Builder()
+                .withTestClass("TestClass")
+                .withTestMethod("testMethod")
+                .build();
+        TestIdentifier testIdentifier = testCaseEvent.toTestIdentifier();
+
+        assertEquals(testCaseEvent.getTestClass(),testIdentifier.getClassName());
+    }
+
+    @Test
+    public void generatedTestIdentifierHasCorrectTestName() {
+        TestCaseEvent testCaseEvent = new TestCaseEvent.Builder()
+                .withTestClass("TestClass")
+                .withTestMethod("testMethod")
+                .build();
+        TestIdentifier testIdentifier = testCaseEvent.toTestIdentifier();
+
+        assertEquals(testCaseEvent.getTestMethod(),testIdentifier.getTestName());
     }
 }

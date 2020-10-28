@@ -10,6 +10,7 @@
 
 package com.shazam.fork.model;
 
+import com.android.ddmlib.testrunner.TestIdentifier;
 import com.google.common.collect.SetMultimap;
 
 import java.util.function.Predicate;
@@ -43,11 +44,11 @@ public class PoolTestCaseFailureAccumulator implements PoolTestCaseAccumulator {
     }
 
     @Override
-    public int getCount(Pool pool, TestCaseEvent testCaseEvent) {
+    public int getCount(Pool pool, TestIdentifier testIdentifier) {
         if (testCaseCounters.containsKey(pool)) {
             synchronized (testCaseCounters) {
                 return testCaseCounters.get(pool).stream()
-                        .filter(isSameTestCase(testCaseEvent))
+                        .filter(isSameTestCase(testIdentifier))
                         .findFirst()
                         .orElse(TestCaseEventCounter.EMPTY)
                         .getCount();
@@ -58,10 +59,10 @@ public class PoolTestCaseFailureAccumulator implements PoolTestCaseAccumulator {
     }
 
     @Override
-    public int getCount(TestCaseEvent testCaseEvent) {
+    public int getCount(TestIdentifier testIdentifier) {
         synchronized (testCaseCounters) {
             return testCaseCounters.values().stream()
-                    .filter(isSameTestCase(testCaseEvent))
+                    .filter(isSameTestCase(testIdentifier))
                     .mapToInt(TestCaseEventCounter::getCount)
                     .sum();
         }
@@ -73,5 +74,9 @@ public class PoolTestCaseFailureAccumulator implements PoolTestCaseAccumulator {
 
     private static Predicate<TestCaseEventCounter> isSameTestCase(TestCaseEvent testCaseEvent) {
         return testCaseEventCounter -> testCaseEventCounter.getTestCaseEvent().equals(testCaseEvent);
+    }
+
+    private static Predicate<TestCaseEventCounter> isSameTestCase(TestIdentifier testIdentifier) {
+        return testCaseEventCounter -> testCaseEventCounter.getTestCaseEvent().toTestIdentifier().equals(testIdentifier);
     }
 }
