@@ -1,15 +1,14 @@
 package com.shazam.fork.model;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
-import com.google.common.base.Objects;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.shazam.fork.model.TestCaseEvent.Builder.testCaseEvent;
+import javax.annotation.Nonnull;
+
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
@@ -20,7 +19,7 @@ public class TestCaseEvent {
     private final String testMethod;
     @Nonnull
     private final String testClass;
-    @Nonnull
+
     private final boolean isIgnored;
     @Nonnull
     private final List<String> permissionsToRevoke;
@@ -36,12 +35,8 @@ public class TestCaseEvent {
     }
 
     @Nonnull
-    public static TestCaseEvent from(@Nonnull TestIdentifier testIdentifier) {
-        return testCaseEvent()
-                .withTestClass(testIdentifier.getClassName())
-                .withTestMethod(testIdentifier.getTestName())
-                .withIsIgnored(false)
-                .build();
+    public TestIdentifier toTestIdentifier() {
+        return new TestIdentifier(testClass, testMethod);
     }
 
     @Nonnull

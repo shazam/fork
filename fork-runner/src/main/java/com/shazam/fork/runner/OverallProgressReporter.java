@@ -10,6 +10,7 @@
 
 package com.shazam.fork.runner;
 
+import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.PoolTestCaseAccumulator;
 import com.shazam.fork.model.TestCaseEvent;
@@ -102,7 +103,8 @@ public class OverallProgressReporter implements ProgressReporter {
     }
 
     public boolean requestRetry(Pool pool, TestCaseEvent testCase) {
-        boolean result = retryWatchdog.requestRetry(failedTestCasesAccumulator.getCount(testCase));
+        int failuresCount = failedTestCasesAccumulator.getCount(testCase.toTestIdentifier());
+        boolean result = retryWatchdog.requestRetry(failuresCount);
         if (result && poolProgressTrackers.containsKey(pool)) {
             poolProgressTrackers.get(pool).trackTestEnqueuedAgain();
         }
@@ -115,8 +117,8 @@ public class OverallProgressReporter implements ProgressReporter {
     }
 
     @Override
-    public int getTestFailuresCount(Pool pool, TestCaseEvent testCase) {
-        return failedTestCasesAccumulator.getCount(pool, testCase);
+    public int getTestFailuresCount(Pool pool, TestIdentifier testIdentifier) {
+        return failedTestCasesAccumulator.getCount(pool, testIdentifier);
     }
 
     private class RetryWatchdog {

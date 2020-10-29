@@ -10,6 +10,7 @@
 
 package com.shazam.fork.runner;
 
+import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 
@@ -89,7 +90,7 @@ public final class FakeProgressReporter implements ProgressReporter {
     }
 
     @Override
-    public int getTestFailuresCount(Pool pool, TestCaseEvent testCase) {
+    public int getTestFailuresCount(Pool pool, TestIdentifier testIdentifier) {
         return 0;
     }
 }

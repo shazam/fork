@@ -27,7 +27,7 @@ public class FileManagerBasedDeviceTestFilesCleaner implements DeviceTestFilesCl
 
     @Override
     public boolean deleteTraceFiles(@Nonnull TestCaseEvent testCase) {
-        File file = fileManager.getFile(FileType.TEST, pool, device, testCase);
+        File file = fileManager.getFile(FileType.TEST, pool, device, testCase.toTestIdentifier());
         boolean isDeleted = file.delete();
         if (!isDeleted) {
             logger.warn("Failed to delete a file {}", file.getAbsolutePath());

@@ -8,6 +8,7 @@ import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.runner.FailedTestScheduler;
 import com.shazam.fork.util.TestPipelineEmulator;
+
 import org.jmock.Expectations;
 import org.jmock.auto.Mock;
 import org.jmock.integration.junit4.JUnitRuleMockery;
@@ -17,6 +18,7 @@ import org.junit.Test;
 import static com.shazam.fork.device.FakeDeviceTestFilesCleaner.fakeDeviceTestFilesCleaner;
 import static com.shazam.fork.model.Device.Builder.aDevice;
 import static com.shazam.fork.model.Pool.Builder.aDevicePool;
+import static com.shazam.fork.model.TestCaseEvent.Builder.testCaseEvent;
 import static com.shazam.fork.util.TestPipelineEmulator.Builder.testPipelineEmulator;
 
 public class RetryListenerTest {
@@ -36,12 +38,15 @@ public class RetryListenerTest {
             .build();
 
     private final TestIdentifier fatalCrashedTest = new TestIdentifier("com.example.FatalCrashedTest", "testMethod");
-    private final TestCaseEvent fatalCrashedTestCaseEvent = TestCaseEvent.from(fatalCrashedTest);
+    private final TestCaseEvent fatalCrashedTestCaseEvent = testCaseEvent()
+            .withTestClass(fatalCrashedTest.getClassName())
+            .withTestMethod(fatalCrashedTest.getTestName())
+            .build();
 
     @Test
     public void reschedulesTestIfTestRunFailedAndDeleteTraceFiles() {
         RetryListener retryListener =
-                new RetryListener(pool, device, mockFailedTestScheduler, mockDeviceTestFilesCleaner,fatalCrashedTestCaseEvent);
+                new RetryListener(pool, device, mockFailedTestScheduler, mockDeviceTestFilesCleaner, fatalCrashedTestCaseEvent);
 
         mockery.checking(new Expectations() {{
             oneOf(mockFailedTestScheduler).rescheduleTestExecution(fatalCrashedTestCaseEvent);

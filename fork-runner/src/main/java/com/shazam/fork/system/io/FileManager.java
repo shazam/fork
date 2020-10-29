@@ -38,5 +38,5 @@ public interface FileManager {
     File getFile(@Nonnull FileType fileType,
                  @Nonnull Pool pool,
                  @Nonnull Device device,
-                 @Nonnull TestCaseEvent testCase);
+                 @Nonnull TestIdentifier testIdentifier);
 }
