@@ -101,6 +101,7 @@ public final class FilesRetrieverBasedAggregator implements Aggregator {
                 .map(testResult -> new TestResultItem(testResult.getTestClass(), testResult.getTestMethod()))
                 .collect(toSet());
         Set<TestResultItem> allTests = testCases.stream()
+                .filter(it -> !it.isParameterized())
                 .map(testCaseEvent -> new TestResultItem(testCaseEvent.getTestClass(), testCaseEvent.getTestMethod()))
                 .collect(toSet());
 

@@ -64,7 +64,11 @@ class TestRun {
 			runner.setTestSize(testSize);
 		}
 		runner.setRunName(poolName);
-		runner.setMethodName(testClassName, testMethodName);
+		if (test.isParameterized()) {
+			runner.setClassName(testClassName);
+		} else {
+			runner.setMethodName(testClassName, testMethodName);
+		}
 		runner.setMaxtimeToOutputResponse(testRunParameters.getTestOutputTimeout());
 
         if (testRunParameters.isCoverageEnabled()) {
