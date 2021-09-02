@@ -13,7 +13,9 @@ import com.shazam.chimprunner.ChimpRunner
 import com.shazam.chimprunner.Configuration
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.VerificationTask
@@ -29,6 +31,7 @@ class ChimpRunnerTask extends DefaultTask implements VerificationTask {
     private static final Logger LOG = LoggerFactory.getLogger(ChimpRunnerTask.class)
 
     /** If true then test failures do not cause a build failure. */
+    @Input
     boolean ignoreFailures
 
     /** Instrumentation APK. */
@@ -43,9 +46,16 @@ class ChimpRunnerTask extends DefaultTask implements VerificationTask {
     @OutputDirectory
     File output
 
+    @Input
+    @Optional
     String testClassRegex
+
+    @Input
+    @Optional
     String testPackage
-    String serial;
+
+    @Input
+    String serial
 
     @TaskAction
     void runChimpRunner() {
@@ -61,7 +71,7 @@ class ChimpRunnerTask extends DefaultTask implements VerificationTask {
                 .withTestPackage(testPackage)
                 .withTestClassRegex(testClassRegex)
                 .withSerial(serial)
-                .build();
+                .build()
 
         boolean success = new ChimpRunner(configuration).run()
         if (!success && !ignoreFailures) {
