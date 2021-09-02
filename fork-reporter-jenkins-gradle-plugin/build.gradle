@@ -16,7 +16,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
-    maven { url "http://repo.jenkins-ci.org/public/" }
+    maven { url "https://repo.jenkins-ci.org/public/" }
 }
 
 dependencies {
