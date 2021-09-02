@@ -105,7 +105,7 @@ public class LogCatSerializerTest {
         String timestampString = String.valueOf("08-13 22:37:24." + ++milli);
 
         LogCatHeader logCatHeader = new LogCatHeader(Log.LogLevel.INFO, 1234, 4321, "TestRunner", "TestRunner",
-                LogCatTimestamp.fromString(timestampString));
+                LogCatTimestamp.parse(timestampString));
         return new LogCatMessage(logCatHeader, msg);
     }
 

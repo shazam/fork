@@ -22,6 +22,7 @@ dependencies {
             localGroovy(),
             project(':fork-common'),
             project(':fork-runner'),
-            "com.android.tools.build:gradle:$androidPluginVersion"
+            "com.android.tools.build:gradle:$androidPluginVersion",
+            "com.android.tools.ddms:ddmlib:$ddmlibVersion"
     )
 }
