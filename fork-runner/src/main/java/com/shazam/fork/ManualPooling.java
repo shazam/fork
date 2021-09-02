@@ -12,11 +12,12 @@ package com.shazam.fork;
 
 import groovy.lang.Closure;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ManualPooling {
+public class ManualPooling implements Serializable {
     public Map<String, Collection<String>> groupings;
 
     public ManualPooling() {

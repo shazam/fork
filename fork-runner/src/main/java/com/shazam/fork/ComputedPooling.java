@@ -11,12 +11,13 @@ package com.shazam.fork;
 
 import com.shazam.fork.model.Device;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import groovy.lang.Closure;
 
-public class ComputedPooling {
+public class ComputedPooling implements Serializable {
     public enum Characteristic implements DeviceCharacteristicReader {
         sw {
             @Override

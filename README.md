@@ -279,7 +279,7 @@ buildscript {
         classpath "com.shazam.fork:fork-reporter-jenkins-gradle-plugin:3.13.0"
     }
     repositories {
-        maven { url "http://repo.jenkins-ci.org/public/" }
+        maven { url "https://repo.jenkins-ci.org/public/" }
     }
 }
 ```

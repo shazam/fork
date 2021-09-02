@@ -17,7 +17,9 @@ import com.shazam.fork.Fork
 import com.shazam.fork.PoolingStrategy
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.VerificationTask
@@ -35,6 +37,7 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
     private static final Logger LOG = LoggerFactory.getLogger(ForkRunTask.class)
 
     /** If true then test failures do not cause a build failure. */
+    @Input
     boolean ignoreFailures
 
     /** Instrumentation APK. */
@@ -49,30 +52,51 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
     @OutputDirectory
     File output
 
+    @Input
+    @Optional
     String title
 
+    @Input
+    @Optional
     String subtitle
 
+    @Input
+    @Optional
     String testClassRegex
 
+    @Input
+    @Optional
     String testPackage
 
+    @Input
     boolean isCoverageEnabled
 
+    @Input
     int testOutputTimeout
 
+    @Input
+    @Optional
     String testSize
 
+    @Input
+    @Optional
     Collection<String> excludedSerials
 
+    @Input
     int totalAllowedRetryQuota
 
+    @Input
     int retryPerTestCaseQuota
 
+    @Input
+    @Optional
     PoolingStrategy poolingStrategy
 
-    boolean autoGrantPermissions;
+    @Input
+    boolean autoGrantPermissions
 
+    @Input
+    @Optional
     String excludedAnnotation
 
     @TaskAction
@@ -99,7 +123,7 @@ class ForkRunTask extends DefaultTask implements VerificationTask {
                 .withPoolingStrategy(poolingStrategy)
                 .withAutoGrantPermissions(autoGrantPermissions)
                 .withExcludedAnnotation(excludedAnnotation)
-                .build();
+                .build()
 
         boolean success = new Fork(configuration).run()
         if (!success && !ignoreFailures) {
