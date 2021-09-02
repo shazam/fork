@@ -11,7 +11,9 @@ package com.shazam.fork;
 
 import groovy.lang.Closure;
 
-public class PoolingStrategy {
+import java.io.Serializable;
+
+public class PoolingStrategy implements Serializable {
     public Boolean splitTablets;
     public Boolean eachDevice;
     public ComputedPooling computed;
