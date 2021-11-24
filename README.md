@@ -1,4 +1,4 @@
-![Build Status](https://github.com/shazam/fork/actions/workflows/main.yml/badge.svg) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/848eae2d11bc422caec3ac215557f38c)](https://www.codacy.com/app/i-giannakakis/fork?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=shazam/fork&amp;utm_campaign=Badge_Grade)
+![Build Status](https://github.com/shazam/fork/actions/workflows/main.yml/badge.svg) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/cd40d76af01b4a2fab6f5e4000e76cb8)](https://www.codacy.com/gh/shazam/fork/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=shazam/fork&amp;utm_campaign=Badge_Grade)
 
 Fork tools
 ==========
