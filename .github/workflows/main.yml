@@ -1,0 +1,32 @@
+name: Release Fork
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+          cache: gradle
+
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Deploy Snapshot
+        run: ./build-scripts/deploy_snapshot.sh
+        env:
+          GITHUB_IS_PULL_REQUEST: ${{ github.event_name == 'pull_request' }}
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+
+      - name: Run coverage
+        env:
+          CODACITY_PROJECT_TOKEN: ${{ secrets.CODACITY_PROJECT_TOKEN }}
+        run: ./build-scripts/coverage.sh
