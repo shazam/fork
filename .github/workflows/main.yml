@@ -23,10 +23,10 @@ jobs:
         run: ./build-scripts/deploy_snapshot.sh
         env:
           GITHUB_IS_PULL_REQUEST: ${{ github.event_name == 'pull_request' }}
-          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          ORG_GRADLE_PROJECT_NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          ORG_GRADLE_PROJECT_NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
       - name: Run coverage
         env:
-          CODACITY_PROJECT_TOKEN: ${{ secrets.CODACITY_PROJECT_TOKEN }}
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         run: ./build-scripts/coverage.sh
