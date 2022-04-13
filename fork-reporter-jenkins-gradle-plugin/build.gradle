@@ -26,3 +26,16 @@ dependencies {
             "com.offbytwo.jenkins:jenkins-client:0.3.4",
             "org.apache.commons:commons-lang3:$commonsLangVersion")
 }
+
+// favour publication configured by `gradle-mvn-push.gradle`
+tasks.withType(PublishToMavenRepository).configureEach {
+    if (name.contains("PluginMaven")) {
+        enabled = false
+    }
+}
+
+tasks.withType(PublishToMavenLocal).configureEach {
+    if (name.contains("PluginMaven")) {
+        enabled = false
+    }
+}
