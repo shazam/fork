@@ -25,7 +25,9 @@ import static com.google.common.collect.Collections2.transform;
 import static com.shazam.fork.model.Diagnostics.VIDEO;
 import static com.shazam.fork.summary.ResultStatus.IGNORED;
 import static com.shazam.fork.summary.ResultStatus.PASS;
-import static com.shazam.fork.utils.ReadableNames.*;
+import static com.shazam.fork.utils.ReadableNames.readableClassName;
+import static com.shazam.fork.utils.ReadableNames.readablePoolName;
+import static com.shazam.fork.utils.ReadableNames.readableTestMethodName;
 
 class HtmlConverters {
 
@@ -130,13 +132,14 @@ class HtmlConverters {
 			@Override
 			public HtmlLogCatMessage apply(@Nullable LogCatMessage logCatMessage) {
 				HtmlLogCatMessage htmlLogCatMessage = new HtmlLogCatMessage();
-				htmlLogCatMessage.appName = logCatMessage.getAppName();
-				htmlLogCatMessage.logLevel = logCatMessage.getLogLevel().getStringValue();
+				htmlLogCatMessage.appName = logCatMessage.getHeader().getAppName();
+				htmlLogCatMessage.logLevel =
+						logCatMessage.getHeader().getLogLevel().getStringValue();
 				htmlLogCatMessage.message = logCatMessage.getMessage();
-				htmlLogCatMessage.pid = logCatMessage.getPid();
-				htmlLogCatMessage.tag = logCatMessage.getTag();
-				htmlLogCatMessage.tid = logCatMessage.getTid();
-				htmlLogCatMessage.time = logCatMessage.getTimestamp().toString();
+				htmlLogCatMessage.pid = logCatMessage.getHeader().getPid();
+				htmlLogCatMessage.tag = logCatMessage.getHeader().getTag();
+				htmlLogCatMessage.tid = logCatMessage.getHeader().getTid();
+				htmlLogCatMessage.time = logCatMessage.getHeader().getTimestamp().toString();
 				return htmlLogCatMessage;
 			}
 		};
