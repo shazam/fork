@@ -16,6 +16,6 @@ elif [ "$GITHUB_REF_NAME" != "$BRANCH" ]; then
   echo "Skipping snapshot deployment: wrong branch. Expected '$BRANCH' but was '$GITHUB_REF_NAME'."
 else
   echo "Deploying snapshot..."
-  ./gradlew clean uploadArchives
+  ./gradlew clean publishReleasePublicationToMavenRepository
   echo "Snapshot deployed!"
 fi
