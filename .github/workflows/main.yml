@@ -28,6 +28,7 @@ jobs:
           GITHUB_IS_PULL_REQUEST: ${{ github.event_name == 'pull_request' }}
           ORG_GRADLE_PROJECT_NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          ORG_GRADLE_PROJECT_IS_CI: true
 
       - name: Run coverage
         env:

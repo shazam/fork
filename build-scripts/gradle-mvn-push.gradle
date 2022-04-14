@@ -23,6 +23,10 @@ def getRepositoryPassword() {
     return hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ""
 }
 
+def isCI() {
+    return hasProperty('IS_CI') ? IS_CI == "true" : false
+}
+
 java {
     withJavadocJar()
     withSourcesJar()
@@ -82,7 +86,7 @@ afterEvaluate {
     }
 
     signing {
-        required { isReleaseBuild() }
+        required { isReleaseBuild() && !isCI() }
         sign publishing.publications.release
     }
 }
