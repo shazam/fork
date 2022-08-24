@@ -90,7 +90,7 @@ public class RetryListenerTest {
         }});
 
         TestPipelineEmulator emulator = testPipelineEmulator()
-                .withTestFailed("assert exception")
+                .withTestFailed(fatalCrashedTest, "assert exception")
                 .withTestRunFailed("fatal error")
                 .build();
         emulator.emulateFor(retryListener, fatalCrashedTest);

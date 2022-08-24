@@ -15,12 +15,12 @@ import com.shazam.fork.Configuration;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
+import com.shazam.fork.runner.listeners.ScreenRecorder;
 import com.shazam.fork.runner.listeners.TestRunListenersFactory;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Queue;
-
-import javax.annotation.Nonnull;
 
 import static com.shazam.fork.runner.TestRunParameters.Builder.testRunParameters;
 import static com.shazam.fork.system.PermissionGrantingManager.permissionGrantingManager;
@@ -39,6 +39,7 @@ public class TestRunFactory {
                                  Device device,
                                  Pool pool,
                                  ProgressReporter progressReporter,
+                                 ScreenRecorder screenRecorder,
                                  Queue<TestCaseEvent> queueOfTestsInPool) {
         TestRunParameters testRunParameters = testRunParameters()
                 .withDeviceInterface(device.getDeviceInterface())
@@ -57,6 +58,7 @@ public class TestRunFactory {
                 device,
                 pool,
                 progressReporter,
+                screenRecorder,
                 queueOfTestsInPool);
 
         return new TestRun(

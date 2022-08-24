@@ -13,7 +13,6 @@ package com.shazam.fork.runner.listeners;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.NullOutputReceiver;
 import com.shazam.fork.system.adb.CollectingShellOutputReceiver;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +27,6 @@ class ScreenRecorderStopper {
     private static final int PAUSE_BETWEEN_RECORDER_PROCESS_KILL = 300;
     private final NullOutputReceiver nullOutputReceiver = new NullOutputReceiver();
     private final IDevice deviceInterface;
-    private boolean hasFailed;
 
     ScreenRecorderStopper(IDevice deviceInterface) {
         this.deviceInterface = deviceInterface;
@@ -37,18 +35,13 @@ class ScreenRecorderStopper {
     /**
      * Stops all running screenrecord processes.
      */
-    public void stopScreenRecord(boolean hasFailed) {
-        this.hasFailed = hasFailed;
+    void stopScreenRecord() {
         boolean hasKilledScreenRecord = true;
         int tries = 0;
         while (hasKilledScreenRecord && tries++ < SCREENRECORD_KILL_ATTEMPTS) {
             hasKilledScreenRecord = attemptToGracefullyKillScreenRecord();
             pauseBetweenProcessKill();
         }
-    }
-
-    public boolean hasFailed() {
-        return hasFailed;
     }
 
     private boolean attemptToGracefullyKillScreenRecord() {

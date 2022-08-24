@@ -47,6 +47,7 @@ public class TestRunListenersFactory {
                                                       Device device,
                                                       Pool pool,
                                                       ProgressReporter progressReporter,
+                                                      ScreenRecorder screenRecorder,
                                                       Queue<TestCaseEvent> testCaseEventQueue) {
         return asList(
                 new ProgressTestRunListener(pool, progressReporter),
@@ -55,7 +56,7 @@ public class TestRunListenersFactory {
                         device.getModelName(), progressReporter),
                 new LogCatTestRunListener(gson, fileManager, pool, device),
                 new SlowWarningTestRunListener(),
-                getScreenTraceTestRunListener(fileManager, pool, device),
+                getScreenTraceTestRunListener(fileManager, screenRecorder, pool, device),
                 buildRetryListener(device, pool, progressReporter, testCaseEventQueue, testCase),
                 getCoverageTestRunListener(configuration, device, fileManager, pool, testCase));
     }
@@ -93,9 +94,9 @@ public class TestRunListenersFactory {
         return new NoOpITestRunListener();
     }
 
-    private ITestRunListener getScreenTraceTestRunListener(FileManager fileManager, Pool pool, Device device) {
+    private ITestRunListener getScreenTraceTestRunListener(FileManager fileManager, ScreenRecorder screenRecorder, Pool pool, Device device) {
         if (VIDEO.equals(device.getSupportedDiagnostics())) {
-            return new ScreenRecorderTestRunListener(fileManager, pool, device);
+            return new ScreenRecorderTestRunListener(fileManager, screenRecorder, pool, device);
         }
 
         return new NoOpITestRunListener();

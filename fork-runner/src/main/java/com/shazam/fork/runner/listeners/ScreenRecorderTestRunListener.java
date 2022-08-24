@@ -9,8 +9,6 @@
  */
 package com.shazam.fork.runner.listeners;
 
-import com.android.ddmlib.IDevice;
-import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
@@ -21,64 +19,53 @@ import java.util.Map;
 
 import static com.shazam.fork.system.io.FileType.SCREENRECORD;
 
-class ScreenRecorderTestRunListener implements ITestRunListener {
+class ScreenRecorderTestRunListener extends NoOpITestRunListener {
     private final FileManager fileManager;
+    private final ScreenRecorder screenRecorder;
     private final Pool pool;
     private final Device device;
-    private final IDevice deviceInterface;
+    private TestIdentifier currentTest;
 
-    private boolean hasFailed;
-    private ScreenRecorderStopper screenRecorderStopper;
-
-    public ScreenRecorderTestRunListener(FileManager fileManager, Pool pool, Device device) {
+    public ScreenRecorderTestRunListener(FileManager fileManager, ScreenRecorder screenRecorder, Pool pool, Device device) {
         this.fileManager = fileManager;
+        this.screenRecorder = screenRecorder;
         this.pool = pool;
         this.device = device;
-        deviceInterface = device.getDeviceInterface();
-    }
-
-    @Override
-    public void testRunStarted(String runName, int testCount) {
     }
 
     @Override
     public void testStarted(TestIdentifier test) {
-        hasFailed = false;
-        File localVideoFile = fileManager.createFile(SCREENRECORD, pool, device, test);
-        screenRecorderStopper = new ScreenRecorderStopper(deviceInterface);
-        ScreenRecorder screenRecorder = new ScreenRecorder(test, screenRecorderStopper, localVideoFile, deviceInterface);
-        new Thread(screenRecorder, "ScreenRecorder").start();
+        currentTest = test;
+        screenRecorder.startScreenRecording(test);
     }
 
     @Override
     public void testFailed(TestIdentifier test, String trace) {
-        hasFailed = true;
-    }
-
-    @Override
-    public void testAssumptionFailure(TestIdentifier test, String trace) {
-        screenRecorderStopper.stopScreenRecord(hasFailed);
-    }
-
-    @Override
-    public void testIgnored(TestIdentifier test) {
-        screenRecorderStopper.stopScreenRecord(hasFailed);
+        saveScreenRecording(test);
     }
 
     @Override
     public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
-        screenRecorderStopper.stopScreenRecord(hasFailed);
+        screenRecorder.stopScreenRecording(test);
     }
 
     @Override
     public void testRunFailed(String errorMessage) {
-    }
-
-    @Override
-    public void testRunStopped(long elapsedTime) {
+        // highly likely that something crashed and we never received testEnded
+        if (currentTest != null) {
+            saveScreenRecording(currentTest);
+        }
     }
 
     @Override
     public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
+        if (currentTest != null) {
+            screenRecorder.removeScreenRecording(currentTest);
+        }
+    }
+
+    private void saveScreenRecording(TestIdentifier test) {
+        File outputScreenRecording = fileManager.createFile(SCREENRECORD, pool, device, test);
+        screenRecorder.saveScreenRecording(test, outputScreenRecording);
     }
 }
