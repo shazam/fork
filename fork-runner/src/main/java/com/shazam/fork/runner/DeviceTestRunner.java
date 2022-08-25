@@ -15,6 +15,7 @@ package com.shazam.fork.runner;
 import com.android.ddmlib.*;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.*;
+import com.shazam.fork.device.ScreenRecorder;
 import com.shazam.fork.system.adb.Installer;
 
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ public class DeviceTestRunner implements Runnable {
     private final Queue<TestCaseEvent> queueOfTestsInPool;
     private final CountDownLatch deviceCountDownLatch;
     private final ProgressReporter progressReporter;
+    private final ScreenRecorder screenRecorder;
     private final TestRunFactory testRunFactory;
 
     public DeviceTestRunner(Installer installer,
@@ -43,6 +45,7 @@ public class DeviceTestRunner implements Runnable {
                             Queue<TestCaseEvent> queueOfTestsInPool,
                             CountDownLatch deviceCountDownLatch,
                             ProgressReporter progressReporter,
+                            ScreenRecorder screenRecorder,
                             TestRunFactory testRunFactory) {
         this.installer = installer;
         this.pool = pool;
@@ -50,6 +53,7 @@ public class DeviceTestRunner implements Runnable {
         this.queueOfTestsInPool = queueOfTestsInPool;
         this.deviceCountDownLatch = deviceCountDownLatch;
         this.progressReporter = progressReporter;
+        this.screenRecorder = screenRecorder;
         this.testRunFactory = testRunFactory;
     }
 
@@ -71,6 +75,7 @@ public class DeviceTestRunner implements Runnable {
                         device,
                         pool,
                         progressReporter,
+                        screenRecorder,
                         queueOfTestsInPool);
                 testRun.execute();
             }
