@@ -10,6 +10,7 @@
 package com.shazam.fork.runner.listeners;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
+import com.shazam.fork.device.ScreenRecorder;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.system.io.FileManager;

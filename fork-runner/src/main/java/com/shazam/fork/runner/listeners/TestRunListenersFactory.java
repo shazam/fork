@@ -14,6 +14,7 @@ import com.android.ddmlib.testrunner.ITestRunListener;
 import com.google.gson.Gson;
 import com.shazam.fork.Configuration;
 import com.shazam.fork.device.FileManagerBasedDeviceTestFilesCleaner;
+import com.shazam.fork.device.ScreenRecorder;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;

@@ -8,10 +8,11 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.shazam.fork.runner.listeners;
+package com.shazam.fork.device;
 
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.NullOutputReceiver;
+import com.shazam.fork.model.Device;
 import com.shazam.fork.system.adb.CollectingShellOutputReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,19 +27,19 @@ class ScreenRecorderStopper {
     private static final int SCREENRECORD_KILL_ATTEMPTS = 5;
     private static final int PAUSE_BETWEEN_RECORDER_PROCESS_KILL = 300;
     private final NullOutputReceiver nullOutputReceiver = new NullOutputReceiver();
-    private final IDevice deviceInterface;
+    private final Device device;
 
-    ScreenRecorderStopper(IDevice deviceInterface) {
-        this.deviceInterface = deviceInterface;
+    ScreenRecorderStopper(Device device) {
+        this.device = device;
     }
 
     /**
      * Stops all running screenrecord processes.
      */
     void stopScreenRecord() {
-        boolean hasKilledScreenRecord = true;
+        boolean hasKilledScreenRecord = false;
         int tries = 0;
-        while (hasKilledScreenRecord && tries++ < SCREENRECORD_KILL_ATTEMPTS) {
+        while (!hasKilledScreenRecord && tries++ < SCREENRECORD_KILL_ATTEMPTS) {
             hasKilledScreenRecord = attemptToGracefullyKillScreenRecord();
             pauseBetweenProcessKill();
         }
@@ -47,7 +48,8 @@ class ScreenRecorderStopper {
     private boolean attemptToGracefullyKillScreenRecord() {
         CollectingShellOutputReceiver receiver = new CollectingShellOutputReceiver();
         try {
-            deviceInterface.executeShellCommand("ps |grep screenrecord", receiver);
+            IDevice deviceInterface = device.getDeviceInterface();
+            deviceInterface.executeShellCommand("ps -A | grep screenrecord", receiver);
             String pid = extractPidOfScreenrecordProcess(receiver);
             if (isNotBlank(pid)) {
                 logger.trace("Killing PID {} on {}", pid, deviceInterface.getSerialNumber());

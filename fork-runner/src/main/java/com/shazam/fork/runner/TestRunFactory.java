@@ -15,7 +15,7 @@ import com.shazam.fork.Configuration;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
-import com.shazam.fork.runner.listeners.ScreenRecorder;
+import com.shazam.fork.device.ScreenRecorder;
 import com.shazam.fork.runner.listeners.TestRunListenersFactory;
 
 import javax.annotation.Nonnull;

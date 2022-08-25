@@ -15,7 +15,7 @@ package com.shazam.fork.runner;
 import com.android.ddmlib.*;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.*;
-import com.shazam.fork.runner.listeners.ScreenRecorder;
+import com.shazam.fork.device.ScreenRecorder;
 import com.shazam.fork.system.adb.Installer;
 
 import org.slf4j.Logger;

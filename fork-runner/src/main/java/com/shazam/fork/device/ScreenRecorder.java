@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package com.shazam.fork.runner.listeners;
+package com.shazam.fork.device;
 
 import com.android.ddmlib.testrunner.TestIdentifier;
 

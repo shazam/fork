@@ -10,10 +10,10 @@
 
 package com.shazam.fork.runner;
 
+import com.shazam.fork.device.ScreenRecorderImpl;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
-import com.shazam.fork.runner.listeners.ScreenRecorderImpl;
 import com.shazam.fork.system.adb.Installer;
 
 import java.util.Queue;
@@ -42,7 +42,7 @@ public class DeviceTestRunnerFactory {
                 testClassQueue,
                 deviceInPoolCountDownLatch,
                 progressReporter,
-                new ScreenRecorderImpl(device.getDeviceInterface()),
+                new ScreenRecorderImpl(device),
                 testRunFactory);
     }
 }
