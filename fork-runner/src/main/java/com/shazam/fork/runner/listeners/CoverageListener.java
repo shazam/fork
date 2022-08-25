@@ -2,10 +2,11 @@ package com.shazam.fork.runner.listeners;
 
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
-import com.shazam.fork.model.*;
+import com.shazam.fork.model.Device;
+import com.shazam.fork.model.Pool;
+import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.system.io.FileManager;
 import com.shazam.fork.system.io.RemoteFileManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +65,7 @@ public class CoverageListener implements ITestRunListener {
     @Override
     public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
         TestIdentifier testIdentifier = new TestIdentifier(testCase.getTestClass(), testCase.getTestMethod());
-        final String remoteFile = RemoteFileManager.getCoverageFileName(testIdentifier);
+        final String remoteFile = RemoteFileManager.getCoverageFileName(device.getDeviceInterface(), testIdentifier);
         final File file = fileManager.createFile(COVERAGE, pool, device, testIdentifier);
         try {
             device.getDeviceInterface().pullFile(remoteFile, file.getAbsolutePath());

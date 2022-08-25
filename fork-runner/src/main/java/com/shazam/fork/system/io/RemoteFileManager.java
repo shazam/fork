@@ -16,57 +16,78 @@ import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.NullOutputReceiver;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
-import com.android.ddmlib.SyncException;
 import com.android.ddmlib.TimeoutException;
 import com.android.ddmlib.testrunner.TestIdentifier;
-import java.io.IOException;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class RemoteFileManager {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteFileManager.class);
-    private static final String FORK_DIRECTORY = "/sdcard/fork";
     private static final NullOutputReceiver NO_OP_RECEIVER = new NullOutputReceiver();
-    private static final String COVERAGE_DIRECTORY = FORK_DIRECTORY + "/coverage";
 
-    private RemoteFileManager() {}
+    private RemoteFileManager() {
+    }
 
     public static void removeRemotePath(IDevice device, String remotePath) {
         executeCommand(device, "rm " + remotePath, "Could not delete remote file(s): " + remotePath);
     }
 
     public static void createCoverageDirectory(IDevice device) {
-        executeCommand(device, "mkdir " + COVERAGE_DIRECTORY,
-                       "Could not create remote directory: " + COVERAGE_DIRECTORY);
+        String coverageDirectory = getCoverageDirectory(device);
+        executeCommand(device, "mkdir " + coverageDirectory,
+                "Could not create remote directory: " + coverageDirectory);
     }
 
-    public static String getCoverageFileName(TestIdentifier testIdentifier) {
-        return COVERAGE_DIRECTORY + "/" +testIdentifier.toString() + ".ec";
+    public static String getCoverageFileName(IDevice device, TestIdentifier testIdentifier) {
+        return getCoverageDirectory(device) + "/" + testIdentifier.toString() + ".ec";
     }
 
     public static void createRemoteDirectory(IDevice device) {
-        executeCommand(device, "mkdir " + FORK_DIRECTORY, "Could not create remote directory: " + FORK_DIRECTORY);
+        String forkDirectory = getForkDirectory(device);
+        executeCommand(device, "mkdir " + forkDirectory, "Could not create remote directory: " + forkDirectory);
     }
 
     public static void removeRemoteDirectory(IDevice device) {
-        executeCommand(device, "rm -r " + FORK_DIRECTORY, "Could not delete remote directory: " + FORK_DIRECTORY);
+        String forkDirectory = getForkDirectory(device);
+        executeCommand(device, "rm -r " + forkDirectory, "Could not delete remote directory: " + forkDirectory);
     }
 
     private static void executeCommand(IDevice device, String command, String errorMessage) {
         try {
             device.executeShellCommand(command, NO_OP_RECEIVER);
-        } catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
+        } catch (TimeoutException | AdbCommandRejectedException |
+                 ShellCommandUnresponsiveException | IOException e) {
             logger.error(errorMessage, e);
         }
     }
 
-    public static String remoteVideoForTest(TestIdentifier test) {
-        return remoteFileForTest(videoFileName(test));
+    @NotNull
+    public static String remoteVideoForTest(IDevice device, TestIdentifier test) {
+        return remoteFileForTest(device, videoFileName(test));
     }
 
-    private static String remoteFileForTest(String filename) {
-        return FORK_DIRECTORY + "/" + filename;
+    @NotNull
+    private static String remoteFileForTest(IDevice device, String filename) {
+        return getForkDirectory(device) + "/" + filename;
+    }
+
+    @NotNull
+    private static String getCoverageDirectory(IDevice device) {
+        return getForkDirectory(device) + "/coverage";
+    }
+
+    @NotNull
+    private static String getForkDirectory(IDevice device) {
+        String externalStorage = device.getMountPoint(IDevice.MNT_EXTERNAL_STORAGE);
+        if (externalStorage != null) {
+            return externalStorage + "/fork";
+        } else {
+            return "/sdcard/fork";
+        }
     }
 
     private static String videoFileName(TestIdentifier test) {

@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.system.PermissionGrantingManager;
 import com.shazam.fork.system.io.RemoteFileManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +68,9 @@ class TestRun {
 
         if (testRunParameters.isCoverageEnabled()) {
             runner.setCoverage(true);
-            runner.addInstrumentationArg("coverageFile", RemoteFileManager.getCoverageFileName(new TestIdentifier(testClassName, testMethodName)));
+			String coverageFileName =
+					RemoteFileManager.getCoverageFileName(device, new TestIdentifier(testClassName, testMethodName));
+			runner.addInstrumentationArg("coverageFile", coverageFileName);
         }
 		String excludedAnnotation = testRunParameters.getExcludedAnnotation();
 		if (!Strings.isNullOrEmpty(excludedAnnotation)) {

@@ -105,7 +105,7 @@ public class ScreenRecorderImpl implements ScreenRecorder {
             try {
                 recorderTask.awaitCompletion();
 
-                String remoteFilePath = remoteVideoForTest(test);
+                String remoteFilePath = remoteVideoForTest(device.getDeviceInterface(), test);
                 logger.debug("Save screen recording {} to {}", remoteFilePath, output);
                 pullTestVideo(remoteFilePath, output);
             } catch (Exception e) {
@@ -126,7 +126,7 @@ public class ScreenRecorderImpl implements ScreenRecorder {
             try {
                 recorderTask.awaitCompletion();
 
-                String remoteFilePath = remoteVideoForTest(test);
+                String remoteFilePath = remoteVideoForTest(device.getDeviceInterface(), test);
                 logger.debug("Remove screen recording {}", remoteFilePath);
                 removeTestVideo(remoteFilePath);
 
@@ -169,7 +169,7 @@ public class ScreenRecorderImpl implements ScreenRecorder {
         @Override
         public void run() {
             try {
-                String remoteFilePath = remoteVideoForTest(test);
+                String remoteFilePath = remoteVideoForTest(deviceInterface, test);
                 logger.debug("Started recording video {}", remoteFilePath);
 
                 startRecordingTestVideo(remoteFilePath);
