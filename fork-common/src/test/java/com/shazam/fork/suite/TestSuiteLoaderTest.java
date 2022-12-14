@@ -20,6 +20,7 @@ import org.junit.Test;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 
 /**
  * This test is based on the <code>tests.dex</code> file, which contains test classes with the following code:
@@ -160,6 +162,15 @@ public class TestSuiteLoaderTest {
                 sameTestEventAs("methodWithUnmatchedKey", testClass, singlePropertyMap)));
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void checkParameterizedTest() throws Exception {
+        Collection<TestCaseEvent> testCaseEvents = testSuiteLoader.loadTestSuite();
+        assertThat(testCaseEvents.stream().filter(TestCaseEvent::isParameterized).count(), is(1L));
+        assertThat(testCaseEvents, hasItems(
+                sameTestEventAs("com.shazam.forktest.ParameterizedClassTest", true)));
+    }
+
     @Nonnull
     private Matcher<TestCaseEvent> sameTestEventAs(String testMethod, String testClass, Map<String, String> properties) {
         return sameBeanAs(
@@ -167,6 +178,16 @@ public class TestSuiteLoaderTest {
                         .withTestClass(testClass)
                         .withTestMethod(testMethod)
                         .withProperties(properties)
+                        .build()
+        );
+    }
+
+    private Matcher<TestCaseEvent> sameTestEventAs(String testClass, boolean isParameterized) {
+        return sameBeanAs(
+                testCaseEvent()
+                        .withTestClass(testClass)
+                        .withTestMethod("")
+                        .withIsParameterized(isParameterized)
                         .build()
         );
     }

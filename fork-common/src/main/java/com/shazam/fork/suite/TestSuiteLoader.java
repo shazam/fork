@@ -13,6 +13,7 @@ package com.shazam.fork.suite;
 import com.shazam.fork.io.DexFileExtractor;
 import com.shazam.fork.model.TestCaseEvent;
 
+import com.shazam.fork.utils.ParameterizedTestDetector;
 import org.jf.dexlib2.iface.Annotation;
 import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.ClassDef;
@@ -28,6 +29,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,7 @@ import java.util.stream.StreamSupport;
 
 import static com.shazam.fork.model.TestCaseEvent.Builder.testCaseEvent;
 import static java.lang.Math.min;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 public class TestSuiteLoader {
@@ -74,6 +77,13 @@ public class TestSuiteLoader {
         if (testCaseEvents.isEmpty()) {
             throw new NoTestCasesFoundException("No tests cases were found in the test APK: " + instrumentationApkFile.getAbsolutePath());
         }
+
+        // put parameterized tests to begin of queue to run them first
+        // because most probably they will require more time than any regular test
+        Map<Boolean, List<TestCaseEvent>> testEventsByParametrizedFlag = testCaseEvents.stream()
+                .collect(groupingBy(TestCaseEvent::isParameterized, toList()));
+        testCaseEvents = testEventsByParametrizedFlag.getOrDefault(true, new ArrayList<>());
+        testCaseEvents.addAll(testEventsByParametrizedFlag.getOrDefault(false, new ArrayList<>()));
         return testCaseEvents;
     }
 
@@ -82,9 +92,23 @@ public class TestSuiteLoader {
         List<TestCaseEvent> testCaseEvents = new ArrayList<>();
 
         Iterable<? extends Method> methods = classDefItem.getMethods();
-        StreamSupport.stream(methods.spliterator(), false)
-                .filter(method -> method.getAnnotations().stream().anyMatch(annotation -> TEST_ANNOTATION.equals(annotation.getType())))
-                .map(method -> convertToTestCaseEvent(classDefItem, method)).forEach(testCaseEvents::add);
+        if (ParameterizedTestDetector.isParameterizedClass(classDefItem)) {
+            return Collections.singletonList(
+                    TestCaseEvent.Builder.testCaseEvent()
+                            .withIsParameterized(true)
+                            .withTestClass(getClassName(classDefItem))
+                            .withTestMethod("")
+                            // we can't properly filter tests in parameterized classes
+                            // because we invoke whole class, not methods
+                            // so can check only marker for class
+                            .withIsIgnored(isClassIgnored(classDefItem))
+                            .build()
+            );
+        } else {
+            StreamSupport.stream(methods.spliterator(), false)
+                    .filter(method -> method.getAnnotations().stream().anyMatch(annotation -> TEST_ANNOTATION.equals(annotation.getType())))
+                    .map(method -> convertToTestCaseEvent(classDefItem, method)).forEach(testCaseEvents::add);
+        }
 
         return testCaseEvents;
     }
