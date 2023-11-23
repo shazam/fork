@@ -30,11 +30,16 @@ ext {
 
 def repos = {
     mavenLocal()
-    mavenCentral()
-    jcenter()
+    google()
     maven {
-        url 'https://maven.google.com'
+        url SHAZAM_PUBLIC_REPOSITORY
+        credentials {
+            username SHAZAM_NEXUS_USERNAME
+            password SHAZAM_NEXUS_PASSWORD
+        }
     }
+    gradlePluginPortal()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
 allprojects {
