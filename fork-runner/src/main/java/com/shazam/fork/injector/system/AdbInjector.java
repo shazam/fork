@@ -17,11 +17,22 @@ import com.shazam.fork.system.adb.Adb;
 import static com.shazam.fork.injector.ConfigurationInjector.configuration;
 
 public class AdbInjector {
-    private static final Adb ADB = new Adb(configuration().getAndroidSdk());
+    private static Adb ADB;
 
-    private AdbInjector() {}
+    private AdbInjector() {
+    }
 
     public static Adb adb() {
+        if (ADB == null) {
+            ADB = new Adb(configuration().getAndroidSdk());
+        }
         return ADB;
+    }
+
+    public static void releaseAdb() {
+        if (ADB != null) {
+            ADB.terminate();
+        }
+        ADB = null;
     }
 }
