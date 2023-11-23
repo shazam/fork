@@ -15,6 +15,8 @@ package com.shazam.fork.injector;
 import com.google.gson.*;
 import com.shazam.fork.ComputedPooling;
 
+import java.time.Instant;
+
 import static com.shazam.fork.ComputedPooling.Characteristic.valueOf;
 
 public class GsonInjector {
@@ -24,6 +26,8 @@ public class GsonInjector {
     static {
         GSON_BUILDER.registerTypeAdapter(ComputedPooling.Characteristic.class, characteristicDeserializer());
         GSON_BUILDER.registerTypeAdapter(ComputedPooling.Characteristic.class, characteristicSerializer());
+        GSON_BUILDER.registerTypeAdapter(Instant.class, instantSerializer());
+        GSON_BUILDER.registerTypeAdapter(Instant.class, instantDeserializer());
         GSON = GSON_BUILDER.create();
     }
 
@@ -35,6 +39,14 @@ public class GsonInjector {
 
     private static JsonDeserializer<ComputedPooling.Characteristic> characteristicDeserializer() {
         return (json, typeOfT, context) -> valueOf(json.getAsJsonPrimitive().getAsString());
+    }
+
+    private static JsonSerializer<Instant> instantSerializer() {
+        return (src, typeOfSrc, context) -> new JsonPrimitive(src.toEpochMilli());
+    }
+
+    private static JsonDeserializer<Instant> instantDeserializer() {
+        return (json, typeOfT, context) -> Instant.ofEpochMilli(json.getAsJsonPrimitive().getAsLong());
     }
 
     public static Gson gson() {
