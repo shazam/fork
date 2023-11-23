@@ -18,10 +18,10 @@ import com.android.ddmlib.NullOutputReceiver;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
 import com.android.ddmlib.testrunner.TestIdentifier;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 public class RemoteFileManager {
@@ -65,22 +65,22 @@ public class RemoteFileManager {
         }
     }
 
-    @NotNull
+    @Nonnull
     public static String remoteVideoForTest(IDevice device, TestIdentifier test) {
         return remoteFileForTest(device, videoFileName(test));
     }
 
-    @NotNull
+    @Nonnull
     private static String remoteFileForTest(IDevice device, String filename) {
         return getForkDirectory(device) + "/" + filename;
     }
 
-    @NotNull
+    @Nonnull
     private static String getCoverageDirectory(IDevice device) {
         return getForkDirectory(device) + "/coverage";
     }
 
-    @NotNull
+    @Nonnull
     private static String getForkDirectory(IDevice device) {
         String externalStorage = device.getMountPoint(IDevice.MNT_EXTERNAL_STORAGE);
         if (externalStorage != null) {
