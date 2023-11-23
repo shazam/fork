@@ -10,6 +10,7 @@
 
 package com.shazam.fork.system.adb;
 
+import com.android.ddmlib.AdbInitOptions;
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 
@@ -19,6 +20,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 /**
  * @see "com.android.builder.testing.ConnectedDeviceProvider"
  */
@@ -26,19 +29,21 @@ public class Adb {
     private final AndroidDebugBridge bridge;
 
     public Adb(File sdk) {
-        AndroidDebugBridge.initIfNeeded(false /*clientSupport*/);
+        AndroidDebugBridge.init(AdbInitOptions.DEFAULT);
         File adbPath = FileUtils.getFile(sdk, "platform-tools", "adb");
-        bridge = AndroidDebugBridge.createBridge(adbPath.getAbsolutePath(), false /*forceNewBridge*/);
-        long timeOut = 30000; // 30 sec
-        int sleepTime = 1000;
-        while (!bridge.hasInitialDeviceList() && timeOut > 0) {
-            sleep(sleepTime);
-            timeOut -= sleepTime;
+        bridge = AndroidDebugBridge.createBridge(adbPath.getAbsolutePath(), false, 30, SECONDS);
+
+        for (int attempt = 0; attempt < 60 && !this.isReady(bridge); attempt++) {
+            sleep(500);
         }
 
-        if (timeOut <= 0 && !bridge.hasInitialDeviceList()) {
+        if (!isReady(bridge)) {
             throw new RuntimeException("Timeout getting device list.", null);
         }
+    }
+
+    private boolean isReady(AndroidDebugBridge bridge) {
+        return bridge.getCurrentAdbVersion() != null && bridge.hasInitialDeviceList();
     }
 
     public Collection<IDevice> getDevices() {
