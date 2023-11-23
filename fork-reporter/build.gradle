@@ -16,8 +16,8 @@ apply from: '../build-scripts/gradle-mvn-push.gradle'
 
 mainClassName = 'com.shazam.fork.reporter.ForkReporterCli'
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = rootProject.sourceCompatibility
+targetCompatibility = rootProject.targetCompatibility
 
 dependencies {
     implementation(

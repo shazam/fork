@@ -12,8 +12,8 @@ apply plugin: 'java-gradle-plugin'
 apply from: '../build-scripts/manifest.gradle'
 apply from: '../build-scripts/gradle-mvn-push.gradle'
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = rootProject.sourceCompatibility
+targetCompatibility = rootProject.targetCompatibility
 
 repositories {
     maven { url "https://repo.jenkins-ci.org/public/" }

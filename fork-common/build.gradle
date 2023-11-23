@@ -15,7 +15,7 @@ apply from: '../build-scripts/gradle-mvn-push.gradle'
 //noinspection GroovyUnusedAssignment
 sourceCompatibility = rootProject.sourceCompatibility
 //noinspection GroovyUnusedAssignment
-targetCompatibility = rootProject.sourceCompatibility
+targetCompatibility = rootProject.targetCompatibility
 
 dependencies {
     implementation(

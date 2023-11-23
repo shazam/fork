@@ -14,7 +14,7 @@ apply from: '../build-scripts/manifest.gradle'
 apply from: '../build-scripts/gradle-mvn-push.gradle'
 
 sourceCompatibility = rootProject.sourceCompatibility
-targetCompatibility = rootProject.sourceCompatibility
+targetCompatibility = rootProject.targetCompatibility
 
 dependencies {
     implementation(

@@ -17,7 +17,7 @@ apply from: '../build-scripts/gradle-mvn-push.gradle'
 mainClassName = 'com.shazam.chimprunner.ChimpCli'
 
 sourceCompatibility = rootProject.sourceCompatibility
-targetCompatibility = rootProject.sourceCompatibility
+targetCompatibility = rootProject.targetCompatibility
 
 dependencies {
     implementation(
