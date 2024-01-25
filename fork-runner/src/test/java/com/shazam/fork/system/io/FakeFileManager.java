@@ -18,8 +18,8 @@ import com.android.ddmlib.testrunner.TestIdentifier;
 import com.shazam.fork.model.Device;
 import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 
 public class FakeFileManager implements FileManager {
@@ -73,7 +73,7 @@ public class FakeFileManager implements FileManager {
     }
 
     @Override
-    public File getFile(@NotNull FileType fileType, @NotNull Pool pool, @NotNull Device device, @NotNull TestIdentifier testIdentifier) {
+    public File getFile(@Nonnull FileType fileType, @Nonnull Pool pool, @Nonnull Device device, @Nonnull TestIdentifier testIdentifier) {
         return null;
     }
 }
