@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static com.shazam.fork.Utils.namedExecutor;
 import static java.util.stream.Collectors.toList;
@@ -66,15 +67,14 @@ public class ForkRunner {
     }
 
     public boolean run() {
-        ExecutorService poolExecutor = null;
         try {
             Collection<Pool> pools = poolLoader.loadPools();
-            poolExecutor = namedExecutor(pools.size(), "PoolExecutor-%d");
 
             Collection<TestCaseEvent> testCases = testClassLoader.loadTestSuite();
             summaryGeneratorHook.registerHook(pools, testCases);
 
-            executeTests(poolExecutor, pools, testCases);
+            executeTests(pools, testCases);
+
 
             AggregatedTestResult aggregatedTestResult = aggregator.aggregateTestResults(pools, testCases);
             if (!aggregatedTestResult.getFatalCrashedTests().isEmpty()) {
@@ -83,7 +83,7 @@ public class ForkRunner {
 
                 Collection<TestCaseEvent> fatalCrashedTestCases =
                         findFatalCrashedTestCases(testCases, aggregatedTestResult.getFatalCrashedTests());
-                executeTests(poolExecutor, pools, fatalCrashedTestCases);
+                executeTests(pools, fatalCrashedTestCases);
 
                 aggregatedTestResult = aggregator.aggregateTestResults(pools, testCases);
 
@@ -107,27 +107,32 @@ public class ForkRunner {
         } catch (Exception e) {
             logger.error("Error while Fork was executing", e);
             return false;
-        } finally {
-            if (poolExecutor != null) {
-                poolExecutor.shutdown();
-            }
         }
     }
 
-    private void executeTests(ExecutorService poolExecutor,
-                              Collection<Pool> pools,
-                              Collection<TestCaseEvent> testCases) throws InterruptedException {
+    private void executeTests(
+            Collection<Pool> pools,
+            Collection<TestCaseEvent> testCases
+    ) throws InterruptedException {
         ProgressReporter progressReporter = progressReporterFactory.createProgressReporter();
         progressReporter.start();
 
-        CountDownLatch poolCountDownLatch = new CountDownLatch(pools.size());
+        ExecutorService poolExecutor = namedExecutor(pools.size(), "PoolExecutor-%d");
 
+        CountDownLatch poolCountDownLatch = new CountDownLatch(pools.size());
         for (Pool pool : pools) {
-            Runnable poolTestRunner =
-                    poolTestRunnerFactory.createPoolTestRunner(pool, testCases, poolCountDownLatch, progressReporter);
+            Runnable poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(
+                    pool,
+                    testCases,
+                    poolCountDownLatch,
+                    progressReporter
+            );
             poolExecutor.execute(poolTestRunner);
         }
         poolCountDownLatch.await();
+
+        poolExecutor.shutdown();
+        poolExecutor.awaitTermination(10, TimeUnit.MINUTES);
 
         progressReporter.stop();
     }
