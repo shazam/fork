@@ -26,12 +26,15 @@ public class TestCaseEvent {
     @Nonnull
     private final Map<String, String> properties;
 
+    private final boolean isParameterized;
+
     private TestCaseEvent(Builder builder) {
         this.testClass = builder.testClass;
         this.testMethod = builder.testMethod;
         this.isIgnored = builder.isIgnored;
         this.permissionsToRevoke = builder.permissionsToRevoke;
         this.properties = builder.properties;
+        this.isParameterized = builder.isParameterized;
     }
 
     @Nonnull
@@ -66,6 +69,10 @@ public class TestCaseEvent {
     @Nonnull
     public Map<String, String> getProperties() {
         return unmodifiableMap(properties);
+    }
+
+    public boolean isParameterized() {
+        return isParameterized;
     }
 
     @Override
@@ -103,6 +110,7 @@ public class TestCaseEvent {
         private boolean isIgnored;
         private List<String> permissionsToRevoke = new ArrayList<>();
         private Map<String, String> properties = new HashMap<>();
+        private boolean isParameterized = false;
 
         @Nonnull
         public static Builder testCaseEvent(@Nonnull TestIdentifier testIdentifier) {
@@ -145,6 +153,12 @@ public class TestCaseEvent {
         public Builder withProperties(@Nonnull Map<String, String> properties) {
             this.properties.clear();
             this.properties.putAll(properties);
+            return this;
+        }
+
+        @Nonnull
+        public Builder withIsParameterized(boolean flag) {
+            this.isParameterized = flag;
             return this;
         }
 
