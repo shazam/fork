@@ -74,7 +74,8 @@ public class ForkRunner {
             Collection<TestCaseEvent> testCases = testClassLoader.loadTestSuite();
             summaryGeneratorHook.registerHook(pools, testCases);
 
-            executeTests(poolExecutor, pools, testCases);
+            executeTests(poolExecutor, pools, testCases
+                    .stream().filter(it -> !it.isIgnored()).collect(toList()));
 
             AggregatedTestResult aggregatedTestResult = aggregator.aggregateTestResults(pools, testCases);
             if (!aggregatedTestResult.getFatalCrashedTests().isEmpty()) {
