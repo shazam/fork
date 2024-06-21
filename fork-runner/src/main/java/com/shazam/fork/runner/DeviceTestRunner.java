@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Queue;
+import java.util.Deque;
 
 import static com.shazam.fork.system.io.RemoteFileManager.*;
 
@@ -32,7 +32,7 @@ public class DeviceTestRunner implements Runnable {
     private final Installer installer;
     private final Pool pool;
     private final Device device;
-    private final Queue<TestCaseEvent> queueOfTestsInPool;
+    private final Deque<TestCaseEvent> queueOfTestsInPool;
     private final ProgressReporter progressReporter;
     private final ScreenRecorder screenRecorder;
     private final TestRunFactory testRunFactory;
@@ -40,7 +40,7 @@ public class DeviceTestRunner implements Runnable {
     public DeviceTestRunner(Installer installer,
                             Pool pool,
                             Device device,
-                            Queue<TestCaseEvent> queueOfTestsInPool,
+                            Deque<TestCaseEvent> queueOfTestsInPool,
                             ProgressReporter progressReporter,
                             ScreenRecorder screenRecorder,
                             TestRunFactory testRunFactory) {

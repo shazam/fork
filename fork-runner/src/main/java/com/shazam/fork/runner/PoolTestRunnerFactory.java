@@ -14,7 +14,7 @@ import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class PoolTestRunnerFactory {
     private final DeviceTestRunnerFactory deviceTestRunnerFactory;
@@ -33,7 +33,7 @@ public class PoolTestRunnerFactory {
         return new PoolTestRunner(
                 deviceTestRunnerFactory,
                 pool,
-                new LinkedList<>(testCases),
+                new ConcurrentLinkedDeque<>(testCases),
                 progressReporter);
     }
 }

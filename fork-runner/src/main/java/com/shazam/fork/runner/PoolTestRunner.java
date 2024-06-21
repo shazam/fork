@@ -19,7 +19,7 @@ import com.shazam.fork.model.TestCaseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Queue;
+import java.util.Deque;
 import java.util.concurrent.ExecutorService;
 
 import static com.google.common.util.concurrent.Uninterruptibles.awaitTerminationUninterruptibly;
@@ -30,12 +30,12 @@ public class PoolTestRunner implements Runnable {
     public static final String DROPPED_BY = "DroppedBy-";
 
     private final Pool pool;
-    private final Queue<TestCaseEvent> testCases;
+    private final Deque<TestCaseEvent> testCases;
     private final DeviceTestRunnerFactory deviceTestRunnerFactory;
     private final ProgressReporter progressReporter;
 
     public PoolTestRunner(DeviceTestRunnerFactory deviceTestRunnerFactory, Pool pool,
-                          Queue<TestCaseEvent> testCases,
+                          Deque<TestCaseEvent> testCases,
                           ProgressReporter progressReporter) {
         this.pool = pool;
         this.testCases = testCases;

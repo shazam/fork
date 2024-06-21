@@ -16,7 +16,7 @@ import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.system.adb.Installer;
 
-import java.util.Queue;
+import java.util.Deque;
 
 public class DeviceTestRunnerFactory {
 
@@ -29,7 +29,7 @@ public class DeviceTestRunnerFactory {
     }
 
     public Runnable createDeviceTestRunner(Pool pool,
-                                           Queue<TestCaseEvent> testClassQueue,
+                                           Deque<TestCaseEvent> testClassQueue,
                                            Device device,
                                            ProgressReporter progressReporter
     ) {
