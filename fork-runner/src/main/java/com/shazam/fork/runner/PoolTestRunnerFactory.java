@@ -14,8 +14,7 @@ import com.shazam.fork.model.Pool;
 import com.shazam.fork.model.TestCaseEvent;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class PoolTestRunnerFactory {
     private final DeviceTestRunnerFactory deviceTestRunnerFactory;
@@ -26,7 +25,6 @@ public class PoolTestRunnerFactory {
 
     public Runnable createPoolTestRunner(Pool pool,
                                          Collection<TestCaseEvent> testCases,
-                                         CountDownLatch poolCountDownLatch,
                                          ProgressReporter progressReporter) {
 
         int totalTests = testCases.size();
@@ -35,8 +33,7 @@ public class PoolTestRunnerFactory {
         return new PoolTestRunner(
                 deviceTestRunnerFactory,
                 pool,
-                new LinkedList<>(testCases),
-                poolCountDownLatch,
+                new ConcurrentLinkedDeque<>(testCases),
                 progressReporter);
     }
 }

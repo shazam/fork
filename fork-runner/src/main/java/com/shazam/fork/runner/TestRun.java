@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
 
@@ -64,7 +65,7 @@ class TestRun {
 		}
 		runner.setRunName(poolName);
 		runner.setMethodName(testClassName, testMethodName);
-		runner.setMaxtimeToOutputResponse(testRunParameters.getTestOutputTimeout());
+		runner.setMaxTimeToOutputResponse(testRunParameters.getTestOutputTimeout(), TimeUnit.MILLISECONDS);
 
         if (testRunParameters.isCoverageEnabled()) {
             runner.setCoverage(true);

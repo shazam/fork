@@ -22,8 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Queue;
-import java.util.concurrent.CountDownLatch;
+import java.util.Deque;
 
 import static com.shazam.fork.system.io.RemoteFileManager.*;
 
@@ -33,8 +32,7 @@ public class DeviceTestRunner implements Runnable {
     private final Installer installer;
     private final Pool pool;
     private final Device device;
-    private final Queue<TestCaseEvent> queueOfTestsInPool;
-    private final CountDownLatch deviceCountDownLatch;
+    private final Deque<TestCaseEvent> queueOfTestsInPool;
     private final ProgressReporter progressReporter;
     private final ScreenRecorder screenRecorder;
     private final TestRunFactory testRunFactory;
@@ -42,8 +40,7 @@ public class DeviceTestRunner implements Runnable {
     public DeviceTestRunner(Installer installer,
                             Pool pool,
                             Device device,
-                            Queue<TestCaseEvent> queueOfTestsInPool,
-                            CountDownLatch deviceCountDownLatch,
+                            Deque<TestCaseEvent> queueOfTestsInPool,
                             ProgressReporter progressReporter,
                             ScreenRecorder screenRecorder,
                             TestRunFactory testRunFactory) {
@@ -51,7 +48,6 @@ public class DeviceTestRunner implements Runnable {
         this.pool = pool;
         this.device = device;
         this.queueOfTestsInPool = queueOfTestsInPool;
-        this.deviceCountDownLatch = deviceCountDownLatch;
         this.progressReporter = progressReporter;
         this.screenRecorder = screenRecorder;
         this.testRunFactory = testRunFactory;
@@ -81,7 +77,6 @@ public class DeviceTestRunner implements Runnable {
             }
         } finally {
             logger.info("Device {} from pool {} finished", device.getSerial(), pool.getName());
-            deviceCountDownLatch.countDown();
         }
     }
 
