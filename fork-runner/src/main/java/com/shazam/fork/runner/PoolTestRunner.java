@@ -20,9 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Queue;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
+import static com.google.common.util.concurrent.Uninterruptibles.awaitTerminationUninterruptibly;
 import static com.shazam.fork.Utils.namedExecutor;
 
 public class PoolTestRunner implements Runnable {
@@ -31,17 +31,14 @@ public class PoolTestRunner implements Runnable {
 
     private final Pool pool;
     private final Queue<TestCaseEvent> testCases;
-    private final CountDownLatch poolCountDownLatch;
     private final DeviceTestRunnerFactory deviceTestRunnerFactory;
     private final ProgressReporter progressReporter;
 
     public PoolTestRunner(DeviceTestRunnerFactory deviceTestRunnerFactory, Pool pool,
                           Queue<TestCaseEvent> testCases,
-                          CountDownLatch poolCountDownLatch,
                           ProgressReporter progressReporter) {
         this.pool = pool;
         this.testCases = testCases;
-        this.poolCountDownLatch = poolCountDownLatch;
         this.deviceTestRunnerFactory = deviceTestRunnerFactory;
         this.progressReporter = progressReporter;
     }
@@ -52,23 +49,25 @@ public class PoolTestRunner implements Runnable {
         try {
             int devicesInPool = pool.size();
             concurrentDeviceExecutor = namedExecutor(devicesInPool, "DeviceExecutor-%d");
-            CountDownLatch deviceCountDownLatch = new CountDownLatch(devicesInPool);
             logger.info("Pool {} started", poolName);
             for (Device device : pool.getDevices()) {
-                Runnable deviceTestRunner = deviceTestRunnerFactory.createDeviceTestRunner(pool, testCases,
-                        deviceCountDownLatch, device, progressReporter);
-                concurrentDeviceExecutor.execute(deviceTestRunner);
+                Runnable deviceTestRunner = deviceTestRunnerFactory.createDeviceTestRunner(
+                        pool,
+                        testCases,
+                        device,
+                        progressReporter
+                );
+                concurrentDeviceExecutor.submit(deviceTestRunner);
             }
-            deviceCountDownLatch.await();
-        } catch (InterruptedException e) {
-            logger.warn("Pool {} was interrupted while running", poolName);
+
+            concurrentDeviceExecutor.shutdown();
+            awaitTerminationUninterruptibly(concurrentDeviceExecutor);
         } finally {
-            if (concurrentDeviceExecutor != null) {
-                concurrentDeviceExecutor.shutdown();
+            if (concurrentDeviceExecutor != null && !concurrentDeviceExecutor.isTerminated()) {
+                concurrentDeviceExecutor.shutdownNow();
+                awaitTerminationUninterruptibly(concurrentDeviceExecutor);
             }
             logger.info("Pool {} finished", poolName);
-            poolCountDownLatch.countDown();
-            logger.info("Pools remaining: {}", poolCountDownLatch.getCount());
         }
     }
 }

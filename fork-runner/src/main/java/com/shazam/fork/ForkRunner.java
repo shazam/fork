@@ -36,6 +36,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.util.concurrent.Uninterruptibles.awaitTerminationUninterruptibly;
 import static com.shazam.fork.Utils.namedExecutor;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -113,28 +114,34 @@ public class ForkRunner {
     private void executeTests(
             Collection<Pool> pools,
             Collection<TestCaseEvent> testCases
-    ) throws InterruptedException {
+    ) {
         ProgressReporter progressReporter = progressReporterFactory.createProgressReporter();
         progressReporter.start();
 
-        ExecutorService poolExecutor = namedExecutor(pools.size(), "PoolExecutor-%d");
+        ExecutorService poolExecutor = null;
+        try {
+            poolExecutor = namedExecutor(pools.size(), "PoolExecutor-%d");
 
-        CountDownLatch poolCountDownLatch = new CountDownLatch(pools.size());
-        for (Pool pool : pools) {
-            Runnable poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(
-                    pool,
-                    testCases,
-                    poolCountDownLatch,
-                    progressReporter
-            );
-            poolExecutor.execute(poolTestRunner);
+            for (Pool pool : pools) {
+                Runnable poolTestRunner = poolTestRunnerFactory.createPoolTestRunner(
+                        pool,
+                        testCases,
+                        progressReporter
+                );
+                poolExecutor.submit(poolTestRunner);
+            }
+
+            poolExecutor.shutdown();
+            awaitTerminationUninterruptibly(poolExecutor);
+        } finally {
+            progressReporter.stop();
+
+            if (poolExecutor != null && !poolExecutor.isTerminated()) {
+                poolExecutor.shutdownNow();
+                awaitTerminationUninterruptibly(poolExecutor);
+            }
         }
-        poolCountDownLatch.await();
 
-        poolExecutor.shutdown();
-        poolExecutor.awaitTermination(10, TimeUnit.MINUTES);
-
-        progressReporter.stop();
     }
 
     private static void reportMissingTests(AggregatedTestResult aggregatedTestResult) {

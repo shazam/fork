@@ -17,7 +17,6 @@ import com.shazam.fork.model.TestCaseEvent;
 import com.shazam.fork.system.adb.Installer;
 
 import java.util.Queue;
-import java.util.concurrent.CountDownLatch;
 
 public class DeviceTestRunnerFactory {
 
@@ -31,7 +30,6 @@ public class DeviceTestRunnerFactory {
 
     public Runnable createDeviceTestRunner(Pool pool,
                                            Queue<TestCaseEvent> testClassQueue,
-                                           CountDownLatch deviceInPoolCountDownLatch,
                                            Device device,
                                            ProgressReporter progressReporter
     ) {
@@ -40,7 +38,6 @@ public class DeviceTestRunnerFactory {
                 pool,
                 device,
                 testClassQueue,
-                deviceInPoolCountDownLatch,
                 progressReporter,
                 new ScreenRecorderImpl(device),
                 testRunFactory);
