@@ -1,5 +1,7 @@
 ![Build Status](https://github.com/shazam/fork/actions/workflows/main.yml/badge.svg) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/cd40d76af01b4a2fab6f5e4000e76cb8)](https://www.codacy.com/gh/shazam/fork/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=shazam/fork&amp;utm_campaign=Badge_Grade)
 
+# DEPRECATED
+
 Fork tools
 ==========
 The Fork project consists of these tools:
